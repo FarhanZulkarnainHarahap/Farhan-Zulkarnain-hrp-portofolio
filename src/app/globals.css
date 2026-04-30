@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+/* ... theme lainnya ... */
+
+:root {
+  /* Menghilangkan scroll-behavior smooth jika menggunakan snap 
+     karena snap sudah memiliki engine smoothing sendiri */
+  scroll-behavior: auto; 
+}
+
+body {
+  background-color: #030406;
+  color: white;
+  /* Gunakan proximity jika mandatory dirasa terlalu keras */
+  scroll-snap-type: y proximity; 
+  overflow-y: overlay; /* Membuat scrollbar melayang agar tidak geser layout */
+}
+
+/* Memperhalus pergerakan snap pada kontainer */
+.snap-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  /* Menghilangkan scrollbar di Chrome/Safari agar lebih clean */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
