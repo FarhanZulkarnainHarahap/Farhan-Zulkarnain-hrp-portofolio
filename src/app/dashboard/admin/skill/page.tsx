@@ -63,7 +63,10 @@ export default function SkillPage() {
 
   const fetchSkills = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/skills`);
+      const response = await fetch(`${API_URL}/api/skills`, {
+        cache: 'no-store',
+        credentials: "include"
+      });;
       const result = await response.json();
       const data = Array.isArray(result) ? result : result.data;
       if (Array.isArray(data)) setSkills(data);

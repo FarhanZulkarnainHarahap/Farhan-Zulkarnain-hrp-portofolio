@@ -21,7 +21,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
   const fetchPortfolios = async () => {
     try {
       const response = await fetch(`${API_URL}/api/portofolios`, {
-        cache: 'no-store'
+        cache: 'no-store',
+        credentials: "include"
       });
       const result = await response.json();
       if (result.success) {
