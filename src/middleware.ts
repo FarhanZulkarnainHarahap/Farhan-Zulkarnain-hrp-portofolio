@@ -6,64 +6,56 @@ export async function middleware(req: NextRequest) {
   const accessToken = req.cookies.get("accessToken")?.value;
   const { pathname } = req.nextUrl;
 
-  // 1. Daftar Halaman Publik (Bisa diakses tanpa login)
-  const publicUserPaths = [
-    "/dashboard/user/product",
-    "/dashboard/user/product-store",
-    "/dashboard/user/best-deals",
-    "/dashboard/user/contact-us",
-    "/dashboard/user/about",
-  ];
-
-  // 2. Cek apakah path saat ini termasuk halaman publik
-  const isPublicPath = publicUserPaths.some((path) => pathname.startsWith(path));
-
-  if (isPublicPath) {
-    return NextResponse.next();
-  }
-
-  // 3. Bypass untuk halaman Auth agar tidak looping
+  // 1. Bypass Halaman Auth
   if (pathname.startsWith("/auth")) {
-    // Jika sudah login tapi mau ke /auth/login, lempar ke dashboard
-    if (accessToken) return NextResponse.redirect(new URL("/admin/home", req.url));
-    return NextResponse.next();
-  }
-
-  // 4. Proteksi: Jika TIDAK ada token
-  if (!accessToken) {
-    // Semua yang mencoba akses checkout atau area dashboard/admin lainnya wajib login
-    if (pathname.startsWith("/dashboard") || pathname.startsWith("/admin")) {
-      return NextResponse.redirect(new URL("/auth/login", req.url));
+    if (accessToken) {
+      return NextResponse.redirect(new URL("/admin/home", req.url));
     }
     return NextResponse.next();
   }
 
-  // 5. Verifikasi Token & Role (Untuk halaman terproteksi)
-  const secret = process.env.JWT_SECRET;
-  if (!secret) return new NextResponse("Secret Code missing", { status: 500 });
-
-  try {
-    const verified = await jwtVerify(accessToken, new TextEncoder().encode(secret));
-    const role = (verified.payload as { role: string }).role;
-
-    // Logika Role-Based Access Control (RBAC)
-    if (pathname.startsWith("/admin") && role !== "ADMIN") {
-      return new NextResponse("Forbidden: Admin Only", { status: 403 });
-    }
-
-    if (pathname.startsWith("/dashboard/user/checkout") && !role) {
+  // 2. Proteksi Halaman Terlarang (Admin/Dashboard)
+  if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) {
+    if (!accessToken) {
       return NextResponse.redirect(new URL("/auth/login", req.url));
     }
 
-    return NextResponse.next();
-  } catch (err) {
-    // Jika token tidak valid/expired, hapus cookie dan arahkan ke login
-    const response = NextResponse.redirect(new URL("/auth/login", req.url));
-    response.cookies.delete("accessToken");
-    return response;
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.error("Middleware Error: JWT_SECRET tidak terdefinisi di Environment Variables");
+      return new NextResponse("Server Configuration Error", { status: 500 });
+    }
+
+    try {
+      // Verifikasi Token
+      const { payload } = await jwtVerify(
+        accessToken, 
+        new TextEncoder().encode(secret)
+      );
+
+      // RBAC: Cek Role Admin
+      if (pathname.startsWith("/admin") && payload.role !== "ADMIN") {
+        return new NextResponse("Forbidden: Admin Only", { status: 403 });
+      }
+
+      return NextResponse.next();
+    } catch (err) {
+      // DEBUG: Cek di log hosting/Vercel kenapa gagal (expired atau invalid secret)
+      console.error("JWT Verification Failed:", err);
+
+      // Gagal verifikasi -> Hapus cookie dan balik ke login
+      const response = NextResponse.redirect(new URL("/auth/login", req.url));
+      response.cookies.delete("accessToken"); 
+      return response;
+    }
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|public).*)"],
+  // Matcher yang lebih aman untuk mengabaikan file statis & folder public
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|public|.*\\..*).*)",
+  ],
 };
