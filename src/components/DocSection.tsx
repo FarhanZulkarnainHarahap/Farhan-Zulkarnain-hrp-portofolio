@@ -24,10 +24,11 @@ interface DocumentData {
 export default function DocSection() {
   const [docs, setDocs] = useState<DocumentData[]>([]);
   const [loading, setLoading] = useState(true);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  console.log(API_URL) 
   useEffect(() => {
     const fetchDocs = async () => {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL;
         const response = await fetch(`${API_URL}/api/documents`);
         const result = await response.json();
         if (result.success) {
