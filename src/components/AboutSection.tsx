@@ -107,7 +107,7 @@ export default function AboutSection() {
               className="grid grid-cols-1 md:grid-cols-2 gap-8"
             >
               <p className="text-gray-500 text-sm leading-relaxed max-w-sm">
-                Saya adalah arsitek digital yang fokus pada pembuatan antarmuka intuitif dan performa backend solid. 4 tahun perjalanan ini membentuk presisi visual saya.
+                Satu tahun berkarier sebagai arsitek digital telah membentuk standar tinggi saya terhadap presisi visual dan stabilitas backend. Saya berkomitmen pada pembuatan produk digital yang tidak hanya estetik secara antarmuka, tetapi juga optimal secara performa.
               </p>
               
               <div className="space-y-4">

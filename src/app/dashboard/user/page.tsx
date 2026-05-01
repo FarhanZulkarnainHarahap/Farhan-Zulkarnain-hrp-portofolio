@@ -56,22 +56,34 @@ export default function Home() {
         <DocSection />
       </section>
 
-      {/* SECTION 6: CONTACT & FOOTER */}
-      <section id="contact" className="h-screen w-full snap-start snap-always relative flex flex-col items-center justify-center p-6 bg-[#030406]">
-        <div className="w-full max-w-5xl mb-24">
+      {/* SECTION 6: CONTACT */}
+      <section id="contact" className="min-h-screen w-full snap-start snap-always flex items-center justify-center p-6 bg-[#030406]">
+        <div className="w-full max-w-5xl">
           <ContactSection />
         </div>
+      </section>
 
-        <footer className="absolute bottom-10 w-full flex flex-col items-center gap-4">
-          <div className="flex gap-6 text-gray-600">
-            <FaLinkedin size={22} className="hover:text-blue-500 transition-colors cursor-pointer" /> 
-            <FaInstagram size={22} className="hover:text-pink-500 transition-colors cursor-pointer" /> 
-            <FaGithub size={22} className="hover:text-white transition-colors cursor-pointer" />
+      {/* SECTION 7: FOOTER SEPARATE */}
+      <section className="w-full snap-start bg-[#030406] flex flex-col items-center justify-center py-12 gap-6 border-t border-white/5">
+        <div className="flex gap-6 text-gray-600">
+          <FaLinkedin size={22} className="hover:text-blue-500 transition-colors cursor-pointer" /> 
+          <FaInstagram size={22} className="hover:text-pink-500 transition-colors cursor-pointer" /> 
+          <FaGithub size={22} className="hover:text-white transition-colors cursor-pointer" />
+        </div>
+
+        <div className="flex flex-col items-center gap-4 text-center px-6">
+          <div className="text-[9px] md:text-[10px] tracking-[0.3em] md:tracking-[0.5em] uppercase text-gray-600 font-bold leading-loose">
+            © 2026 Farhan Zulkarnain Harahap <br className="md:hidden" />
+            <span className="hidden md:inline"> | </span> 
+            Creative Web Developer
           </div>
-          <div className="text-[8px] md:text-[10px] tracking-[0.5em] uppercase text-gray-700 font-bold text-center px-4">
-            © 2026 Farhan Zulkarnain Harahap Creative Web Developer
+
+          {/* Badge Status */}
+          <div className="flex items-center gap-2 text-[10px] text-gray-500 font-medium bg-white/5 px-4 py-2 rounded-full border border-white/10">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            OPEN FOR NEW OPPORTUNITIES
           </div>
-        </footer>
+        </div>
       </section>
     </main>
   );
