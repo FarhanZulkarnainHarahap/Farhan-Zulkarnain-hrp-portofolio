@@ -3,7 +3,7 @@ import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 
-const menuItems = ["HOME", "ABOUT", "SKILLS", "PORTFOLIO", "DOCUMENTS", "CONTACT"];
+const menuItems = ["HOME", "ABOUT", "SKILLS", "PROJECTS", "DOCUMENTS", "CONTACT"];
 
 export default function Navbar() {
   const router = useRouter();

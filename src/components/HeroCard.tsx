@@ -3,6 +3,7 @@ import { motion, Variants } from "framer-motion";
 import { FaArrowRight } from "react-icons/fa";
 import Image from "next/image";
 import ShinyText from "./ShinyText"; // Pastikan path import sudah benar
+import Link from "next/link";
 
 export default function HeroCard() {
   const fadeInUp: Variants = {
@@ -54,10 +55,12 @@ export default function HeroCard() {
           </motion.p>
 
           <motion.div initial="hidden" animate="visible" variants={fadeInUp} className="pt-4 flex flex-wrap gap-6">
+            <Link href="/projects">
             <button className="group flex items-center gap-4 bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-full transition-all shadow-xl shadow-blue-500/20">
               <span className="text-xs font-black uppercase tracking-widest">View My Projects</span>
               <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
             </button>
+            </Link>
           </motion.div>
         </div>
 

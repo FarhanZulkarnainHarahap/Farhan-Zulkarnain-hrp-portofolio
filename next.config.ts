@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
         destination: '/dashboard/user',
       },
       {
-        source: '/portfolio',
+        source: '/projects',
         destination: '/dashboard/user',
       },
       {
