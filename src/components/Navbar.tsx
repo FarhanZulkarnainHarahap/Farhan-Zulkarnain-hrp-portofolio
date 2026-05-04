@@ -1,7 +1,7 @@
 "use client";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const menuItems = ["HOME", "ABOUT", "SKILLS", "PROJECTS", "DOCUMENTS", "CONTACT"];
 
@@ -13,12 +13,18 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Cek apakah item aktif berdasarkan pathname
+  // Mencegah scroll body saat menu mobile terbuka
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [isOpen]);
+
   const getIsActive = (item: string) => {
     const itemPath = item.toLowerCase();
-    if (itemPath === "home") {
-      return pathname === "/" || pathname === "/home";
-    }
+    if (itemPath === "home") return pathname === "/" || pathname === "/home";
     return pathname === `/${itemPath}`;
   };
 
@@ -26,25 +32,23 @@ export default function Navbar() {
     const targetId = item.toLowerCase();
     const urlPath = targetId === "home" ? "/" : `/${targetId}`;
 
-    // 1. Update URL secara "silent" tanpa memicu scroll default Next.js
     if (pathname !== urlPath) {
       window.history.pushState(null, "", urlPath);
     }
 
-    // 2. Scroll halus ke element ID
     const element = document.getElementById(targetId);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     } else if (targetId === "home") {
-      // Jika element home tidak ada, scroll ke paling atas
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    setIsOpen(false);
+    setIsOpen(false); // Tutup menu setelah klik (penting untuk mobile)
   };
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
+    // Navbar sembunyi saat scroll ke bawah, tapi tetap muncul di mobile jika menu terbuka
     if (latest > previous && latest > 150 && !isOpen && !isHovered) {
       setHidden(true);
     } else {
@@ -54,26 +58,29 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Area deteksi hover untuk memunculkan navbar kembali (Desktop) */}
       <div 
         onMouseEnter={() => { setIsHovered(true); setHidden(false); }}
-        className="fixed top-0 left-0 w-full h-4 z-110 pointer-events-auto"
+        className="fixed top-0 left-0 w-full h-4 z-100 hidden lg:block"
       />
 
       <motion.nav 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         variants={{ visible: { y: 0 }, hidden: { y: "-100%" } }}
-        animate={hidden && !isOpen ? "hidden" : "visible"}
+        animate={hidden ? "hidden" : "visible"}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed top-0 left-0 w-full z-110 p-6 flex justify-between items-center backdrop-blur-xl bg-black/40 border-b border-white/5"
+        className="fixed top-0 left-0 w-full z-110 px-6 py-4 lg:px-12 lg:py-6 flex justify-between items-center backdrop-blur-xl bg-black/40 border-b border-white/5"
       >
+        {/* Logo */}
         <div 
-          className="font-black tracking-tighter text-xl text-blue-500 uppercase italic cursor-pointer" 
+          className="font-black tracking-tighter text-xl lg:text-2xl text-blue-500 uppercase italic cursor-pointer z-120" 
           onClick={() => handleNavigation("HOME")}
         >
           Farhan Z.
         </div>
         
+        {/* Desktop Menu */}
         <ul className="hidden lg:flex gap-10">
           {menuItems.map((item) => (
             <li key={item}>
@@ -89,26 +96,48 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* HAMBURGER & MOBILE MENU TETAP SAMA */}
-        <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden flex flex-col gap-1.5 z-110 p-2">
-          <motion.span animate={isOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }} className="w-7 h-0.5 bg-blue-500 rounded-full" />
-          <motion.span animate={isOpen ? { opacity: 0, x: 20 } : { opacity: 1, x: 0 }} className="w-7 h-0.5 bg-white rounded-full" />
-          <motion.span animate={isOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }} className="w-5 h-0.5 bg-blue-500 rounded-full self-end" />
+        {/* Hamburger Button (Mobile Only) */}
+        <button 
+          onClick={() => setIsOpen(!isOpen)} 
+          className="lg:hidden flex flex-col gap-1.5 z-120 p-2 focus:outline-none"
+          aria-label="Toggle Menu"
+        >
+          <motion.span 
+            animate={isOpen ? { rotate: 45, y: 8, backgroundColor: "#3b82f6" } : { rotate: 0, y: 0, backgroundColor: "#3b82f6" }} 
+            className="w-7 h-0.5 rounded-full" 
+          />
+          <motion.span 
+            animate={isOpen ? { opacity: 0, x: 10 } : { opacity: 1, x: 0, backgroundColor: "#ffffff" }} 
+            className="w-7 h-0.5 rounded-full" 
+          />
+          <motion.span 
+            animate={isOpen ? { rotate: -45, y: -8, width: "1.75rem", backgroundColor: "#3b82f6" } : { rotate: 0, y: 0, width: "1.25rem", backgroundColor: "#3b82f6" }} 
+            className="h-0.5 rounded-full self-end" 
+          />
         </button>
 
+        {/* Fullscreen Mobile Menu Overlay */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
-              className="fixed inset-0 h-screen bg-[#030406]/95 backdrop-blur-2xl flex flex-col items-center justify-center lg:hidden"
+              initial={{ opacity: 0, x: "100%" }} 
+              animate={{ opacity: 1, x: 0 }} 
+              exit={{ opacity: 0, x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed inset-0 h-screen w-full bg-[#030406] flex flex-col items-center justify-center lg:hidden z-115"
             >
               <ul className="flex flex-col items-center gap-8">
                 {menuItems.map((item, i) => (
-                  <motion.li key={item} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 * i }}>
+                  <motion.li 
+                    key={item} 
+                    initial={{ opacity: 0, y: 20 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ delay: 0.1 * i + 0.2 }}
+                  >
                     <button 
                       onClick={() => handleNavigation(item)}
-                      className={`text-2xl font-black tracking-[0.2em] uppercase ${
-                        getIsActive(item) ? "text-blue-500" : "text-white"
+                      className={`text-3xl font-black tracking-[0.2em] uppercase transition-all ${
+                        getIsActive(item) ? "text-blue-500 scale-110" : "text-white"
                       }`}
                     >
                       {item}
