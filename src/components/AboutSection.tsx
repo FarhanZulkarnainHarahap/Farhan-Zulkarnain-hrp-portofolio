@@ -87,9 +87,7 @@ export default function AboutSection() {
               className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start"
             >
               <p className="text-gray-400 text-sm md:text-base leading-relaxed max-w-md mx-auto lg:mx-0">
-                Satu tahun berkarier sebagai arsitek digital telah membentuk standar tinggi saya terhadap presisi visual dan stabilitas backend. Saya berkomitmen pada pembuatan produk digital yang optimal secara performa.
-              </p>
-              
+                A year as a digital architect has shaped my high standards for front-end visual precision and backend stability. I am committed to building digital products optimized for performance</p>
               <div className="flex flex-col gap-4 items-center lg:items-start">
                 {[
                   { icon: FaTerminal, text: "Fullstack Dev" },
