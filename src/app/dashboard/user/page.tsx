@@ -69,9 +69,9 @@ export default function Home() {
       {/* SECTION 7: FOOTER */}
       <footer className="w-full snap-start bg-[#030406] flex flex-col items-center justify-center py-10 md:py-16 gap-6 border-t border-white/5 px-4 md:px-6">
         <div className="flex flex-wrap justify-center gap-6 text-gray-500">
-          <FaLinkedin size={24} className="hover:text-blue-500 transition-all cursor-pointer hover:scale-110" /> 
-          <FaInstagram size={24} className="hover:text-pink-500 transition-all cursor-pointer hover:scale-110" /> 
-          <FaGithub size={24} className="hover:text-white transition-all cursor-pointer hover:scale-110" />
+          <FaLinkedin size={24} href="https://www.linkedin.com/in/farhan-zulkarnain-71801a347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" className="hover:text-blue-500 transition-all cursor-pointer hover:scale-110" /> 
+          <FaInstagram size={24} href="https://www.instagram.com/farhan.nexxus?igsh=bmw4cmI4djQzeTN1" className="hover:text-pink-500 transition-all cursor-pointer hover:scale-110" /> 
+          <FaGithub size={24} href="https://github.com/FarhanZulkarnainHarahap" className="hover:text-white transition-all cursor-pointer hover:scale-110" />
         </div>
 
         <div className="flex flex-col items-center gap-4 text-center max-w-2xl">

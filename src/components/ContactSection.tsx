@@ -164,10 +164,10 @@ export default function ContactSection() {
           {/* Social Media Grid */}
           <div className="grid grid-cols-4 gap-4">
             {[
-              { icon: FaLinkedin, link: "https://linkedin.com", color: "hover:bg-blue-600" },
-              { icon: FaInstagram, link: "https://instagram.com", color: "hover:bg-pink-600" },
-              { icon: FaGithub, link: "https://github.com", color: "hover:bg-white hover:text-black" },
-              { icon: FaWhatsapp, link: "https://wa.me", color: "hover:bg-green-600" }
+              { icon: FaLinkedin, link: "https://www.linkedin.com/in/farhan-zulkarnain-71801a347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", color: "hover:bg-blue-600" },
+              { icon: FaInstagram, link: "https://www.instagram.com/farhan.nexxus?igsh=bmw4cmI4djQzeTN1", color: "hover:bg-pink-600" },
+              { icon: FaGithub, link: "https://github.com/FarhanZulkarnainHarahap", color: "hover:bg-white hover:text-black" },
+              { icon: FaWhatsapp, link: "https://wa.me/6281958169283", color: "hover:bg-green-600" }
             ].map((social, i) => (
               <motion.a
                 key={i}
