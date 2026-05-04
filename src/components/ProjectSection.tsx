@@ -38,7 +38,7 @@ export default function PortfolioSection() {
     <div className="flex min-h-100 w-full items-center justify-center bg-[#030406]">
       <div className="flex flex-col items-center gap-4">
         <LuLoader className="animate-spin text-blue-500" size={32} />
-        <p className="text-zinc-500 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em]">Accessing Database...</p>
+        <p className="text-zinc-500 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em]">Loading</p>
       </div>
     </div>
   );

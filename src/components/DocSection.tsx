@@ -7,10 +7,9 @@ import {
   FaFilePdf, 
   FaCertificate, 
   FaUserGraduate, 
-  FaFileAlt,
   FaFileSignature 
 } from "react-icons/fa";
-
+import { LuLoader } from "react-icons/lu";
 // Interface disesuaikan dengan skema backend Prisma/Cloudinary kamu
 interface DocumentData {
   id: string;
@@ -64,12 +63,12 @@ export default function DocSection() {
   };
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center py-20 gap-4">
-      <div className="w-12 h-1 bg-zinc-800 rounded-full overflow-hidden">
-        <div className="w-1/2 h-full bg-blue-600 animate-[loading_1s_ease-in-out_infinite]" />
-      </div>
-      <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Accessing Vault...</span>
-    </div>
+    <div className="flex min-h-100 w-full items-center justify-center bg-[#030406]">
+          <div className="flex flex-col items-center gap-4">
+            <LuLoader className="animate-spin text-blue-500" size={32} />
+            <p className="text-zinc-500 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em]">Loading</p>
+          </div>
+        </div>
   );
 
   return (

@@ -12,7 +12,7 @@ interface SkillData {
   iconName: string;
   category: "FRONTEND" | "BACKEND" | "TOOLS" | "OTHERS";
 }
-
+import { LuLoader } from "react-icons/lu";
 // --- HELPER: RENDER ICON ---
 const DynamicIcon = ({ name }: { name: string }) => {
   const allIcons: any = { ...Lu, ...Fa, ...Si, ...Di };
@@ -95,9 +95,12 @@ export default function SkillSection() {
       {/* --- CONTENT LAYER --- */}
       <div className="relative z-10 w-full flex flex-col gap-6">
         {loading ? (
-          <div className="text-zinc-600 animate-pulse text-[10px] tracking-[0.5em] uppercase text-center py-10 italic">
-            Initialising Systems...
-          </div>
+          <div className="flex min-h-100 w-full items-center justify-center bg-[#030406]">
+                <div className="flex flex-col items-center gap-4">
+                  <LuLoader className="animate-spin text-blue-500" size={32} />
+                  <p className="text-zinc-500 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em]">Loading</p>
+                </div>
+              </div>
         ) : (
           categoryOrder.map((catKey, idx) => {
             const skillsInCat = groupedSkills[catKey];
