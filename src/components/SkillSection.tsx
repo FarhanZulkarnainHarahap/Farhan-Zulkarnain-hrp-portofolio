@@ -59,7 +59,7 @@ export default function SkillSection() {
     }, {});
   }, [skills]);
 
-  const categoryOrder = ["FRONTEND", "BACKEND", "TOOLS"];
+  const categoryOrder = ["FRONTEND", "BACKEND", "TOOLS", "OTHERS"];
 
   return (
     <div className="relative w-full flex flex-col gap-6 md:gap-8 overflow-visible">
