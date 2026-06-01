@@ -1,74 +1,137 @@
 "use client";
-import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
-import { FiExternalLink } from "react-icons/fi";
-import { MouseEvent } from "react";
-import Image from "next/image"; // Import Next/Image
+
+import type { CSSProperties } from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { FaGithub } from "react-icons/fa";
+import { FiArrowUpRight } from "react-icons/fi";
 
 interface CardProps {
   title: string;
-  category: string;
+  description: string;
   imageUrl: string;
-  link: string;
+  demoUrl: string | null;
+  repoUrl: string | null;
+  index: number;
+  variant: "featured" | "orbit" | "mobile";
+  accent?: string;
+  onSelect?: () => void;
 }
 
-export default function ProjectCard({ title, category, imageUrl, link }: CardProps) {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  function handleMouseMove({ currentTarget, clientX, clientY }: MouseEvent) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
-
-  const background = useMotionTemplate`radial-gradient(400px circle at ${mouseX}px ${mouseY}px, rgba(59, 130, 246, 0.15), transparent 80%)`;
+export default function ProjectCard({
+  title,
+  description,
+  imageUrl,
+  demoUrl,
+  repoUrl,
+  index,
+  variant,
+  accent = "#3b82f6",
+  onSelect,
+}: CardProps) {
+  const isFeatured = variant !== "orbit";
+  const projectNumber = String(index + 1).padStart(2, "0");
+  const cardStyle = {
+    "--project-accent": accent,
+    borderColor: `${accent}70`,
+    boxShadow: `0 20px 70px ${accent}18`,
+  } as CSSProperties;
 
   return (
-    <motion.a
-      href={link}
-      target="_blank"
-      rel="noopener noreferrer"
-      data-cursor-label="VIEW"
-      whileHover={{ y: -6, scale: 1.02 }}
-      onMouseMove={handleMouseMove}
-      className="relative block w-full overflow-hidden rounded-2xl border border-white/5 bg-zinc-900/20 backdrop-blur-md group cursor-pointer transition-all duration-300 hover:border-blue-500/40 shadow-xl"
+    <motion.article
+      layout
+      initial={{ opacity: 0, scale: 0.92 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.92 }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      style={cardStyle}
+      className={`group relative overflow-hidden border bg-[#080b14]/95 backdrop-blur-xl ${
+        variant === "featured"
+          ? "w-100 rounded-[28px] p-3"
+          : variant === "mobile"
+            ? "w-full rounded-[26px] p-2.5"
+            : "w-55 rounded-[22px] p-2"
+      }`}
     >
-      {/* Spotlight Effect */}
-      <motion.div
-        className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition duration-300 group-hover:opacity-100"
-        style={{ background }}
-      />
-
-      {/* Image Area */}
-      <div className="h-48 bg-[#0a0a0a] relative overflow-hidden">
-        <Image 
-          src={imageUrl || "/placeholder-project.jpg"} 
-          alt={title} 
-          fill // Mengisi kontainer parent (h-48)
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 grayscale group-hover:grayscale-0"
-          priority={false}
+      {variant === "orbit" && (
+        <button
+          type="button"
+          onClick={onSelect}
+          aria-label={`Tampilkan project ${title}`}
+          data-cursor-label="SELECT"
+          className="absolute inset-0 z-30"
         />
-        {/* Overlay Gradient */}
-        <div className="absolute inset-0 bg-linear-to-t from-[#050505] via-transparent to-transparent opacity-90" />
+      )}
+
+      <div className={`relative overflow-hidden rounded-[18px] bg-slate-950 ${variant === "orbit" ? "h-31" : "h-53"}`}>
+        <Image
+          src={imageUrl || "/placeholder-project.jpg"}
+          alt={title}
+          fill
+          sizes={variant === "orbit" ? "220px" : "(max-width: 768px) 100vw, 400px"}
+          className="object-cover opacity-85 transition-all duration-700 group-hover:scale-110 group-hover:opacity-100"
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-[#060812] via-transparent to-transparent" />
       </div>
 
-      {/* Content Area */}
-      <div className="p-6 flex justify-between items-center relative z-10">
-        <div className="leading-tight">
-          <h4 className="font-bold text-[15px] text-white group-hover:text-blue-400 transition-colors uppercase tracking-tight">
-            {title}
-          </h4>
-          <p className="text-[10px] text-zinc-500 uppercase tracking-[0.25em] font-black mt-2">
-            {category}
-          </p>
-        </div>
-        
-        {/* Icon Button */}
-        <div className="bg-white/5 p-2.5 rounded-xl group-hover:bg-blue-600 group-hover:shadow-[0_0_20px_rgba(37,99,235,0.5)] transition-all duration-500 text-zinc-400 group-hover:text-white">
-          <FiExternalLink size={16} />
-        </div>
+      <span
+        className="absolute left-1 top-1 flex h-8 w-8 items-center justify-center rounded-full border bg-[#071020] font-mono text-[10px] font-black text-white shadow-lg"
+        style={{ borderColor: accent, boxShadow: `0 0 18px ${accent}80` }}
+      >
+        {projectNumber}
+      </span>
+
+      <div className={variant === "orbit" ? "px-2 pb-2 pt-4" : "px-3 pb-3 pt-5 text-center"}>
+        <p className="text-[9px] font-black uppercase tracking-[0.24em]" style={{ color: accent }}>
+          Web Application
+        </p>
+        <h3 className={`mt-2 font-black uppercase tracking-tight text-white ${variant === "orbit" ? "text-lg" : "text-2xl"}`}>
+          {title}
+        </h3>
+
+        {isFeatured && (
+          <>
+            <p className="mx-auto mt-3 max-w-xs text-xs leading-relaxed text-zinc-400">
+              {description || "A carefully crafted digital product with a clean and scalable interface."}
+            </p>
+            <div className="mt-5 flex items-center justify-center gap-3">
+              {demoUrl && (
+                <a
+                  href={demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cursor-label="OPEN"
+                  aria-label={`Buka demo ${title}`}
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_0_22px_rgba(37,99,235,0.6)] transition-transform hover:scale-110"
+                >
+                  <FiArrowUpRight size={18} />
+                </a>
+              )}
+              {repoUrl && (
+                <a
+                  href={repoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cursor-label="CODE"
+                  aria-label={`Buka repository ${title}`}
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-all hover:scale-110 hover:bg-white/15"
+                >
+                  <FaGithub size={17} />
+                </a>
+              )}
+            </div>
+          </>
+        )}
+
+        {variant === "orbit" && (
+          <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-3">
+            <span className="text-[8px] font-bold uppercase tracking-[0.22em] text-zinc-500">View Case</span>
+            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 text-white transition-colors group-hover:bg-white/10">
+              <FiArrowUpRight size={14} />
+            </span>
+          </div>
+        )}
       </div>
-    </motion.a>
+    </motion.article>
   );
 }

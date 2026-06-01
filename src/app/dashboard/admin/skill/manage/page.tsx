@@ -7,7 +7,10 @@ import {
   LuType, 
   LuLayers, 
   LuLoader, 
-  LuShieldCheck 
+  LuShieldCheck,
+  LuCircleCheck,
+  LuArrowRight,
+  LuX
 } from "react-icons/lu";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,23 +20,21 @@ import * as LuIcons from "react-icons/lu";
 import * as FaIcons from "react-icons/fa6";
 import * as SiIcons from "react-icons/si";
 import * as DiIcons from "react-icons/di";
+import type { IconType } from "react-icons";
 
 export default function ManageSkillPage() {
   const router = useRouter();
   const [skillName, setSkillName] = useState("");
   const [category, setCategory] = useState("FRONTEND");
-  const [detectedIcon, setDetectedIcon] = useState("");
   const [loading, setLoading] = useState(false);
+  const [createdSkill, setCreatedSkill] = useState<{ name: string; category: string } | null>(null);
 
   // Gabungkan semua library icons dalam satu objek (Memoized agar enteng)
-  const allIcons: any = useMemo(() => ({ ...LuIcons, ...FaIcons, ...SiIcons, ...DiIcons }), []);
+  const allIcons: Record<string, IconType> = useMemo(() => ({ ...LuIcons, ...FaIcons, ...SiIcons, ...DiIcons }), []);
 
   // --- LOGIKA AUTO DETECT ICON ---
-  useEffect(() => {
-    if (!skillName) {
-      setDetectedIcon("");
-      return;
-    }
+  const detectedIcon = useMemo(() => {
+    if (!skillName) return "";
 
     // 1. Normalisasi nama (Next.js -> nextdotjs, Node.js -> nodedotjs)
     const normalized = skillName.toLowerCase()
@@ -47,12 +48,24 @@ export default function ManageSkillPage() {
       return k === `si${normalized}` || k === `fa${normalized}` || k === `lu${normalized}` || k === normalized || k === `di${normalized}`;
     });
 
-    if (foundKey) {
-      setDetectedIcon(foundKey);
-    } else {
-      setDetectedIcon("");
-    }
+    return foundKey || "";
   }, [skillName, allIcons]);
+
+  useEffect(() => {
+    if (!createdSkill) return;
+
+    const closeModal = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setCreatedSkill(null);
+    };
+
+    window.addEventListener("keydown", closeModal);
+    return () => window.removeEventListener("keydown", closeModal);
+  }, [createdSkill]);
+
+  const goToSkillList = () => {
+    router.push("/admin/skill");
+    router.refresh();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,12 +87,11 @@ export default function ManageSkillPage() {
 
       const result = await response.json();
       if (result.success) {
-        router.push("/admin/skill");
-        router.refresh();
+        setCreatedSkill({ name: skillName, category });
       } else {
         alert("Gagal: " + result.error);
       }
-    } catch (error) {
+    } catch {
       alert("Gagal terhubung ke server.");
     } finally {
       setLoading(false);
@@ -88,6 +100,50 @@ export default function ManageSkillPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 min-h-screen bg-slate-50/30">
+      {createdSkill && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="skill-success-title"
+          className="fixed inset-0 z-100 flex items-center justify-center bg-slate-950/60 p-6 backdrop-blur-sm"
+        >
+          <div className="relative w-full max-w-md overflow-hidden rounded-4xl border border-emerald-100 bg-white p-8 text-center shadow-2xl shadow-emerald-950/20 md:p-10">
+            <button
+              type="button"
+              onClick={() => setCreatedSkill(null)}
+              aria-label="Tutup modal"
+              className="absolute right-5 top-5 rounded-full p-2 text-slate-300 transition-colors hover:bg-slate-100 hover:text-slate-600"
+            >
+              <LuX size={18} />
+            </button>
+
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-emerald-100 bg-emerald-50 text-emerald-500 shadow-inner">
+              <LuCircleCheck size={42} />
+            </div>
+
+            <p className="mt-6 text-[10px] font-black uppercase tracking-[0.35em] text-emerald-500">
+              Publish Successful
+            </p>
+            <h2 id="skill-success-title" className="mt-3 text-2xl font-black uppercase tracking-tight text-slate-800">
+              Skill Berhasil Dibuat
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate-500">
+              <span className="font-bold text-slate-700">{createdSkill.name}</span> berhasil ditambahkan ke kategori{" "}
+              <span className="font-bold text-indigo-600">{createdSkill.category}</span>.
+            </p>
+
+            <button
+              type="button"
+              onClick={goToSkillList}
+              className="mt-8 flex w-full items-center justify-center gap-3 rounded-2xl bg-indigo-600 px-5 py-4 text-xs font-black uppercase tracking-[0.2em] text-white shadow-xl shadow-indigo-100 transition-all hover:bg-indigo-700 active:scale-[0.98]"
+            >
+              Lihat Daftar Skill
+              <LuArrowRight size={18} />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Navigation */}
       <div className="mb-10 flex items-center justify-between">
         <Link href="/admin/skill" className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 transition-all font-bold text-xs uppercase tracking-tighter group">

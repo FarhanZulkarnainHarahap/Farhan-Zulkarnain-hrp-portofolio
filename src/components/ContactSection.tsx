@@ -41,7 +41,7 @@ export default function ContactSection() {
       } else {
         setStatus({ type: "error", msg: result.message || "Gagal mengirim pesan." });
       }
-    } catch (error) {
+    } catch {
       setStatus({ type: "error", msg: "Kesalahan koneksi ke server." });
     } finally {
       setLoading(false);
@@ -139,24 +139,29 @@ export default function ContactSection() {
           transition={{ duration: 0.8 }}
           className="grid grid-cols-1 gap-6"
         >
-          <div className="p-8 space-y-6 border border-white/5 bg-linear-to-br from-white/2 to-transparent rounded-3xl">
-             <div className="flex items-center gap-6 group">
-                <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
+          <div className="p-5 sm:p-8 space-y-6 border border-white/5 bg-linear-to-br from-white/2 to-transparent rounded-3xl">
+             <div className="flex items-center gap-4 sm:gap-6 group">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
                   <FaEnvelope size={20} />
                 </div>
-                <div className="space-y-1">
+                <div className="min-w-0 flex-1 space-y-1">
                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Email Me</p>
-                  <p className="text-white text-sm font-medium italic">farhanzulkarnaenhrp@gmail.com</p>
+                  <a
+                    href="mailto:farhanzulkarnaenhrp@gmail.com"
+                    className="block max-w-full break-all text-[11px] leading-relaxed font-medium italic text-white transition-colors hover:text-blue-400 md:text-sm"
+                  >
+                    farhanzulkarnaenhrp@gmail.com
+                  </a>
                 </div>
              </div>
 
-             <div className="flex items-center gap-6 group border-t border-white/5 pt-6">
-                <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
+             <div className="flex items-center gap-4 sm:gap-6 group border-t border-white/5 pt-6">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
                   <FaPhoneAlt size={18} />
                 </div>
-                <div className="space-y-1">
+                <div className="min-w-0 flex-1 space-y-1">
                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Call / WA</p>
-                  <p className="text-white text-sm font-medium">+62 819 5816 9283</p>
+                  <p className="text-white text-sm font-medium break-words">+62 819 5816 9283</p>
                 </div>
              </div>
           </div>
