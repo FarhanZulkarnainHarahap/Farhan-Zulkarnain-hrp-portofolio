@@ -2,7 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { LuArrowLeft, LuArrowRight, LuLoader, LuSparkles } from "react-icons/lu";
+import {
+  LuArrowLeft,
+  LuArrowRight,
+  LuBox,
+  LuCodeXml,
+  LuLoader,
+  LuShieldCheck,
+  LuSparkles,
+  LuZap,
+} from "react-icons/lu";
 import ProjectCard from "./ProjectCard";
 
 interface Project {
@@ -18,9 +27,31 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const PROJECTS_PER_PAGE = 4;
 const projectAccents = ["#3b82f6", "#10b981", "#facc15", "#a855f7"];
 const orbitPositions = [
-  "left-[1%] top-[30%] -rotate-[8deg]",
-  "left-[25%] bottom-[2%] rotate-[6deg]",
-  "right-[1%] top-[37%] rotate-[7deg]",
+  "left-[-3%] top-[27%] -rotate-[8deg]",
+  "left-[19%] bottom-[-1%] rotate-[6deg]",
+  "right-[-4%] top-[36%] rotate-[7deg]",
+];
+const showcaseHighlights = [
+  {
+    icon: LuBox,
+    title: "Modern Stack",
+    description: "Next.js, TypeScript, Tailwind, Node.js, PostgreSQL.",
+  },
+  {
+    icon: LuZap,
+    title: "Performance Focused",
+    description: "Optimized, fast, and built with best practices.",
+  },
+  {
+    icon: LuShieldCheck,
+    title: "Scalable & Maintainable",
+    description: "Clean architecture and structured codebase.",
+  },
+  {
+    icon: LuCodeXml,
+    title: "Pixel Perfect",
+    description: "Carefully crafted UI with attention to detail.",
+  },
 ];
 
 export default function PortfolioSection() {
@@ -51,6 +82,7 @@ export default function PortfolioSection() {
   );
   const safeActiveIndex = Math.min(activeIndex, Math.max(currentProjects.length - 1, 0));
   const activeProject = currentProjects[safeActiveIndex];
+  const currentSlide = page * PROJECTS_PER_PAGE + safeActiveIndex + 1;
   const orbitProjects = currentProjects
     .map((project, index) => ({ project, index }))
     .filter(({ index }) => index !== safeActiveIndex);
@@ -99,11 +131,16 @@ export default function PortfolioSection() {
       <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/12 blur-[130px]" />
       <div className="absolute -bottom-28 -left-28 -z-10 h-80 w-80 rounded-full border border-blue-500/25 opacity-50" />
 
-      <div className="mx-auto grid w-full max-w-380 grid-cols-1 items-center gap-10 lg:grid-cols-[285px_minmax(0,1fr)]">
+      <div className="mx-auto grid w-full max-w-390 grid-cols-1 items-center gap-10 lg:grid-cols-[285px_minmax(0,1fr)] xl:grid-cols-[285px_minmax(0,1fr)_235px]">
         <header className="relative z-20 text-center lg:text-left">
           <div className="flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-purple-400 lg:justify-start">
             <LuSparkles size={14} />
             My Works
+            {projects.length > 0 && (
+              <span className="text-zinc-500">
+                {String(currentSlide).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+              </span>
+            )}
           </div>
           <h2 className="mt-5 text-4xl font-black leading-[0.95] tracking-tight text-white md:text-6xl lg:text-6xl">
             Projects Built With <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-blue-400">Purpose.</span>
@@ -128,7 +165,7 @@ export default function PortfolioSection() {
                 aria-label="Project berikutnya"
                 className="flex items-center gap-3 rounded-full border border-white/15 px-5 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-white transition-all hover:border-blue-400 hover:bg-blue-500/15"
               >
-                Explore
+                Explore My Work
                 <LuArrowRight size={15} />
               </button>
             </div>
@@ -137,12 +174,17 @@ export default function PortfolioSection() {
 
         {activeProject ? (
           <>
-            <div className="hidden min-h-172 lg:block">
-              <div className="relative h-172 w-full">
-                <div className="absolute left-1/2 top-1/2 h-120 w-120 -translate-x-1/2 -translate-y-1/2 rounded-full border border-blue-400/45 shadow-[0_0_40px_rgba(37,99,235,0.24)]" />
-                <div className="absolute left-1/2 top-1/2 h-145 w-145 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-blue-500/35" />
-                <div className="absolute left-1/2 top-1/2 h-94 w-166 -translate-x-1/2 -translate-y-1/2 rounded-[50%] border border-blue-500/25 rotate-[-14deg]" />
-                <div className="absolute left-1/2 top-1/2 h-90 w-184 -translate-x-1/2 -translate-y-1/2 rounded-[50%] border border-purple-500/25 rotate-[11deg]" />
+            <div className="hidden min-h-180 lg:block">
+              <div className="relative h-180 w-full">
+                <div className="absolute left-1/2 top-1/2 h-120 w-120 -translate-x-1/2 -translate-y-1/2 rounded-full border border-blue-400/55 shadow-[0_0_60px_rgba(37,99,235,0.3)]" />
+                <div className="absolute left-1/2 top-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-blue-500/40" />
+                <div className="absolute left-1/2 top-1/2 h-108 w-180 -translate-x-1/2 -translate-y-1/2 rounded-[50%] border border-blue-500/30 rotate-[-14deg]" />
+                <div className="absolute left-1/2 top-1/2 h-102 w-198 -translate-x-1/2 -translate-y-1/2 rounded-[50%] border border-purple-500/30 rotate-[11deg]" />
+
+                <span className="absolute left-[9%] top-[25%] h-2.5 w-2.5 rounded-full bg-blue-400 shadow-[0_0_18px_5px_rgba(96,165,250,0.75)]" />
+                <span className="absolute right-[12%] top-[33%] h-3 w-3 rounded-full bg-emerald-300 shadow-[0_0_18px_5px_rgba(110,231,183,0.7)]" />
+                <span className="absolute bottom-[13%] left-[24%] h-2.5 w-2.5 rounded-full bg-yellow-300 shadow-[0_0_18px_5px_rgba(253,224,71,0.6)]" />
+                <span className="absolute bottom-[19%] right-[14%] h-2.5 w-2.5 rounded-full bg-purple-300 shadow-[0_0_18px_5px_rgba(216,180,254,0.65)]" />
 
                 {orbitProjects.map(({ project, index }, slotIndex) => (
                   <motion.div
@@ -235,6 +277,20 @@ export default function PortfolioSection() {
             No digital assets found in archive
           </div>
         )}
+
+        <aside className="hidden rounded-[24px] border border-purple-500/25 bg-[#080b16]/85 px-5 py-6 shadow-[0_20px_80px_rgba(88,28,135,0.18)] backdrop-blur-xl xl:block">
+          <div className="space-y-5">
+            {showcaseHighlights.map(({ icon: Icon, title, description }) => (
+              <div key={title} className="flex gap-3">
+                <Icon className="mt-0.5 shrink-0 text-purple-400" size={22} />
+                <div>
+                  <h3 className="text-sm font-bold text-white">{title}</h3>
+                  <p className="mt-1 text-[11px] leading-relaxed text-zinc-400">{description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </aside>
       </div>
 
       {pageCount > 1 && (

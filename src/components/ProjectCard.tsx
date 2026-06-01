@@ -3,7 +3,7 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { FaGithub } from "react-icons/fa";
+import { FaGithub, FaStar } from "react-icons/fa";
 import { FiArrowUpRight } from "react-icons/fi";
 
 interface CardProps {
@@ -31,6 +31,7 @@ export default function ProjectCard({
 }: CardProps) {
   const isFeatured = variant !== "orbit";
   const projectNumber = String(index + 1).padStart(2, "0");
+  const fallbackDescription = "A carefully crafted digital product with a clean and scalable interface.";
   const cardStyle = {
     "--project-accent": accent,
     borderColor: `${accent}70`,
@@ -47,10 +48,10 @@ export default function ProjectCard({
       style={cardStyle}
       className={`group relative overflow-hidden border bg-[#080b14]/95 backdrop-blur-xl ${
         variant === "featured"
-          ? "w-100 rounded-[28px] p-3"
+          ? "w-92 rounded-[28px] p-3 xl:w-100"
           : variant === "mobile"
             ? "w-full rounded-[26px] p-2.5"
-            : "w-55 rounded-[22px] p-2"
+            : "w-62 rounded-[22px] p-2.5 xl:w-68"
       }`}
     >
       {variant === "orbit" && (
@@ -63,23 +64,33 @@ export default function ProjectCard({
         />
       )}
 
-      <div className={`relative overflow-hidden rounded-[18px] bg-slate-950 ${variant === "orbit" ? "h-31" : "h-53"}`}>
+      <div className={`relative overflow-hidden rounded-[18px] bg-slate-950 ${variant === "orbit" ? "h-36" : "h-53"}`}>
         <Image
           src={imageUrl || "/placeholder-project.jpg"}
           alt={title}
           fill
-          sizes={variant === "orbit" ? "220px" : "(max-width: 768px) 100vw, 400px"}
+          sizes={variant === "orbit" ? "272px" : "(max-width: 768px) 100vw, 400px"}
           className="object-cover opacity-85 transition-all duration-700 group-hover:scale-110 group-hover:opacity-100"
         />
         <div className="absolute inset-0 bg-linear-to-t from-[#060812] via-transparent to-transparent" />
       </div>
 
       <span
-        className="absolute left-1 top-1 flex h-8 w-8 items-center justify-center rounded-full border bg-[#071020] font-mono text-[10px] font-black text-white shadow-lg"
+        className="absolute left-1 top-1 flex h-9 w-9 items-center justify-center rounded-full border bg-[#071020] font-mono text-xs font-black text-white shadow-lg"
         style={{ borderColor: accent, boxShadow: `0 0 18px ${accent}80` }}
       >
         {projectNumber}
       </span>
+
+      {variant === "featured" && (
+        <span
+          className="absolute right-5 top-5 flex items-center gap-1.5 rounded-full border bg-[#071020]/95 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.16em] text-white shadow-lg"
+          style={{ borderColor: accent, boxShadow: `0 0 18px ${accent}40` }}
+        >
+          <FaStar className="text-yellow-300" size={10} />
+          Featured
+        </span>
+      )}
 
       <div className={variant === "orbit" ? "px-2 pb-2 pt-4" : "px-3 pb-3 pt-5 text-center"}>
         <p className="text-[9px] font-black uppercase tracking-[0.24em]" style={{ color: accent }}>
@@ -92,8 +103,18 @@ export default function ProjectCard({
         {isFeatured && (
           <>
             <p className="mx-auto mt-3 max-w-xs text-xs leading-relaxed text-zinc-400">
-              {description || "A carefully crafted digital product with a clean and scalable interface."}
+              {description || fallbackDescription}
             </p>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5">
+              {["Responsive UI", "Modern Web", "Scalable"].map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full border border-white/10 bg-white/4 px-2.5 py-1 text-[8px] font-bold uppercase tracking-[0.12em] text-zinc-400"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
             <div className="mt-5 flex items-center justify-center gap-3">
               {demoUrl && (
                 <a
@@ -124,12 +145,17 @@ export default function ProjectCard({
         )}
 
         {variant === "orbit" && (
-          <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-3">
-            <span className="text-[8px] font-bold uppercase tracking-[0.22em] text-zinc-500">View Case</span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 text-white transition-colors group-hover:bg-white/10">
-              <FiArrowUpRight size={14} />
-            </span>
-          </div>
+          <>
+            <p className="mt-3 line-clamp-3 text-[10px] leading-relaxed text-zinc-400">
+              {description || fallbackDescription}
+            </p>
+            <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-3">
+              <span className="text-[8px] font-bold uppercase tracking-[0.22em] text-zinc-500">View Case</span>
+              <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 text-white transition-colors group-hover:bg-white/10">
+                <FiArrowUpRight size={14} />
+              </span>
+            </div>
+          </>
         )}
       </div>
     </motion.article>
