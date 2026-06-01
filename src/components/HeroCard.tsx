@@ -84,16 +84,6 @@ export default function HeroCard() {
               </div>
             </div>
 
-            <motion.div 
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -bottom-4 -left-4 z-20 rounded-2xl border border-white/10 bg-black/65 p-3 shadow-2xl backdrop-blur-md md:-bottom-6 md:-left-6 md:p-4"
-            >
-              <div className="flex flex-col">
-                <span className="text-blue-500 font-black text-lg md:text-xl leading-none">FZ.</span>
-                <span className="text-[7px] md:text-[8px] text-gray-400 uppercase tracking-widest mt-1">Creative Dev</span>
-              </div>
-            </motion.div>
           </div>
         </motion.div>
 

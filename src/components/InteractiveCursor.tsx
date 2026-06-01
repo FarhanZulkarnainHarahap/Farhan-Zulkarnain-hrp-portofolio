@@ -19,20 +19,20 @@ interface CursorParticle {
 export default function InteractiveCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
-  const orbitRef = useRef<HTMLDivElement>(null);
+  const labelAnchorRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
   const particlePoolRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const cursor = cursorRef.current;
     const dot = dotRef.current;
-    const orbit = orbitRef.current;
+    const labelAnchor = labelAnchorRef.current;
     const label = labelRef.current;
     const particlePool = particlePoolRef.current;
     const canUseCustomCursor = window.matchMedia("(hover: hover) and (pointer: fine)");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    if (!cursor || !dot || !orbit || !label || !particlePool || !canUseCustomCursor.matches) {
+    if (!cursor || !dot || !labelAnchor || !label || !particlePool || !canUseCustomCursor.matches) {
       return;
     }
 
@@ -41,8 +41,6 @@ export default function InteractiveCursor() {
     let frameId = 0;
     let pointerX = window.innerWidth / 2;
     let pointerY = window.innerHeight / 2;
-    let orbitX = pointerX;
-    let orbitY = pointerY;
     let lastTrailX = pointerX;
     let lastTrailY = pointerY;
     let nextParticleIndex = 0;
@@ -110,10 +108,6 @@ export default function InteractiveCursor() {
     };
 
     const renderCursor = () => {
-      orbitX += (pointerX - orbitX) * 0.16;
-      orbitY += (pointerY - orbitY) * 0.16;
-      orbit.style.transform = `translate3d(${orbitX}px, ${orbitY}px, 0) translate(-50%, -50%)`;
-
       particles.forEach((particle) => {
         if (particle.life <= 0) {
           return;
@@ -156,22 +150,20 @@ export default function InteractiveCursor() {
       pointerX = event.clientX;
       pointerY = event.clientY;
       dot.style.transform = `translate3d(${pointerX}px, ${pointerY}px, 0) translate(-50%, -50%)`;
+      labelAnchor.style.transform = `translate3d(${pointerX}px, ${pointerY}px, 0)`;
       cursor.classList.add("is-visible");
       updateCursorState(event.target);
       createTrail(pointerX, pointerY);
     };
 
     const handlePointerDown = () => {
-      cursor.classList.add("is-pressed");
       createBurst();
     };
-    const handlePointerUp = () => cursor.classList.remove("is-pressed");
     const handlePointerLeave = () => cursor.classList.remove("is-visible");
 
     frameId = window.requestAnimationFrame(renderCursor);
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerdown", handlePointerDown);
-    window.addEventListener("pointerup", handlePointerUp);
     window.addEventListener("blur", handlePointerLeave);
     document.documentElement.addEventListener("mouseleave", handlePointerLeave);
 
@@ -180,7 +172,6 @@ export default function InteractiveCursor() {
       window.cancelAnimationFrame(frameId);
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerdown", handlePointerDown);
-      window.removeEventListener("pointerup", handlePointerUp);
       window.removeEventListener("blur", handlePointerLeave);
       document.documentElement.removeEventListener("mouseleave", handlePointerLeave);
     };
@@ -193,7 +184,7 @@ export default function InteractiveCursor() {
           <span key={index} className="custom-cursor-particle" />
         ))}
       </div>
-      <div ref={orbitRef} className="custom-cursor-orbit">
+      <div ref={labelAnchorRef} className="custom-cursor-label-anchor">
         <span ref={labelRef} className="custom-cursor-label" />
       </div>
       <div ref={dotRef} className="custom-cursor-dot" />
