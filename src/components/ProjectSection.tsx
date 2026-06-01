@@ -24,12 +24,13 @@ interface Project {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const GALAXY_GIF_URL = "https://media.giphy.com/media/3oEhn2LiBCmcAU5yvu/giphy.gif";
 const PROJECTS_PER_PAGE = 4;
 const projectAccents = ["#3b82f6", "#10b981", "#facc15", "#a855f7"];
 const orbitPositions = [
-  "left-[-3%] top-[27%] -rotate-[8deg]",
-  "left-[19%] bottom-[-1%] rotate-[6deg]",
-  "right-[-4%] top-[36%] rotate-[7deg]",
+  "left-[-12%] top-[16%] -rotate-[7deg]",
+  "left-[-6%] bottom-[-3%] rotate-[5deg]",
+  "right-[-5%] top-[27%] rotate-[7deg]",
 ];
 const showcaseHighlights = [
   {
@@ -110,7 +111,12 @@ export default function PortfolioSection() {
 
   if (loading) {
     return (
-      <div className="flex min-h-100 w-full items-center justify-center bg-[#030406]">
+      <div
+        className="flex min-h-100 w-full items-center justify-center bg-cover bg-center"
+        style={{
+          backgroundImage: `linear-gradient(rgba(2, 4, 11, 0.82), rgba(2, 4, 11, 0.82)), url(${GALAXY_GIF_URL})`,
+        }}
+      >
         <div className="flex flex-col items-center gap-4">
           <LuLoader className="animate-spin text-blue-500" size={32} />
           <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-zinc-500 md:text-[10px]">Loading</p>
@@ -122,16 +128,17 @@ export default function PortfolioSection() {
   return (
     <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-[#02040b] px-5 py-20 md:px-8 lg:py-24">
       <div
-        className="absolute inset-0 -z-20 opacity-70"
+        className="absolute inset-0 -z-30 bg-cover bg-center opacity-70"
         style={{
-          backgroundImage: "radial-gradient(circle, rgba(96,165,250,0.65) 1px, transparent 1px)",
-          backgroundSize: "78px 78px",
+          backgroundImage: `url(${GALAXY_GIF_URL})`,
         }}
       />
+      <div className="absolute inset-0 -z-20 bg-[#02040b]/76" />
+      <div className="absolute inset-0 -z-20 bg-linear-to-b from-[#02040b]/35 via-[#02040b]/65 to-[#02040b]/95" />
       <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/12 blur-[130px]" />
       <div className="absolute -bottom-28 -left-28 -z-10 h-80 w-80 rounded-full border border-blue-500/25 opacity-50" />
 
-      <div className="mx-auto grid w-full max-w-390 grid-cols-1 items-center gap-10 lg:grid-cols-[285px_minmax(0,1fr)] xl:grid-cols-[285px_minmax(0,1fr)_235px]">
+      <div className="mx-auto grid w-full max-w-390 grid-cols-1 items-center gap-10 lg:grid-cols-[285px_minmax(0,1fr)] 2xl:grid-cols-[285px_minmax(0,1fr)_235px]">
         <header className="relative z-20 text-center lg:text-left">
           <div className="flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-purple-400 lg:justify-start">
             <LuSparkles size={14} />
@@ -174,7 +181,7 @@ export default function PortfolioSection() {
 
         {activeProject ? (
           <>
-            <div className="hidden min-h-180 lg:block">
+            <div className="hidden min-h-180 xl:block">
               <div className="relative h-180 w-full">
                 <div className="absolute left-1/2 top-1/2 h-120 w-120 -translate-x-1/2 -translate-y-1/2 rounded-full border border-blue-400/55 shadow-[0_0_60px_rgba(37,99,235,0.3)]" />
                 <div className="absolute left-1/2 top-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-blue-500/40" />
@@ -238,7 +245,7 @@ export default function PortfolioSection() {
               </div>
             </div>
 
-            <div className="lg:hidden">
+            <div className="xl:hidden">
               <AnimatePresence mode="wait">
                 <ProjectCard
                   key={activeProject.id}
@@ -278,7 +285,7 @@ export default function PortfolioSection() {
           </div>
         )}
 
-        <aside className="hidden rounded-[24px] border border-purple-500/25 bg-[#080b16]/85 px-5 py-6 shadow-[0_20px_80px_rgba(88,28,135,0.18)] backdrop-blur-xl xl:block">
+        <aside className="hidden rounded-[24px] border border-purple-500/25 bg-[#080b16]/85 px-5 py-6 shadow-[0_20px_80px_rgba(88,28,135,0.18)] backdrop-blur-xl 2xl:block">
           <div className="space-y-5">
             {showcaseHighlights.map(({ icon: Icon, title, description }) => (
               <div key={title} className="flex gap-3">
