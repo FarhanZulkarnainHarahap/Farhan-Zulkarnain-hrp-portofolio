@@ -1,9 +1,27 @@
 "use client";
 import { motion, Variants } from "framer-motion";
-import { FaArrowRight } from "react-icons/fa";
+import { FaArrowRight, FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import Image from "next/image";
 import ShinyText from "./ShinyText"; 
 import Link from "next/link";
+
+const socialLinks = [
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/farhan.nexxus?igsh=bmw4cmI4djQzeTN1",
+    icon: FaInstagram,
+  },
+  {
+    name: "LinkedIn",
+    href: "https://www.linkedin.com/in/farhan-zulkarnain-71801a347",
+    icon: FaLinkedinIn,
+  },
+  {
+    name: "GitHub",
+    href: "https://github.com/FarhanZulkarnainHarahap",
+    icon: FaGithub,
+  },
+];
 
 export default function HeroCard() {
   const fadeInUp: Variants = {
@@ -30,32 +48,46 @@ export default function HeroCard() {
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           className="lg:col-span-5 flex justify-center lg:justify-end order-1 lg:order-2"
         >
-          <div className="relative group">
-            {/* Ring dekoratif - Disembunyikan di mobile agar lebih clean jika perlu, atau kecilkan ukurannya */}
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="absolute -inset-4 md:-inset-6 border border-dashed border-blue-500/20 rounded-full pointer-events-none"
-            />
-            
-            {/* Container Foto - Ukuran adaptif */}
-            <div className="relative w-56 h-72 md:w-80 md:h-105 rounded-4xl md:rounded-[2.5rem] overflow-hidden border border-white/10 bg-gray-900 shadow-2xl">
-              <Image 
-                src="https://res.cloudinary.com/dpanr1qqp/image/upload/v1765874955/bake-bliss/b1v5qdy9whqszyqohdjb.jpg"  
-                alt="Farhan Zulkarnain"
-                fill
-                priority
-                sizes="(max-width: 768px) 224px, 320px"
-                className="object-cover transition-all duration-1000 scale-110 group-hover:scale-100"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-[#030406] via-transparent to-transparent opacity-60" />
+          <div className="hero-profile-card group">
+            <div className="hero-profile-content">
+              <div className="hero-profile-image">
+                <Image
+                  src="https://res.cloudinary.com/dpanr1qqp/image/upload/v1765874955/bake-bliss/b1v5qdy9whqszyqohdjb.jpg"
+                  alt="Farhan Zulkarnain"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 220px, 300px"
+                  className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-[#080b13] via-transparent to-transparent opacity-55" />
+              </div>
+
+              <div className="relative z-10 pt-4">
+                <p className="text-center text-[9px] font-black uppercase tracking-[0.45em] text-blue-400">
+                  Connect With Me
+                </p>
+                <div className="mt-3 flex gap-2.5">
+                  {socialLinks.map(({ name, href, icon: Icon }) => (
+                    <a
+                      key={name}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={name}
+                      data-cursor-label={name.toUpperCase()}
+                      className="flex h-10 flex-1 items-center justify-center rounded-lg border border-white/5 bg-white/5 text-zinc-300 transition-all duration-300 hover:-translate-y-1 hover:border-blue-400/50 hover:bg-blue-500/15 hover:text-white"
+                    >
+                      <Icon size={18} />
+                    </a>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Floating Badge */}
             <motion.div 
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -bottom-4 -left-4 md:-bottom-6 md:-left-6 p-3 md:p-4 bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl"
+              className="absolute -bottom-4 -left-4 z-20 rounded-2xl border border-white/10 bg-black/65 p-3 shadow-2xl backdrop-blur-md md:-bottom-6 md:-left-6 md:p-4"
             >
               <div className="flex flex-col">
                 <span className="text-blue-500 font-black text-lg md:text-xl leading-none">FZ.</span>

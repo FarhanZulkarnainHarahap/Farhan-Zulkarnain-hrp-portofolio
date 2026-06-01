@@ -16,6 +16,91 @@ body {
   overflow-y: overlay; /* Membuat scrollbar melayang agar tidak geser layout */
 }
 
+.hero-profile-card {
+  position: relative;
+  width: min(78vw, 330px);
+  overflow: hidden;
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: 26px;
+  background: #080b13;
+  padding: 10px;
+  box-shadow:
+    0 18px 70px rgba(0, 0, 0, 0.42),
+    0 0 32px rgba(37, 99, 235, 0.12);
+}
+
+.hero-profile-card::before {
+  position: absolute;
+  top: 30%;
+  left: -12%;
+  width: 124%;
+  height: 30%;
+  content: "";
+  background: linear-gradient(144deg, #7c3aed, #2563eb 52%, #06b6d4);
+  filter: blur(24px);
+  opacity: 0.72;
+  animation: hero-floating-light 3.5s infinite ease-in-out;
+}
+
+.hero-profile-content {
+  position: relative;
+  z-index: 1;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 19px;
+  background: rgba(5, 8, 16, 0.9);
+  padding: 8px;
+}
+
+.hero-profile-image {
+  position: relative;
+  height: 350px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #111827;
+  box-shadow: 0 0 28px rgba(37, 99, 235, 0.14);
+  animation: hero-floating-image 8s infinite ease-in-out;
+}
+
+@keyframes hero-floating-light {
+  0%,
+  100% {
+    opacity: 0.52;
+    transform: rotate(-5deg) translateY(-8%);
+  }
+
+  50% {
+    opacity: 0.95;
+    transform: rotate(5deg) translateY(8%);
+  }
+}
+
+@keyframes hero-floating-image {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-profile-card {
+    width: min(76vw, 265px);
+    border-radius: 22px;
+    padding: 8px;
+  }
+
+  .hero-profile-content {
+    padding: 6px;
+  }
+
+  .hero-profile-image {
+    height: 265px;
+  }
+}
+
 /* Memperhalus pergerakan snap pada kontainer */
 .snap-container {
   height: 100vh;
@@ -196,6 +281,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero-profile-card::before,
+  .hero-profile-image,
   .custom-cursor-layer,
   .custom-cursor-dot,
   .custom-cursor-orbit,
