@@ -28,6 +28,7 @@ export default function ProjectCard({ title, category, imageUrl, link }: CardPro
       href={link}
       target="_blank"
       rel="noopener noreferrer"
+      data-cursor-label="VIEW"
       whileHover={{ y: -6, scale: 1.02 }}
       onMouseMove={handleMouseMove}
       className="relative block w-full overflow-hidden rounded-2xl border border-white/5 bg-zinc-900/20 backdrop-blur-md group cursor-pointer transition-all duration-300 hover:border-blue-500/40 shadow-xl"

@@ -11,7 +11,7 @@ export default function HeroCard() {
     visible: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as any },
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as const },
     },
   };
 
@@ -97,7 +97,7 @@ export default function HeroCard() {
 
           <motion.div initial="hidden" animate="visible" variants={fadeInUp} className="pt-4 flex justify-center lg:justify-start">
             <Link href="#projects">
-              <button className="group flex items-center gap-4 bg-blue-600 hover:bg-blue-700 text-white px-8 md:px-10 py-3.5 md:py-4 rounded-full transition-all shadow-xl shadow-blue-500/20 active:scale-95">
+              <button data-cursor-label="EXPLORE" className="group flex items-center gap-4 bg-blue-600 hover:bg-blue-700 text-white px-8 md:px-10 py-3.5 md:py-4 rounded-full transition-all shadow-xl shadow-blue-500/20 active:scale-95">
                 <span className="text-[10px] md:text-xs font-black uppercase tracking-widest">View My Projects</span>
                 <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
               </button>

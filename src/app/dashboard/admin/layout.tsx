@@ -18,10 +18,16 @@ import {
   LuRefreshCw
 } from "react-icons/lu";
 
+interface AdminUser {
+  name: string;
+  role: string;
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(true);
   const [loading, setLoading] = useState(true); // State loading untuk cek session
-  const [user, setUser] = useState<any>(null); // State simpan data user
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [user, setUser] = useState<AdminUser | null>(null); // State simpan data user
   const pathname = usePathname();
   const router = useRouter();
 
@@ -29,7 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     const verifySession = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
           method: "GET",
           credentials: "include", // WAJIB: Agar cookie accessToken terkirim saat refresh
         });
@@ -37,7 +43,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         const data = await res.json();
 
         if (res.ok && data.success) {
-          setUser(data.user);
+          setUser(data.data);
         } else {
           router.push("/auth/login");
         }
@@ -54,8 +60,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   // 2. LOGIKA LOGOUT
   const handleLogout = async () => {
-    // Anda bisa tambahkan panggil API logout di sini jika ada
-    router.push("/auth/login");
+    try {
+      setIsLoggingOut(true);
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        throw new Error("Logout gagal");
+      }
+
+      setUser(null);
+      router.replace("/auth/login");
+      router.refresh();
+    } catch (err) {
+      console.error("Logout Error:", err);
+      alert("Logout gagal. Silakan coba lagi.");
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   const menuItems = [
@@ -161,10 +186,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="p-4 border-t border-gray-700">
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-4 px-3 py-3 w-full text-gray-500 hover:text-red-400 transition-colors group"
+            disabled={isLoggingOut}
+            className="flex items-center gap-4 px-3 py-3 w-full text-gray-500 hover:text-red-400 transition-colors group disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <LuLogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
-            <span className={`text-sm font-medium ${!isOpen && "hidden"}`}>Log Out</span>
+            {isLoggingOut ? (
+              <LuRefreshCw size={20} className="animate-spin" />
+            ) : (
+              <LuLogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
+            )}
+            <span className={`text-sm font-medium ${!isOpen && "hidden"}`}>
+              {isLoggingOut ? "Logging Out..." : "Log Out"}
+            </span>
           </button>
         </div>
       </aside>
