@@ -111,12 +111,7 @@ export default function PortfolioSection() {
 
   if (loading) {
     return (
-      <div
-        className="flex min-h-100 w-full items-center justify-center bg-cover bg-center"
-        style={{
-          backgroundImage: `linear-gradient(rgba(2, 4, 11, 0.82), rgba(2, 4, 11, 0.82)), url(${GALAXY_GIF_URL})`,
-        }}
-      >
+      <div className="flex min-h-100 w-full items-center justify-center bg-[#030406]">
         <div className="flex flex-col items-center gap-4">
           <LuLoader className="animate-spin text-blue-500" size={32} />
           <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-zinc-500 md:text-[10px]">Loading</p>
@@ -127,20 +122,21 @@ export default function PortfolioSection() {
 
   return (
     <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-[#02040b] px-5 py-20 md:px-8 lg:py-24">
+      <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.2),transparent_55%)]" />
       <div
-        className="absolute inset-0 -z-30 bg-cover bg-center opacity-70"
+        className="absolute inset-0 -z-30 hidden bg-cover bg-center opacity-60 md:block"
         style={{
           backgroundImage: `url(${GALAXY_GIF_URL})`,
         }}
       />
       <div className="absolute inset-0 -z-20 bg-[#02040b]/76" />
       <div className="absolute inset-0 -z-20 bg-linear-to-b from-[#02040b]/35 via-[#02040b]/65 to-[#02040b]/95" />
-      <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/12 blur-[130px]" />
+      <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
       <div className="absolute -bottom-28 -left-28 -z-10 h-80 w-80 rounded-full border border-blue-500/25 opacity-50" />
 
       <div className="mx-auto grid w-full max-w-390 grid-cols-1 items-center gap-10 lg:grid-cols-[285px_minmax(0,1fr)] 2xl:grid-cols-[285px_minmax(0,1fr)_235px]">
         <header className="relative z-20 text-center lg:text-left">
-          <div className="flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-purple-400 lg:justify-start">
+          <div className="flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 lg:justify-start">
             <LuSparkles size={14} />
             My Works
             {projects.length > 0 && (
@@ -150,7 +146,7 @@ export default function PortfolioSection() {
             )}
           </div>
           <h2 className="mt-5 text-4xl font-black leading-[0.95] tracking-tight text-white md:text-6xl lg:text-6xl">
-            Projects Built With <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-blue-400">Purpose.</span>
+            Projects Built With <span className="text-blue-500">Purpose.</span>
           </h2>
           <p className="mx-auto mt-5 max-w-sm text-sm leading-relaxed text-zinc-400 lg:mx-0">
             A collection of digital products, crafted with clean code, modern design, and scalable architecture.
@@ -183,22 +179,22 @@ export default function PortfolioSection() {
           <>
             <div className="hidden min-h-180 xl:block">
               <div className="relative h-180 w-full">
-                <div className="absolute left-1/2 top-1/2 h-120 w-120 -translate-x-1/2 -translate-y-1/2 rounded-full border border-blue-400/55 shadow-[0_0_60px_rgba(37,99,235,0.3)]" />
+                <div className="absolute left-1/2 top-1/2 h-120 w-120 -translate-x-1/2 -translate-y-1/2 rounded-full border border-blue-400/55 shadow-[0_0_36px_rgba(37,99,235,0.24)]" />
                 <div className="absolute left-1/2 top-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-blue-500/40" />
                 <div className="absolute left-1/2 top-1/2 h-108 w-180 -translate-x-1/2 -translate-y-1/2 rounded-[50%] border border-blue-500/30 rotate-[-14deg]" />
-                <div className="absolute left-1/2 top-1/2 h-102 w-198 -translate-x-1/2 -translate-y-1/2 rounded-[50%] border border-purple-500/30 rotate-[11deg]" />
+                <div className="absolute left-1/2 top-1/2 h-102 w-198 -translate-x-1/2 -translate-y-1/2 rounded-[50%] border border-blue-500/30 rotate-[11deg]" />
 
-                <span className="absolute left-[9%] top-[25%] h-2.5 w-2.5 rounded-full bg-blue-400 shadow-[0_0_18px_5px_rgba(96,165,250,0.75)]" />
-                <span className="absolute right-[12%] top-[33%] h-3 w-3 rounded-full bg-emerald-300 shadow-[0_0_18px_5px_rgba(110,231,183,0.7)]" />
-                <span className="absolute bottom-[13%] left-[24%] h-2.5 w-2.5 rounded-full bg-yellow-300 shadow-[0_0_18px_5px_rgba(253,224,71,0.6)]" />
-                <span className="absolute bottom-[19%] right-[14%] h-2.5 w-2.5 rounded-full bg-purple-300 shadow-[0_0_18px_5px_rgba(216,180,254,0.65)]" />
+                <span className="absolute left-[9%] top-[25%] h-2.5 w-2.5 rounded-full bg-blue-400 shadow-[0_0_12px_3px_rgba(96,165,250,0.65)]" />
+                <span className="absolute right-[12%] top-[33%] h-3 w-3 rounded-full bg-emerald-300 shadow-[0_0_12px_3px_rgba(110,231,183,0.6)]" />
+                <span className="absolute bottom-[13%] left-[24%] h-2.5 w-2.5 rounded-full bg-yellow-300 shadow-[0_0_12px_3px_rgba(253,224,71,0.5)]" />
+                <span className="absolute bottom-[19%] right-[14%] h-2.5 w-2.5 rounded-full bg-blue-300 shadow-[0_0_12px_3px_rgba(147,197,253,0.55)]" />
 
                 {orbitProjects.map(({ project, index }, slotIndex) => (
                   <motion.div
                     key={project.id}
                     initial={{ opacity: 0, scale: 0.88 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.45, delay: slotIndex * 0.08 }}
+                    transition={{ duration: 0.32, delay: slotIndex * 0.05 }}
                     className={`absolute z-20 ${orbitPositions[slotIndex]}`}
                   >
                     <ProjectCard
@@ -285,11 +281,11 @@ export default function PortfolioSection() {
           </div>
         )}
 
-        <aside className="hidden rounded-[24px] border border-purple-500/25 bg-[#080b16]/85 px-5 py-6 shadow-[0_20px_80px_rgba(88,28,135,0.18)] backdrop-blur-xl 2xl:block">
+        <aside className="hidden rounded-[24px] border border-blue-500/25 bg-[#080b16]/95 px-5 py-6 shadow-[0_16px_48px_rgba(37,99,235,0.14)] 2xl:block">
           <div className="space-y-5">
             {showcaseHighlights.map(({ icon: Icon, title, description }) => (
               <div key={title} className="flex gap-3">
-                <Icon className="mt-0.5 shrink-0 text-purple-400" size={22} />
+                <Icon className="mt-0.5 shrink-0 text-blue-500" size={22} />
                 <div>
                   <h3 className="text-sm font-bold text-white">{title}</h3>
                   <p className="mt-1 text-[11px] leading-relaxed text-zinc-400">{description}</p>
@@ -308,7 +304,7 @@ export default function PortfolioSection() {
               type="button"
               onClick={() => changePage(index)}
               aria-label={`Buka halaman project ${index + 1}`}
-              className={`h-2 rounded-full transition-all ${index === page ? "w-8 bg-purple-500" : "w-2 bg-white/20 hover:bg-white/40"}`}
+              className={`h-2 rounded-full transition-all ${index === page ? "w-8 bg-blue-500" : "w-2 bg-white/20 hover:bg-white/40"}`}
             />
           ))}
         </div>

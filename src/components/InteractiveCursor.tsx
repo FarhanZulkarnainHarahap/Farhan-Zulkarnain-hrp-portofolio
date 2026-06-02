@@ -81,6 +81,10 @@ export default function InteractiveCursor() {
       particle.maxLife = life;
       particle.element.style.setProperty("--particle-size", `${Math.random() * 4 + 2}px`);
       particle.element.style.opacity = "1";
+
+      if (!frameId) {
+        frameId = window.requestAnimationFrame(renderCursor);
+      }
     };
 
     const createTrail = (x: number, y: number) => {
@@ -108,11 +112,14 @@ export default function InteractiveCursor() {
     };
 
     const renderCursor = () => {
+      let hasActiveParticles = false;
+
       particles.forEach((particle) => {
         if (particle.life <= 0) {
           return;
         }
 
+        hasActiveParticles = true;
         particle.life -= 1;
         particle.x += particle.velocityX;
         particle.y += particle.velocityY;
@@ -124,7 +131,7 @@ export default function InteractiveCursor() {
         particle.element.style.transform = `translate3d(${particle.x}px, ${particle.y}px, 0) translate(-50%, -50%) scale(${0.45 + progress})`;
       });
 
-      frameId = window.requestAnimationFrame(renderCursor);
+      frameId = hasActiveParticles ? window.requestAnimationFrame(renderCursor) : 0;
     };
 
     const updateCursorState = (target: EventTarget | null) => {
@@ -161,7 +168,6 @@ export default function InteractiveCursor() {
     };
     const handlePointerLeave = () => cursor.classList.remove("is-visible");
 
-    frameId = window.requestAnimationFrame(renderCursor);
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerdown", handlePointerDown);
     window.addEventListener("blur", handlePointerLeave);

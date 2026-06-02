@@ -35,18 +35,17 @@ export default function ProjectCard({
   const cardStyle = {
     "--project-accent": accent,
     borderColor: `${accent}70`,
-    boxShadow: `0 20px 70px ${accent}18`,
+    boxShadow: `0 16px 42px ${accent}14`,
   } as CSSProperties;
 
   return (
     <motion.article
-      layout
       initial={{ opacity: 0, scale: 0.92 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.92 }}
-      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
       style={cardStyle}
-      className={`group relative overflow-hidden border bg-[#080b14]/95 backdrop-blur-xl ${
+      className={`group relative overflow-hidden border bg-[#080b14]/98 ${
         variant === "featured"
           ? "w-92 rounded-[28px] p-3 xl:w-100"
           : variant === "mobile"
@@ -70,7 +69,7 @@ export default function ProjectCard({
           alt={title}
           fill
           sizes={variant === "orbit" ? "272px" : "(max-width: 768px) 100vw, 400px"}
-          className="object-cover opacity-85 transition-all duration-700 group-hover:scale-110 group-hover:opacity-100"
+          className="object-cover opacity-85 transition-[transform,opacity] duration-500 group-hover:scale-105 group-hover:opacity-100"
         />
         <div className="absolute inset-0 bg-linear-to-t from-[#060812] via-transparent to-transparent" />
       </div>
