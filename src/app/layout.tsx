@@ -31,7 +31,6 @@ export default function RootLayout({
     >
       <head>
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://api.farhanzulkarnainhrp.com" />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

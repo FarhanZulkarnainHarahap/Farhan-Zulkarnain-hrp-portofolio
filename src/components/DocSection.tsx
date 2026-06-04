@@ -187,13 +187,13 @@ export default function DocSection() {
             role="dialog"
             aria-modal="true"
             aria-label={`Preview ${selectedDoc.name}`}
-            className="fixed inset-0 z-150 flex items-center justify-center bg-black/80 px-4 py-6"
+            className="fixed inset-0 z-150 flex items-center justify-center bg-black/80 px-3 py-4 sm:px-4 sm:py-6"
           >
-            <div className="relative flex h-[86vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-blue-500/25 bg-[#070a12] shadow-[0_24px_80px_rgba(0,0,0,0.55)]">
-              <div className="flex items-center justify-between gap-4 border-b border-white/10 px-4 py-3 md:px-5">
+            <div className="relative flex h-[86dvh] max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[26px] border border-blue-500/25 bg-[#070a12] shadow-[0_24px_80px_rgba(0,0,0,0.55)] md:rounded-3xl">
+              <div className="flex items-start justify-between gap-3 border-b border-white/10 px-4 py-3 md:items-center md:px-5">
                 <div className="min-w-0">
                   <p className="text-[9px] font-black uppercase tracking-[0.28em] text-blue-500">Document Preview</p>
-                  <h3 className="mt-1 truncate text-sm font-black uppercase tracking-tight text-white md:text-base">
+                  <h3 className="mt-1 line-clamp-2 text-sm font-black uppercase tracking-tight text-white md:truncate md:text-base">
                     {selectedDoc.name}
                   </h3>
                 </div>
@@ -222,12 +222,44 @@ export default function DocSection() {
 
               <div className="min-h-0 flex-1 bg-[#030406]">
                 {getPreviewType(selectedDoc) === "pdf" && (
-                  <iframe
-                    src={`${selectedDoc.fileUrl}#toolbar=0&navpanes=0`}
-                    title={`Preview ${selectedDoc.name}`}
-                    className="h-full w-full"
-                    loading="lazy"
-                  />
+                  <>
+                    <iframe
+                      src={`${selectedDoc.fileUrl}#toolbar=0&navpanes=0`}
+                      title={`Preview ${selectedDoc.name}`}
+                      className="hidden h-full w-full md:block"
+                      loading="lazy"
+                    />
+                    <div className="flex h-full flex-col items-center justify-center gap-5 px-6 text-center md:hidden">
+                      <div className="flex h-18 w-18 items-center justify-center rounded-2xl border border-blue-500/20 bg-blue-500/10 text-blue-500">
+                        <FaFilePdf size={34} />
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-black uppercase tracking-tight text-white">PDF siap dibuka</h4>
+                        <p className="mt-2 max-w-sm text-sm leading-relaxed text-zinc-500">
+                          Preview PDF langsung sering tidak stabil di browser mobile. Gunakan tombol di bawah untuk melihat dokumen dengan viewer bawaan HP.
+                        </p>
+                      </div>
+                      <div className="flex w-full max-w-xs flex-col gap-3">
+                        <a
+                          href={selectedDoc.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-full bg-blue-600 px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-white transition-colors hover:bg-blue-700"
+                        >
+                          Buka PDF
+                        </a>
+                        <a
+                          href={selectedDoc.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download
+                          className="rounded-full border border-white/10 px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300 transition-colors hover:border-blue-500 hover:text-blue-500"
+                        >
+                          Download
+                        </a>
+                      </div>
+                    </div>
+                  </>
                 )}
 
                 {getPreviewType(selectedDoc) === "image" && (
