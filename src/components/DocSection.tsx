@@ -129,11 +129,39 @@ export default function DocSection() {
               {/* Hover Glow Effect */}
               <div className="absolute inset-0 bg-linear-to-r from-blue-600/0 via-blue-600/0 to-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
+              {getPreviewType(doc) === "pdf" && (
+                <a
+                  href={doc.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cursor-label="OPEN"
+                  className="relative z-10 flex min-w-0 flex-1 items-center gap-5 text-left md:hidden"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-500 group-hover:text-blue-500 group-hover:border-blue-500/30 transition-all duration-500">
+                    {getIcon(doc.category)}
+                  </div>
+
+                  <div className="min-w-0 space-y-1">
+                    <h3 className="truncate text-white text-sm font-bold uppercase tracking-tight group-hover:text-blue-400 transition-colors">
+                      {doc.name}
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[9px] text-zinc-500 font-black uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded">
+                        {doc.category}
+                      </span>
+                      <span className="text-[9px] text-zinc-600 font-mono">
+                        {formatSize(doc.size)}
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              )}
+
               <button
                 type="button"
                 onClick={() => setSelectedDoc(doc)}
                 data-cursor-label="PREVIEW"
-                className="relative z-10 flex min-w-0 flex-1 items-center gap-5 text-left"
+                className={`relative z-10 min-w-0 flex-1 items-center gap-5 text-left ${getPreviewType(doc) === "pdf" ? "hidden md:flex" : "flex"}`}
               >
                 {/* ICON BOX */}
                 <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-500 group-hover:text-blue-500 group-hover:border-blue-500/30 transition-all duration-500">
@@ -157,15 +185,39 @@ export default function DocSection() {
 
               {/* DOWNLOAD ACTION */}
               <div className="relative z-10 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedDoc(doc)}
-                  data-cursor-label="VIEW"
-                  aria-label={`Preview ${doc.name}`}
-                  className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-zinc-600 transition-all duration-300 hover:border-blue-500 hover:text-blue-500"
-                >
-                  <FaEye size={12} />
-                </button>
+                {getPreviewType(doc) === "pdf" ? (
+                  <>
+                    <a
+                      href={doc.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-cursor-label="OPEN"
+                      aria-label={`Buka ${doc.name}`}
+                      className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-zinc-600 transition-all duration-300 hover:border-blue-500 hover:text-blue-500 md:hidden"
+                    >
+                      <FaExternalLinkAlt size={12} />
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedDoc(doc)}
+                      data-cursor-label="VIEW"
+                      aria-label={`Preview ${doc.name}`}
+                      className="hidden w-10 h-10 rounded-full border border-white/10 md:flex items-center justify-center text-zinc-600 transition-all duration-300 hover:border-blue-500 hover:text-blue-500"
+                    >
+                      <FaEye size={12} />
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDoc(doc)}
+                    data-cursor-label="VIEW"
+                    aria-label={`Preview ${doc.name}`}
+                    className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-zinc-600 transition-all duration-300 hover:border-blue-500 hover:text-blue-500"
+                  >
+                    <FaEye size={12} />
+                  </button>
+                )}
                 <a
                   href={doc.fileUrl}
                   target="_blank"
