@@ -11,7 +11,6 @@ import {
   FaCertificate, 
   FaUserGraduate, 
   FaFileSignature,
-  FaTimes,
 } from "react-icons/fa";
 import { LuLoader } from "react-icons/lu";
 // Interface disesuaikan dengan skema backend Prisma/Cloudinary kamu
@@ -48,13 +47,6 @@ export default function DocSection() {
     fetchDocs();
   }, [API_URL]);
 
-  useEffect(() => {
-    document.body.style.overflow = selectedDoc ? "hidden" : "unset";
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [selectedDoc]);
-
   // Format Size (Bytes ke KB/MB)
   const formatSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
@@ -80,6 +72,11 @@ export default function DocSection() {
     if (/\.(png|jpe?g|webp|gif|avif)$/.test(value)) return "image";
     return "unsupported";
   };
+
+  const activeDoc = selectedDoc ?? docs[0] ?? null;
+
+  const getPdfViewerUrl = (fileUrl: string) =>
+    `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(fileUrl)}`;
 
   if (loading) return (
     <div className="flex min-h-100 w-full items-center justify-center bg-[#030406]">
@@ -115,219 +112,135 @@ export default function DocSection() {
           </div>
         </div>
 
-        {/* GRID DOKUMEN */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {docs.map((doc, i) => (
-            <motion.div
-              key={doc.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="group relative flex items-center justify-between p-5 bg-[#0d0d0d] border border-white/5 rounded-2xl hover:border-blue-500/50 hover:bg-[#111111] transition-all duration-300 overflow-hidden"
-            >
-              {/* Hover Glow Effect */}
-              <div className="absolute inset-0 bg-linear-to-r from-blue-600/0 via-blue-600/0 to-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+        {activeDoc ? (
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-[360px_minmax(0,1fr)]">
+            <div className="order-2 space-y-3 lg:order-1">
+              {docs.map((doc, i) => {
+                const isActive = activeDoc.id === doc.id;
 
-              {getPreviewType(doc) === "pdf" && (
-                <a
-                  href={doc.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-cursor-label="OPEN"
-                  className="relative z-10 flex min-w-0 flex-1 items-center gap-5 text-left md:hidden"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-500 group-hover:text-blue-500 group-hover:border-blue-500/30 transition-all duration-500">
-                    {getIcon(doc.category)}
-                  </div>
+                return (
+                  <motion.article
+                    key={doc.id}
+                    initial={{ opacity: 0, y: 18 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.08 }}
+                    className={`group relative flex items-center justify-between overflow-hidden rounded-2xl border p-4 transition-all duration-300 ${
+                      isActive
+                        ? "border-blue-500/60 bg-blue-500/10"
+                        : "border-white/5 bg-[#0d0d0d] hover:border-blue-500/35 hover:bg-[#111111]"
+                    }`}
+                  >
+                    <div className="absolute inset-0 bg-linear-to-r from-blue-600/0 via-blue-600/0 to-blue-600/5 opacity-0 transition-opacity group-hover:opacity-100" />
 
-                  <div className="min-w-0 space-y-1">
-                    <h3 className="truncate text-white text-sm font-bold uppercase tracking-tight group-hover:text-blue-400 transition-colors">
-                      {doc.name}
-                    </h3>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[9px] text-zinc-500 font-black uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded">
-                        {doc.category}
-                      </span>
-                      <span className="text-[9px] text-zinc-600 font-mono">
-                        {formatSize(doc.size)}
-                      </span>
-                    </div>
-                  </div>
-                </a>
-              )}
-
-              <button
-                type="button"
-                onClick={() => setSelectedDoc(doc)}
-                data-cursor-label="PREVIEW"
-                className={`relative z-10 min-w-0 flex-1 items-center gap-5 text-left ${getPreviewType(doc) === "pdf" ? "hidden md:flex" : "flex"}`}
-              >
-                {/* ICON BOX */}
-                <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-500 group-hover:text-blue-500 group-hover:border-blue-500/30 transition-all duration-500">
-                  {getIcon(doc.category)}
-                </div>
-                
-                <div className="min-w-0 space-y-1">
-                  <h3 className="truncate text-white text-sm font-bold uppercase tracking-tight group-hover:text-blue-400 transition-colors">
-                    {doc.name}
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[9px] text-zinc-500 font-black uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded">
-                      {doc.category}
-                    </span>
-                    <span className="text-[9px] text-zinc-600 font-mono">
-                      {formatSize(doc.size)}
-                    </span>
-                  </div>
-                </div>
-              </button>
-
-              {/* DOWNLOAD ACTION */}
-              <div className="relative z-10 flex items-center gap-2">
-                {getPreviewType(doc) === "pdf" ? (
-                  <>
-                    <a
-                      href={doc.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      data-cursor-label="OPEN"
-                      aria-label={`Buka ${doc.name}`}
-                      className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-zinc-600 transition-all duration-300 hover:border-blue-500 hover:text-blue-500 md:hidden"
-                    >
-                      <FaExternalLinkAlt size={12} />
-                    </a>
                     <button
                       type="button"
                       onClick={() => setSelectedDoc(doc)}
-                      data-cursor-label="VIEW"
-                      aria-label={`Preview ${doc.name}`}
-                      className="hidden w-10 h-10 rounded-full border border-white/10 md:flex items-center justify-center text-zinc-600 transition-all duration-300 hover:border-blue-500 hover:text-blue-500"
+                      data-cursor-label="PREVIEW"
+                      className="relative z-10 flex min-w-0 flex-1 items-center gap-4 text-left"
                     >
-                      <FaEye size={12} />
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedDoc(doc)}
-                    data-cursor-label="VIEW"
-                    aria-label={`Preview ${doc.name}`}
-                    className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-zinc-600 transition-all duration-300 hover:border-blue-500 hover:text-blue-500"
-                  >
-                    <FaEye size={12} />
-                  </button>
-                )}
-                <a
-                  href={doc.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                  data-cursor-label="DOWNLOAD"
-                  aria-label={`Download ${doc.name}`}
-                  className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-zinc-600 transition-all duration-300 hover:border-blue-500 hover:text-blue-500"
-                >
-                  <FaDownload size={12} />
-                </a>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                      <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-colors ${
+                        isActive
+                          ? "border-blue-500/40 bg-blue-500/15 text-blue-400"
+                          : "border-white/5 bg-zinc-900 text-zinc-500 group-hover:text-blue-500"
+                      }`}>
+                        {getIcon(doc.category)}
+                      </div>
 
-        {selectedDoc && (
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={`Preview ${selectedDoc.name}`}
-            className="fixed inset-0 z-150 flex items-center justify-center bg-black/80 px-3 py-4 sm:px-4 sm:py-6"
-          >
-            <div className="relative flex h-[86dvh] max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-[26px] border border-blue-500/25 bg-[#070a12] shadow-[0_24px_80px_rgba(0,0,0,0.55)] md:rounded-3xl">
+                      <div className="min-w-0 space-y-1">
+                        <h3 className="truncate text-sm font-bold uppercase tracking-tight text-white group-hover:text-blue-400">
+                          {doc.name}
+                        </h3>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="rounded bg-white/5 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-zinc-500">
+                            {doc.category}
+                          </span>
+                          <span className="font-mono text-[9px] text-zinc-600">
+                            {formatSize(doc.size)}
+                          </span>
+                        </div>
+                      </div>
+                    </button>
+
+                    <div className="relative z-10 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedDoc(doc)}
+                        data-cursor-label="VIEW"
+                        aria-label={`Preview ${doc.name}`}
+                        className={`flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${
+                          isActive
+                            ? "border-blue-500/45 text-blue-400"
+                            : "border-white/10 text-zinc-600 hover:border-blue-500 hover:text-blue-500"
+                        }`}
+                      >
+                        <FaEye size={11} />
+                      </button>
+                      <a
+                        href={doc.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download
+                        data-cursor-label="DOWNLOAD"
+                        aria-label={`Download ${doc.name}`}
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-zinc-600 transition-colors hover:border-blue-500 hover:text-blue-500"
+                      >
+                        <FaDownload size={11} />
+                      </a>
+                    </div>
+                  </motion.article>
+                );
+              })}
+            </div>
+
+            <motion.article
+              key={activeDoc.id}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="order-1 overflow-hidden rounded-[26px] border border-blue-500/25 bg-[#070a12] shadow-[0_24px_80px_rgba(0,0,0,0.35)] lg:order-2"
+            >
               <div className="flex items-start justify-between gap-3 border-b border-white/10 px-4 py-3 md:items-center md:px-5">
                 <div className="min-w-0">
-                  <p className="text-[9px] font-black uppercase tracking-[0.28em] text-blue-500">Document Preview</p>
+                  <p className="text-[9px] font-black uppercase tracking-[0.28em] text-blue-500">Live Document Preview</p>
                   <h3 className="mt-1 line-clamp-2 text-sm font-black uppercase tracking-tight text-white md:truncate md:text-base">
-                    {selectedDoc.name}
+                    {activeDoc.name}
                   </h3>
                 </div>
-                <div className="flex shrink-0 items-center gap-2">
-                  <a
-                    href={selectedDoc.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-cursor-label="OPEN"
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-zinc-400 transition-colors hover:border-blue-500 hover:text-blue-500"
-                    aria-label="Buka document di tab baru"
-                  >
-                    <FaExternalLinkAlt size={12} />
-                  </a>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedDoc(null)}
-                    data-cursor-label="CLOSE"
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-zinc-400 transition-colors hover:border-blue-500 hover:text-blue-500"
-                    aria-label="Tutup preview"
-                  >
-                    <FaTimes size={13} />
-                  </button>
-                </div>
+                <a
+                  href={activeDoc.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cursor-label="OPEN"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 text-zinc-400 transition-colors hover:border-blue-500 hover:text-blue-500"
+                  aria-label="Buka document di tab baru"
+                >
+                  <FaExternalLinkAlt size={12} />
+                </a>
               </div>
 
-              <div className="min-h-0 flex-1 bg-[#030406]">
-                {getPreviewType(selectedDoc) === "pdf" && (
-                  <>
-                    <iframe
-                      src={`${selectedDoc.fileUrl}#toolbar=0&navpanes=0`}
-                      title={`Preview ${selectedDoc.name}`}
-                      className="hidden h-full w-full md:block"
-                      loading="lazy"
-                    />
-                    <div className="flex h-full flex-col items-center justify-center gap-5 px-6 text-center md:hidden">
-                      <div className="flex h-18 w-18 items-center justify-center rounded-2xl border border-blue-500/20 bg-blue-500/10 text-blue-500">
-                        <FaFilePdf size={34} />
-                      </div>
-                      <div>
-                        <h4 className="text-lg font-black uppercase tracking-tight text-white">PDF siap dibuka</h4>
-                        <p className="mt-2 max-w-sm text-sm leading-relaxed text-zinc-500">
-                          Preview PDF langsung sering tidak stabil di browser mobile. Gunakan tombol di bawah untuk melihat dokumen dengan viewer bawaan HP.
-                        </p>
-                      </div>
-                      <div className="flex w-full max-w-xs flex-col gap-3">
-                        <a
-                          href={selectedDoc.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="rounded-full bg-blue-600 px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-white transition-colors hover:bg-blue-700"
-                        >
-                          Buka PDF
-                        </a>
-                        <a
-                          href={selectedDoc.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          download
-                          className="rounded-full border border-white/10 px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300 transition-colors hover:border-blue-500 hover:text-blue-500"
-                        >
-                          Download
-                        </a>
-                      </div>
-                    </div>
-                  </>
+              <div className="relative h-[62vh] min-h-105 bg-[#030406] md:h-[660px]">
+                {getPreviewType(activeDoc) === "pdf" && (
+                  <iframe
+                    src={getPdfViewerUrl(activeDoc.fileUrl)}
+                    title={`Preview ${activeDoc.name}`}
+                    className="h-full w-full"
+                    loading="lazy"
+                  />
                 )}
 
-                {getPreviewType(selectedDoc) === "image" && (
-                  <div className="relative h-full w-full">
-                    <Image
-                      src={selectedDoc.fileUrl}
-                      alt={selectedDoc.name}
-                      fill
-                      sizes="100vw"
-                      loading="lazy"
-                      className="object-contain p-4"
-                    />
-                  </div>
+                {getPreviewType(activeDoc) === "image" && (
+                  <Image
+                    src={activeDoc.fileUrl}
+                    alt={activeDoc.name}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 680px"
+                    loading="lazy"
+                    className="object-contain p-4"
+                  />
                 )}
 
-                {getPreviewType(selectedDoc) === "unsupported" && (
+                {getPreviewType(activeDoc) === "unsupported" && (
                   <div className="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
                     <FaFilePdf className="text-blue-500" size={42} />
                     <div>
@@ -337,7 +250,7 @@ export default function DocSection() {
                       </p>
                     </div>
                     <a
-                      href={selectedDoc.fileUrl}
+                      href={activeDoc.fileUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="rounded-full bg-blue-600 px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-white transition-colors hover:bg-blue-700"
@@ -347,7 +260,11 @@ export default function DocSection() {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.article>
+          </div>
+        ) : (
+          <div className="rounded-3xl border border-dashed border-white/10 px-6 py-20 text-center text-[10px] font-bold uppercase tracking-[0.35em] text-zinc-600">
+            No verified files found
           </div>
         )}
 
