@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import InteractiveCursor from "@/components/InteractiveCursor";
+import EntranceScreen from "@/components/EntranceScreen";
 
 export default function UserLayout({
   children,
@@ -8,6 +9,7 @@ export default function UserLayout({
 }) {
   return (
     <section>
+      <EntranceScreen />
       <InteractiveCursor />
       {/* Memasang Navbar premium yang kamu buat tadi */}
       <Navbar />

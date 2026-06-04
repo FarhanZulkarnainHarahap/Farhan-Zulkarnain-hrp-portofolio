@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&height=220&color=0:030406,45:2563eb,100:93c5fd&text=Farhan%20Z.%20Portfolio&fontColor=ffffff&fontAlignY=38&fontSize=42&desc=Creative%20Web%20Developer%20Experience&descAlignY=58&animation=fadeIn" alt="Farhan Z Portfolio banner" />
+</p>
+
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=800&size=18&duration=2600&pause=900&color=3B82F6&center=true&vCenter=true&width=760&lines=Next.js+Portfolio+Website;Animated+Hero+%2B+Interactive+Cursor;Projects+Carousel+%2B+Document+Preview;Built+with+the+Farhan+Z.+blue+palette" alt="Animated typing headline" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16.2.4-030406?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" />
+  <img src="https://img.shields.io/badge/React-19.2.4-2563EB?style=for-the-badge&logo=react&logoColor=white" alt="React" />
+  <img src="https://img.shields.io/badge/Tailwind-4-3B82F6?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Framer_Motion-12-93C5FD?style=for-the-badge&logo=framer&logoColor=030406" alt="Framer Motion" />
+</p>
+
+## Overview
+
+`web` adalah frontend portofolio Farhan Zulkarnain. Website ini menampilkan hero animated, interactive cursor particle, project showcase carousel, skills, document preview, dan contact section.
+
+## Color Palette
+
+| Token | Hex | Preview | Usage |
+| --- | --- | --- | --- |
+| Void Black | `#030406` | ![#030406](https://placehold.co/80x18/030406/030406.png) | Base background |
+| Card Navy | `#080b13` | ![#080b13](https://placehold.co/80x18/080b13/080b13.png) | Cards and panels |
+| Signature Blue | `#2563eb` | ![#2563eb](https://placehold.co/80x18/2563eb/2563eb.png) | Brand accents |
+| Electric Blue | `#3b82f6` | ![#3b82f6](https://placehold.co/80x18/3b82f6/3b82f6.png) | CTA and active states |
+| Soft Sky | `#93c5fd` | ![#93c5fd](https://placehold.co/80x18/93c5fd/93c5fd.png) | Glow and highlights |
+
+## Features
+
+- Animated entrance screen with Farhan Z. identity.
+- Hero section with `ShinyText`, Framer Motion, and optimized profile image.
+- Interactive particle cursor for desktop pointer devices.
+- Project carousel with featured card and orbit cards.
+- Document section with in-page preview modal for PDF and image files.
+- Skeleton loading for dynamic sections.
+- Admin dashboard routes for portfolio, skill, and document management.
+
+## Tech Stack
+
+```txt
+Next.js 16      React 19        TypeScript
+Tailwind CSS 4  Framer Motion   React Icons
+Three.js        Cloudinary      JWT/Auth flow
+```
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```txt
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment
 
-## Learn More
+Create `.env` in `web/`:
 
-To learn more about Next.js, take a look at the following resources:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+For production, point it to:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+NEXT_PUBLIC_API_URL=https://api.farhanzulkarnainhrp.com
+```
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start development server |
+| `npm run build` | Build production app |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Main Sections
+
+| Route / Section | Purpose |
+| --- | --- |
+| `/home` | Portfolio landing page |
+| `/projects` | Project showcase section |
+| `/documents` | Public credential and asset preview |
+| `/contact` | Contact form |
+| `/admin/*` | Admin management pages |
+
+## Visual Direction
+
+The UI leans into a dark, futuristic, blue-accented portfolio style:
+
+- deep black backgrounds,
+- electric blue highlights,
+- soft particle glow,
+- motion-led transitions,
+- clean cards with strong hierarchy.
+
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=rect&height=2&color=0:030406,40:2563eb,100:93c5fd" alt="Blue divider" />
+</p>

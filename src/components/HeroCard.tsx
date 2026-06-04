@@ -1,9 +1,10 @@
 "use client";
+
 import { motion, Variants } from "framer-motion";
 import { FaArrowRight, FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import Image from "next/image";
-import ShinyText from "./ShinyText"; 
 import Link from "next/link";
+import ShinyText from "./ShinyText";
 
 const socialLinks = [
   {
@@ -35,14 +36,12 @@ export default function HeroCard() {
 
   return (
     <section className="relative w-full min-h-screen lg:h-screen flex items-center justify-center bg-[#030406] overflow-hidden py-20 lg:py-0">
-      {/* 1. Ambient Background Decor - Ukuran dinamis agar tidak makan memori di mobile */}
-      <div className="absolute top-1/4 -left-20 w-64 h-64 md:w-96 md:h-96 bg-blue-600/10 rounded-full blur-[80px] md:blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-20 w-60 h-60 md:w-80 md:h-80 bg-purple-600/5 rounded-full blur-[80px] md:blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/4 -left-20 hidden w-80 h-80 bg-blue-600/8 rounded-full blur-[90px] pointer-events-none md:block" />
       
       <div className="max-w-7xl w-full mx-auto px-6 md:px-12 z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
         
         {/* 2. Kolom Foto Profil (Muncul di ATAS pada mobile: order-1) */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
@@ -56,8 +55,10 @@ export default function HeroCard() {
                   alt="Farhan Zulkarnain"
                   fill
                   priority
-                  sizes="(max-width: 768px) 220px, 300px"
-                  className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                  fetchPriority="high"
+                  quality={72}
+                  sizes="(max-width: 768px) 265px, 330px"
+                  className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-[#080b13] via-transparent to-transparent opacity-55" />
               </div>
@@ -95,23 +96,25 @@ export default function HeroCard() {
             </div>
             
             <h1 className="text-4xl md:text-7xl lg:text-8xl font-black leading-[0.9] tracking-tighter uppercase flex flex-col items-center lg:items-start">
-              <ShinyText 
-                text="FARHAN" 
-                speed={3} 
-                color="rgba(255, 255, 255, 0.2)" 
-                shineColor="#ffffff" 
+              <ShinyText
+                text="FARHAN"
+                speed={3}
+                color="rgba(255, 255, 255, 0.2)"
+                shineColor="#ffffff"
               />
-              <ShinyText 
-                text="ZULKARNAIN." 
-                speed={3} 
-                color="#3b82f6" 
-                shineColor="#ffffff" 
+              <ShinyText
+                text="ZULKARNAIN."
+                speed={3}
+                color="#3b82f6"
+                shineColor="#ffffff"
               />
             </h1>
           </motion.div>
 
-          <motion.p 
-            initial="hidden" animate="visible" variants={fadeInUp} 
+          <motion.p
+            initial="hidden"
+            animate="visible"
+            variants={fadeInUp}
             className="max-w-xl mx-auto lg:mx-0 text-gray-500 text-base md:text-xl font-light leading-relaxed px-2 md:px-0"
           >
             Crafting high-performance digital experiences through <span className="text-white font-medium underline decoration-blue-500/30">clean code</span> and <span className="text-white font-medium italic">immersive design</span>.

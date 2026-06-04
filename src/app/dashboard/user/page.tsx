@@ -1,24 +1,47 @@
 "use client";
-import Navbar from "@/components/Navbar";
 import HeroCard from "@/components/HeroCard";
-import SkillSection from "@/components/SkillSection";
-import PortfolioSection from "@/components/ProjectSection"; 
 import { FaLinkedin, FaInstagram, FaGithub } from "react-icons/fa";
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
+
+const SectionLoader = () => (
+  <div className="flex min-h-screen w-full items-center justify-center px-6">
+    <div className="w-full max-w-5xl space-y-7">
+      <div className="mx-auto h-4 w-32 rounded-full bg-blue-500/15 md:mx-0" />
+      <div className="mx-auto h-12 w-72 rounded-2xl bg-white/8 md:mx-0 md:h-16 md:w-96" />
+      <div className="grid gap-4 md:grid-cols-3">
+        {Array.from({ length: 6 }, (_, index) => (
+          <div key={index} className="h-28 rounded-3xl border border-white/5 bg-white/4" />
+        ))}
+      </div>
+    </div>
+  </div>
+);
 
 const AboutSection = dynamic(() => import('@/components/AboutSection'), {
-  loading: () => <div className="h-screen flex items-center justify-center text-blue-500 font-black tracking-widest animate-pulse">LOADING...</div>,
+  loading: SectionLoader,
   ssr: false 
 });
 
-const ContactSection = dynamic(() => import('@/components/ContactSection'), { ssr: false });
-const DocSection = dynamic(() => import('@/components/DocSection'), { ssr: false });
+const SkillSection = dynamic(() => import("@/components/SkillSection"), {
+  loading: SectionLoader,
+  ssr: false,
+});
+const PortfolioSection = dynamic(() => import("@/components/ProjectSection"), {
+  loading: SectionLoader,
+  ssr: false,
+});
+const ContactSection = dynamic(() => import("@/components/ContactSection"), {
+  loading: SectionLoader,
+  ssr: false,
+});
+const DocSection = dynamic(() => import("@/components/DocSection"), {
+  loading: SectionLoader,
+  ssr: false,
+});
 
 export default function Home() {
   return (
     <main className="bg-[#030406] text-white overflow-x-hidden">
-      <Navbar />
-
       {/* SECTION 1: HOME - Tetap min-h-screen agar konten tetap kuat di mobile */}
       <section id="home" className="min-h-screen w-full snap-start shrink-0">
         <HeroCard />
