@@ -22,6 +22,7 @@ interface DocumentData {
   category: string;
   size: number;
   fileUrl: string;
+  previewUrl?: string | null;
   createdAt: string;
 }
 
@@ -107,9 +108,6 @@ export default function DocSection() {
     return "unsupported";
   };
 
-  const getPdfViewerUrl = (fileUrl: string) =>
-    `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(fileUrl)}`;
-
   const changeFilter = (nextCategory: string) => {
     setCategoryFilter(nextCategory);
     setPage(1);
@@ -183,17 +181,50 @@ export default function DocSection() {
                   className="relative block h-44 overflow-hidden bg-white md:h-50"
                   aria-label={`Buka ${doc.name}`}
                 >
-                  {previewType === "pdf" && (
-                    <iframe
-                      src={getPdfViewerUrl(doc.fileUrl)}
-                      title={`Preview ${doc.name}`}
-                      className="pointer-events-none h-full w-full border-0 bg-white"
+                  {doc.previewUrl && (
+                    <Image
+                      src={doc.previewUrl}
+                      alt={`${doc.name} preview`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                      className="bg-white object-contain"
                       loading="lazy"
-                      tabIndex={-1}
                     />
                   )}
 
-                  {previewType === "image" && (
+                  {!doc.previewUrl && previewType === "pdf" && (
+                    <div className="relative h-full overflow-hidden bg-[#f8fafc] p-5 text-slate-900">
+                      <div className="absolute inset-y-0 right-0 w-23 bg-linear-to-l from-slate-200 to-transparent" />
+                      <div className="absolute -right-5 -top-5 h-28 w-28 rounded-full bg-blue-100" />
+                      <div className="relative z-10 flex h-full flex-col">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="text-xs font-black uppercase tracking-tight text-blue-700">
+                              {doc.category || "certificate"}
+                            </p>
+                            <h4 className="mt-3 max-w-52 text-2xl font-black uppercase leading-none tracking-tight">
+                              Certificate
+                            </h4>
+                          </div>
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-slate-300 bg-white text-blue-600 shadow-sm">
+                            {getIcon(doc.category)}
+                          </div>
+                        </div>
+
+                        <div className="mt-auto">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                            Awarded to
+                          </p>
+                          <p className="mt-1 text-sm font-bold text-slate-900">Farhan Zulkarnain</p>
+                          <p className="mt-3 line-clamp-2 max-w-80 text-sm font-semibold leading-snug text-slate-600">
+                            {doc.name}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {!doc.previewUrl && previewType === "image" && (
                     <Image
                       src={doc.fileUrl}
                       alt={doc.name}
@@ -204,7 +235,7 @@ export default function DocSection() {
                     />
                   )}
 
-                  {previewType === "unsupported" && (
+                  {!doc.previewUrl && previewType === "unsupported" && (
                     <div className="flex h-full items-center justify-center bg-[#f8fafc] text-slate-400">
                       <div className="text-center">
                         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
