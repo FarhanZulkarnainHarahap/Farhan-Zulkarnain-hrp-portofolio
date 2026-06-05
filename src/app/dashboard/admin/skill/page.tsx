@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { LuPlus, LuTrash2, LuShieldCheck, LuSearch, LuLoader } from "react-icons/lu";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { IconType } from "react-icons";
+import { LuPlus, LuTrash2, LuSearch, LuLoader } from "react-icons/lu";
 import Link from "next/link";
 
 // Import library icon
@@ -17,7 +18,7 @@ interface Skill {
 }
 
 const DynamicIcon = ({ name }: { name: string }) => {
-  const allIcons: any = { ...Lu, ...Fa, ...Si, ...Di };
+  const allIcons: Record<string, IconType> = { ...Lu, ...Fa, ...Si, ...Di };
   
   // 1. Cek langsung jika namanya sudah pas (misal: "SiNextdotjs")
   if (allIcons[name]) {
@@ -57,16 +58,12 @@ export default function SkillPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  useEffect(() => {
-    fetchSkills();
-  }, []);
-
-  const fetchSkills = async () => {
+  const fetchSkills = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/api/skills`, {
         cache: 'no-store',
         credentials: "include"
-      });;
+      });
       const result = await response.json();
       const data = Array.isArray(result) ? result : result.data;
       if (Array.isArray(data)) setSkills(data);
@@ -75,7 +72,15 @@ export default function SkillPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      void fetchSkills();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [fetchSkills]);
 
   const handleDelete = async (id: number, name: string) => {
     if (!confirm(`Apakah Anda yakin ingin menghapus skill ${name}?`)) return;

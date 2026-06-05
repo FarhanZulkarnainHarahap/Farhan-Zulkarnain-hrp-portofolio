@@ -90,7 +90,7 @@ const ShinyText: React.FC<ShinyTextProps> = ({
     directionRef.current = direction === 'left' ? 1 : -1;
     elapsedRef.current = 0;
     progress.set(0);
-  }, [direction]);
+  }, [direction, progress]);
 
   // Memberikan tipe data 'number' pada parameter 'p'
   const backgroundPosition = useTransform(progress, (p: number) => `${150 - p * 2}% center`);

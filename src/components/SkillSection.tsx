@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
+import type { IconType } from "react-icons";
 import * as Lu from "react-icons/lu";
 import * as Fa from "react-icons/fa6";
 import * as Si from "react-icons/si";
@@ -15,7 +16,7 @@ interface SkillData {
 import { LuLoader } from "react-icons/lu";
 // --- HELPER: RENDER ICON ---
 const DynamicIcon = ({ name }: { name: string }) => {
-  const allIcons: any = { ...Lu, ...Fa, ...Si, ...Di };
+  const allIcons: Record<string, IconType> = { ...Lu, ...Fa, ...Si, ...Di };
   const normalized = name.toLowerCase().replace(/\.js/g, 'dotjs').replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
   const foundKey = Object.keys(allIcons).find((key) => 
     key.toLowerCase() === name.toLowerCase() || key.toLowerCase() === `si${normalized}`
@@ -28,7 +29,16 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 export default function SkillSection() {
   const [skills, setSkills] = useState<SkillData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stars, setStars] = useState<{id: number, size: number, x: number, y: number, duration: number}[]>([]);
+  const [stars] = useState(() => (
+    [...Array(30)].map((_, i) => ({
+      id: i,
+      size: Math.random() * 2 + 0.5,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      duration: Math.random() * 5 + 3,
+    }))
+  ));
+
   useEffect(() => {
     // 1. Fetch Data
     fetch(`${API_URL}/api/skills`)
@@ -37,21 +47,11 @@ export default function SkillSection() {
         setSkills(Array.isArray(data) ? data : data.data || []);
         setLoading(false);
       });
-
-    // 2. Generate Bintang Galaxy (Animasi Bergerak)
-    const generatedStars = [...Array(30)].map((_, i) => ({
-      id: i,
-      size: Math.random() * 2 + 0.5,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      duration: Math.random() * 5 + 3,
-    }));
-    setStars(generatedStars);
   }, []);
 
   // --- LOGIKA GROUPING ---
   const groupedSkills = useMemo(() => {
-    return skills.reduce((acc: any, skill) => {
+    return skills.reduce<Record<string, SkillData[]>>((acc, skill) => {
       const cat = skill.category || "OTHERS";
       if (!acc[cat]) acc[cat] = [];
       acc[cat].push(skill);

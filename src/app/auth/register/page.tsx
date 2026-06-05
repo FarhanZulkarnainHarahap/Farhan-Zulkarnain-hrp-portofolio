@@ -28,7 +28,7 @@ export default function RegisterPage() {
       } else {
         alert(data.error || "Gagal Mendaftar");
       }
-    } catch (err) {
+    } catch {
       alert("Masalah koneksi server");
     } finally {
       setLoading(false);

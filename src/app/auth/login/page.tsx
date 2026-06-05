@@ -30,7 +30,7 @@ export default function LoginPage() {
       } else {
         alert(data.message || "Login gagal");
       }
-    } catch (err) {
+    } catch {
       alert("Terjadi kesalahan koneksi");
     } finally {
       setLoading(false);

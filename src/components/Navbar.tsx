@@ -1,12 +1,11 @@
 "use client";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
 const menuItems = ["HOME", "ABOUT", "SKILLS", "PROJECTS", "DOCUMENTS", "CONTACT"];
 
 export default function Navbar() {
-  const router = useRouter();
   const pathname = usePathname();
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);

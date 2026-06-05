@@ -11,6 +11,7 @@ export default function UploadDocPage() {
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState("");
   const [category, setCategory] = useState("Resume"); // Default category
+  const maxFileSize = 4 * 1024 * 1024;
 
   // Handle Pilih File
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -18,8 +19,16 @@ export default function UploadDocPage() {
     if (selectedFile) {
       if (selectedFile.type !== "application/pdf") {
         alert("Hanya file PDF yang diperbolehkan!");
+        e.target.value = "";
         return;
       }
+
+      if (selectedFile.size > maxFileSize) {
+        alert("Ukuran PDF maksimal 4MB.");
+        e.target.value = "";
+        return;
+      }
+
       setFile(selectedFile);
     }
   };
@@ -42,14 +51,17 @@ export default function UploadDocPage() {
         credentials: "include", // PENTING: Untuk mengirim cookie accessToken
       });
 
-      const result = await response.json();
+      const result = await response.json().catch(() => ({
+        success: false,
+        error: `Server mengembalikan status ${response.status}`,
+      }));
 
-      if (result.success) {
+      if (response.ok && result.success) {
         alert("Dokumen berhasil diunggah!");
         router.push("/admin/document");
         router.refresh();
       } else {
-        alert("Gagal: " + result.error);
+        alert("Gagal: " + (result.error || "Dokumen gagal diunggah"));
       }
     } catch (error) {
       console.error(error);

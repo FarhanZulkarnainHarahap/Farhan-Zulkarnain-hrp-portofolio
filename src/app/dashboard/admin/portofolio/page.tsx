@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LuPlus, LuPencilLine, LuTrash2, LuExternalLink, LuLayers, LuLoader } from "react-icons/lu";
 import Link from "next/link";
 
@@ -17,8 +17,8 @@ export default function PortfolioPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-  const fetchPortfolios = async () => {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  const fetchPortfolios = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/api/portofolios`, {
         cache: 'no-store',
@@ -33,7 +33,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
 
   // FUNGSI DELETE
   const handleDelete = async (id: string, title: string) => {
@@ -63,8 +63,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
   };
 
   useEffect(() => {
-    fetchPortfolios();
-  }, []);
+    const timeoutId = window.setTimeout(() => {
+      void fetchPortfolios();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [fetchPortfolios]);
 
   if (loading) {
     return (
@@ -104,6 +108,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
             >
               {/* Image Preview Area */}
               <div className="relative h-56 overflow-hidden bg-slate-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={project.imageUrl} 
                   className="h-full w-full object-cover transition-all duration-700 group-hover:rotate-2 group-hover:scale-110"

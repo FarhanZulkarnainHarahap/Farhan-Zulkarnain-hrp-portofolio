@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { 
   LuFileText, 
   LuDownload, 
@@ -37,7 +37,7 @@ export default function DocumentsPage() {
   };
 
   // 2. Fetch Data dari API
-  const fetchDocuments = async () => {
+  const fetchDocuments = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/api/documents`, {
         cache: 'no-store'
@@ -51,25 +51,29 @@ export default function DocumentsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchDocuments();
-  }, []);
+    const timeoutId = window.setTimeout(() => {
+      void fetchDocuments();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [fetchDocuments]);
 
   // 3. Fungsi Delete
   const handleDelete = async (id: string) => {
     if (!confirm("Hapus dokumen ini secara permanen?")) return;
     
     try {
-      const res = await fetch(`${API_URL}/api/documents${id}`, {
+      const res = await fetch(`${API_URL}/api/documents/${id}`, {
         method: "DELETE",
         credentials: "include"
       });
       if (res.ok) {
         setDocs(docs.filter(doc => doc.id !== id));
       }
-    } catch (error) {
+    } catch {
       alert("Gagal menghapus file");
     }
   };

@@ -162,6 +162,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
           <div className="bg-white border-2 border-dashed border-slate-200 rounded-[40px] p-2 hover:border-[#6f42c1] transition-colors group relative overflow-hidden">
             {preview ? (
               <div className="relative w-full aspect-video rounded-[36px] overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={preview} alt="Preview" className="w-full h-full object-cover" />
                 <button 
                   type="button"

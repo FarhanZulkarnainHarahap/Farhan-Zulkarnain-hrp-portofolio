@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LuZap, LuFolder, LuFileText, LuHistory, LuLoader, LuRefreshCw } from "react-icons/lu";
 
 // 1. Definisikan Interface untuk Type Safety
@@ -20,7 +20,7 @@ export default function HomePage() {
   const [refreshing, setRefreshing] = useState(false);
 
   // 2. Fungsi Fetch Data dengan Credentials
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     
     // Konfigurasi fetch agar menyertakan cookie (AccessToken)
@@ -62,11 +62,15 @@ export default function HomePage() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    const timeoutId = window.setTimeout(() => {
+      void fetchDashboardData();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [fetchDashboardData]);
 
   // 3. Konfigurasi Tampilan Card
   const statsCards = [
