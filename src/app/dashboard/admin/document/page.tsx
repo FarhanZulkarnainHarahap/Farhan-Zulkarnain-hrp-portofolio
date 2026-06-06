@@ -70,10 +70,19 @@ export default function DocumentsPage() {
         method: "DELETE",
         credentials: "include"
       });
-      if (res.ok) {
-        setDocs(docs.filter(doc => doc.id !== id));
+
+      const result = await res.json().catch(() => null);
+
+      if (!res.ok || !result?.success) {
+        alert(result?.error || result?.message || "Gagal menghapus dokumen");
+        return;
       }
-    } catch {
+
+      if (res.ok) {
+        setDocs((currentDocs) => currentDocs.filter((doc) => doc.id !== id));
+      }
+    } catch (error) {
+      console.error("Delete document error:", error);
       alert("Gagal menghapus file");
     }
   };
