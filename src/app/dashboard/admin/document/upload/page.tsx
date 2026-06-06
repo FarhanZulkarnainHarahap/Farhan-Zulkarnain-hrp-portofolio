@@ -17,7 +17,12 @@ export default function UploadDocPage() {
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      if (selectedFile.type !== "application/pdf") {
+      const isPdf =
+        selectedFile.type === "application/pdf" ||
+        selectedFile.type === "" ||
+        selectedFile.type === "application/octet-stream";
+
+      if (!isPdf || !selectedFile.name.toLowerCase().endsWith(".pdf")) {
         alert("Hanya file PDF yang diperbolehkan!");
         e.target.value = "";
         return;
