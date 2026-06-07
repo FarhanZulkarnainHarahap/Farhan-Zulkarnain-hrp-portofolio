@@ -4,7 +4,6 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import { LuArrowLeft, LuFileUp, LuShieldCheck, LuRefreshCw, LuFileText, LuX } from "react-icons/lu";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { toaster } from "@/components/ChakraAppProvider";
 
 export default function UploadDocPage() {
   const router = useRouter();
@@ -24,21 +23,13 @@ export default function UploadDocPage() {
         selectedFile.type === "application/octet-stream";
 
       if (!isPdf || !selectedFile.name.toLowerCase().endsWith(".pdf")) {
-        toaster.create({
-          title: "Invalid file",
-          description: "Only PDF files are allowed.",
-          type: "error",
-        });
+        alert("Only PDF files are allowed!");
         e.target.value = "";
         return;
       }
 
       if (selectedFile.size > maxFileSize) {
-        toaster.create({
-          title: "File is too large",
-          description: "PDF size must be 4MB or less.",
-          type: "error",
-        });
+        alert("PDF size must be 4MB or less.");
         e.target.value = "";
         return;
       }
@@ -51,14 +42,7 @@ export default function UploadDocPage() {
   // Submit to backend
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!file || !name) {
-      toaster.create({
-        title: "Missing information",
-        description: "Document name and PDF file are required.",
-        type: "warning",
-      });
-      return;
-    }
+    if (!file || !name) return alert("Name and file are required!");
 
     setLoading(true);
     const data = new FormData();
@@ -78,27 +62,15 @@ export default function UploadDocPage() {
       }));
 
       if (response.ok && result.success) {
-        toaster.create({
-          title: "Document uploaded",
-          description: "Your document has been saved successfully.",
-          type: "success",
-        });
+        alert("Document uploaded successfully!");
         router.push("/admin/document");
         router.refresh();
       } else {
-        toaster.create({
-          title: "Upload failed",
-          description: result.error || "Document upload failed.",
-          type: "error",
-        });
+        alert("Failed: " + (result.error || "Document upload failed"));
       }
     } catch (error) {
       console.error(error);
-      toaster.create({
-        title: "Server connection error",
-        description: "Please check the API connection and try again.",
-        type: "error",
-      });
+      alert("Server connection error.");
     } finally {
       setLoading(false);
     }

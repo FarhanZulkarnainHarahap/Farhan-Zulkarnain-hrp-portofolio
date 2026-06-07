@@ -9,8 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@chakra-ui/react": "^3.35.0",
-    "@emotion/react": "^11.14.0",
     "@react-three/fiber": "^9.6.0",
     "framer-motion": "^12.38.0",
     "jose": "^6.2.3",

@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Dialog, Portal } from "@chakra-ui/react";
 import { 
   LuFileText, 
   LuDownload, 
@@ -13,7 +12,6 @@ import {
   LuHardDrive
 } from "react-icons/lu";
 import Link from "next/link";
-import { toaster } from "@/components/ChakraAppProvider";
 
 // Interface aligned with the Prisma database.
 interface Document {
@@ -29,8 +27,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 export default function DocumentsPage() {
   const [docs, setDocs] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
-  const [pendingDelete, setPendingDelete] = useState<Document | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   // Format bytes to KB/MB.
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
@@ -66,12 +62,11 @@ export default function DocumentsPage() {
   }, [fetchDocuments]);
 
   // Delete document.
-  const handleDelete = async () => {
-    if (!pendingDelete) return;
-
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this document permanently?")) return;
+    
     try {
-      setDeletingId(pendingDelete.id);
-      const res = await fetch(`${API_URL}/api/documents/${pendingDelete.id}`, {
+      const res = await fetch(`${API_URL}/api/documents/${id}`, {
         method: "DELETE",
         credentials: "include"
       });
@@ -79,32 +74,16 @@ export default function DocumentsPage() {
       const result = await res.json().catch(() => null);
 
       if (!res.ok || !result?.success) {
-        toaster.create({
-          title: "Delete failed",
-          description: result?.error || result?.message || "Failed to delete document.",
-          type: "error",
-        });
+        alert(result?.error || result?.message || "Failed to delete document");
         return;
       }
 
       if (res.ok) {
-        setDocs((currentDocs) => currentDocs.filter((doc) => doc.id !== pendingDelete.id));
-        toaster.create({
-          title: "Document deleted",
-          description: `${pendingDelete.name} has been removed from the vault.`,
-          type: "success",
-        });
-        setPendingDelete(null);
+        setDocs((currentDocs) => currentDocs.filter((doc) => doc.id !== id));
       }
     } catch (error) {
       console.error("Delete document error:", error);
-      toaster.create({
-        title: "Delete failed",
-        description: "Failed to delete file. Please try again.",
-        type: "error",
-      });
-    } finally {
-      setDeletingId(null);
+      alert("Failed to delete file");
     }
   };
 
@@ -197,7 +176,7 @@ export default function DocumentsPage() {
                           <LuDownload size={18} />
                         </a>
                         <button 
-                          onClick={() => setPendingDelete(doc)}
+                          onClick={() => handleDelete(doc.id)}
                           className="rounded-xl border border-slate-100 p-2.5 text-slate-400 transition-all hover:bg-white hover:text-red-500 hover:shadow-md" 
                           title="Delete"
                         >
@@ -229,54 +208,6 @@ export default function DocumentsPage() {
           </div>
         </div>
       </div>
-
-      <Dialog.Root
-        open={Boolean(pendingDelete)}
-        onOpenChange={({ open }) => {
-          if (!open && !deletingId) setPendingDelete(null);
-        }}
-        placement="center"
-      >
-        <Portal>
-          <Dialog.Backdrop className="fixed inset-0 z-120 bg-black/50 backdrop-blur-sm" />
-          <Dialog.Positioner className="fixed inset-0 z-130 flex items-center justify-center px-4">
-            <Dialog.Content className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl">
-              <Dialog.Header className="mb-4">
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500">
-                  <LuTrash2 size={28} />
-                </div>
-                <Dialog.Title className="text-center text-xl font-black text-slate-900">
-                  Delete Document?
-                </Dialog.Title>
-                <Dialog.Description className="mt-2 text-center text-sm leading-relaxed text-slate-500">
-                  This action will permanently remove{" "}
-                  <span className="font-bold text-slate-800">{pendingDelete?.name}</span> from your document vault.
-                </Dialog.Description>
-              </Dialog.Header>
-
-              <Dialog.Footer className="mt-6 grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setPendingDelete(null)}
-                  disabled={Boolean(deletingId)}
-                  className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-500 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  disabled={Boolean(deletingId)}
-                  className="flex items-center justify-center gap-2 rounded-2xl bg-red-500 px-5 py-3 text-sm font-black text-white shadow-lg shadow-red-100 transition-all hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-70"
-                >
-                  {deletingId ? <LuLoader className="animate-spin" size={16} /> : <LuTrash2 size={16} />}
-                  {deletingId ? "Deleting..." : "Delete"}
-                </button>
-              </Dialog.Footer>
-            </Dialog.Content>
-          </Dialog.Positioner>
-        </Portal>
-      </Dialog.Root>
     </div>
   );
 }
