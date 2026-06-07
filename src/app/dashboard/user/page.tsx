@@ -1,12 +1,12 @@
 "use client";
 import { motion } from "framer-motion";
-import HeroCard from "@/components/HeroCard";
-import AboutSection from "@/components/AboutSection";
-import SkillSection from "@/components/SkillSection";
-import PortfolioSection from "@/components/ProjectSection";
-import DocSection from "@/components/DocSection";
-import SocialProofSection from "@/components/SocialProofSection";
-import ContactSection from "@/components/ContactSection";
+import HeroCard from "@/components/sections/hero/HeroCard";
+import AboutSection from "@/components/sections/about/AboutSection";
+import SkillSection from "@/components/sections/skill/SkillSection";
+import PortfolioSection from "@/components/sections/portfolio/project/ProjectSection";
+import DocSection from "@/components/sections/document/DocSection";
+import SocialProofSection from "@/components/sections/social/SocialProofSection";
+import ContactSection from "@/components/sections/contact/ContactSection";
 import { FaLinkedin, FaInstagram, FaGithub } from "react-icons/fa";
 
 const sectionMotion = {
