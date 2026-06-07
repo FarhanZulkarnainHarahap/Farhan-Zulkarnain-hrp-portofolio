@@ -22,19 +22,19 @@ export default function Home() {
   return (
     <main className="portfolio-bg text-white overflow-x-hidden">
       {/* SECTION 1: HOME */}
-      <motion.section id="home" className={`${sectionClass} shrink-0`} {...sectionMotion}>
+      <motion.section id="home" data-cursor-label="HOME" className={`${sectionClass} shrink-0`} {...sectionMotion}>
         <HeroCard />
       </motion.section>
 
       {/* SECTION 2: ABOUT */}
-      <motion.section id="about" className={`${sectionClass} shrink-0 overflow-hidden flex items-center justify-center px-4 md:px-6`} {...sectionMotion}>
+      <motion.section id="about" data-cursor-label="ABOUT" className={`${sectionClass} shrink-0 overflow-hidden flex items-center justify-center px-4 md:px-6`} {...sectionMotion}>
         <div className="w-full max-w-6xl">
           <AboutSection />
         </div>
       </motion.section>
 
       {/* SECTION 3: SKILLS */}
-      <motion.section id="skills" className={`${sectionClass} relative flex flex-col items-center py-16 md:py-24 xl:py-32 px-4 md:px-6`} {...sectionMotion}>
+      <motion.section id="skills" data-cursor-label="SKILLS" className={`${sectionClass} relative flex flex-col items-center py-16 md:py-24 xl:py-32 px-4 md:px-6`} {...sectionMotion}>
         <h2 className="relative z-10 text-3xl md:text-5xl font-black mb-8 md:mb-16 uppercase tracking-[0.25em] md:tracking-[0.4em] text-transparent bg-clip-text bg-linear-to-r from-blue-500 to-blue-200 text-center w-full max-w-4xl">
           My Expertise
         </h2>
@@ -48,33 +48,33 @@ export default function Home() {
       </motion.section>
 
       {/* SECTION 4: PORTFOLIO */}
-      <motion.section id="projects" className={`${sectionClass} flex items-center justify-center px-4 md:px-6`} {...sectionMotion}>
+      <motion.section id="projects" data-cursor-label="PROJECTS" className={`${sectionClass} flex items-center justify-center px-4 md:px-6`} {...sectionMotion}>
         <div className="w-full max-w-6xl">
           <PortfolioSection />
         </div>
       </motion.section>
 
       {/* SECTION 5: DOCUMENTS */}
-      <motion.section id="documents" className={`${sectionClass} flex items-center justify-center px-4 md:px-6`} {...sectionMotion}>
+      <motion.section id="documents" data-cursor-label="DOCS" className={`${sectionClass} flex items-center justify-center px-4 md:px-6`} {...sectionMotion}>
         <div className="w-full max-w-6xl">
           <DocSection />
         </div>
       </motion.section>
 
       {/* SECTION 6: PROOF */}
-      <motion.section id="proof" className="portfolio-section-bg w-full snap-start snap-always" {...sectionMotion}>
+      <motion.section id="proof" data-cursor-label="PROOF" className="portfolio-section-bg w-full snap-start snap-always" {...sectionMotion}>
         <SocialProofSection />
       </motion.section>
 
       {/* SECTION 7: CONTACT */}
-      <motion.section id="contact" className={`${sectionClass} flex items-center justify-center px-4 md:px-6 py-10 md:py-14`} {...sectionMotion}>
+      <motion.section id="contact" data-cursor-label="CONTACT" className={`${sectionClass} flex items-center justify-center px-4 md:px-6 py-10 md:py-14`} {...sectionMotion}>
         <div className="w-full max-w-6xl">
           <ContactSection />
         </div>
       </motion.section>
 
       {/* SECTION 8: FOOTER */}
-      <motion.footer className="portfolio-section-bg w-full snap-start flex flex-col items-center justify-center py-10 md:py-16 gap-6 border-t border-white/5 px-4 md:px-6" {...sectionMotion}>
+      <motion.footer data-cursor-label="FARHAN" className="portfolio-section-bg w-full snap-start flex flex-col items-center justify-center py-10 md:py-16 gap-6 px-4 md:px-6" {...sectionMotion}>
         <div className="flex flex-wrap justify-center gap-6 text-gray-500">
           <FaLinkedin size={24} href="https://www.linkedin.com/in/farhan-zulkarnain-71801a347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" className="hover:text-blue-500 transition-all cursor-pointer hover:scale-110" /> 
           <FaInstagram size={24} href="https://www.instagram.com/farhan.nexxus?igsh=bmw4cmI4djQzeTN1" className="hover:text-pink-500 transition-all cursor-pointer hover:scale-110" /> 

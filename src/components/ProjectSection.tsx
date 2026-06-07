@@ -28,6 +28,18 @@ interface Project {
   imageUrl: string;
   demoUrl: string | null;
   repoUrl: string | null;
+  category?: string | null;
+  caseType?: string | null;
+  type?: string | null;
+  tags?: string[] | string | null;
+  techStack?: string[] | string | null;
+  problem?: string | null;
+  caseProblem?: string | null;
+  solution?: string | null;
+  caseSolution?: string | null;
+  result?: string | null;
+  caseResult?: string | null;
+  features?: string[] | string | null;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -61,11 +73,37 @@ const showcaseHighlights = [
   },
 ];
 
+const splitListValue = (value?: string[] | string | null) => {
+  if (!value) {
+    return [];
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => item.trim()).filter(Boolean);
+  }
+
+  return value
+    .split(/[,|\n]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+};
+
+const firstText = (...values: Array<string | null | undefined>) =>
+  values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();
+
 const inferProjectDetails = (project: Project) => {
   const text = `${project.title} ${project.description}`.toLowerCase();
+  let details = {
+    type: "Web Application",
+    tags: ["Responsive UI", "Modern Web", "Scalable", "API Ready"],
+    problem: "Digital products need a clean interface, clear user flow, and a codebase that can grow without becoming messy.",
+    solution: "Built a polished web application experience with reusable UI patterns, structured layout, and performance-minded presentation.",
+    result: "A modern project that communicates the product idea clearly and gives the codebase room to scale.",
+    features: ["Responsive layout", "Reusable components", "Clean navigation", "Modern visual system"],
+  };
 
   if (text.includes("market") || text.includes("grocery")) {
-    return {
+    details = {
       type: "Grocery App",
       tags: ["Product Catalog", "Cart Flow", "Responsive UI", "Order Ready"],
       problem: "Users need a clean grocery interface that makes product discovery, cart management, and checkout feel quick on mobile.",
@@ -76,7 +114,7 @@ const inferProjectDetails = (project: Project) => {
   }
 
   if (text.includes("calendar") || text.includes("callender")) {
-    return {
+    details = {
       type: "Productivity App",
       tags: ["Schedule UI", "Task Flow", "Cards", "Clean Dashboard"],
       problem: "A productivity interface needs to organize schedules and notes without making the screen feel crowded.",
@@ -87,7 +125,7 @@ const inferProjectDetails = (project: Project) => {
   }
 
   if (text.includes("nexxora") || text.includes("store") || text.includes("e-commerce")) {
-    return {
+    details = {
       type: "E-Commerce Platform",
       tags: ["Storefront", "Checkout", "Admin", "User Profile"],
       problem: "An online store needs a premium storefront while still supporting product, user, order, and admin flows.",
@@ -98,7 +136,7 @@ const inferProjectDetails = (project: Project) => {
   }
 
   if (text.includes("talk") || text.includes("chat")) {
-    return {
+    details = {
       type: "Chat Application",
       tags: ["Authentication", "Realtime UI", "User List", "Clean Chat"],
       problem: "Messaging apps need fast context switching while keeping conversations readable and secure.",
@@ -108,13 +146,19 @@ const inferProjectDetails = (project: Project) => {
     };
   }
 
+  const dbTags = splitListValue(project.tags).length
+    ? splitListValue(project.tags)
+    : splitListValue(project.techStack);
+  const dbFeatures = splitListValue(project.features);
+
   return {
-    type: "Web Application",
-    tags: ["Responsive UI", "Modern Web", "Scalable", "API Ready"],
-    problem: "Digital products need a clean interface, clear user flow, and a codebase that can grow without becoming messy.",
-    solution: "Built a polished web application experience with reusable UI patterns, structured layout, and performance-minded presentation.",
-    result: "A modern project that communicates the product idea clearly and gives the codebase room to scale.",
-    features: ["Responsive layout", "Reusable components", "Clean navigation", "Modern visual system"],
+    ...details,
+    type: firstText(project.caseType, project.type, project.category) ?? details.type,
+    tags: dbTags.length ? dbTags : details.tags,
+    problem: firstText(project.caseProblem, project.problem) ?? details.problem,
+    solution: firstText(project.caseSolution, project.solution) ?? details.solution,
+    result: firstText(project.caseResult, project.result) ?? details.result,
+    features: dbFeatures.length ? dbFeatures : details.features,
   };
 };
 
@@ -398,7 +442,7 @@ export default function PortfolioSection() {
   return (
     <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-5 py-20 md:px-8 lg:py-24">
       <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.2),transparent_55%)]" />
-      <div className="absolute inset-0 -z-20 bg-linear-to-b from-[#030406]/20 via-[#030406]/48 to-[#030406]/75" />
+      <div className="absolute inset-0 -z-20 bg-linear-to-b from-transparent via-[#030406]/14 to-transparent" />
       <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
       <div className="absolute -bottom-28 -left-28 -z-10 h-80 w-80 rounded-full border border-blue-500/25 opacity-50" />
 
