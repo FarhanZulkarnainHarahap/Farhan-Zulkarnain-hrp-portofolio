@@ -15,6 +15,47 @@ body {
   overflow-y: overlay; /* Keep the scrollbar floating so it does not shift layout. */
 }
 
+.portfolio-bg {
+  background-color: #030406;
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(37, 99, 235, 0.16), transparent 32%),
+    radial-gradient(circle at 78% 18%, rgba(14, 165, 233, 0.1), transparent 28%),
+    radial-gradient(circle at 50% 82%, rgba(30, 64, 175, 0.12), transparent 34%),
+    linear-gradient(180deg, #030406 0%, #02040a 55%, #030406 100%);
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.portfolio-section-bg {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+}
+
+.portfolio-section-bg::before,
+.portfolio-section-bg::after {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  content: "";
+  pointer-events: none;
+}
+
+.portfolio-section-bg::before {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(59, 130, 246, 0.1), transparent 30%),
+    radial-gradient(circle at 88% 70%, rgba(37, 99, 235, 0.08), transparent 28%);
+}
+
+.portfolio-section-bg::after {
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: 0.35;
+  mask-image: linear-gradient(to bottom, transparent, black 16%, black 84%, transparent);
+}
+
 .hero-profile-card {
   position: relative;
   width: min(78vw, 330px);

@@ -35,7 +35,7 @@ export default function EntranceScreen() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.03 }}
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed inset-0 z-[9998] grid place-items-center overflow-hidden bg-[#030813]"
+          className="portfolio-bg fixed inset-0 z-[9998] grid place-items-center overflow-hidden"
         >
           <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.06)_1px,transparent_1px)] bg-[size:42px_42px]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(34,211,238,0.16),transparent_45%),radial-gradient(circle_at_85%_75%,rgba(245,158,11,0.12),transparent_38%)]" />
@@ -57,7 +57,7 @@ export default function EntranceScreen() {
             initial={{ opacity: 0, y: 22, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-10 w-[min(92vw,760px)] overflow-hidden rounded-[28px] border border-cyan-400/25 bg-[#050b16]/92 shadow-[0_30px_120px_rgba(34,211,238,0.14)] backdrop-blur-xl"
+            className="relative z-10 max-h-[86vh] w-[min(92vw,760px)] overflow-y-auto rounded-[28px] border border-cyan-400/25 bg-[#050b16]/92 shadow-[0_30px_120px_rgba(34,211,238,0.14)] backdrop-blur-xl"
           >
             <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
               <div className="flex items-center gap-2">

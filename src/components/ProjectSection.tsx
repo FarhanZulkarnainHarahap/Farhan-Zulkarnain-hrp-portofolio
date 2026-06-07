@@ -31,7 +31,6 @@ interface Project {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const GALAXY_GIF_URL = "https://media.giphy.com/media/3oEhn2LiBCmcAU5yvu/giphy.gif";
 const PROJECTS_PER_PAGE = 4;
 const projectAccents = ["#3b82f6", "#10b981", "#facc15", "#a855f7"];
 const orbitPositions = [
@@ -277,13 +276,8 @@ const ProjectCaseStudyModal = ({
 };
 
 const ProjectSkeleton = () => (
-  <section className="relative isolate min-h-screen w-full overflow-hidden bg-[#02040b] px-5 py-20 md:px-8 lg:py-24">
+  <section className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-5 py-20 md:px-8 lg:py-24">
     <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.18),transparent_55%)]" />
-    <div
-      className="absolute inset-0 -z-30 hidden bg-cover bg-center opacity-35 md:block"
-      style={{ backgroundImage: `url(${GALAXY_GIF_URL})` }}
-    />
-    <div className="absolute inset-0 -z-20 bg-[#02040b]/86" />
 
     <div className="mx-auto grid w-full max-w-390 grid-cols-1 items-center gap-10 lg:grid-cols-[285px_minmax(0,1fr)] 2xl:grid-cols-[285px_minmax(0,1fr)_235px]">
       <div className="animate-pulse text-center lg:text-left">
@@ -402,16 +396,9 @@ export default function PortfolioSection() {
   }
 
   return (
-    <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-[#02040b] px-5 py-20 md:px-8 lg:py-24">
+    <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-5 py-20 md:px-8 lg:py-24">
       <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.2),transparent_55%)]" />
-      <div
-        className="absolute inset-0 -z-30 hidden bg-cover bg-center opacity-60 md:block"
-        style={{
-          backgroundImage: `url(${GALAXY_GIF_URL})`,
-        }}
-      />
-      <div className="absolute inset-0 -z-20 bg-[#02040b]/76" />
-      <div className="absolute inset-0 -z-20 bg-linear-to-b from-[#02040b]/35 via-[#02040b]/65 to-[#02040b]/95" />
+      <div className="absolute inset-0 -z-20 bg-linear-to-b from-[#030406]/20 via-[#030406]/48 to-[#030406]/75" />
       <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
       <div className="absolute -bottom-28 -left-28 -z-10 h-80 w-80 rounded-full border border-blue-500/25 opacity-50" />
 

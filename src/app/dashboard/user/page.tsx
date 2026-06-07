@@ -1,4 +1,5 @@
 "use client";
+import { motion } from "framer-motion";
 import HeroCard from "@/components/HeroCard";
 import AboutSection from "@/components/AboutSection";
 import SkillSection from "@/components/SkillSection";
@@ -8,23 +9,32 @@ import SocialProofSection from "@/components/SocialProofSection";
 import ContactSection from "@/components/ContactSection";
 import { FaLinkedin, FaInstagram, FaGithub } from "react-icons/fa";
 
+const sectionMotion = {
+  initial: { opacity: 0, y: 42, scale: 0.98 },
+  whileInView: { opacity: 1, y: 0, scale: 1 },
+  viewport: { once: true, amount: 0.18 },
+  transition: { duration: 0.72, ease: [0.16, 1, 0.3, 1] as const },
+};
+
+const sectionClass = "portfolio-section-bg min-h-screen w-full snap-start snap-always";
+
 export default function Home() {
   return (
-    <main className="bg-[#030406] text-white overflow-x-hidden">
+    <main className="portfolio-bg text-white overflow-x-hidden">
       {/* SECTION 1: HOME */}
-      <section id="home" className="min-h-screen w-full snap-start shrink-0">
+      <motion.section id="home" className={`${sectionClass} shrink-0`} {...sectionMotion}>
         <HeroCard />
-      </section>
+      </motion.section>
 
       {/* SECTION 2: ABOUT */}
-      <section id="about" className="min-h-screen w-full snap-start shrink-0 overflow-hidden flex items-center justify-center px-4 md:px-6">
+      <motion.section id="about" className={`${sectionClass} shrink-0 overflow-hidden flex items-center justify-center px-4 md:px-6`} {...sectionMotion}>
         <div className="w-full max-w-6xl">
           <AboutSection />
         </div>
-      </section>
+      </motion.section>
 
       {/* SECTION 3: SKILLS */}
-      <section id="skills" className="min-h-screen w-full snap-start snap-always relative flex flex-col items-center py-16 md:py-24 xl:py-32 bg-[#030406] px-4 md:px-6">
+      <motion.section id="skills" className={`${sectionClass} relative flex flex-col items-center py-16 md:py-24 xl:py-32 px-4 md:px-6`} {...sectionMotion}>
         <h2 className="relative z-10 text-3xl md:text-5xl font-black mb-8 md:mb-16 uppercase tracking-[0.25em] md:tracking-[0.4em] text-transparent bg-clip-text bg-linear-to-r from-blue-500 to-blue-200 text-center w-full max-w-4xl">
           My Expertise
         </h2>
@@ -35,36 +45,36 @@ export default function Home() {
 
         {/* Glow Background */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 md:w-72 md:h-72 bg-blue-600/5 rounded-full blur-[80px] md:blur-[120px] pointer-events-none" />
-      </section>
+      </motion.section>
 
       {/* SECTION 4: PORTFOLIO */}
-      <section id="projects" className="min-h-screen w-full snap-start snap-always flex items-center justify-center px-4 md:px-6 bg-[#030406]">
+      <motion.section id="projects" className={`${sectionClass} flex items-center justify-center px-4 md:px-6`} {...sectionMotion}>
         <div className="w-full max-w-6xl">
           <PortfolioSection />
         </div>
-      </section>
+      </motion.section>
 
       {/* SECTION 5: DOCUMENTS */}
-      <section id="documents" className="min-h-screen w-full snap-start snap-always flex items-center justify-center px-4 md:px-6 bg-[#030406]">
+      <motion.section id="documents" className={`${sectionClass} flex items-center justify-center px-4 md:px-6`} {...sectionMotion}>
         <div className="w-full max-w-6xl">
           <DocSection />
         </div>
-      </section>
+      </motion.section>
 
       {/* SECTION 6: PROOF */}
-      <section id="proof" className="w-full snap-start snap-always bg-[#030406]">
+      <motion.section id="proof" className="portfolio-section-bg w-full snap-start snap-always" {...sectionMotion}>
         <SocialProofSection />
-      </section>
+      </motion.section>
 
       {/* SECTION 7: CONTACT */}
-      <section id="contact" className="min-h-screen w-full snap-start snap-always flex items-center justify-center px-4 md:px-6 py-10 md:py-14 bg-[#030406]">
+      <motion.section id="contact" className={`${sectionClass} flex items-center justify-center px-4 md:px-6 py-10 md:py-14`} {...sectionMotion}>
         <div className="w-full max-w-6xl">
           <ContactSection />
         </div>
-      </section>
+      </motion.section>
 
       {/* SECTION 8: FOOTER */}
-      <footer className="w-full snap-start bg-[#030406] flex flex-col items-center justify-center py-10 md:py-16 gap-6 border-t border-white/5 px-4 md:px-6">
+      <motion.footer className="portfolio-section-bg w-full snap-start flex flex-col items-center justify-center py-10 md:py-16 gap-6 border-t border-white/5 px-4 md:px-6" {...sectionMotion}>
         <div className="flex flex-wrap justify-center gap-6 text-gray-500">
           <FaLinkedin size={24} href="https://www.linkedin.com/in/farhan-zulkarnain-71801a347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" className="hover:text-blue-500 transition-all cursor-pointer hover:scale-110" /> 
           <FaInstagram size={24} href="https://www.instagram.com/farhan.nexxus?igsh=bmw4cmI4djQzeTN1" className="hover:text-pink-500 transition-all cursor-pointer hover:scale-110" /> 
@@ -84,7 +94,7 @@ export default function Home() {
             AVAILABLE FOR PROJECTS
           </div>
         </div>
-      </footer>
+      </motion.footer>
     </main>
   );
 }

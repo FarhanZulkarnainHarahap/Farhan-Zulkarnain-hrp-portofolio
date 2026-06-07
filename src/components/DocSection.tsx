@@ -29,8 +29,6 @@ const DOCS_PER_PAGE = 6;
 
 const DocumentSkeleton = () => (
   <section className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6">
-    <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_10%,rgba(59,130,246,0.13),transparent_30%),radial-gradient(circle_at_86%_15%,rgba(99,102,241,0.1),transparent_28%)]" />
-
     <div className="mb-10 animate-pulse border-b border-white/10 pb-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
@@ -168,8 +166,6 @@ export default function DocSection() {
 
   return (
     <section id="documents" className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_10%,rgba(59,130,246,0.13),transparent_30%),radial-gradient(circle_at_86%_15%,rgba(99,102,241,0.1),transparent_28%)]" />
-
       <div className="mb-10 border-b border-white/10 pb-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>

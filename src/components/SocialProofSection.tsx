@@ -45,8 +45,7 @@ const stats = [
 
 export default function SocialProofSection() {
   return (
-    <section className="relative isolate w-full overflow-hidden bg-[#030406] px-4 py-20 md:px-6 md:py-24">
-      <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.12),transparent_34%),radial-gradient(circle_at_78%_72%,rgba(14,165,233,0.1),transparent_30%)]" />
+    <section className="relative isolate w-full overflow-hidden bg-transparent px-4 py-20 md:px-6 md:py-24">
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 26, repeat: Infinity, ease: "linear" }}
