@@ -133,6 +133,23 @@ export default function DocSection() {
     <section id="documents" className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_10%,rgba(59,130,246,0.13),transparent_30%),radial-gradient(circle_at_86%_15%,rgba(99,102,241,0.1),transparent_28%)]" />
 
+      <div className="mb-10 border-b border-white/10 pb-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400">
+              Document Preview
+            </p>
+            <h2 className="text-4xl font-black uppercase italic leading-none tracking-tight text-white md:text-6xl">
+              Credential <span className="text-zinc-500">&</span> Assets<span className="text-blue-500">.</span>
+            </h2>
+          </div>
+
+          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-500">
+            {docs.length} Verified Files
+          </p>
+        </div>
+      </div>
+
       <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <label className="relative w-full md:max-w-sm">
           <FaSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={13} />
