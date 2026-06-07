@@ -4,6 +4,7 @@ import AboutSection from "@/components/AboutSection";
 import SkillSection from "@/components/SkillSection";
 import PortfolioSection from "@/components/ProjectSection";
 import DocSection from "@/components/DocSection";
+import SocialProofSection from "@/components/SocialProofSection";
 import ContactSection from "@/components/ContactSection";
 import { FaLinkedin, FaInstagram, FaGithub } from "react-icons/fa";
 
@@ -50,14 +51,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION 6: CONTACT */}
+      {/* SECTION 6: PROOF */}
+      <section id="proof" className="w-full snap-start snap-always bg-[#030406]">
+        <SocialProofSection />
+      </section>
+
+      {/* SECTION 7: CONTACT */}
       <section id="contact" className="min-h-screen w-full snap-start snap-always flex items-center justify-center px-4 md:px-6 py-10 md:py-14 bg-[#030406]">
         <div className="w-full max-w-6xl">
           <ContactSection />
         </div>
       </section>
 
-      {/* SECTION 7: FOOTER */}
+      {/* SECTION 8: FOOTER */}
       <footer className="w-full snap-start bg-[#030406] flex flex-col items-center justify-center py-10 md:py-16 gap-6 border-t border-white/5 px-4 md:px-6">
         <div className="flex flex-wrap justify-center gap-6 text-gray-500">
           <FaLinkedin size={24} href="https://www.linkedin.com/in/farhan-zulkarnain-71801a347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" className="hover:text-blue-500 transition-all cursor-pointer hover:scale-110" /> 

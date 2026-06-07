@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { FaGithub, FaStar } from "react-icons/fa";
-import { FiArrowUpRight } from "react-icons/fi";
+import { FiArrowUpRight, FiBookOpen } from "react-icons/fi";
 
 interface CardProps {
   title: string;
@@ -16,6 +16,7 @@ interface CardProps {
   variant: "featured" | "orbit" | "mobile";
   accent?: string;
   onSelect?: () => void;
+  onDetails?: () => void;
 }
 
 export default function ProjectCard({
@@ -28,6 +29,7 @@ export default function ProjectCard({
   variant,
   accent = "#3b82f6",
   onSelect,
+  onDetails,
 }: CardProps) {
   const isFeatured = variant !== "orbit";
   const projectNumber = String(index + 1).padStart(2, "0");
@@ -115,13 +117,25 @@ export default function ProjectCard({
               ))}
             </div>
             <div className="mt-5 flex items-center justify-center gap-3">
+              {onDetails && (
+                <button
+                  type="button"
+                  onClick={onDetails}
+                  data-cursor-label="CASE"
+                  aria-label={`Open case study for ${title}`}
+                  className="group/case flex h-11 items-center gap-2 rounded-full border border-blue-500/35 bg-blue-500/12 px-4 text-[9px] font-black uppercase tracking-[0.16em] text-blue-200 transition-all hover:scale-105 hover:border-blue-300 hover:bg-blue-500 hover:text-white"
+                >
+                  <FiBookOpen size={14} />
+                  Case
+                </button>
+              )}
               {demoUrl && (
                 <a
                   href={demoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cursor-label="OPEN"
-                  aria-label={`Buka demo ${title}`}
+                  aria-label={`Open demo ${title}`}
                   className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_0_22px_rgba(37,99,235,0.6)] transition-transform hover:scale-110"
                 >
                   <FiArrowUpRight size={18} />
@@ -133,7 +147,7 @@ export default function ProjectCard({
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cursor-label="CODE"
-                  aria-label={`Buka repository ${title}`}
+                  aria-label={`Open repository ${title}`}
                   className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-all hover:scale-110 hover:bg-white/15"
                 >
                   <FaGithub size={17} />

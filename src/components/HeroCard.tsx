@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
-import { FaArrowRight, FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa";
+import { FaArrowRight, FaDownload, FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
 import ShinyText from "./ShinyText";
@@ -120,12 +120,28 @@ export default function HeroCard() {
             Crafting high-performance digital experiences through <span className="text-white font-medium underline decoration-blue-500/30">clean code</span> and <span className="text-white font-medium italic">immersive design</span>.
           </motion.p>
 
-          <motion.div initial="hidden" animate="visible" variants={fadeInUp} className="pt-4 flex justify-center lg:justify-start">
+          <motion.div initial="hidden" animate="visible" variants={fadeInUp} className="pt-4 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
             <Link href="#projects">
               <button data-cursor-label="EXPLORE" className="group flex items-center gap-4 bg-blue-600 hover:bg-blue-700 text-white px-8 md:px-10 py-3.5 md:py-4 rounded-full transition-all shadow-xl shadow-blue-500/20 active:scale-95">
                 <span className="text-[10px] md:text-xs font-black uppercase tracking-widest">View My Projects</span>
                 <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
               </button>
+            </Link>
+            <Link href="/documents">
+              <motion.button
+                data-cursor-label="RESUME"
+                whileHover={{ y: -3, scale: 1.03 }}
+                whileTap={{ scale: 0.96 }}
+                className="group relative flex items-center gap-3 overflow-hidden rounded-full border border-white/12 bg-white/5 px-8 py-3.5 text-white transition-all hover:border-blue-400/60 hover:bg-blue-500/10 md:px-9 md:py-4"
+              >
+                <motion.span
+                  animate={{ x: ["-120%", "120%"] }}
+                  transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute inset-y-0 w-12 bg-linear-to-r from-transparent via-blue-400/25 to-transparent"
+                />
+                <span className="relative text-[10px] font-black uppercase tracking-widest md:text-xs">View Resume</span>
+                <FaDownload className="relative text-blue-400 transition-transform group-hover:-translate-y-0.5" />
+              </motion.button>
             </Link>
           </motion.div>
         </div>

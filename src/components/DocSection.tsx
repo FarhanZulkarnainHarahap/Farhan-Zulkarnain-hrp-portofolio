@@ -233,7 +233,7 @@ export default function DocSection() {
                   rel="noopener noreferrer"
                   data-cursor-label="OPEN"
                   className="relative block h-44 overflow-hidden bg-white md:h-50"
-                  aria-label={`Buka ${doc.name}`}
+                  aria-label={`Open ${doc.name}`}
                 >
                   {doc.previewUrl && (
                     <Image
