@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import ChakraAppProvider from "@/components/ChakraAppProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -91,7 +92,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api2.farhanzulkarnainhrp.com" />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ChakraAppProvider>{children}</ChakraAppProvider>
+      </body>
     </html>
   );
 }

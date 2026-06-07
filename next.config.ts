@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
 
-  reactCompiler: true,
+  // Chakra UI v3 currently builds more reliably without React Compiler in this app.
+  reactCompiler: false,
   async rewrites() {
     return [
       {
