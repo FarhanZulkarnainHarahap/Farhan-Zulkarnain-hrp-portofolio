@@ -22,6 +22,7 @@ interface DocumentData {
   category: string;
   size: number;
   fileUrl: string;
+  previewUrl?: string | null;
   createdAt: string;
 }
 
@@ -180,7 +181,18 @@ export default function DocSection() {
                   className="relative block h-44 overflow-hidden bg-white md:h-50"
                   aria-label={`Buka ${doc.name}`}
                 >
-                  {previewType === "pdf" && (
+                  {doc.previewUrl && (
+                    <Image
+                      src={doc.previewUrl}
+                      alt={`${doc.name} preview`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                      className="bg-white object-contain"
+                      loading="lazy"
+                    />
+                  )}
+
+                  {!doc.previewUrl && previewType === "pdf" && (
                     <div className="relative h-full overflow-hidden bg-[#f8fafc] p-5 text-slate-900">
                       <div className="absolute inset-y-0 right-0 w-23 bg-linear-to-l from-slate-200 to-transparent" />
                       <div className="absolute -right-5 -top-5 h-28 w-28 rounded-full bg-blue-100" />
@@ -212,7 +224,7 @@ export default function DocSection() {
                     </div>
                   )}
 
-                  {previewType === "image" && (
+                  {!doc.previewUrl && previewType === "image" && (
                     <Image
                       src={doc.fileUrl}
                       alt={doc.name}
@@ -223,7 +235,7 @@ export default function DocSection() {
                     />
                   )}
 
-                  {previewType === "unsupported" && (
+                  {!doc.previewUrl && previewType === "unsupported" && (
                     <div className="flex h-full items-center justify-center bg-[#f8fafc] text-slate-400">
                       <div className="text-center">
                         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
