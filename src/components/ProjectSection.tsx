@@ -7,7 +7,6 @@ import {
   LuArrowRight,
   LuBox,
   LuCodeXml,
-  LuLoader,
   LuShieldCheck,
   LuSparkles,
   LuZap,
@@ -54,6 +53,65 @@ const showcaseHighlights = [
     description: "Carefully crafted UI with attention to detail.",
   },
 ];
+
+const ProjectSkeleton = () => (
+  <section className="relative isolate min-h-screen w-full overflow-hidden bg-[#02040b] px-5 py-20 md:px-8 lg:py-24">
+    <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.18),transparent_55%)]" />
+    <div
+      className="absolute inset-0 -z-30 hidden bg-cover bg-center opacity-35 md:block"
+      style={{ backgroundImage: `url(${GALAXY_GIF_URL})` }}
+    />
+    <div className="absolute inset-0 -z-20 bg-[#02040b]/86" />
+
+    <div className="mx-auto grid w-full max-w-390 grid-cols-1 items-center gap-10 lg:grid-cols-[285px_minmax(0,1fr)] 2xl:grid-cols-[285px_minmax(0,1fr)_235px]">
+      <div className="animate-pulse text-center lg:text-left">
+        <div className="mx-auto h-3 w-42 rounded-full bg-blue-500/18 lg:mx-0" />
+        <div className="mt-6 space-y-3">
+          <div className="mx-auto h-12 w-70 rounded-2xl bg-white/10 lg:mx-0" />
+          <div className="mx-auto h-12 w-58 rounded-2xl bg-white/8 lg:mx-0" />
+          <div className="mx-auto h-12 w-52 rounded-2xl bg-blue-500/16 lg:mx-0" />
+        </div>
+        <div className="mx-auto mt-6 h-18 w-full max-w-sm rounded-2xl bg-white/6 lg:mx-0" />
+        <div className="mt-7 flex items-center justify-center gap-3 lg:justify-start">
+          <div className="h-11 w-11 rounded-full border border-white/10 bg-white/5" />
+          <div className="h-11 w-48 rounded-full border border-white/10 bg-white/5" />
+        </div>
+      </div>
+
+      <div className="relative mx-auto h-165 w-full max-w-220 animate-pulse">
+        <div className="absolute left-1/2 top-1/2 h-108 w-108 -translate-x-1/2 -translate-y-1/2 rounded-full border border-blue-400/25" />
+        <div className="absolute left-1/2 top-1/2 h-135 w-135 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-blue-500/20" />
+        <div className="absolute left-1/2 top-1/2 z-20 h-125 w-full max-w-96 -translate-x-1/2 -translate-y-1/2 rounded-[28px] border border-blue-500/25 bg-[#070b16]/92 shadow-[0_30px_90px_rgba(37,99,235,0.14)]">
+          <div className="m-4 h-48 rounded-2xl bg-white/10" />
+          <div className="mx-auto mt-6 h-4 w-32 rounded-full bg-blue-500/18" />
+          <div className="mx-auto mt-5 h-8 w-54 rounded-xl bg-white/10" />
+          <div className="mx-auto mt-4 h-18 w-70 rounded-2xl bg-white/6" />
+          <div className="mx-auto mt-7 flex justify-center gap-2">
+            {Array.from({ length: 4 }, (_, index) => (
+              <div key={index} className="h-7 w-20 rounded-full border border-white/8 bg-white/5" />
+            ))}
+          </div>
+        </div>
+        <div className="absolute left-0 top-16 hidden h-78 w-64 rotate-[-7deg] rounded-[24px] border border-blue-500/18 bg-white/5 xl:block" />
+        <div className="absolute bottom-6 right-0 hidden h-78 w-64 rotate-[8deg] rounded-[24px] border border-blue-500/18 bg-white/5 xl:block" />
+      </div>
+
+      <aside className="hidden animate-pulse rounded-[24px] border border-blue-500/18 bg-[#080b16]/80 px-5 py-6 2xl:block">
+        <div className="space-y-5">
+          {Array.from({ length: 4 }, (_, index) => (
+            <div key={index} className="flex gap-3">
+              <div className="h-7 w-7 shrink-0 rounded-lg bg-blue-500/14" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3 w-28 rounded-full bg-white/12" />
+                <div className="h-10 rounded-xl bg-white/6" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </aside>
+    </div>
+  </section>
+);
 
 export default function PortfolioSection() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -110,14 +168,7 @@ export default function PortfolioSection() {
   };
 
   if (loading) {
-    return (
-      <div className="flex min-h-100 w-full items-center justify-center bg-[#030406]">
-        <div className="flex flex-col items-center gap-4">
-          <LuLoader className="animate-spin text-blue-500" size={32} />
-          <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-zinc-500 md:text-[10px]">Loading</p>
-        </div>
-      </div>
-    );
+    return <ProjectSkeleton />;
   }
 
   return (
@@ -157,7 +208,7 @@ export default function PortfolioSection() {
               <button
                 type="button"
                 onClick={showPrevious}
-                aria-label="Project sebelumnya"
+                aria-label="Previous project"
                 className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white transition-all hover:border-blue-400 hover:bg-blue-500/15"
               >
                 <LuArrowLeft size={17} />
@@ -165,7 +216,7 @@ export default function PortfolioSection() {
               <button
                 type="button"
                 onClick={showNext}
-                aria-label="Project berikutnya"
+                aria-label="Next project"
                 className="flex items-center gap-3 rounded-full border border-white/15 px-5 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-white transition-all hover:border-blue-400 hover:bg-blue-500/15"
               >
                 Explore My Work
@@ -233,7 +284,7 @@ export default function PortfolioSection() {
                       key={project.id}
                       type="button"
                       onClick={() => setActiveIndex(index)}
-                      aria-label={`Tampilkan ${project.title}`}
+                      aria-label={`Show ${project.title}`}
                       className={`h-2.5 rounded-full transition-all ${index === safeActiveIndex ? "w-7 bg-blue-500" : "w-2.5 bg-white/20 hover:bg-white/40"}`}
                     />
                   ))}
@@ -262,7 +313,7 @@ export default function PortfolioSection() {
                     key={project.id}
                     type="button"
                     onClick={() => setActiveIndex(index)}
-                    aria-label={`Tampilkan ${project.title}`}
+                    aria-label={`Show ${project.title}`}
                     className={`rounded-xl border px-2 py-3 text-[10px] font-black transition-all ${
                       index === safeActiveIndex
                         ? "border-blue-400 bg-blue-500/15 text-blue-300"
@@ -303,7 +354,7 @@ export default function PortfolioSection() {
               key={index}
               type="button"
               onClick={() => changePage(index)}
-              aria-label={`Buka halaman project ${index + 1}`}
+              aria-label={`Open project page ${index + 1}`}
               className={`h-2 rounded-full transition-all ${index === page ? "w-8 bg-blue-500" : "w-2 bg-white/20 hover:bg-white/40"}`}
             />
           ))}

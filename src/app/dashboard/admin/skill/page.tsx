@@ -5,7 +5,7 @@ import type { IconType } from "react-icons";
 import { LuPlus, LuTrash2, LuSearch, LuLoader } from "react-icons/lu";
 import Link from "next/link";
 
-// Import library icon
+// Import icon libraries
 import * as Lu from "react-icons/lu";
 import * as Fa from "react-icons/fa";
 import * as Si from "react-icons/si";
@@ -20,17 +20,15 @@ interface Skill {
 const DynamicIcon = ({ name }: { name: string }) => {
   const allIcons: Record<string, IconType> = { ...Lu, ...Fa, ...Si, ...Di };
   
-  // 1. Cek langsung jika namanya sudah pas (misal: "SiNextdotjs")
   if (allIcons[name]) {
     const Icon = allIcons[name];
     return <Icon className="w-full h-full" />;
   }
 
-  // 2. Normalisasi nama untuk pencarian cerdas (untuk menangani "Next.js", "Node.js", dsb)
   const normalizedSearch = name.toLowerCase()
-    .replace(/\.js/g, 'dotjs')     // Mengubah .js menjadi dotjs
-    .replace(/\s+/g, '')           // Menghapus spasi
-    .replace(/[^a-z0-9]/g, '');    // Menghapus simbol lain
+    .replace(/\.js/g, 'dotjs')
+    .replace(/\s+/g, '')
+    .replace(/[^a-z0-9]/g, '');
 
   const foundKey = Object.keys(allIcons).find((key) => {
     const k = key.toLowerCase();
@@ -48,7 +46,6 @@ const DynamicIcon = ({ name }: { name: string }) => {
     return <Icon className="w-full h-full" />;
   }
 
-  // Fallback jika tidak ditemukan
   return <Lu.LuShieldCheck className="w-full h-full opacity-20" />;
 };
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -68,7 +65,7 @@ export default function SkillPage() {
       const data = Array.isArray(result) ? result : result.data;
       if (Array.isArray(data)) setSkills(data);
     } catch (error) {
-      console.error("Gagal load data:", error);
+      console.error("Failed to load data:", error);
     } finally {
       setLoading(false);
     }
@@ -83,7 +80,7 @@ export default function SkillPage() {
   }, [fetchSkills]);
 
   const handleDelete = async (id: number, name: string) => {
-    if (!confirm(`Apakah Anda yakin ingin menghapus skill ${name}?`)) return;
+    if (!confirm(`Are you sure you want to delete the ${name} skill?`)) return;
 
     setDeletingId(id);
     try {
@@ -95,7 +92,7 @@ export default function SkillPage() {
       if (response.ok) {
         setSkills((prev) => prev.filter((skill) => skill.id !== id));
       } else {
-        alert("Gagal menghapus skill.");
+        alert("Failed to delete skill.");
       }
     } catch (error) {
       console.error("Error delete:", error);
@@ -117,7 +114,7 @@ export default function SkillPage() {
             <Lu.LuShieldCheck className="text-indigo-600" />
             Manage Skills
           </h2>
-          <p className="text-slate-500 text-sm mt-1">Daftar keahlian teknis Anda.</p>
+          <p className="text-slate-500 text-sm mt-1">Your technical skills list.</p>
         </div>
         
         <Link 
@@ -125,7 +122,7 @@ export default function SkillPage() {
           className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg transition-all active:scale-95 flex items-center gap-2"
         >
           <LuPlus size={18} />
-          Tambah Skill
+          Add Skill
         </Link>
       </div>
 
@@ -134,7 +131,7 @@ export default function SkillPage() {
         <LuSearch className="text-slate-400 ml-2" />
         <input 
           type="text" 
-          placeholder="Cari skill (contoh: Next.js)..." 
+          placeholder="Search skills (example: Next.js)..." 
           className="bg-transparent border-none focus:ring-0 text-sm w-full outline-none text-slate-600"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}

@@ -57,7 +57,7 @@ export default function ProjectCard({
         <button
           type="button"
           onClick={onSelect}
-          aria-label={`Tampilkan project ${title}`}
+          aria-label={`Show project ${title}`}
           data-cursor-label="SELECT"
           className="absolute inset-0 z-30"
         />

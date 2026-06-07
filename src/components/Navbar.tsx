@@ -12,7 +12,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Mencegah scroll body saat menu mobile terbuka
+  // Prevent body scroll while the mobile menu is open.
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -42,12 +42,12 @@ export default function Navbar() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    setIsOpen(false); // Tutup menu setelah klik (penting untuk mobile)
+    setIsOpen(false);
   };
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
-    // Navbar sembunyi saat scroll ke bawah, tapi tetap muncul di mobile jika menu terbuka
+    // Hide navbar on downward scroll, but keep it visible while the mobile menu is open.
     if (latest > previous && latest > 150 && !isOpen && !isHovered) {
       setHidden(true);
     } else {
@@ -57,7 +57,7 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Area deteksi hover untuk memunculkan navbar kembali (Desktop) */}
+      {/* Hover detection area to reveal the navbar again on desktop. */}
       <div 
         onMouseEnter={() => { setIsHovered(true); setHidden(false); }}
         className="fixed top-0 left-0 w-full h-4 z-100 hidden lg:block"

@@ -7,7 +7,6 @@ import { IoSendSharp } from "react-icons/io5";
 import { LuLoader } from "react-icons/lu";
 
 export default function ContactSection() {
-  // State untuk form
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -36,13 +35,13 @@ export default function ContactSection() {
       const result = await response.json();
 
       if (result.success) {
-        setStatus({ type: "success", msg: "Pesan berhasil dikirim! Saya akan segera menghubungi Anda." });
-        setFormData({ name: "", email: "", message: "" }); // Reset form
+        setStatus({ type: "success", msg: "Message sent successfully! I will get back to you soon." });
+        setFormData({ name: "", email: "", message: "" });
       } else {
-        setStatus({ type: "error", msg: result.message || "Gagal mengirim pesan." });
+        setStatus({ type: "error", msg: result.message || "Failed to send message." });
       }
     } catch {
-      setStatus({ type: "error", msg: "Kesalahan koneksi ke server." });
+      setStatus({ type: "error", msg: "Server connection error." });
     } finally {
       setLoading(false);
     }
@@ -52,7 +51,7 @@ export default function ContactSection() {
     <section className="relative w-full max-w-6xl mx-auto py-12 px-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         
-        {/* SISI KIRI: FORM KONTAK */}
+        {/* Left Side: Contact Form */}
         <motion.div 
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -65,7 +64,7 @@ export default function ContactSection() {
               Get in <span className="text-blue-500 italic">Touch.</span>
             </h2>
             <p className="text-gray-500 text-sm max-w-md">
-              Punya ide luar biasa? Mari kita diskusikan dan bangun sesuatu yang bermakna bersama.
+              Have a great idea? Let&apos;s discuss it and build something meaningful together.
             </p>
           </div>
 
@@ -109,7 +108,7 @@ export default function ContactSection() {
               />
             </div>
             
-            {/* Notifikasi Status */}
+            {/* Status Notification */}
             {status.msg && (
               <div className={`p-4 rounded-xl text-[10px] font-bold uppercase tracking-widest ${status.type === "success" ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"}`}>
                 {status.msg}
@@ -132,7 +131,7 @@ export default function ContactSection() {
           </form>
         </motion.div>
 
-        {/* SISI KANAN: INFO DETAIL & SOCIAL CARDS */}
+        {/* Right Side: Details & Social Cards */}
         <motion.div 
           initial={{ opacity: 0, x: 30 }}
           whileInView={{ opacity: 1, x: 0 }}

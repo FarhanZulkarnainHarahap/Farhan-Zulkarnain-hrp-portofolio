@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Farhan Z. | Creative Web Developer & Designer",
-  description: "Portofolio Farhan Zulkarnain - Spesialis Full-stack Developer dan UI/UX Designer yang berbasis di Jakarta.",
+  description: "Farhan Zulkarnain portfolio - Full-stack Developer and UI/UX Designer based in Jakarta.",
   keywords: ["Web Developer", "UI/UX Designer", "Next.js", "Portfolio", "Farhan Zulkarnain"],
   authors: [{ name: "Farhan Zulkarnain" }]
 };

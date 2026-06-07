@@ -1,19 +1,18 @@
 @import "tailwindcss";
 
-/* ... theme lainnya ... */
+/* Theme extensions */
 
 :root {
-  /* Menghilangkan scroll-behavior smooth jika menggunakan snap 
-     karena snap sudah memiliki engine smoothing sendiri */
+  /* Disable smooth scrolling when using snap because snap has its own smoothing engine. */
   scroll-behavior: auto; 
 }
 
 body {
   background-color: #030406;
   color: white;
-  /* Gunakan proximity jika mandatory dirasa terlalu keras */
+  /* Use proximity when mandatory snapping feels too strict. */
   scroll-snap-type: y proximity; 
-  overflow-y: overlay; /* Membuat scrollbar melayang agar tidak geser layout */
+  overflow-y: overlay; /* Keep the scrollbar floating so it does not shift layout. */
 }
 
 .hero-profile-card {
@@ -101,13 +100,13 @@ body {
   }
 }
 
-/* Memperhalus pergerakan snap pada kontainer */
+/* Smooth snap movement on the container. */
 .snap-container {
   height: 100vh;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
-  /* Menghilangkan scrollbar di Chrome/Safari agar lebih clean */
+  /* Hide scrollbar in Chrome/Safari for a cleaner look. */
   &::-webkit-scrollbar {
     display: none;
   }
@@ -115,7 +114,7 @@ body {
   scrollbar-width: none;  /* Firefox */
 }
 
-/* Cursor interaktif hanya aktif untuk mouse atau trackpad. */
+/* Interactive cursor is active only for mouse or trackpad users. */
 .custom-cursor-layer {
   display: none;
 }

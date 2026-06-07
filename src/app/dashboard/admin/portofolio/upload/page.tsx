@@ -11,7 +11,6 @@ export default function UploadPortoPage() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  // State untuk form
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -19,12 +18,10 @@ export default function UploadPortoPage() {
     repoUrl: "",
   });
 
-  // Handle input teks
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle input file & preview
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -33,10 +30,9 @@ export default function UploadPortoPage() {
     }
   };
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-  // Submit ke Backend Express
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!file) return alert("Pilih gambar proyek terlebih dahulu!");
+    if (!file) return alert("Please choose a project image first!");
 
     setLoading(true);
     const data = new FormData();
@@ -44,30 +40,27 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     data.append("description", formData.description);
     data.append("demoUrl", formData.demoUrl);
     data.append("repoUrl", formData.repoUrl);
-    data.append("image", file); // Pastikan field name 'image' sama dengan di Multer backend
+    data.append("image", file);
 
     try {
       const response = await fetch(`${API_URL}/api/portofolios`, {
         method: "POST",
         body: data,
         credentials: "include", 
-        // Header Content-Type tidak perlu diisi manual jika menggunakan FormData
-        // Jika ada token, tambahkan di sini:
-        // headers: { "Authorization": `Bearer ${token}` }
       });
 
       const result = await response.json();
 
       if (result.success) {
-        alert("Proyek berhasil dipublikasikan!");
+        alert("Project published successfully!");
         router.push("/admin/portofolio");
         router.refresh();
       } else {
-        alert("Gagal: " + result.error);
+        alert("Failed: " + result.error);
       }
     } catch (error) {
       console.error(error);
-      alert("Terjadi kesalahan koneksi ke server.");
+      alert("Server connection error.");
     } finally {
       setLoading(false);
     }
@@ -82,7 +75,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
           className="flex items-center gap-2 text-slate-500 hover:text-[#6f42c1] transition-colors text-sm font-bold group"
         >
           <LuArrowLeft className="group-hover:-translate-x-1 transition-transform" /> 
-          Kembali ke List
+          Back to List
         </Link>
         <div className="text-right">
           <h1 className="text-2xl font-black text-slate-800 italic uppercase tracking-tighter leading-none">
@@ -95,31 +88,31 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       </div>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-5 gap-10">
-        {/* Kolom Kiri: Form Data */}
+        {/* Left Column: Form Data */}
         <div className="lg:col-span-3 space-y-6">
           <div className="bg-slate-50/50 p-8 rounded-4xl border border-slate-100 space-y-5">
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Judul Proyek</label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Project Title</label>
               <input 
                 type="text"
                 name="title"
                 required
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="Masukkan nama proyek..." 
+                placeholder="Enter project name..." 
                 className="w-full bg-white border border-slate-200 rounded-2xl px-5 py-4 outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-[#6f42c1] transition-all font-bold text-slate-700" 
               />
             </div>
 
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Deskripsi</label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Description</label>
               <textarea 
                 rows={5}
                 name="description"
                 required
                 value={formData.description}
                 onChange={handleChange}
-                placeholder="Ceritakan singkat tentang proyek ini..." 
+                placeholder="Briefly describe this project..." 
                 className="w-full bg-white border border-slate-200 rounded-2xl p-5 text-sm outline-none focus:ring-4 focus:ring-purple-500/10 font-bold text-slate-700 focus:border-[#6f42c1] transition-all"
               ></textarea>
             </div>
@@ -157,7 +150,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
           </div>
         </div>
 
-        {/* Kolom Kanan: Upload & Action */}
+        {/* Right Column: Upload & Action */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white border-2 border-dashed border-slate-200 rounded-[40px] p-2 hover:border-[#6f42c1] transition-colors group relative overflow-hidden">
             {preview ? (
@@ -168,14 +161,14 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
                   type="button"
                   onClick={() => { setFile(null); setPreview(null); }}
                   className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full text-xs"
-                > Hapus </button>
+                > Remove </button>
               </div>
             ) : (
               <label className="flex flex-col items-center justify-center py-16 cursor-pointer bg-slate-50/50 rounded-[36px] group-hover:bg-purple-50/50 transition-all">
                 <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-slate-300 group-hover:text-[#6f42c1] transition-all group-hover:scale-110">
                   <LuCloudUpload size={32} />
                 </div>
-                <p className="mt-5 text-sm font-bold text-slate-500 group-hover:text-slate-800 transition-colors">Pilih Screenshot</p>
+                <p className="mt-5 text-sm font-bold text-slate-500 group-hover:text-slate-800 transition-colors">Choose Screenshot</p>
                 <span className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Format: JPG, PNG (16:9)</span>
                 <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
               </label>
@@ -196,7 +189,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
               onClick={() => router.back()}
               className="w-full bg-white text-slate-400 py-4 rounded-2xl font-bold uppercase tracking-widest text-[11px] hover:text-red-500 transition-colors"
             >
-              Batalkan & Kembali
+              Cancel & Go Back
             </button>
           </div>
         </div>

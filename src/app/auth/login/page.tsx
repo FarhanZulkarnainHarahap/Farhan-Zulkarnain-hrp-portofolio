@@ -20,7 +20,7 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-        credentials: "include", // WAJIB: Agar cookie accessToken tersimpan di browser
+        credentials: "include",
       });
 
       const data = await res.json();
@@ -28,10 +28,10 @@ export default function LoginPage() {
         router.push("/admin/home");
         router.refresh();
       } else {
-        alert(data.message || "Login gagal");
+        alert(data.message || "Login failed");
       }
     } catch {
-      alert("Terjadi kesalahan koneksi");
+      alert("Connection error");
     } finally {
       setLoading(false);
     }

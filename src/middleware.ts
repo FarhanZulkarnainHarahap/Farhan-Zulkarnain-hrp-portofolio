@@ -6,7 +6,7 @@ export async function middleware(req: NextRequest) {
   const accessToken = req.cookies.get("accessToken")?.value;
   const { pathname } = req.nextUrl;
 
-  // 1. Bypass Halaman Auth
+  // 1. Bypass auth pages
   if (pathname.startsWith("/auth")) {
     if (accessToken) {
       return NextResponse.redirect(new URL("/admin/home", req.url));
@@ -14,7 +14,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. Proteksi Halaman Terlarang (Admin/Dashboard)
+  // 2. Protect restricted pages (Admin/Dashboard)
   if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) {
     if (!accessToken) {
       return NextResponse.redirect(new URL("/auth/login", req.url));
@@ -22,7 +22,7 @@ export async function middleware(req: NextRequest) {
 
     const secret = process.env.JWT_SECRET;
     if (!secret) {
-      console.error("Middleware Error: JWT_SECRET tidak terdefinisi di Environment Variables");
+      console.error("Middleware Error: JWT_SECRET is not defined in environment variables");
       return new NextResponse("Server Configuration Error", { status: 500 });
     }
 
@@ -33,17 +33,17 @@ export async function middleware(req: NextRequest) {
         new TextEncoder().encode(secret)
       );
 
-      // RBAC: Cek Role Admin
+      // RBAC: Check admin role
       if (pathname.startsWith("/admin") && payload.role !== "ADMIN") {
         return new NextResponse("Forbidden: Admin Only", { status: 403 });
       }
 
       return NextResponse.next();
     } catch (err) {
-      // DEBUG: Cek di log hosting/Vercel kenapa gagal (expired atau invalid secret)
+      // DEBUG: Check hosting/Vercel logs for verification failures.
       console.error("JWT Verification Failed:", err);
 
-      // Gagal verifikasi -> Hapus cookie dan balik ke login
+      // Verification failed -> clear cookie and return to login
       const response = NextResponse.redirect(new URL("/auth/login", req.url));
       response.cookies.delete("accessToken"); 
       return response;
@@ -54,7 +54,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  // Matcher yang lebih aman untuk mengabaikan file statis & folder public
+  // Safer matcher to ignore static files and public folder
   matcher: [
     "/((?!api|_next/static|_next/image|favicon.ico|public|.*\\..*).*)",
   ],

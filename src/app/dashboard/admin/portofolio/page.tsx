@@ -29,15 +29,15 @@ export default function PortfolioPage() {
         setProjects(result.data);
       }
     } catch (error) {
-      console.error("Gagal mengambil data:", error);
+      console.error("Failed to fetch data:", error);
     } finally {
       setLoading(false);
     }
   }, [API_URL]);
 
-  // FUNGSI DELETE
+  // Delete project
   const handleDelete = async (id: string, title: string) => {
-    if (!confirm(`Apakah Anda yakin ingin menghapus proyek "${title}"?`)) return;
+    if (!confirm(`Are you sure you want to delete the "${title}" project?`)) return;
 
     setDeletingId(id);
     try {
@@ -48,15 +48,14 @@ export default function PortfolioPage() {
       const result = await response.json();
 
       if (result.success) {
-        // Hapus data dari state lokal agar tampilan langsung update tanpa refresh
         setProjects((prev) => prev.filter((project) => project.id !== id));
-        alert("Proyek berhasil dihapus");
+        alert("Project deleted successfully");
       } else {
-        alert("Gagal menghapus proyek: " + (result.message || "Terjadi kesalahan server"));
+        alert("Failed to delete project: " + (result.message || "Server error"));
       }
     } catch (error) {
       console.error("Error delete:", error);
-      alert("Terjadi kesalahan koneksi.");
+      alert("Connection error.");
     } finally {
       setDeletingId(null);
     }
@@ -87,13 +86,13 @@ export default function PortfolioPage() {
             <LuLayers className="text-[#6f42c1]" />
             Portfolio Projects
           </h1>
-          <p className="text-sm font-medium text-slate-500 mt-1">Pamerkan karya terbaik Anda kepada dunia.</p>
+          <p className="text-sm font-medium text-slate-500 mt-1">Showcase your best work to the world.</p>
         </div>
         
         <Link href="/admin/portofolio/upload">
           <button className="flex items-center gap-2 rounded-2xl bg-green-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-green-100 transition-all hover:bg-green-700 active:scale-95">
             <LuPlus size={20} />
-            Upload Proyek Baru
+            Upload New Project
           </button>
         </Link>
       </div>
@@ -143,7 +142,7 @@ export default function PortfolioPage() {
                     Edit
                   </button>
                   
-                  {/* TOMBOL DELETE */}
+                  {/* Delete Button */}
                   <button 
                     onClick={() => handleDelete(project.id, project.title)}
                     disabled={deletingId === project.id}
@@ -161,7 +160,7 @@ export default function PortfolioPage() {
           ))
         ) : (
           <div className="col-span-full py-20 text-center">
-            <p className="text-slate-400 font-bold uppercase tracking-widest">Belum ada proyek yang diunggah.</p>
+            <p className="text-slate-400 font-bold uppercase tracking-widest">No projects have been uploaded yet.</p>
           </div>
         )}
 

@@ -23,13 +23,13 @@ export default function RegisterPage() {
 
       const data = await res.json();
       if (res.ok) {
-        alert("Registrasi Berhasil!");
+        alert("Registration successful!");
         router.push("/auth/login");
       } else {
-        alert(data.error || "Gagal Mendaftar");
+        alert(data.error || "Registration failed");
       }
     } catch {
-      alert("Masalah koneksi server");
+      alert("Server connection issue");
     } finally {
       setLoading(false);
     }

@@ -17,7 +17,7 @@ export default function AboutSection() {
         />
       </div>
 
-      {/* 2. BACKGROUND BIG TEXT - Ukuran lebih kecil di mobile agar tidak berantakan */}
+      {/* Background Big Text */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden opacity-20 lg:opacity-100">
         <motion.div 
           animate={{ x: ["0%", "-50%"] }}
@@ -33,7 +33,7 @@ export default function AboutSection() {
       <div className="max-w-7xl w-full mx-auto px-6 md:px-12 z-10">
         <div className="flex flex-col lg:flex-row items-center lg:items-end gap-12 lg:gap-20">
           
-          {/* SISI KIRI: Visual Element - Sekarang muncul di Mobile dengan ukuran menyesuaikan */}
+          {/* Left Side: Visual Element */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -51,7 +51,7 @@ export default function AboutSection() {
               <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
             </div>
 
-            {/* Dekorasi Garis (Siku) - Disesuaikan ukurannya */}
+            {/* Corner line decoration */}
             <motion.div 
               animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.6, 0.3] }}
               transition={{ duration: 4, repeat: Infinity }}
@@ -113,7 +113,7 @@ export default function AboutSection() {
               className="pt-4 flex justify-center lg:justify-start"
             >
               <Link href="/documents" target="_blank" className="group flex items-center gap-4 text-white hover:text-blue-400 transition-colors">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Lihat Resume Lengkap</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">View Full Resume</span>
                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:border-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
                   <FaArrowRight className="-rotate-45 group-hover:rotate-0 transition-transform text-sm" />
                 </div>
@@ -124,7 +124,7 @@ export default function AboutSection() {
         </div>
       </div>
 
-      {/* Ornament Number - Ukuran lebih kecil di mobile */}
+      {/* Ornament Number */}
       <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 opacity-5 text-[15vw] lg:text-[10vw] font-black text-white italic select-none pointer-events-none">
         01
       </div>

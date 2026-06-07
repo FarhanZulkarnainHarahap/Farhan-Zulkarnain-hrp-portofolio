@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { LuZap, LuFolder, LuFileText, LuHistory, LuLoader, LuRefreshCw } from "react-icons/lu";
 
-// 1. Definisikan Interface untuk Type Safety
 interface DashboardStats {
   skills: number;
   portfolios: number;
@@ -19,14 +18,12 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  // 2. Fungsi Fetch Data dengan Credentials
   const fetchDashboardData = useCallback(async () => {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     
-    // Konfigurasi fetch agar menyertakan cookie (AccessToken)
     const requestOptions: RequestInit = {
       method: "GET",
-      credentials: "include", // CRITICAL: Agar cookie terkirim ke backend
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
@@ -41,11 +38,9 @@ export default function HomePage() {
         fetch(`${API_URL}/api/documents/all`, requestOptions)
       ]);
 
-      // Helper untuk handle response dan menghitung jumlah data
       const parseData = async (res: Response) => {
         if (!res.ok) throw new Error("Server Error");
         const json = await res.json();
-        // Cek apakah data berbentuk array langsung atau didalam object .data
         return Array.isArray(json) ? json.length : (json.data?.length || 0);
       };
 
@@ -56,8 +51,7 @@ export default function HomePage() {
       });
 
     } catch (error) {
-      console.error("Gagal sinkronisasi database:", error);
-      // Opsional: Redirect ke login jika error 401 (Unauthorized) terdeteksi di sini
+      console.error("Failed to synchronize database:", error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -72,7 +66,6 @@ export default function HomePage() {
     return () => window.clearTimeout(timeoutId);
   }, [fetchDashboardData]);
 
-  // 3. Konfigurasi Tampilan Card
   const statsCards = [
     { 
       name: "Total Skills", 
@@ -156,7 +149,7 @@ export default function HomePage() {
            <div className="relative z-10">
               <h3 className="text-2xl font-black italic tracking-tighter mb-4 leading-none">Security Verified.</h3>
               <p className="text-indigo-100 text-sm opacity-70 leading-relaxed font-medium">
-                Data yang Anda kelola akan langsung dipublikasikan secara aman ke portfolio utama melalui koneksi SSL terenkripsi.
+                The data you manage is securely published to the main portfolio through an encrypted SSL connection.
               </p>
            </div>
            

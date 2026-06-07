@@ -14,7 +14,6 @@ import {
   FaSearch,
   FaUserGraduate,
 } from "react-icons/fa";
-import { LuLoader } from "react-icons/lu";
 
 interface DocumentData {
   id: string;
@@ -27,6 +26,51 @@ interface DocumentData {
 }
 
 const DOCS_PER_PAGE = 6;
+
+const DocumentSkeleton = () => (
+  <section className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6">
+    <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_10%,rgba(59,130,246,0.13),transparent_30%),radial-gradient(circle_at_86%_15%,rgba(99,102,241,0.1),transparent_28%)]" />
+
+    <div className="mb-10 animate-pulse border-b border-white/10 pb-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <div className="mb-4 h-3 w-42 rounded-full bg-blue-500/18" />
+          <div className="h-12 w-80 rounded-2xl bg-white/10 md:h-16 md:w-135" />
+        </div>
+        <div className="h-3 w-36 rounded-full bg-white/8" />
+      </div>
+    </div>
+
+    <div className="mb-7 flex animate-pulse flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="h-12 w-full rounded-lg border border-white/8 bg-[#111722]/80 md:max-w-sm" />
+      <div className="h-12 w-full rounded-lg border border-white/8 bg-[#111722]/80 md:w-56" />
+    </div>
+
+    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {Array.from({ length: DOCS_PER_PAGE }, (_, index) => (
+        <div
+          key={index}
+          className="animate-pulse overflow-hidden rounded-xl border border-white/7 bg-[#101720]/92 shadow-[0_18px_60px_rgba(0,0,0,0.22)]"
+        >
+          <div className="h-44 bg-linear-to-br from-white/14 via-white/8 to-blue-500/8 md:h-50" />
+          <div className="p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-4/5 rounded-full bg-white/12" />
+                <div className="h-3 w-2/5 rounded-full bg-white/8" />
+              </div>
+              <div className="h-10 w-10 rounded-lg border border-white/8 bg-white/6" />
+            </div>
+            <div className="mt-5 flex items-center justify-between">
+              <div className="h-3 w-28 rounded-full bg-white/8" />
+              <div className="h-7 w-24 rounded-md border border-blue-500/10 bg-blue-500/12" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+);
 
 export default function DocSection() {
   const [docs, setDocs] = useState<DocumentData[]>([]);
@@ -119,14 +163,7 @@ export default function DocSection() {
   };
 
   if (loading) {
-    return (
-      <div className="flex min-h-100 w-full items-center justify-center bg-[#030406]">
-        <div className="flex flex-col items-center gap-4">
-          <LuLoader className="animate-spin text-blue-500" size={32} />
-          <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-zinc-500 md:text-[10px]">Loading</p>
-        </div>
-      </div>
-    );
+    return <DocumentSkeleton />;
   }
 
   return (
@@ -205,7 +242,6 @@ export default function DocSection() {
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                       className="bg-white object-contain"
-                      loading="lazy"
                     />
                   )}
 
@@ -248,7 +284,6 @@ export default function DocSection() {
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                       className="object-cover"
-                      loading="lazy"
                     />
                   )}
 

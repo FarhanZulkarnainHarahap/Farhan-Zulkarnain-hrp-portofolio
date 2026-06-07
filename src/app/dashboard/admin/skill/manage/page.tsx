@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-// IMPORT SEMUA LIBRARY ICON
+// Import all icon libraries
 import * as LuIcons from "react-icons/lu";
 import * as FaIcons from "react-icons/fa6";
 import * as SiIcons from "react-icons/si";
@@ -29,20 +29,16 @@ export default function ManageSkillPage() {
   const [loading, setLoading] = useState(false);
   const [createdSkill, setCreatedSkill] = useState<{ name: string; category: string } | null>(null);
 
-  // Gabungkan semua library icons dalam satu objek (Memoized agar enteng)
   const allIcons: Record<string, IconType> = useMemo(() => ({ ...LuIcons, ...FaIcons, ...SiIcons, ...DiIcons }), []);
 
-  // --- LOGIKA AUTO DETECT ICON ---
   const detectedIcon = useMemo(() => {
     if (!skillName) return "";
 
-    // 1. Normalisasi nama (Next.js -> nextdotjs, Node.js -> nodedotjs)
     const normalized = skillName.toLowerCase()
       .replace(/\.js/g, 'dotjs')
       .replace(/\s+/g, '')
       .replace(/[^a-z0-9]/g, '');
 
-    // 2. Cari di library dengan prefix Si, Fa, atau Lu
     const foundKey = Object.keys(allIcons).find((key) => {
       const k = key.toLowerCase();
       return k === `si${normalized}` || k === `fa${normalized}` || k === `lu${normalized}` || k === normalized || k === `di${normalized}`;
@@ -69,7 +65,7 @@ export default function ManageSkillPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!skillName) return alert("Isi nama skill!");
+    if (!skillName) return alert("Skill name is required!");
 
     setLoading(true);
     const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -80,7 +76,7 @@ export default function ManageSkillPage() {
         credentials: "include",
         body: JSON.stringify({ 
           name: skillName, 
-          iconName: detectedIcon || skillName, // Kirim hasil deteksi atau nama aslinya
+          iconName: detectedIcon || skillName,
           category: category 
         }),
       });
@@ -89,10 +85,10 @@ export default function ManageSkillPage() {
       if (result.success) {
         setCreatedSkill({ name: skillName, category });
       } else {
-        alert("Gagal: " + result.error);
+        alert("Failed: " + result.error);
       }
     } catch {
-      alert("Gagal terhubung ke server.");
+      alert("Failed to connect to the server.");
     } finally {
       setLoading(false);
     }
@@ -111,7 +107,7 @@ export default function ManageSkillPage() {
             <button
               type="button"
               onClick={() => setCreatedSkill(null)}
-              aria-label="Tutup modal"
+              aria-label="Close modal"
               className="absolute right-5 top-5 rounded-full p-2 text-slate-300 transition-colors hover:bg-slate-100 hover:text-slate-600"
             >
               <LuX size={18} />
@@ -125,10 +121,10 @@ export default function ManageSkillPage() {
               Publish Successful
             </p>
             <h2 id="skill-success-title" className="mt-3 text-2xl font-black uppercase tracking-tight text-slate-800">
-              Skill Berhasil Dibuat
+              Skill Created Successfully
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-500">
-              <span className="font-bold text-slate-700">{createdSkill.name}</span> berhasil ditambahkan ke kategori{" "}
+              <span className="font-bold text-slate-700">{createdSkill.name}</span> was added to the{" "}
               <span className="font-bold text-indigo-600">{createdSkill.category}</span>.
             </p>
 
@@ -137,7 +133,7 @@ export default function ManageSkillPage() {
               onClick={goToSkillList}
               className="mt-8 flex w-full items-center justify-center gap-3 rounded-2xl bg-indigo-600 px-5 py-4 text-xs font-black uppercase tracking-[0.2em] text-white shadow-xl shadow-indigo-100 transition-all hover:bg-indigo-700 active:scale-[0.98]"
             >
-              Lihat Daftar Skill
+              View Skill List
               <LuArrowRight size={18} />
             </button>
           </div>
@@ -147,7 +143,7 @@ export default function ManageSkillPage() {
       {/* Navigation */}
       <div className="mb-10 flex items-center justify-between">
         <Link href="/admin/skill" className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 transition-all font-bold text-xs uppercase tracking-tighter group">
-          <LuArrowLeft className="group-hover:-translate-x-1 transition-transform" /> Kembali
+          <LuArrowLeft className="group-hover:-translate-x-1 transition-transform" /> Back
         </Link>
         <div className="text-right">
           <h1 className="text-2xl font-black uppercase italic tracking-tighter text-slate-800">Add Skill</h1>
@@ -161,7 +157,6 @@ export default function ManageSkillPage() {
         <div className="flex flex-col items-center mb-12">
           <div className="w-32 h-32 bg-slate-50 rounded-[40px] shadow-inner flex items-center justify-center border border-white transition-all duration-500 transform hover:scale-110">
             {detectedIcon && allIcons[detectedIcon] ? (
-              // Ambil komponen dari library berdasarkan nama yang terdeteksi
               (() => {
                 const Icon = allIcons[detectedIcon];
                 return <Icon className="text-indigo-600" size={54} />;
@@ -178,24 +173,24 @@ export default function ManageSkillPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-10">
-          {/* Input Tunggal */}
+          {/* Single Input */}
           <div className="space-y-4">
             <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">
-              <LuType size={14} className="text-indigo-500" /> Nama Skill
+              <LuType size={14} className="text-indigo-500" /> Skill Name
             </label>
             <input 
               type="text" 
               value={skillName}
               onChange={(e) => setSkillName(e.target.value)}
-              placeholder="Contoh: Next.js, Laravel, Docker..." 
+              placeholder="Example: Next.js, Laravel, Docker..." 
               className="w-full bg-slate-50 border border-slate-200 rounded-3xl px-8 py-5 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-slate-700 text-lg shadow-sm" 
             />
           </div>
 
-          {/* Kategori Enum */}
+          {/* Category Enum */}
           <div className="space-y-4">
             <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">
-              <LuLayers size={14} className="text-indigo-500" /> Pilih Kategori
+              <LuLayers size={14} className="text-indigo-500" /> Select Category
             </label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {["FRONTEND", "BACKEND", "TOOLS", "OTHERS"].map((cat) => (
@@ -223,7 +218,7 @@ export default function ManageSkillPage() {
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-6 rounded-[28px] font-black uppercase tracking-[0.2em] text-sm shadow-xl shadow-indigo-100 transition-all active:scale-[0.97] flex items-center justify-center gap-3 disabled:opacity-50"
             >
               {loading ? <LuLoader className="animate-spin" size={20} /> : <LuSave size={20} />}
-              {loading ? "MENYIMPAN..." : "PUBLISH SKILL"}
+              {loading ? "SAVING..." : "PUBLISH SKILL"}
             </button>
           </div>
         </form>

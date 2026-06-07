@@ -11,10 +11,10 @@ export default function UserLayout({
     <section>
       <EntranceScreen />
       <InteractiveCursor />
-      {/* Memasang Navbar premium yang kamu buat tadi */}
+      {/* Premium navbar */}
       <Navbar />
       
-      {/* Memberikan padding top agar konten tidak tertutup Navbar yang posisinya 'fixed' */}
+      {/* Top padding keeps content clear of the fixed navbar */}
       <main className="pt-24 min-h-screen bg-[#030406]">
         {children}
       </main>

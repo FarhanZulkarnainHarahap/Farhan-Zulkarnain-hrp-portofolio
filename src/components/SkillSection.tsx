@@ -13,7 +13,30 @@ interface SkillData {
   iconName: string;
   category: "FRONTEND" | "BACKEND" | "TOOLS" | "OTHERS";
 }
-import { LuLoader } from "react-icons/lu";
+
+const SkillSkeleton = () => (
+  <div className="w-full space-y-7">
+    {Array.from({ length: 3 }, (_, sectionIndex) => (
+      <div key={sectionIndex} className="space-y-4 animate-pulse">
+        <div className="flex items-center gap-3">
+          <div className="h-8 w-8 rounded-md border border-blue-500/10 bg-blue-500/10" />
+          <div className="h-3 w-28 rounded-full bg-white/10" />
+          <div className="h-px flex-1 bg-linear-to-r from-zinc-800 to-transparent" />
+        </div>
+
+        <div className="flex flex-wrap gap-x-10 gap-y-6 pl-2">
+          {Array.from({ length: 8 }, (_, itemIndex) => (
+            <div key={itemIndex} className="flex min-w-15 flex-col items-center gap-3">
+              <div className="h-12 w-12 rounded-2xl border border-white/5 bg-white/8 shadow-[0_0_24px_rgba(59,130,246,0.06)]" />
+              <div className="h-2 w-14 rounded-full bg-white/8" />
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 // --- HELPER: RENDER ICON ---
 const DynamicIcon = ({ name }: { name: string }) => {
   const allIcons: Record<string, IconType> = { ...Lu, ...Fa, ...Si, ...Di };
@@ -22,7 +45,7 @@ const DynamicIcon = ({ name }: { name: string }) => {
     key.toLowerCase() === name.toLowerCase() || key.toLowerCase() === `si${normalized}`
   );
   const Icon = foundKey ? allIcons[foundKey] : Lu.LuShieldAlert;
-  return <Icon size={26} />; // Ukuran icon diperbesar dikit sesuai request
+  return <Icon size={26} />;
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -95,12 +118,7 @@ export default function SkillSection() {
       {/* --- CONTENT LAYER --- */}
       <div className="relative z-10 w-full flex flex-col gap-6">
         {loading ? (
-          <div className="flex min-h-100 w-full items-center justify-center bg-[#030406]">
-                <div className="flex flex-col items-center gap-4">
-                  <LuLoader className="animate-spin text-blue-500" size={32} />
-                  <p className="text-zinc-500 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em]">Loading</p>
-                </div>
-              </div>
+          <SkillSkeleton />
         ) : (
           categoryOrder.map((catKey, idx) => {
             const skillsInCat = groupedSkills[catKey];
@@ -115,7 +133,7 @@ export default function SkillSection() {
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
                 className="w-full"
               >
-                {/* Header Kategori - Dibuat Rapat agar muat 1 Screen */}
+                {/* Category Header */}
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-1.5 bg-blue-500/10 rounded-md border border-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
                     <Lu.LuCode size={14} />

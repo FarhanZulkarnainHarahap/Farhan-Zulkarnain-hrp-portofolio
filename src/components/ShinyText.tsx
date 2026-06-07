@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-// Ganti motion/react menjadi framer-motion
+// Use framer-motion for animation primitives.
 import { motion, useMotionValue, useAnimationFrame, useTransform } from 'framer-motion';
 
 interface ShinyTextProps {

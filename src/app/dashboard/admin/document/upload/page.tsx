@@ -13,7 +13,7 @@ export default function UploadDocPage() {
   const [category, setCategory] = useState("Resume"); // Default category
   const maxFileSize = 4 * 1024 * 1024;
 
-  // Handle Pilih File
+  // Handle file selection
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -23,13 +23,13 @@ export default function UploadDocPage() {
         selectedFile.type === "application/octet-stream";
 
       if (!isPdf || !selectedFile.name.toLowerCase().endsWith(".pdf")) {
-        alert("Hanya file PDF yang diperbolehkan!");
+        alert("Only PDF files are allowed!");
         e.target.value = "";
         return;
       }
 
       if (selectedFile.size > maxFileSize) {
-        alert("Ukuran PDF maksimal 4MB.");
+        alert("PDF size must be 4MB or less.");
         e.target.value = "";
         return;
       }
@@ -39,38 +39,38 @@ export default function UploadDocPage() {
   };
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-  // Submit ke Backend
+  // Submit to backend
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!file || !name) return alert("Nama dan File wajib diisi!");
+    if (!file || !name) return alert("Name and file are required!");
 
     setLoading(true);
     const data = new FormData();
     data.append("name", name);
     data.append("category", category);
-    data.append("file", file); // Nama field 'file' sesuai dengan uploadDoc.single('file') di backend
+    data.append("file", file);
     try {
       const response = await fetch(`${API_URL}/api/documents`, {
         method: "POST",
         body: data,
-        credentials: "include", // PENTING: Untuk mengirim cookie accessToken
+        credentials: "include",
       });
 
       const result = await response.json().catch(() => ({
         success: false,
-        error: `Server mengembalikan status ${response.status}`,
+        error: `Server returned status ${response.status}`,
       }));
 
       if (response.ok && result.success) {
-        alert("Dokumen berhasil diunggah!");
+        alert("Document uploaded successfully!");
         router.push("/admin/document");
         router.refresh();
       } else {
-        alert("Gagal: " + (result.error || "Dokumen gagal diunggah"));
+        alert("Failed: " + (result.error || "Document upload failed"));
       }
     } catch (error) {
       console.error(error);
-      alert("Terjadi kesalahan koneksi ke server.");
+      alert("Server connection error.");
     } finally {
       setLoading(false);
     }
@@ -91,41 +91,41 @@ export default function UploadDocPage() {
         </div>
         <div className="text-center mb-8">
           <h2 className="text-2xl font-black text-slate-800 mb-2 tracking-tight">Upload Document</h2>
-          <p className="text-slate-400 text-sm italic">Unggah CV, Ijazah, atau Sertifikat (Format PDF).</p>
+          <p className="text-slate-400 text-sm italic">Upload your CV, diploma, or certificate in PDF format.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5 text-left">
-          {/* Input Nama Dokumen */}
+          {/* Document Name */}
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Nama Dokumen</label>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Document Name</label>
             <input 
               type="text" 
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Contoh: CV_Felix_2024" 
+              placeholder="Example: CV_Farhan_2026" 
               className="w-full bg-slate-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2  focus:ring-indigo-100 outline-none font-medium text-slate-700" 
             />
           </div>
 
-          {/* Pilih Kategori */}
+          {/* Select Category */}
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Kategori</label>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Category</label>
             <select 
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className="w-full bg-slate-50 border-none rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-indigo-100 outline-none font-medium text-slate-700 appearance-none"
             >
               <option value="Resume">CV / Resume</option>
-              <option value="Certificate">Sertifikat</option>
-              <option value="Education">Ijazah / Dokumen Pendidikan</option>
-              <option value="Other">Lainnya</option>
+              <option value="Certificate">Certificate</option>
+              <option value="Education">Diploma / Education Document</option>
+              <option value="Other">Other</option>
             </select>
           </div>
           
-          {/* Area Dropzone/File Picker */}
+          {/* Dropzone/File Picker */}
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">File Dokumen (PDF)</label>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Document File (PDF)</label>
             {file ? (
               <div className="flex items-center justify-between bg-indigo-50 border-2 border-indigo-100 rounded-2xl p-4 transition-all">
                 <div className="flex items-center gap-3">
@@ -147,7 +147,7 @@ export default function UploadDocPage() {
               </div>
             ) : (
               <label className="block w-full py-10 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:bg-indigo-50/50 hover:border-indigo-200 transition-all text-center group">
-                <span className="text-xs font-bold text-slate-400 group-hover:text-indigo-500 uppercase tracking-widest">Klik untuk pilih file PDF</span>
+                <span className="text-xs font-bold text-slate-400 group-hover:text-indigo-500 uppercase tracking-widest">Click to choose a PDF file</span>
                 <input 
                   type="file" 
                   className="hidden" 
@@ -169,7 +169,7 @@ export default function UploadDocPage() {
             ) : (
               <LuShieldCheck size={20} />
             )}
-            {loading ? "Uploading..." : "Simpan Dokumen"}
+            {loading ? "Uploading..." : "Save Document"}
           </button>
         </form>
       </div>

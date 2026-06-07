@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react"; // Tambahkan useEffect
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation"; // Tambahkan useRouter
+import { usePathname, useRouter } from "next/navigation";
 import { 
   LuMenu, 
   LuChevronRight, 
@@ -25,19 +25,19 @@ interface AdminUser {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(true);
-  const [loading, setLoading] = useState(true); // State loading untuk cek session
+  const [loading, setLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [user, setUser] = useState<AdminUser | null>(null); // State simpan data user
+  const [user, setUser] = useState<AdminUser | null>(null);
   const pathname = usePathname();
   const router = useRouter();
 
-  // 1. LOGIKA CEK SESSION SAAT REFRESH
+  // Session verification on refresh.
   useEffect(() => {
     const verifySession = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
           method: "GET",
-          credentials: "include", // WAJIB: Agar cookie accessToken terkirim saat refresh
+          credentials: "include",
         });
 
         const data = await res.json();
@@ -58,7 +58,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     verifySession();
   }, [router]);
 
-  // 2. LOGIKA LOGOUT
+  // Logout flow.
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
@@ -69,7 +69,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       });
 
       if (!res.ok) {
-        throw new Error("Logout gagal");
+        throw new Error("Logout failed");
       }
 
       setUser(null);
@@ -77,7 +77,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       router.refresh();
     } catch (err) {
       console.error("Logout Error:", err);
-      alert("Logout gagal. Silakan coba lagi.");
+      alert("Logout failed. Please try again.");
     } finally {
       setIsLoggingOut(false);
     }
@@ -94,10 +94,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       subIcon: <LuSettings2 size={16} />
     },
     { 
-      name: "Portofolio", 
+      name: "Portfolio", 
       href: "/admin/portofolio", 
       icon: <LuFolder size={20} />,
-      subName: "Upload Porto",
+      subName: "Upload Project",
       subHref: "/admin/portofolio/upload",
       subIcon: <LuPlus size={16} />
     },
@@ -118,7 +118,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return activeMenu.name;
   };
 
-  // Jika sedang loading session, tampilkan spinner
+  // Show spinner while checking the session.
   if (loading) {
     return (
       <div className="min-h-screen bg-[#09090b] flex flex-col items-center justify-center gap-4">
@@ -219,7 +219,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <LuSettings size={20} className="cursor-pointer opacity-70 hover:opacity-100" />
             <div className="flex items-center gap-3 pl-5 border-l border-white/20">
                <div className="text-right hidden sm:block">
-                  {/* Tampilkan Nama User Asli dari Database */}
+                  {/* Display user name from database */}
                   <p className="text-[11px] font-bold leading-none uppercase">{user?.name || "Admin Account"}</p>
                   <p className="text-[10px] text-white/60 mt-1 uppercase italic">{user?.role || "Developer"}</p>
                </div>

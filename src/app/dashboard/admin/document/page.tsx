@@ -13,7 +13,7 @@ import {
 } from "react-icons/lu";
 import Link from "next/link";
 
-// Interface sesuai dengan database Prisma kamu
+// Interface aligned with the Prisma database.
 interface Document {
   id: string;
   name: string;
@@ -27,7 +27,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 export default function DocumentsPage() {
   const [docs, setDocs] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
-  // 1. Fungsi Helper Format Size (Bytes ke KB/MB)
+  // Format bytes to KB/MB.
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -36,7 +36,7 @@ export default function DocumentsPage() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  // 2. Fetch Data dari API
+  // Fetch data from API.
   const fetchDocuments = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/api/documents`, {
@@ -61,9 +61,9 @@ export default function DocumentsPage() {
     return () => window.clearTimeout(timeoutId);
   }, [fetchDocuments]);
 
-  // 3. Fungsi Delete
+  // Delete document.
   const handleDelete = async (id: string) => {
-    if (!confirm("Hapus dokumen ini secara permanen?")) return;
+    if (!confirm("Delete this document permanently?")) return;
     
     try {
       const res = await fetch(`${API_URL}/api/documents/${id}`, {
@@ -74,7 +74,7 @@ export default function DocumentsPage() {
       const result = await res.json().catch(() => null);
 
       if (!res.ok || !result?.success) {
-        alert(result?.error || result?.message || "Gagal menghapus dokumen");
+        alert(result?.error || result?.message || "Failed to delete document");
         return;
       }
 
@@ -83,7 +83,7 @@ export default function DocumentsPage() {
       }
     } catch (error) {
       console.error("Delete document error:", error);
-      alert("Gagal menghapus file");
+      alert("Failed to delete file");
     }
   };
 
@@ -133,7 +133,7 @@ export default function DocumentsPage() {
               {docs.length > 0 ? (
                 docs.map((doc) => (
                   <tr key={doc.id} className="group transition-colors hover:bg-indigo-50/20">
-                    {/* Column: Nama & Date */}
+                    {/* Column: Name & Date */}
                     <td className="px-8 py-5">
                       <div className="flex items-center gap-4">
                         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-500 transition-all duration-300 group-hover:bg-red-500 group-hover:text-white group-hover:rotate-6">
