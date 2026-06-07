@@ -13,10 +13,68 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Farhan Z. | Creative Web Developer & Designer",
-  description: "Farhan Zulkarnain portfolio - Full-stack Developer and UI/UX Designer based in Jakarta.",
-  keywords: ["Web Developer", "UI/UX Designer", "Next.js", "Portfolio", "Farhan Zulkarnain"],
-  authors: [{ name: "Farhan Zulkarnain" }]
+  metadataBase: new URL("https://farhanzulkarnainhrp.com"),
+  title: {
+    default: "Farhan Z. | Full-Stack Web Developer & UI/UX Designer",
+    template: "%s | Farhan Zulkarnain",
+  },
+  description:
+    "Explore Farhan Zulkarnain Harahap's portfolio: full-stack web apps, modern UI/UX design, Next.js projects, admin dashboards, API integration, certificates, and creative digital experiences.",
+  keywords: [
+    "Farhan Zulkarnain Harahap",
+    "Farhan Zulkarnain portfolio",
+    "Farhan Z portfolio",
+    "Full-stack Developer Jakarta",
+    "Creative Web Developer",
+    "UI/UX Designer",
+    "Frontend Developer",
+    "Backend Developer",
+    "Next.js Developer",
+    "React Developer",
+    "TypeScript Developer",
+    "Tailwind CSS",
+    "Node.js",
+    "Express.js",
+    "PostgreSQL",
+    "Prisma",
+    "Portfolio Website",
+    "Admin Dashboard",
+    "Web Application",
+  ],
+  authors: [{ name: "Farhan Zulkarnain Harahap", url: "https://farhanzulkarnainhrp.com" }],
+  creator: "Farhan Zulkarnain Harahap",
+  publisher: "Farhan Zulkarnain Harahap",
+  applicationName: "Farhan Zulkarnain Portfolio",
+  category: "technology",
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://farhanzulkarnainhrp.com",
+    siteName: "Farhan Zulkarnain Portfolio",
+    title: "Farhan Z. | Full-Stack Web Developer & UI/UX Designer",
+    description:
+      "A dark-tech portfolio showcasing full-stack web applications, clean UI/UX design, API integrations, dashboards, skills, documents, and selected project work by Farhan Zulkarnain Harahap.",
+  },
+  twitter: {
+    card: "summary",
+    title: "Farhan Z. | Full-Stack Web Developer & UI/UX Designer",
+    description:
+      "Full-stack web portfolio featuring Next.js projects, UI/UX design, dashboards, certificates, and creative digital experiences.",
+  },
 };
 
 export default function RootLayout({
