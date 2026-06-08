@@ -1,23 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   LuArrowLeft,
   LuArrowRight,
-  LuBox,
   LuCircleCheck,
-  LuCodeXml,
   LuExternalLink,
   LuGithub,
   LuLayers,
   LuRocket,
-  LuShieldCheck,
   LuSparkles,
   LuTarget,
   LuX,
-  LuZap,
 } from "react-icons/lu";
 import ProjectCard from "./ProjectCard";
 
@@ -43,29 +39,8 @@ interface Project {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const PROJECTS_PER_PAGE = 6;
 const projectAccents = ["#3b82f6", "#10b981", "#facc15", "#a855f7"];
-const showcaseHighlights = [
-  {
-    icon: LuBox,
-    title: "Modern Stack",
-    description: "Next.js, TypeScript, Tailwind, Node.js, PostgreSQL.",
-  },
-  {
-    icon: LuZap,
-    title: "Performance Focused",
-    description: "Optimized, fast, and built with best practices.",
-  },
-  {
-    icon: LuShieldCheck,
-    title: "Scalable & Maintainable",
-    description: "Clean architecture and structured codebase.",
-  },
-  {
-    icon: LuCodeXml,
-    title: "Pixel Perfect",
-    description: "Carefully crafted UI with attention to detail.",
-  },
-];
 
 const splitListValue = (value?: string[] | string | null) => {
   if (!value) {
@@ -370,7 +345,7 @@ const ProjectSkeleton = () => (
 export default function PortfolioSection() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [page, setPage] = useState(1);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
@@ -395,17 +370,12 @@ export default function PortfolioSection() {
     };
   }, [selectedProject]);
 
-  const safeActiveIndex = Math.min(activeIndex, Math.max(projects.length - 1, 0));
-  const activeProject = projects[safeActiveIndex];
-  const currentSlide = safeActiveIndex + 1;
-
-  const showPrevious = () => {
-    setActiveIndex((current) => (current - 1 + projects.length) % projects.length);
-  };
-
-  const showNext = () => {
-    setActiveIndex((current) => (current + 1) % projects.length);
-  };
+  const pageCount = Math.max(1, Math.ceil(projects.length / PROJECTS_PER_PAGE));
+  const safePage = Math.min(page, pageCount);
+  const visibleProjects = useMemo(
+    () => projects.slice((safePage - 1) * PROJECTS_PER_PAGE, safePage * PROJECTS_PER_PAGE),
+    [projects, safePage],
+  );
 
   if (loading) {
     return <ProjectSkeleton />;
@@ -418,113 +388,48 @@ export default function PortfolioSection() {
       <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
       <div className="absolute -bottom-28 -left-28 -z-10 h-80 w-80 rounded-full border border-blue-500/25 opacity-50" />
 
-      <div className="mx-auto grid w-full max-w-350 grid-cols-1 items-center gap-10 lg:grid-cols-[300px_minmax(0,1fr)] 2xl:grid-cols-[300px_minmax(0,1fr)_270px]">
-        <header className="relative z-20 text-center lg:text-left">
-          <div className="flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 lg:justify-start">
-            <LuSparkles size={14} />
-            My Works
-            {projects.length > 0 && (
-              <span className="text-zinc-500">
-                {String(currentSlide).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
-              </span>
-            )}
+      <div className="mx-auto w-full max-w-7xl">
+        <div className="mb-10 border-b border-white/10 pb-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="mb-3 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400">
+                <LuSparkles size={14} />
+                My Works
+              </p>
+              <h2 className="text-4xl font-black uppercase leading-none tracking-tight text-white md:text-6xl">
+                Projects Built With <span className="text-blue-500">Purpose.</span>
+              </h2>
+              <p className="mt-5 max-w-lg text-sm leading-relaxed text-zinc-400">
+                A collection of digital products, crafted with clean code, modern design, and scalable architecture.
+              </p>
+            </div>
+
+            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-500">
+              {projects.length} Project Assets
+            </p>
           </div>
-          <h2 className="mt-5 text-4xl font-black leading-[0.95] tracking-tight text-white md:text-6xl lg:text-6xl">
-            Projects Built With <span className="text-blue-500">Purpose.</span>
-          </h2>
-          <p className="mx-auto mt-5 max-w-sm text-sm leading-relaxed text-zinc-400 lg:mx-0">
-            A collection of digital products, crafted with clean code, modern design, and scalable architecture.
-          </p>
+        </div>
 
-          {projects.length > 1 && (
-            <div className="mt-7 flex items-center justify-center gap-3 lg:justify-start">
-              <button
-                type="button"
-                onClick={showPrevious}
-                data-cursor-label="PREV"
-                aria-label="Previous project"
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white transition-all hover:border-blue-400 hover:bg-blue-500/15"
-              >
-                <LuArrowLeft size={17} />
-              </button>
-              <button
-                type="button"
-                onClick={showNext}
-                data-cursor-label="NEXT"
-                aria-label="Next project"
-                className="flex items-center gap-3 rounded-full border border-white/15 px-5 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-white transition-all hover:border-blue-400 hover:bg-blue-500/15"
-              >
-                Explore My Work
-                <LuArrowRight size={15} />
-              </button>
-            </div>
-          )}
-        </header>
+        {visibleProjects.length > 0 ? (
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {visibleProjects.map((project, index) => {
+              const projectIndex = (safePage - 1) * PROJECTS_PER_PAGE + index;
 
-        {activeProject ? (
-          <div className="relative z-20 mx-auto w-full max-w-145">
-            <div className="relative overflow-hidden rounded-[34px] border border-blue-500/20 bg-[#050814]/70 p-4 shadow-[0_32px_100px_rgba(37,99,235,0.16)]">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(37,99,235,0.18),transparent_48%)]" />
-
-              <div className="relative flex items-center justify-between pb-4">
-                <span className="text-[10px] font-black uppercase tracking-[0.28em] text-blue-300">
-                  Featured Project
-                </span>
-                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black text-zinc-400">
-                  {String(currentSlide).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
-                </span>
-              </div>
-
-              <AnimatePresence mode="wait">
+              return (
                 <ProjectCard
-                  key={activeProject.id}
-                  title={activeProject.title}
-                  description={activeProject.description}
-                  imageUrl={activeProject.imageUrl}
-                  demoUrl={activeProject.demoUrl}
-                  repoUrl={activeProject.repoUrl}
-                  index={safeActiveIndex}
+                  key={project.id}
+                  title={project.title}
+                  description={project.description}
+                  imageUrl={project.imageUrl}
+                  demoUrl={project.demoUrl}
+                  repoUrl={project.repoUrl}
+                  index={projectIndex}
                   variant="mobile"
-                  accent={projectAccents[safeActiveIndex % projectAccents.length]}
-                  onDetails={() => setSelectedProject(activeProject)}
+                  accent={projectAccents[projectIndex % projectAccents.length]}
+                  onDetails={() => setSelectedProject(project)}
                 />
-              </AnimatePresence>
-
-              <div className="mt-5 flex items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={showPrevious}
-                  data-cursor-label="PREV"
-                  aria-label="Previous project"
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/5 text-white transition-all hover:border-blue-400 hover:bg-blue-500/15"
-                >
-                  <LuArrowLeft size={17} />
-                </button>
-
-                <div className="flex flex-1 justify-center gap-2">
-                  {projects.map((project, index) => (
-                    <button
-                      key={project.id}
-                      type="button"
-                      onClick={() => setActiveIndex(index)}
-                      data-cursor-label={`PROJECT ${String(index + 1).padStart(2, "0")}`}
-                      aria-label={`Show ${project.title}`}
-                      className={`h-2.5 rounded-full transition-all ${index === safeActiveIndex ? "w-8 bg-blue-500" : "w-2.5 bg-white/25 hover:bg-white/45"}`}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  type="button"
-                  onClick={showNext}
-                  data-cursor-label="NEXT"
-                  aria-label="Next project"
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/5 text-white transition-all hover:border-blue-400 hover:bg-blue-500/15"
-                >
-                  <LuArrowRight size={17} />
-                </button>
-              </div>
-            </div>
+              );
+            })}
           </div>
         ) : (
           <div className="rounded-3xl border border-dashed border-white/10 px-6 py-24 text-center text-[10px] font-bold uppercase tracking-[0.35em] text-zinc-600">
@@ -532,19 +437,48 @@ export default function PortfolioSection() {
           </div>
         )}
 
-        <aside className="hidden rounded-[24px] border border-blue-500/25 bg-[#080b16]/95 px-5 py-6 shadow-[0_16px_48px_rgba(37,99,235,0.14)] 2xl:block">
-          <div className="space-y-5">
-            {showcaseHighlights.map(({ icon: Icon, title, description }) => (
-              <div key={title} className="flex gap-3">
-                <Icon className="mt-0.5 shrink-0 text-blue-500" size={22} />
-                <div>
-                  <h3 className="text-sm font-bold text-white">{title}</h3>
-                  <p className="mt-1 text-[11px] leading-relaxed text-zinc-400">{description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </aside>
+        <div className="mt-9 flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => setPage((current) => Math.max(1, current - 1))}
+            disabled={safePage === 1}
+            data-cursor-label="PREV"
+            aria-label="Previous project page"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/3 text-zinc-400 transition-colors hover:border-blue-500/45 hover:text-blue-400 disabled:cursor-not-allowed disabled:opacity-35"
+          >
+            <LuArrowLeft size={14} />
+          </button>
+
+          {Array.from({ length: pageCount }, (_, index) => {
+            const pageNumber = index + 1;
+            return (
+              <button
+                key={pageNumber}
+                type="button"
+                onClick={() => setPage(pageNumber)}
+                data-cursor-label={`PAGE ${pageNumber}`}
+                className={`flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-bold transition-colors ${
+                  pageNumber === safePage
+                    ? "border-blue-400 bg-blue-500 text-white shadow-[0_0_24px_rgba(59,130,246,0.35)]"
+                    : "border-white/10 bg-white/3 text-zinc-400 hover:border-blue-500/45 hover:text-blue-400"
+                }`}
+              >
+                {pageNumber}
+              </button>
+            );
+          })}
+
+          <button
+            type="button"
+            onClick={() => setPage((current) => Math.min(pageCount, current + 1))}
+            disabled={safePage === pageCount}
+            data-cursor-label="NEXT"
+            aria-label="Next project page"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/3 text-zinc-400 transition-colors hover:border-blue-500/45 hover:text-blue-400 disabled:cursor-not-allowed disabled:opacity-35"
+          >
+            <LuArrowRight size={14} />
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
