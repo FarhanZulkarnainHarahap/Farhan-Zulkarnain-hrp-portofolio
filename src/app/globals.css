@@ -10,6 +10,8 @@
 html {
   background-color: #030406;
   overflow-x: hidden;
+  scrollbar-color: #2563eb #030406;
+  scrollbar-width: thin;
 }
 
 body {
@@ -19,6 +21,31 @@ body {
   scroll-snap-type: y proximity; 
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+* {
+  scrollbar-color: #2563eb #030406;
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #030406;
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid #030406;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #60a5fa, #2563eb);
+  box-shadow: 0 0 18px rgba(37, 99, 235, 0.42);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #93c5fd, #3b82f6);
 }
 
 .portfolio-bg {
@@ -142,20 +169,6 @@ body {
   .hero-profile-image {
     height: 265px;
   }
-}
-
-/* Smooth snap movement on the container. */
-.snap-container {
-  height: 100vh;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
-  /* Hide scrollbar in Chrome/Safari for a cleaner look. */
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
 }
 
 /* Interactive cursor is active only for mouse or trackpad users. */

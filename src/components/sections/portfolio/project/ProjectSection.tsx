@@ -292,52 +292,49 @@ const ProjectSkeleton = () => (
   <section className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-5 py-20 md:px-8 lg:py-24">
     <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.18),transparent_55%)]" />
 
-    <div className="mx-auto grid w-full max-w-390 grid-cols-1 items-center gap-10 lg:grid-cols-[285px_minmax(0,1fr)] 2xl:grid-cols-[285px_minmax(0,1fr)_235px]">
-      <div className="animate-pulse text-center lg:text-left">
-        <div className="mx-auto h-3 w-42 rounded-full bg-blue-500/18 lg:mx-0" />
-        <div className="mt-6 space-y-3">
-          <div className="mx-auto h-12 w-70 rounded-2xl bg-white/10 lg:mx-0" />
-          <div className="mx-auto h-12 w-58 rounded-2xl bg-white/8 lg:mx-0" />
-          <div className="mx-auto h-12 w-52 rounded-2xl bg-blue-500/16 lg:mx-0" />
-        </div>
-        <div className="mx-auto mt-6 h-18 w-full max-w-sm rounded-2xl bg-white/6 lg:mx-0" />
-        <div className="mt-7 flex items-center justify-center gap-3 lg:justify-start">
-          <div className="h-11 w-11 rounded-full border border-white/10 bg-white/5" />
-          <div className="h-11 w-48 rounded-full border border-white/10 bg-white/5" />
-        </div>
-      </div>
-
-      <div className="relative mx-auto h-165 w-full max-w-220 animate-pulse">
-        <div className="absolute left-1/2 top-1/2 h-108 w-108 -translate-x-1/2 -translate-y-1/2 rounded-full border border-blue-400/25" />
-        <div className="absolute left-1/2 top-1/2 h-135 w-135 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-blue-500/20" />
-        <div className="absolute left-1/2 top-1/2 z-20 h-125 w-full max-w-96 -translate-x-1/2 -translate-y-1/2 rounded-[28px] border border-blue-500/25 bg-[#070b16]/92 shadow-[0_30px_90px_rgba(37,99,235,0.14)]">
-          <div className="m-4 h-48 rounded-2xl bg-white/10" />
-          <div className="mx-auto mt-6 h-4 w-32 rounded-full bg-blue-500/18" />
-          <div className="mx-auto mt-5 h-8 w-54 rounded-xl bg-white/10" />
-          <div className="mx-auto mt-4 h-18 w-70 rounded-2xl bg-white/6" />
-          <div className="mx-auto mt-7 flex justify-center gap-2">
-            {Array.from({ length: 4 }, (_, index) => (
-              <div key={index} className="h-7 w-20 rounded-full border border-white/8 bg-white/5" />
-            ))}
+    <div className="mx-auto w-full max-w-7xl">
+      <div className="mb-10 animate-pulse border-b border-white/10 pb-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <div className="mb-4 h-3 w-36 rounded-full bg-blue-500/18" />
+            <div className="h-12 w-80 rounded-2xl bg-white/10 md:h-16 md:w-135" />
+            <div className="mt-5 h-16 w-full max-w-lg rounded-2xl bg-white/6" />
           </div>
+          <div className="h-3 w-36 rounded-full bg-white/8" />
         </div>
-        <div className="absolute left-0 top-16 hidden h-78 w-64 rotate-[-7deg] rounded-[24px] border border-blue-500/18 bg-white/5 xl:block" />
-        <div className="absolute bottom-6 right-0 hidden h-78 w-64 rotate-[8deg] rounded-[24px] border border-blue-500/18 bg-white/5 xl:block" />
       </div>
 
-      <aside className="hidden animate-pulse rounded-[24px] border border-blue-500/18 bg-[#080b16]/80 px-5 py-6 2xl:block">
-        <div className="space-y-5">
-          {Array.from({ length: 4 }, (_, index) => (
-            <div key={index} className="flex gap-3">
-              <div className="h-7 w-7 shrink-0 rounded-lg bg-blue-500/14" />
-              <div className="flex-1 space-y-2">
-                <div className="h-3 w-28 rounded-full bg-white/12" />
-                <div className="h-10 rounded-xl bg-white/6" />
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: PROJECTS_PER_PAGE }, (_, index) => (
+          <div
+            key={index}
+            className="animate-pulse overflow-hidden rounded-[26px] border border-white/7 bg-[#101720]/92 p-2.5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]"
+          >
+            <div className="h-53 rounded-[18px] bg-linear-to-br from-white/14 via-white/8 to-blue-500/8" />
+            <div className="px-3 pb-3 pt-5 text-center">
+              <div className="mx-auto h-3 w-32 rounded-full bg-blue-500/18" />
+              <div className="mx-auto mt-4 h-7 w-54 rounded-xl bg-white/10" />
+              <div className="mx-auto mt-4 h-16 w-full max-w-xs rounded-2xl bg-white/6" />
+              <div className="mt-4 flex justify-center gap-2">
+                <div className="h-6 w-24 rounded-full border border-white/8 bg-white/5" />
+                <div className="h-6 w-22 rounded-full border border-white/8 bg-white/5" />
+                <div className="h-6 w-20 rounded-full border border-white/8 bg-white/5" />
+              </div>
+              <div className="mt-5 flex justify-center gap-3">
+                <div className="h-11 w-22 rounded-full border border-blue-500/18 bg-blue-500/10" />
+                <div className="h-11 w-11 rounded-full bg-blue-500/14" />
+                <div className="h-11 w-11 rounded-full border border-white/10 bg-white/5" />
               </div>
             </div>
-          ))}
-        </div>
-      </aside>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-9 flex animate-pulse items-center justify-center gap-3">
+        <div className="h-10 w-10 rounded-lg border border-white/10 bg-white/3" />
+        <div className="h-10 w-10 rounded-lg border border-blue-400 bg-blue-500" />
+        <div className="h-10 w-10 rounded-lg border border-white/10 bg-white/3" />
+      </div>
     </div>
   </section>
 );

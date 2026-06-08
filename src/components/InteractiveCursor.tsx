@@ -171,7 +171,13 @@ export default function InteractiveCursor() {
       createTrail(pointerX, pointerY);
     };
 
-    const handlePointerDown = () => {
+    const handlePointerDown = (event: PointerEvent) => {
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      dot.style.transform = `translate3d(${pointerX}px, ${pointerY}px, 0) translate(-50%, -50%)`;
+      labelAnchor.style.transform = `translate3d(${pointerX}px, ${pointerY}px, 0)`;
+      cursor.classList.add("is-visible");
+      updateCursorState(event.target);
       createBurst();
     };
     const handlePointerLeave = () => cursor.classList.remove("is-visible");

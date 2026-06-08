@@ -15,16 +15,22 @@ export default function EntranceScreen() {
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const hasPlayed = window.sessionStorage.getItem("farhan-portfolio-entrance");
 
-    if (reduceMotion || hasPlayed) {
+    if (reduceMotion) {
       const skipTimer = window.setTimeout(() => setVisible(false), 0);
       return () => window.clearTimeout(skipTimer);
     }
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = visible ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [visible]);
+
   const enterPortfolio = () => {
-    window.sessionStorage.setItem("farhan-portfolio-entrance", "true");
     setVisible(false);
   };
 
@@ -57,7 +63,7 @@ export default function EntranceScreen() {
             initial={{ opacity: 0, y: 22, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-10 max-h-[86vh] w-[min(92vw,760px)] overflow-y-auto rounded-[28px] border border-cyan-400/25 bg-[#050b16]/92 shadow-[0_30px_120px_rgba(34,211,238,0.14)] backdrop-blur-xl"
+            className="relative z-10 w-[min(92vw,760px)] overflow-hidden rounded-[28px] border border-cyan-400/25 bg-[#050b16]/92 shadow-[0_30px_120px_rgba(34,211,238,0.14)] backdrop-blur-xl"
           >
             <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
               <div className="flex items-center gap-2">
