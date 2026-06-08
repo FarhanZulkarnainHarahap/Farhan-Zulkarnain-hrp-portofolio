@@ -23,10 +23,30 @@ export default function EntranceScreen() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = visible ? "hidden" : "";
+    if (!visible) {
+      return;
+    }
+
+    const html = document.documentElement;
+    const body = document.body;
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyPosition = body.style.position;
+    const previousBodyInset = body.style.inset;
+    const previousBodyWidth = body.style.width;
+
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.inset = "0";
+    body.style.width = "100%";
 
     return () => {
-      document.body.style.overflow = "";
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
+      body.style.position = previousBodyPosition;
+      body.style.inset = previousBodyInset;
+      body.style.width = previousBodyWidth;
     };
   }, [visible]);
 
@@ -41,7 +61,7 @@ export default function EntranceScreen() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.03 }}
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-          className="portfolio-bg fixed inset-0 z-[9998] grid place-items-center overflow-hidden"
+          className="portfolio-bg fixed inset-0 z-[9998] grid h-[100dvh] min-h-[100svh] place-items-center overflow-hidden overscroll-none px-4 py-4"
         >
           <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.06)_1px,transparent_1px)] bg-[size:42px_42px]" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(34,211,238,0.16),transparent_45%),radial-gradient(circle_at_85%_75%,rgba(245,158,11,0.12),transparent_38%)]" />
@@ -63,9 +83,9 @@ export default function EntranceScreen() {
             initial={{ opacity: 0, y: 22, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-10 w-[min(92vw,760px)] overflow-hidden rounded-[28px] border border-cyan-400/25 bg-[#050b16]/92 shadow-[0_30px_120px_rgba(34,211,238,0.14)] backdrop-blur-xl"
+            className="relative z-10 max-h-[calc(100dvh-2rem)] w-[min(92vw,760px)] overflow-hidden rounded-[24px] border border-cyan-400/25 bg-[#050b16]/92 shadow-[0_30px_120px_rgba(34,211,238,0.14)] backdrop-blur-xl sm:rounded-[28px]"
           >
-            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+            <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-5 sm:py-4">
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-red-400/80" />
                 <span className="h-3 w-3 rounded-full bg-amber-400/80" />
@@ -76,16 +96,16 @@ export default function EntranceScreen() {
               </span>
             </div>
 
-            <div className="grid gap-6 p-6 md:grid-cols-[1fr_220px] md:p-8">
+            <div className="grid gap-5 p-5 sm:p-6 md:grid-cols-[1fr_220px] md:p-8">
               <div>
                 <p className="font-mono text-[10px] font-black uppercase tracking-[0.36em] text-amber-300">
                   Welcome to
                 </p>
-                <h1 className="mt-3 text-4xl font-black uppercase italic leading-none tracking-tighter text-white md:text-6xl">
+                <h1 className="mt-3 text-4xl font-black uppercase italic leading-none tracking-tighter text-white sm:text-5xl md:text-6xl">
                   Farhan<span className="text-cyan-300">.dev</span>
                 </h1>
 
-                <div className="mt-7 space-y-3 font-mono text-xs text-zinc-400 md:text-sm">
+                <div className="mt-6 space-y-3 font-mono text-[11px] text-zinc-400 sm:text-xs md:mt-7 md:text-sm">
                   {bootLines.map((line, index) => (
                     <motion.p
                       key={line}
@@ -106,7 +126,7 @@ export default function EntranceScreen() {
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.42, delay: 1.75 }}
-                  className="mt-8 rounded-full border border-cyan-300/35 bg-cyan-300/10 px-6 py-3 font-mono text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100 shadow-[0_0_28px_rgba(34,211,238,0.16)] transition-all hover:bg-cyan-300 hover:text-[#030813]"
+                  className="mt-7 w-full rounded-full border border-cyan-300/35 bg-cyan-300/10 px-5 py-3 font-mono text-[10px] font-black uppercase tracking-[0.22em] text-cyan-100 shadow-[0_0_28px_rgba(34,211,238,0.16)] transition-all hover:bg-cyan-300 hover:text-[#030813] sm:mt-8 sm:w-auto sm:px-6"
                 >
                   [ Enter Portfolio ]
                 </motion.button>

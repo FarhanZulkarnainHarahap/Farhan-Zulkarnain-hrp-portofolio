@@ -14,11 +14,22 @@ export default function Navbar() {
 
   // Prevent body scroll while the mobile menu is open.
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
+    if (!isOpen) {
+      return;
     }
+
+    const html = document.documentElement;
+    const body = document.body;
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+
+    return () => {
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
+    };
   }, [isOpen]);
 
   const getIsActive = (item: string) => {
@@ -125,7 +136,7 @@ export default function Navbar() {
               animate={{ opacity: 1, x: 0 }} 
               exit={{ opacity: 0, x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-0 h-screen w-full bg-[#030406] flex flex-col items-center justify-center lg:hidden z-115"
+              className="fixed inset-0 h-[100dvh] w-full bg-[#030406] flex flex-col items-center justify-center overflow-hidden lg:hidden z-115"
             >
               <ul className="flex flex-col items-center gap-8">
                 {menuItems.map((item, i) => (

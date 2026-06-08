@@ -3,48 +3,49 @@
 /* Theme extensions */
 
 :root {
-  /* Disable smooth scrolling when using snap because snap has its own smoothing engine. */
   scroll-behavior: auto; 
 }
 
 html {
+  width: 100%;
+  min-height: 100%;
   background-color: #030406;
   overflow-x: hidden;
+  overflow-y: auto;
   scrollbar-color: #2563eb #030406;
   scrollbar-width: thin;
 }
 
 body {
+  width: 100%;
+  min-height: 100%;
   background-color: #030406;
   color: white;
-  /* Use proximity when mandatory snapping feels too strict. */
-  scroll-snap-type: y proximity; 
   overflow-x: hidden;
-  overflow-y: auto;
+  overscroll-behavior-y: none;
 }
 
-* {
-  scrollbar-color: #2563eb #030406;
-  scrollbar-width: thin;
-}
-
-*::-webkit-scrollbar {
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
-*::-webkit-scrollbar-track {
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
   background: #030406;
 }
 
-*::-webkit-scrollbar-thumb {
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
   border: 2px solid #030406;
   border-radius: 999px;
   background: linear-gradient(180deg, #60a5fa, #2563eb);
   box-shadow: 0 0 18px rgba(37, 99, 235, 0.42);
 }
 
-*::-webkit-scrollbar-thumb:hover {
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #93c5fd, #3b82f6);
 }
 

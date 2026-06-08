@@ -65,7 +65,7 @@ export default function ProjectCard({
         />
       )}
 
-      <div className={`relative overflow-hidden rounded-[18px] bg-slate-950 ${variant === "orbit" ? "h-36" : "h-53"}`}>
+      <div className={`relative overflow-hidden rounded-[18px] bg-slate-950 ${variant === "orbit" ? "h-36" : "h-44 sm:h-53"}`}>
         <Image
           src={imageUrl || "/placeholder-project.jpg"}
           alt={title}
@@ -97,13 +97,13 @@ export default function ProjectCard({
         <p className="text-[9px] font-black uppercase tracking-[0.24em]" style={{ color: accent }}>
           Web Application
         </p>
-        <h3 className={`mt-2 font-black uppercase tracking-tight text-white ${variant === "orbit" ? "text-lg" : "text-2xl"}`}>
+        <h3 className={`mt-2 font-black uppercase tracking-tight text-white ${variant === "orbit" ? "text-lg" : "text-xl sm:text-2xl"}`}>
           {title}
         </h3>
 
         {isFeatured && (
           <>
-            <p className="mx-auto mt-3 max-w-xs text-xs leading-relaxed text-zinc-400">
+            <p className="mx-auto mt-3 max-w-xs text-[11px] leading-relaxed text-zinc-400 sm:text-xs">
               {description || fallbackDescription}
             </p>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5">

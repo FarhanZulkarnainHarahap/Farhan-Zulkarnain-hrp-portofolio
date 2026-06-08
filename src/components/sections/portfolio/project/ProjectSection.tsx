@@ -40,6 +40,7 @@ interface Project {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const PROJECTS_PER_PAGE = 6;
+const MOBILE_PROJECTS_PER_PAGE = 1;
 const projectAccents = ["#3b82f6", "#10b981", "#facc15", "#a855f7"];
 
 const splitListValue = (value?: string[] | string | null) => {
@@ -289,7 +290,7 @@ const ProjectCaseStudyModal = ({
 };
 
 const ProjectSkeleton = () => (
-  <section className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-5 py-20 md:px-8 lg:py-24">
+  <section className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:py-24">
     <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.18),transparent_55%)]" />
 
     <div className="mx-auto w-full max-w-7xl">
@@ -304,7 +305,7 @@ const ProjectSkeleton = () => (
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mx-auto grid w-full max-w-sm grid-cols-1 gap-5 md:max-w-none md:grid-cols-2 xl:grid-cols-3">
         {Array.from({ length: PROJECTS_PER_PAGE }, (_, index) => (
           <div
             key={index}
@@ -343,6 +344,7 @@ export default function PortfolioSection() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [isMobileCarousel, setIsMobileCarousel] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
@@ -361,25 +363,52 @@ export default function PortfolioSection() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = selectedProject ? "hidden" : "unset";
+    if (!selectedProject) {
+      return;
+    }
+
+    const html = document.documentElement;
+    const body = document.body;
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+
     return () => {
-      document.body.style.overflow = "unset";
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
     };
   }, [selectedProject]);
 
-  const pageCount = Math.max(1, Math.ceil(projects.length / PROJECTS_PER_PAGE));
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 767px)");
+    const updateMode = () => setIsMobileCarousel(media.matches);
+
+    updateMode();
+    media.addEventListener("change", updateMode);
+
+    return () => media.removeEventListener("change", updateMode);
+  }, []);
+
+  const projectsPerPage = isMobileCarousel ? MOBILE_PROJECTS_PER_PAGE : PROJECTS_PER_PAGE;
+  const pageCount = Math.max(1, Math.ceil(projects.length / projectsPerPage));
   const safePage = Math.min(page, pageCount);
   const visibleProjects = useMemo(
-    () => projects.slice((safePage - 1) * PROJECTS_PER_PAGE, safePage * PROJECTS_PER_PAGE),
-    [projects, safePage],
+    () => projects.slice((safePage - 1) * projectsPerPage, safePage * projectsPerPage),
+    [projects, projectsPerPage, safePage],
   );
+
+  useEffect(() => {
+    setPage((current) => Math.min(current, pageCount));
+  }, [pageCount]);
 
   if (loading) {
     return <ProjectSkeleton />;
   }
 
   return (
-    <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-5 py-20 md:px-8 lg:py-24">
+    <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:py-24">
       <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.2),transparent_55%)]" />
       <div className="absolute inset-0 -z-20 bg-linear-to-b from-transparent via-[#030406]/14 to-transparent" />
       <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
@@ -408,9 +437,9 @@ export default function PortfolioSection() {
         </div>
 
         {visibleProjects.length > 0 ? (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mx-auto grid w-full max-w-sm grid-cols-1 gap-5 md:max-w-none md:grid-cols-2 xl:grid-cols-3">
             {visibleProjects.map((project, index) => {
-              const projectIndex = (safePage - 1) * PROJECTS_PER_PAGE + index;
+              const projectIndex = (safePage - 1) * projectsPerPage + index;
 
               return (
                 <ProjectCard
@@ -434,14 +463,14 @@ export default function PortfolioSection() {
           </div>
         )}
 
-        <div className="mt-9 flex items-center justify-center gap-3">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2 sm:mt-9 sm:gap-3">
           <button
             type="button"
             onClick={() => setPage((current) => Math.max(1, current - 1))}
             disabled={safePage === 1}
             data-cursor-label="PREV"
             aria-label="Previous project page"
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/3 text-zinc-400 transition-colors hover:border-blue-500/45 hover:text-blue-400 disabled:cursor-not-allowed disabled:opacity-35"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/3 text-zinc-400 transition-colors hover:border-blue-500/45 hover:text-blue-400 disabled:cursor-not-allowed disabled:opacity-35 sm:h-10 sm:w-10"
           >
             <LuArrowLeft size={14} />
           </button>
@@ -454,7 +483,7 @@ export default function PortfolioSection() {
                 type="button"
                 onClick={() => setPage(pageNumber)}
                 data-cursor-label={`PAGE ${pageNumber}`}
-                className={`flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-bold transition-colors ${
+                className={`flex h-9 w-9 items-center justify-center rounded-lg border text-xs font-bold transition-colors sm:h-10 sm:w-10 sm:text-sm ${
                   pageNumber === safePage
                     ? "border-blue-400 bg-blue-500 text-white shadow-[0_0_24px_rgba(59,130,246,0.35)]"
                     : "border-white/10 bg-white/3 text-zinc-400 hover:border-blue-500/45 hover:text-blue-400"
@@ -471,7 +500,7 @@ export default function PortfolioSection() {
             disabled={safePage === pageCount}
             data-cursor-label="NEXT"
             aria-label="Next project page"
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/3 text-zinc-400 transition-colors hover:border-blue-500/45 hover:text-blue-400 disabled:cursor-not-allowed disabled:opacity-35"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/3 text-zinc-400 transition-colors hover:border-blue-500/45 hover:text-blue-400 disabled:cursor-not-allowed disabled:opacity-35 sm:h-10 sm:w-10"
           >
             <LuArrowRight size={14} />
           </button>
