@@ -31,22 +31,13 @@ export default function EntranceScreen() {
     const body = document.body;
     const previousHtmlOverflow = html.style.overflow;
     const previousBodyOverflow = body.style.overflow;
-    const previousBodyPosition = body.style.position;
-    const previousBodyInset = body.style.inset;
-    const previousBodyWidth = body.style.width;
 
     html.style.overflow = "hidden";
     body.style.overflow = "hidden";
-    body.style.position = "fixed";
-    body.style.inset = "0";
-    body.style.width = "100%";
 
     return () => {
       html.style.overflow = previousHtmlOverflow;
       body.style.overflow = previousBodyOverflow;
-      body.style.position = previousBodyPosition;
-      body.style.inset = previousBodyInset;
-      body.style.width = previousBodyWidth;
     };
   }, [visible]);
 

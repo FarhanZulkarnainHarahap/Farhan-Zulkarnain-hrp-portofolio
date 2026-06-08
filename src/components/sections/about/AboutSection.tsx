@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function AboutSection() {
   return (
-    <section id="about" className="min-h-screen lg:h-screen w-full bg-transparent flex items-center justify-center snap-start overflow-hidden relative py-20 lg:py-0">
+    <section id="about" className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-transparent py-20 lg:h-screen lg:py-0">
       
       {/* 1. DEKORASI BERGERAK */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">

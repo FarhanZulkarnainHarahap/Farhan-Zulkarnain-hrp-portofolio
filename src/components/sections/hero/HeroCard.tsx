@@ -35,7 +35,7 @@ export default function HeroCard() {
   };
 
   return (
-    <section className="relative w-full min-h-screen lg:h-screen flex items-center justify-center bg-transparent overflow-hidden py-20 lg:py-0">
+    <section className="relative flex min-h-[100svh] w-full items-center justify-center overflow-x-hidden bg-transparent py-20 lg:h-screen lg:overflow-hidden lg:py-0">
       <div className="absolute top-1/4 -left-20 hidden w-80 h-80 bg-blue-600/8 rounded-full blur-[90px] pointer-events-none md:block" />
       
       <div className="max-w-7xl w-full mx-auto px-6 md:px-12 z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">

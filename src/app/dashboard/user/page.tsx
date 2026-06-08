@@ -16,7 +16,7 @@ const sectionMotion = {
   transition: { duration: 0.72, ease: [0.16, 1, 0.3, 1] as const },
 };
 
-const sectionClass = "portfolio-section-bg min-h-screen w-full snap-start snap-always";
+const sectionClass = "portfolio-section-bg min-h-screen w-full";
 
 export default function Home() {
   return (
@@ -62,7 +62,7 @@ export default function Home() {
       </motion.section>
 
       {/* SECTION 6: PROOF */}
-      <motion.section id="proof" data-cursor-label="PROOF" className="portfolio-section-bg w-full snap-start snap-always" {...sectionMotion}>
+      <motion.section id="proof" data-cursor-label="PROOF" className="portfolio-section-bg w-full" {...sectionMotion}>
         <SocialProofSection />
       </motion.section>
 
@@ -74,7 +74,7 @@ export default function Home() {
       </motion.section>
 
       {/* SECTION 8: FOOTER */}
-      <motion.footer data-cursor-label="FARHAN" className="portfolio-section-bg w-full snap-start flex flex-col items-center justify-center py-10 md:py-16 gap-6 px-4 md:px-6" {...sectionMotion}>
+      <motion.footer data-cursor-label="FARHAN" className="portfolio-section-bg w-full flex flex-col items-center justify-center py-10 md:py-16 gap-6 px-4 md:px-6" {...sectionMotion}>
         <div className="flex flex-wrap justify-center gap-6 text-gray-500">
           <FaLinkedin size={24} href="https://www.linkedin.com/in/farhan-zulkarnain-71801a347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" className="hover:text-blue-500 transition-all cursor-pointer hover:scale-110" /> 
           <FaInstagram size={24} href="https://www.instagram.com/farhan.nexxus?igsh=bmw4cmI4djQzeTN1" className="hover:text-pink-500 transition-all cursor-pointer hover:scale-110" /> 
