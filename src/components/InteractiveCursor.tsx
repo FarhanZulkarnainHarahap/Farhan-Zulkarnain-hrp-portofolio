@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 const interactiveSelector = "a, button, [role='button'], [data-cursor-label]";
 const textInputSelector = "input, textarea, select, [contenteditable='true']";
-const particleCount = 52;
+const particleCount = 86;
 
 interface CursorParticle {
   element: HTMLSpanElement;
@@ -19,6 +19,7 @@ interface CursorParticle {
 export default function InteractiveCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
+  const clickRingRef = useRef<HTMLDivElement>(null);
   const labelAnchorRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
   const particlePoolRef = useRef<HTMLDivElement>(null);
@@ -26,13 +27,14 @@ export default function InteractiveCursor() {
   useEffect(() => {
     const cursor = cursorRef.current;
     const dot = dotRef.current;
+    const clickRing = clickRingRef.current;
     const labelAnchor = labelAnchorRef.current;
     const label = labelRef.current;
     const particlePool = particlePoolRef.current;
     const canUseCustomCursor = window.matchMedia("(hover: hover) and (pointer: fine)");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    if (!cursor || !dot || !labelAnchor || !label || !particlePool || !canUseCustomCursor.matches) {
+    if (!cursor || !dot || !clickRing || !labelAnchor || !label || !particlePool || !canUseCustomCursor.matches) {
       return;
     }
 
@@ -80,6 +82,7 @@ export default function InteractiveCursor() {
       particle.life = life;
       particle.maxLife = life;
       particle.element.style.setProperty("--particle-size", `${Math.random() * 4 + 2}px`);
+      particle.element.style.setProperty("--particle-hue", `${Math.random() * 30 + 205}`);
       particle.element.style.opacity = "1";
 
       if (!frameId) {
@@ -90,15 +93,15 @@ export default function InteractiveCursor() {
     const createTrail = (x: number, y: number) => {
       const distance = Math.hypot(x - lastTrailX, y - lastTrailY);
 
-      if (distance < 5) {
+      if (distance < 3) {
         return;
       }
 
       const trailAngle = Math.atan2(y - lastTrailY, x - lastTrailX) + Math.PI;
-      const particlesToLaunch = Math.min(4, Math.max(2, Math.floor(distance / 10)));
+      const particlesToLaunch = Math.min(7, Math.max(3, Math.floor(distance / 7)));
 
       for (let index = 0; index < particlesToLaunch; index += 1) {
-        launchParticle(x, y, Math.random() * 1.15 + 0.3, trailAngle + (Math.random() - 0.5) * 1.2);
+        launchParticle(x, y, Math.random() * 1.35 + 0.45, trailAngle + (Math.random() - 0.5) * 1.25, Math.random() * 18 + 26);
       }
 
       lastTrailX = x;
@@ -106,8 +109,13 @@ export default function InteractiveCursor() {
     };
 
     const createBurst = () => {
-      for (let index = 0; index < 16; index += 1) {
-        launchParticle(pointerX, pointerY, Math.random() * 2.8 + 1.2, (Math.PI * 2 * index) / 16, Math.random() * 16 + 30);
+      clickRing.classList.remove("is-clicking");
+      clickRing.style.transform = `translate3d(${pointerX}px, ${pointerY}px, 0) translate(-50%, -50%)`;
+      void clickRing.offsetWidth;
+      clickRing.classList.add("is-clicking");
+
+      for (let index = 0; index < 30; index += 1) {
+        launchParticle(pointerX, pointerY, Math.random() * 3.4 + 1.4, (Math.PI * 2 * index) / 30, Math.random() * 24 + 34);
       }
     };
 
@@ -123,12 +131,12 @@ export default function InteractiveCursor() {
         particle.life -= 1;
         particle.x += particle.velocityX;
         particle.y += particle.velocityY;
-        particle.velocityX *= 0.96;
-        particle.velocityY = particle.velocityY * 0.96 + 0.015;
+        particle.velocityX *= 0.955;
+        particle.velocityY = particle.velocityY * 0.955 + 0.012;
 
         const progress = Math.max(particle.life / particle.maxLife, 0);
         particle.element.style.opacity = `${progress}`;
-        particle.element.style.transform = `translate3d(${particle.x}px, ${particle.y}px, 0) translate(-50%, -50%) scale(${0.45 + progress})`;
+        particle.element.style.transform = `translate3d(${particle.x}px, ${particle.y}px, 0) translate(-50%, -50%) scale(${0.35 + progress * 1.25})`;
       });
 
       frameId = hasActiveParticles ? window.requestAnimationFrame(renderCursor) : 0;
@@ -193,6 +201,7 @@ export default function InteractiveCursor() {
       <div ref={labelAnchorRef} className="custom-cursor-label-anchor">
         <span ref={labelRef} className="custom-cursor-label" />
       </div>
+      <div ref={clickRingRef} className="custom-cursor-click-ring" />
       <div ref={dotRef} className="custom-cursor-dot" />
     </div>
   );

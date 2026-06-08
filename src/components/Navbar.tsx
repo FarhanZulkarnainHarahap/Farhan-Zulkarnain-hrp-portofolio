@@ -85,6 +85,7 @@ export default function Navbar() {
             <li key={item}>
               <button
                 onClick={() => handleNavigation(item)}
+                data-cursor-label={item}
                 className={`text-[10px] font-bold tracking-[0.4em] transition-colors duration-500 uppercase ${
                   getIsActive(item) ? "text-blue-500" : "text-white/60 hover:text-white"
                 }`}
@@ -98,6 +99,7 @@ export default function Navbar() {
         {/* Hamburger Button (Mobile Only) */}
         <button 
           onClick={() => setIsOpen(!isOpen)} 
+          data-cursor-label="MENU"
           className="lg:hidden flex flex-col gap-1.5 z-120 p-2 focus:outline-none"
           aria-label="Toggle Menu"
         >
@@ -135,6 +137,7 @@ export default function Navbar() {
                   >
                     <button 
                       onClick={() => handleNavigation(item)}
+                      data-cursor-label={item}
                       className={`text-3xl font-black tracking-[0.2em] uppercase transition-all ${
                         getIsActive(item) ? "text-blue-500 scale-110" : "text-white"
                       }`}

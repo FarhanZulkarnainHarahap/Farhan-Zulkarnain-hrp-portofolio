@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -43,13 +43,7 @@ interface Project {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const PROJECTS_PER_PAGE = 4;
 const projectAccents = ["#3b82f6", "#10b981", "#facc15", "#a855f7"];
-const orbitPositions = [
-  "left-[-12%] top-[16%] -rotate-[7deg]",
-  "left-[-6%] bottom-[-3%] rotate-[5deg]",
-  "right-[-5%] top-[27%] rotate-[7deg]",
-];
 const showcaseHighlights = [
   {
     icon: LuBox,
@@ -376,7 +370,6 @@ const ProjectSkeleton = () => (
 export default function PortfolioSection() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
@@ -402,37 +395,16 @@ export default function PortfolioSection() {
     };
   }, [selectedProject]);
 
-  const pageCount = Math.max(1, Math.ceil(projects.length / PROJECTS_PER_PAGE));
-  const currentProjects = useMemo(
-    () => projects.slice(page * PROJECTS_PER_PAGE, (page + 1) * PROJECTS_PER_PAGE),
-    [page, projects],
-  );
-  const safeActiveIndex = Math.min(activeIndex, Math.max(currentProjects.length - 1, 0));
-  const activeProject = currentProjects[safeActiveIndex];
-  const currentSlide = page * PROJECTS_PER_PAGE + safeActiveIndex + 1;
-  const orbitProjects = currentProjects
-    .map((project, index) => ({ project, index }))
-    .filter(({ index }) => index !== safeActiveIndex);
-
-  const changePage = (nextPage: number) => {
-    setPage((nextPage + pageCount) % pageCount);
-    setActiveIndex(0);
-  };
+  const safeActiveIndex = Math.min(activeIndex, Math.max(projects.length - 1, 0));
+  const activeProject = projects[safeActiveIndex];
+  const currentSlide = safeActiveIndex + 1;
 
   const showPrevious = () => {
-    if (safeActiveIndex > 0) {
-      setActiveIndex(safeActiveIndex - 1);
-      return;
-    }
-    changePage(page - 1);
+    setActiveIndex((current) => (current - 1 + projects.length) % projects.length);
   };
 
   const showNext = () => {
-    if (safeActiveIndex < currentProjects.length - 1) {
-      setActiveIndex(safeActiveIndex + 1);
-      return;
-    }
-    changePage(page + 1);
+    setActiveIndex((current) => (current + 1) % projects.length);
   };
 
   if (loading) {
@@ -446,7 +418,7 @@ export default function PortfolioSection() {
       <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
       <div className="absolute -bottom-28 -left-28 -z-10 h-80 w-80 rounded-full border border-blue-500/25 opacity-50" />
 
-      <div className="mx-auto grid w-full max-w-390 grid-cols-1 items-center gap-10 lg:grid-cols-[285px_minmax(0,1fr)] 2xl:grid-cols-[285px_minmax(0,1fr)_235px]">
+      <div className="mx-auto grid w-full max-w-350 grid-cols-1 items-center gap-10 lg:grid-cols-[300px_minmax(0,1fr)] 2xl:grid-cols-[300px_minmax(0,1fr)_270px]">
         <header className="relative z-20 text-center lg:text-left">
           <div className="flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-blue-500 lg:justify-start">
             <LuSparkles size={14} />
@@ -469,6 +441,7 @@ export default function PortfolioSection() {
               <button
                 type="button"
                 onClick={showPrevious}
+                data-cursor-label="PREV"
                 aria-label="Previous project"
                 className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white transition-all hover:border-blue-400 hover:bg-blue-500/15"
               >
@@ -477,6 +450,7 @@ export default function PortfolioSection() {
               <button
                 type="button"
                 onClick={showNext}
+                data-cursor-label="NEXT"
                 aria-label="Next project"
                 className="flex items-center gap-3 rounded-full border border-white/15 px-5 py-3 text-[10px] font-black uppercase tracking-[0.18em] text-white transition-all hover:border-blue-400 hover:bg-blue-500/15"
               >
@@ -488,73 +462,19 @@ export default function PortfolioSection() {
         </header>
 
         {activeProject ? (
-          <>
-            <div className="hidden min-h-180 xl:block">
-              <div className="relative h-180 w-full">
-                <div className="absolute left-1/2 top-1/2 h-120 w-120 -translate-x-1/2 -translate-y-1/2 rounded-full border border-blue-400/55 shadow-[0_0_36px_rgba(37,99,235,0.24)]" />
-                <div className="absolute left-1/2 top-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-blue-500/40" />
-                <div className="absolute left-1/2 top-1/2 h-108 w-180 -translate-x-1/2 -translate-y-1/2 rounded-[50%] border border-blue-500/30 rotate-[-14deg]" />
-                <div className="absolute left-1/2 top-1/2 h-102 w-198 -translate-x-1/2 -translate-y-1/2 rounded-[50%] border border-blue-500/30 rotate-[11deg]" />
+          <div className="relative z-20 mx-auto w-full max-w-145">
+            <div className="relative overflow-hidden rounded-[34px] border border-blue-500/20 bg-[#050814]/70 p-4 shadow-[0_32px_100px_rgba(37,99,235,0.16)]">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(37,99,235,0.18),transparent_48%)]" />
 
-                <span className="absolute left-[9%] top-[25%] h-2.5 w-2.5 rounded-full bg-blue-400 shadow-[0_0_12px_3px_rgba(96,165,250,0.65)]" />
-                <span className="absolute right-[12%] top-[33%] h-3 w-3 rounded-full bg-emerald-300 shadow-[0_0_12px_3px_rgba(110,231,183,0.6)]" />
-                <span className="absolute bottom-[13%] left-[24%] h-2.5 w-2.5 rounded-full bg-yellow-300 shadow-[0_0_12px_3px_rgba(253,224,71,0.5)]" />
-                <span className="absolute bottom-[19%] right-[14%] h-2.5 w-2.5 rounded-full bg-blue-300 shadow-[0_0_12px_3px_rgba(147,197,253,0.55)]" />
-
-                {orbitProjects.map(({ project, index }, slotIndex) => (
-                  <motion.div
-                    key={project.id}
-                    initial={{ opacity: 0, scale: 0.88 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.32, delay: slotIndex * 0.05 }}
-                    className={`absolute z-20 ${orbitPositions[slotIndex]}`}
-                  >
-                    <ProjectCard
-                      title={project.title}
-                      description={project.description}
-                      imageUrl={project.imageUrl}
-                      demoUrl={project.demoUrl}
-                      repoUrl={project.repoUrl}
-                      index={page * PROJECTS_PER_PAGE + index}
-                      variant="orbit"
-                      accent={projectAccents[index % projectAccents.length]}
-                      onSelect={() => setActiveIndex(index)}
-                    />
-                  </motion.div>
-                ))}
-
-                <div className="absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2">
-                  <AnimatePresence mode="wait">
-                    <ProjectCard
-                      key={activeProject.id}
-                      title={activeProject.title}
-                      description={activeProject.description}
-                      imageUrl={activeProject.imageUrl}
-                      demoUrl={activeProject.demoUrl}
-                      repoUrl={activeProject.repoUrl}
-                      index={page * PROJECTS_PER_PAGE + safeActiveIndex}
-                      variant="featured"
-                      accent={projectAccents[safeActiveIndex % projectAccents.length]}
-                      onDetails={() => setSelectedProject(activeProject)}
-                    />
-                  </AnimatePresence>
-                </div>
-
-                <div className="absolute bottom-2 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2">
-                  {currentProjects.map((project, index) => (
-                    <button
-                      key={project.id}
-                      type="button"
-                      onClick={() => setActiveIndex(index)}
-                      aria-label={`Show ${project.title}`}
-                      className={`h-2.5 rounded-full transition-all ${index === safeActiveIndex ? "w-7 bg-blue-500" : "w-2.5 bg-white/20 hover:bg-white/40"}`}
-                    />
-                  ))}
-                </div>
+              <div className="relative flex items-center justify-between pb-4">
+                <span className="text-[10px] font-black uppercase tracking-[0.28em] text-blue-300">
+                  Featured Project
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black text-zinc-400">
+                  {String(currentSlide).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+                </span>
               </div>
-            </div>
 
-            <div className="xl:hidden">
               <AnimatePresence mode="wait">
                 <ProjectCard
                   key={activeProject.id}
@@ -563,32 +483,79 @@ export default function PortfolioSection() {
                   imageUrl={activeProject.imageUrl}
                   demoUrl={activeProject.demoUrl}
                   repoUrl={activeProject.repoUrl}
-                  index={page * PROJECTS_PER_PAGE + safeActiveIndex}
+                  index={safeActiveIndex}
                   variant="mobile"
                   accent={projectAccents[safeActiveIndex % projectAccents.length]}
                   onDetails={() => setSelectedProject(activeProject)}
                 />
               </AnimatePresence>
 
-              <div className="mt-5 grid grid-cols-4 gap-2">
-                {currentProjects.map((project, index) => (
+              <div className="mt-5 flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={showPrevious}
+                  data-cursor-label="PREV"
+                  aria-label="Previous project"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/5 text-white transition-all hover:border-blue-400 hover:bg-blue-500/15"
+                >
+                  <LuArrowLeft size={17} />
+                </button>
+
+                <div className="flex flex-1 justify-center gap-2">
+                  {projects.map((project, index) => (
+                    <button
+                      key={project.id}
+                      type="button"
+                      onClick={() => setActiveIndex(index)}
+                      data-cursor-label={`PROJECT ${String(index + 1).padStart(2, "0")}`}
+                      aria-label={`Show ${project.title}`}
+                      className={`h-2.5 rounded-full transition-all ${index === safeActiveIndex ? "w-8 bg-blue-500" : "w-2.5 bg-white/25 hover:bg-white/45"}`}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={showNext}
+                  data-cursor-label="NEXT"
+                  aria-label="Next project"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/5 text-white transition-all hover:border-blue-400 hover:bg-blue-500/15"
+                >
+                  <LuArrowRight size={17} />
+                </button>
+              </div>
+
+              <div className="mt-5 flex gap-3 overflow-x-auto pb-2">
+                {projects.map((project, index) => (
                   <button
                     key={project.id}
                     type="button"
                     onClick={() => setActiveIndex(index)}
+                    data-cursor-label={`PROJECT ${String(index + 1).padStart(2, "0")}`}
                     aria-label={`Show ${project.title}`}
-                    className={`rounded-xl border px-2 py-3 text-[10px] font-black transition-all ${
+                    className={`group w-34 shrink-0 overflow-hidden rounded-2xl border bg-white/4 p-2 text-left transition-all ${
                       index === safeActiveIndex
-                        ? "border-blue-400 bg-blue-500/15 text-blue-300"
-                        : "border-white/10 bg-white/3 text-zinc-500"
+                        ? "border-blue-400/80 shadow-[0_0_26px_rgba(37,99,235,0.24)]"
+                        : "border-white/10 hover:border-blue-400/45"
                     }`}
                   >
-                    {String(page * PROJECTS_PER_PAGE + index + 1).padStart(2, "0")}
+                    <span className="relative block h-18 overflow-hidden rounded-xl bg-slate-950">
+                      <Image
+                        src={project.imageUrl || "/placeholder-project.jpg"}
+                        alt={project.title}
+                        fill
+                        sizes="160px"
+                        className="object-cover opacity-75 transition-all duration-500 group-hover:scale-105 group-hover:opacity-100"
+                      />
+                    </span>
+                    <span className="mt-2 block truncate text-[9px] font-black uppercase tracking-[0.14em] text-white">
+                      {String(index + 1).padStart(2, "0")} {project.title}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
-          </>
+          </div>
         ) : (
           <div className="rounded-3xl border border-dashed border-white/10 px-6 py-24 text-center text-[10px] font-bold uppercase tracking-[0.35em] text-zinc-600">
             No digital assets found in archive
@@ -609,20 +576,6 @@ export default function PortfolioSection() {
           </div>
         </aside>
       </div>
-
-      {pageCount > 1 && (
-        <div className="mx-auto mt-7 flex max-w-380 items-center justify-center gap-2">
-          {Array.from({ length: pageCount }, (_, index) => (
-            <button
-              key={index}
-              type="button"
-              onClick={() => changePage(index)}
-              aria-label={`Open project page ${index + 1}`}
-              className={`h-2 rounded-full transition-all ${index === page ? "w-8 bg-blue-500" : "w-2 bg-white/20 hover:bg-white/40"}`}
-            />
-          ))}
-        </div>
-      )}
 
       <AnimatePresence>
         {selectedProject && (

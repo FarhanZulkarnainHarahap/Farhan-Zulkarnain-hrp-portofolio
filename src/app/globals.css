@@ -7,12 +7,18 @@
   scroll-behavior: auto; 
 }
 
+html {
+  background-color: #030406;
+  overflow-x: hidden;
+}
+
 body {
   background-color: #030406;
   color: white;
   /* Use proximity when mandatory snapping feels too strict. */
   scroll-snap-type: y proximity; 
-  overflow-y: overlay; /* Keep the scrollbar floating so it does not shift layout. */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .portfolio-bg {
@@ -190,6 +196,7 @@ body {
   }
 
   .custom-cursor-dot,
+  .custom-cursor-click-ring,
   .custom-cursor-label-anchor,
   .custom-cursor-particle {
     position: absolute;
@@ -202,10 +209,11 @@ body {
     width: var(--particle-size, 3px);
     height: var(--particle-size, 3px);
     border-radius: 999px;
-    background: #93c5fd;
+    background: hsl(var(--particle-hue, 214) 100% 78%);
     box-shadow:
       0 0 7px rgba(147, 197, 253, 0.95),
-      0 0 16px rgba(59, 130, 246, 0.8);
+      0 0 16px rgba(59, 130, 246, 0.8),
+      0 0 28px rgba(37, 99, 235, 0.45);
     opacity: 0;
   }
 
@@ -235,6 +243,22 @@ body {
       width 180ms ease,
       height 180ms ease,
       background-color 180ms ease;
+  }
+
+  .custom-cursor-click-ring {
+    width: 12px;
+    height: 12px;
+    border: 1px solid rgba(147, 197, 253, 0);
+    border-radius: 999px;
+    box-shadow:
+      0 0 0 rgba(59, 130, 246, 0),
+      inset 0 0 0 rgba(255, 255, 255, 0);
+    opacity: 0;
+    transform: translate3d(-999px, -999px, 0) translate(-50%, -50%);
+  }
+
+  .custom-cursor-click-ring.is-clicking {
+    animation: cursor-click-ring 520ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .custom-cursor-label {
@@ -268,11 +292,34 @@ body {
 
 }
 
+@keyframes cursor-click-ring {
+  0% {
+    width: 10px;
+    height: 10px;
+    border-color: rgba(255, 255, 255, 0.95);
+    box-shadow:
+      0 0 14px rgba(147, 197, 253, 0.95),
+      inset 0 0 10px rgba(255, 255, 255, 0.7);
+    opacity: 1;
+  }
+
+  100% {
+    width: 76px;
+    height: 76px;
+    border-color: rgba(59, 130, 246, 0);
+    box-shadow:
+      0 0 42px rgba(37, 99, 235, 0),
+      inset 0 0 22px rgba(255, 255, 255, 0);
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-profile-card::before,
   .hero-profile-image,
   .custom-cursor-layer,
   .custom-cursor-dot,
+  .custom-cursor-click-ring,
   .custom-cursor-label-anchor,
   .custom-cursor-particle,
   .custom-cursor-label {
