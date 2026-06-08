@@ -524,36 +524,6 @@ export default function PortfolioSection() {
                   <LuArrowRight size={17} />
                 </button>
               </div>
-
-              <div className="mt-5 flex gap-3 overflow-x-auto pb-2">
-                {projects.map((project, index) => (
-                  <button
-                    key={project.id}
-                    type="button"
-                    onClick={() => setActiveIndex(index)}
-                    data-cursor-label={`PROJECT ${String(index + 1).padStart(2, "0")}`}
-                    aria-label={`Show ${project.title}`}
-                    className={`group w-34 shrink-0 overflow-hidden rounded-2xl border bg-white/4 p-2 text-left transition-all ${
-                      index === safeActiveIndex
-                        ? "border-blue-400/80 shadow-[0_0_26px_rgba(37,99,235,0.24)]"
-                        : "border-white/10 hover:border-blue-400/45"
-                    }`}
-                  >
-                    <span className="relative block h-18 overflow-hidden rounded-xl bg-slate-950">
-                      <Image
-                        src={project.imageUrl || "/placeholder-project.jpg"}
-                        alt={project.title}
-                        fill
-                        sizes="160px"
-                        className="object-cover opacity-75 transition-all duration-500 group-hover:scale-105 group-hover:opacity-100"
-                      />
-                    </span>
-                    <span className="mt-2 block truncate text-[9px] font-black uppercase tracking-[0.14em] text-white">
-                      {String(index + 1).padStart(2, "0")} {project.title}
-                    </span>
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
         ) : (
