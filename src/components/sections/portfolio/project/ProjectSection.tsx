@@ -153,7 +153,7 @@ const ProjectCaseStudyModal = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-200 flex items-center justify-center bg-black/80 px-4 py-8 backdrop-blur-xl"
+      className="fixed inset-0 z-[1000] flex items-start justify-center overflow-y-auto bg-black/80 px-4 pb-6 pt-24 backdrop-blur-xl md:pb-8 md:pt-28"
       role="dialog"
       aria-modal="true"
       aria-label={`${project.title} case study`}
@@ -165,7 +165,7 @@ const ProjectCaseStudyModal = ({
         exit={{ y: 30, scale: 0.96, opacity: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         onClick={(event) => event.stopPropagation()}
-        className="relative max-h-[88vh] w-full max-w-5xl overflow-y-auto rounded-[28px] border bg-[#060a12]/98 p-4 shadow-[0_32px_120px_rgba(37,99,235,0.2)] md:p-5"
+        className="relative w-full max-w-5xl overflow-hidden rounded-[28px] border bg-[#060a12]/98 p-4 shadow-[0_32px_120px_rgba(37,99,235,0.2)] md:p-5"
         style={{ borderColor: `${accent}70` }}
       >
         <button
