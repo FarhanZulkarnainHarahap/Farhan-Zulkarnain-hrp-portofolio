@@ -16,6 +16,12 @@ export default function UploadPortoPage() {
     description: "",
     demoUrl: "",
     repoUrl: "",
+    caseType: "",
+    tags: "",
+    caseProblem: "",
+    caseSolution: "",
+    caseResult: "",
+    features: "",
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -40,6 +46,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     data.append("description", formData.description);
     data.append("demoUrl", formData.demoUrl);
     data.append("repoUrl", formData.repoUrl);
+    data.append("caseType", formData.caseType);
+    data.append("tags", formData.tags);
+    data.append("caseProblem", formData.caseProblem);
+    data.append("caseSolution", formData.caseSolution);
+    data.append("caseResult", formData.caseResult);
+    data.append("features", formData.features);
     data.append("image", file);
 
     try {
@@ -145,6 +157,100 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
                   />
                   <LuCode className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-4xl border border-blue-100 bg-blue-50/40 p-8">
+            <div className="mb-6">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500">Case Study Content</p>
+              <h2 className="mt-2 text-xl font-black uppercase tracking-tight text-slate-800">
+                Project Story
+              </h2>
+              <p className="mt-1 text-xs font-medium text-slate-500">
+                This content appears inside the public project case study modal.
+              </p>
+            </div>
+
+            <div className="space-y-5">
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Project Type</label>
+                <input
+                  type="text"
+                  name="caseType"
+                  value={formData.caseType}
+                  onChange={handleChange}
+                  placeholder="E-Commerce Platform, Chat Application, Productivity App..."
+                  className="w-full bg-white border border-blue-100 rounded-2xl px-5 py-4 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-slate-700"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Tags / Tech Stack</label>
+                <textarea
+                  rows={3}
+                  name="tags"
+                  value={formData.tags}
+                  onChange={handleChange}
+                  placeholder="Next.js, TypeScript, Tailwind, PostgreSQL"
+                  className="w-full bg-white border border-blue-100 rounded-2xl p-5 text-sm outline-none focus:ring-4 focus:ring-blue-500/10 font-bold text-slate-700 focus:border-blue-500 transition-all"
+                />
+                <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  Separate with comma or new line
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Problem</label>
+                  <textarea
+                    rows={4}
+                    name="caseProblem"
+                    value={formData.caseProblem}
+                    onChange={handleChange}
+                    placeholder="What problem does this project solve?"
+                    className="w-full bg-white border border-blue-100 rounded-2xl p-5 text-sm outline-none focus:ring-4 focus:ring-blue-500/10 font-bold text-slate-700 focus:border-blue-500 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Solution</label>
+                  <textarea
+                    rows={4}
+                    name="caseSolution"
+                    value={formData.caseSolution}
+                    onChange={handleChange}
+                    placeholder="How did you build or design the solution?"
+                    className="w-full bg-white border border-blue-100 rounded-2xl p-5 text-sm outline-none focus:ring-4 focus:ring-blue-500/10 font-bold text-slate-700 focus:border-blue-500 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Result</label>
+                  <textarea
+                    rows={4}
+                    name="caseResult"
+                    value={formData.caseResult}
+                    onChange={handleChange}
+                    placeholder="What was improved, delivered, or achieved?"
+                    className="w-full bg-white border border-blue-100 rounded-2xl p-5 text-sm outline-none focus:ring-4 focus:ring-blue-500/10 font-bold text-slate-700 focus:border-blue-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Features</label>
+                <textarea
+                  rows={4}
+                  name="features"
+                  value={formData.features}
+                  onChange={handleChange}
+                  placeholder="Product catalog, Checkout flow, Admin dashboard, User profile"
+                  className="w-full bg-white border border-blue-100 rounded-2xl p-5 text-sm outline-none focus:ring-4 focus:ring-blue-500/10 font-bold text-slate-700 focus:border-blue-500 transition-all"
+                />
+                <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  Separate with comma or new line
+                </p>
               </div>
             </div>
           </div>
