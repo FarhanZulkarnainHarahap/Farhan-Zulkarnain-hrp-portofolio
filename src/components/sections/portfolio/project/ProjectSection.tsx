@@ -165,7 +165,7 @@ const ProjectCaseStudyModal = ({
         exit={{ y: 30, scale: 0.96, opacity: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         onClick={(event) => event.stopPropagation()}
-        className="relative max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-[32px] border bg-[#060a12]/98 p-4 shadow-[0_32px_120px_rgba(37,99,235,0.2)] md:p-6"
+        className="relative max-h-[88vh] w-full max-w-5xl overflow-y-auto rounded-[28px] border bg-[#060a12]/98 p-4 shadow-[0_32px_120px_rgba(37,99,235,0.2)] md:p-5"
         style={{ borderColor: `${accent}70` }}
       >
         <button
@@ -177,9 +177,9 @@ const ProjectCaseStudyModal = ({
           <LuX size={18} />
         </button>
 
-        <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="grid gap-5 lg:grid-cols-[1.02fr_0.98fr]">
           <div>
-            <div className="relative h-62 overflow-hidden rounded-[24px] border border-white/10 bg-slate-950 md:h-82">
+            <div className="relative h-52 overflow-hidden rounded-[22px] border border-white/10 bg-slate-950 md:h-64">
               <Image
                 src={project.imageUrl || "/placeholder-project.jpg"}
                 alt={project.title}
@@ -196,24 +196,24 @@ const ProjectCaseStudyModal = ({
               />
             </div>
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
               {cards.map(({ icon: Icon, title, text }, index) => (
                 <motion.div
                   key={title}
                   initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.12 + index * 0.08 }}
-                  className="rounded-2xl border border-white/8 bg-white/4 p-4"
+                  className="min-h-0 rounded-2xl border border-white/8 bg-white/4 p-4"
                 >
                   <Icon className="mb-3 text-blue-400" size={20} />
                   <h4 className="text-xs font-black uppercase tracking-[0.18em] text-white">{title}</h4>
-                  <p className="mt-2 text-[11px] leading-relaxed text-zinc-400">{text}</p>
+                  <p className="mt-2 line-clamp-6 text-[11px] leading-relaxed text-zinc-400">{text}</p>
                 </motion.div>
               ))}
             </div>
           </div>
 
-          <div className="flex flex-col justify-center">
+          <div className="flex min-h-0 flex-col">
             <div className="mb-4 flex flex-wrap items-center gap-2">
               <span className="rounded-full border border-blue-500/30 bg-blue-500/12 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-blue-300">
                 {details.type}
@@ -226,11 +226,11 @@ const ProjectCaseStudyModal = ({
             <h3 className="text-4xl font-black uppercase leading-none text-white md:text-5xl">
               {project.title}
             </h3>
-            <p className="mt-5 text-sm leading-relaxed text-zinc-400">
+            <p className="mt-4 line-clamp-4 text-sm leading-relaxed text-zinc-400">
               {project.description || "A carefully crafted digital product with a clean and scalable interface."}
             </p>
 
-            <div className="mt-6 flex flex-wrap gap-2">
+            <div className="mt-5 flex flex-wrap gap-2">
               {details.tags.map((tag) => (
                 <span
                   key={tag}
@@ -241,22 +241,22 @@ const ProjectCaseStudyModal = ({
               ))}
             </div>
 
-            <div className="mt-7 space-y-3">
+            <div className="mt-5 grid gap-2.5 sm:grid-cols-2">
               {details.features.map((feature, index) => (
                 <motion.div
                   key={feature}
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 + index * 0.06 }}
-                  className="flex items-center gap-3 rounded-2xl border border-white/7 bg-white/4 px-4 py-3 text-sm text-zinc-300"
+                  className="flex min-h-12 items-center gap-2.5 rounded-2xl border border-white/7 bg-white/4 px-3.5 py-2.5 text-xs leading-snug text-zinc-300"
                 >
-                  <LuCircleCheck className="shrink-0 text-blue-400" size={17} />
-                  {feature}
+                  <LuCircleCheck className="shrink-0 text-blue-400" size={15} />
+                  <span className="line-clamp-2">{feature}</span>
                 </motion.div>
               ))}
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-3">
               {project.demoUrl && (
                 <a
                   href={project.demoUrl}
