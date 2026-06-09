@@ -10,8 +10,6 @@ html {
   width: 100%;
   min-height: 100%;
   background-color: #030406;
-  overflow-x: hidden;
-  overflow-y: auto;
   scrollbar-color: #2563eb #030406;
   scrollbar-width: thin;
 }
@@ -21,7 +19,6 @@ body {
   min-height: 100%;
   background-color: #030406;
   color: white;
-  overflow-x: hidden;
   overscroll-behavior-y: none;
 }
 

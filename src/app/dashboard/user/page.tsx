@@ -20,7 +20,7 @@ const sectionClass = "portfolio-section-bg min-h-screen w-full";
 
 export default function Home() {
   return (
-    <main className="portfolio-bg text-white overflow-x-hidden">
+    <main className="portfolio-bg text-white">
       {/* SECTION 1: HOME */}
       <motion.section id="home" data-cursor-label="HOME" className={`${sectionClass} shrink-0`} {...sectionMotion}>
         <HeroCard />
