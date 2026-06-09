@@ -11,6 +11,7 @@ export default function Navbar() {
   const [hidden, setHidden] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [activeSection, setActiveSection] = useState("HOME");
 
   // Prevent body scroll while the mobile menu is open.
   useEffect(() => {
@@ -32,15 +33,53 @@ export default function Navbar() {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    const sections = menuItems
+      .map((item) => document.getElementById(item.toLowerCase()))
+      .filter((section): section is HTMLElement => Boolean(section));
+
+    if (!sections.length) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleSection = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visibleSection?.target.id) {
+          setActiveSection(visibleSection.target.id.toUpperCase());
+        }
+      },
+      {
+        root: null,
+        rootMargin: "-42% 0px -42% 0px",
+        threshold: [0, 0.2, 0.45, 0.7, 1],
+      },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const pathSection = pathname.replace("/", "").toUpperCase() || "HOME";
+
+    if (menuItems.includes(pathSection)) {
+      setActiveSection(pathSection);
+    }
+  }, [pathname]);
+
   const getIsActive = (item: string) => {
-    const itemPath = item.toLowerCase();
-    if (itemPath === "home") return pathname === "/" || pathname === "/home";
-    return pathname === `/${itemPath}`;
+    return activeSection === item;
   };
 
   const handleNavigation = (item: string) => {
     const targetId = item.toLowerCase();
     const urlPath = targetId === "home" ? "/" : `/${targetId}`;
+    setActiveSection(item);
 
     if (pathname !== urlPath) {
       window.history.pushState(null, "", urlPath);
