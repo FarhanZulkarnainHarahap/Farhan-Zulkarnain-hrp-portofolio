@@ -10,6 +10,7 @@ export default function UploadPortoPage() {
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [successOpen, setSuccessOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -64,8 +65,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const result = await response.json();
 
       if (result.success) {
-        alert("Project published successfully!");
-        router.push("/admin/portofolio");
+        setSuccessOpen(true);
         router.refresh();
       } else {
         alert("Failed: " + result.error);
@@ -80,6 +80,29 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   return (
     <div className="max-w-4xl mx-auto p-4">
+      {successOpen && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-950/50 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-[32px] border border-emerald-100 bg-white p-8 text-center shadow-2xl shadow-emerald-950/20">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-emerald-50 text-emerald-600">
+              <LuCircleCheck size={34} />
+            </div>
+            <h2 className="mt-6 text-2xl font-black tracking-tight text-slate-900">
+              Project Created
+            </h2>
+            <p className="mt-2 text-sm font-medium leading-relaxed text-slate-500">
+              Project data has been created successfully and is ready to appear on the portfolio page.
+            </p>
+            <button
+              type="button"
+              onClick={() => router.push("/admin/portofolio")}
+              className="mt-7 w-full rounded-2xl bg-emerald-600 py-4 text-xs font-black uppercase tracking-[0.2em] text-white shadow-lg shadow-emerald-100 transition-all hover:bg-emerald-700 active:scale-95"
+            >
+              Back to Projects
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header Section */}
       <div className="mb-10 flex items-center justify-between">
         <Link 
