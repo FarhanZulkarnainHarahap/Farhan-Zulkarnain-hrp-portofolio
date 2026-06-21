@@ -19,26 +19,35 @@ const sectionMotion = {
 
 const sectionClass = "portfolio-section-bg relative z-10 min-h-screen w-full";
 
+const SectionGalaxy = ({ count = 760 }: { count?: number }) => (
+  <>
+    <GalaxyScene className="absolute inset-0 z-0 opacity-55 mix-blend-screen [mask-image:radial-gradient(circle_at_center,black_0%,black_58%,transparent_88%)]" count={count} />
+    <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_50%_48%,rgba(37,99,235,0.12),transparent_42%)]" />
+  </>
+);
+
 export default function Home() {
   return (
     <main className="portfolio-bg relative text-white">
-      <GalaxyScene className="fixed inset-0 z-[1] opacity-75 mix-blend-screen" count={1500} />
-      <div className="pointer-events-none fixed inset-0 z-[1] bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.16),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.1),transparent_34%)]" />
-
       {/* SECTION 1: HOME */}
       <motion.section id="home" data-cursor-label="HOME" className={`${sectionClass} shrink-0`} {...sectionMotion}>
-        <HeroCard />
+        <SectionGalaxy count={900} />
+        <div className="relative z-10">
+          <HeroCard />
+        </div>
       </motion.section>
 
       {/* SECTION 2: ABOUT */}
       <motion.section id="about" data-cursor-label="ABOUT" className={`${sectionClass} shrink-0 overflow-hidden flex items-center justify-center px-4 md:px-6`} {...sectionMotion}>
-        <div className="w-full max-w-6xl">
+        <SectionGalaxy count={640} />
+        <div className="relative z-10 w-full max-w-6xl">
           <AboutSection />
         </div>
       </motion.section>
 
       {/* SECTION 3: SKILLS */}
       <motion.section id="skills" data-cursor-label="SKILLS" className={`${sectionClass} relative flex flex-col items-center py-16 md:py-24 xl:py-32 px-4 md:px-6`} {...sectionMotion}>
+        <SectionGalaxy count={700} />
         <h2 className="relative z-10 text-3xl md:text-5xl font-black mb-8 md:mb-16 uppercase tracking-[0.25em] md:tracking-[0.4em] text-transparent bg-clip-text bg-linear-to-r from-blue-500 to-blue-200 text-center w-full max-w-4xl">
           My Expertise
         </h2>
@@ -53,39 +62,46 @@ export default function Home() {
 
       {/* SECTION 4: PORTFOLIO */}
       <motion.section id="projects" data-cursor-label="PROJECTS" className={`${sectionClass} flex items-center justify-center px-4 md:px-6`} {...sectionMotion}>
-        <div className="w-full max-w-6xl">
+        <SectionGalaxy count={820} />
+        <div className="relative z-10 w-full max-w-6xl">
           <PortfolioSection />
         </div>
       </motion.section>
 
       {/* SECTION 5: DOCUMENTS */}
       <motion.section id="documents" data-cursor-label="DOCS" className={`${sectionClass} flex items-center justify-center px-4 md:px-6`} {...sectionMotion}>
-        <div className="w-full max-w-6xl">
+        <SectionGalaxy count={720} />
+        <div className="relative z-10 w-full max-w-6xl">
           <DocSection />
         </div>
       </motion.section>
 
       {/* SECTION 6: PROOF */}
-      <motion.section id="proof" data-cursor-label="PROOF" className="portfolio-section-bg relative z-10 w-full" {...sectionMotion}>
-        <SocialProofSection />
+      <motion.section id="proof" data-cursor-label="PROOF" className="portfolio-section-bg relative z-10 w-full overflow-hidden" {...sectionMotion}>
+        <SectionGalaxy count={620} />
+        <div className="relative z-10">
+          <SocialProofSection />
+        </div>
       </motion.section>
 
       {/* SECTION 7: CONTACT */}
       <motion.section id="contact" data-cursor-label="CONTACT" className={`${sectionClass} flex items-center justify-center px-4 md:px-6 py-10 md:py-14`} {...sectionMotion}>
-        <div className="w-full max-w-6xl">
+        <SectionGalaxy count={680} />
+        <div className="relative z-10 w-full max-w-6xl">
           <ContactSection />
         </div>
       </motion.section>
 
       {/* SECTION 8: FOOTER */}
-      <motion.footer data-cursor-label="FARHAN" className="portfolio-section-bg relative z-10 w-full flex flex-col items-center justify-center py-10 md:py-16 gap-6 px-4 md:px-6" {...sectionMotion}>
-        <div className="flex flex-wrap justify-center gap-6 text-gray-500">
+      <motion.footer data-cursor-label="FARHAN" className="portfolio-section-bg relative z-10 w-full overflow-hidden flex flex-col items-center justify-center py-10 md:py-16 gap-6 px-4 md:px-6" {...sectionMotion}>
+        <SectionGalaxy count={420} />
+        <div className="relative z-10 flex flex-wrap justify-center gap-6 text-gray-500">
           <FaLinkedin size={24} href="https://www.linkedin.com/in/farhan-zulkarnain-71801a347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" className="hover:text-blue-500 transition-all cursor-pointer hover:scale-110" /> 
           <FaInstagram size={24} href="https://www.instagram.com/farhan.nexxus?igsh=bmw4cmI4djQzeTN1" className="hover:text-pink-500 transition-all cursor-pointer hover:scale-110" /> 
           <FaGithub size={24} href="https://github.com/FarhanZulkarnainHarahap" className="hover:text-white transition-all cursor-pointer hover:scale-110" />
         </div>
 
-        <div className="flex flex-col items-center gap-4 text-center max-w-2xl">
+        <div className="relative z-10 flex flex-col items-center gap-4 text-center max-w-2xl">
           <p className="text-[10px] md:text-[11px] tracking-[0.2em] md:tracking-[0.4em] uppercase text-gray-500 font-bold leading-relaxed">
             © 2026 Farhan Zulkarnain Harahap
             <span className="hidden md:inline mx-2">|</span>
