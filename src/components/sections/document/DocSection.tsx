@@ -14,6 +14,7 @@ import {
   FaSearch,
   FaUserGraduate,
 } from "react-icons/fa";
+import GalaxyScene from "@/components/GalaxyScene";
 
 interface DocumentData {
   id: string;
@@ -29,7 +30,8 @@ const DOCS_PER_PAGE = 6;
 
 const DocumentSkeleton = () => (
   <section className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6">
-    <div className="mb-10 animate-pulse border-b border-white/10 pb-8">
+    <GalaxyScene className="z-0 opacity-35" count={480} />
+    <div className="relative z-10 mb-10 animate-pulse border-b border-white/10 pb-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <div className="mb-4 h-3 w-42 rounded-full bg-blue-500/18" />
@@ -39,12 +41,12 @@ const DocumentSkeleton = () => (
       </div>
     </div>
 
-    <div className="mb-7 flex animate-pulse flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div className="relative z-10 mb-7 flex animate-pulse flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div className="h-12 w-full rounded-lg border border-white/8 bg-[#111722]/80 md:max-w-sm" />
       <div className="h-12 w-full rounded-lg border border-white/8 bg-[#111722]/80 md:w-56" />
     </div>
 
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+    <div className="relative z-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: DOCS_PER_PAGE }, (_, index) => (
         <div
           key={index}
@@ -166,7 +168,8 @@ export default function DocSection() {
 
   return (
     <section id="documents" className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6">
-      <div className="mb-10 border-b border-white/10 pb-8">
+      <GalaxyScene className="z-0 opacity-35" count={560} />
+      <div className="relative z-10 mb-10 border-b border-white/10 pb-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400">
@@ -183,7 +186,7 @@ export default function DocSection() {
         </div>
       </div>
 
-      <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="relative z-10 mb-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <label className="relative w-full md:max-w-sm">
           <FaSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={13} />
           <input
@@ -210,7 +213,7 @@ export default function DocSection() {
       </div>
 
       {visibleDocs.length > 0 ? (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="relative z-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visibleDocs.map((doc, index) => {
             const previewType = getPreviewType(doc);
 
@@ -228,7 +231,7 @@ export default function DocSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cursor-label="OPEN"
-                  className="relative block h-44 overflow-hidden bg-white md:h-50"
+                  className="relative block h-38 overflow-hidden bg-white md:h-42"
                   aria-label={`Open ${doc.name}`}
                 >
                   {doc.previewUrl && (
@@ -295,7 +298,7 @@ export default function DocSection() {
                   )}
                 </a>
 
-                <div className="relative p-4">
+                <div className="relative p-3.5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <h3 className="truncate text-base font-bold text-white">
@@ -331,12 +334,12 @@ export default function DocSection() {
           })}
         </div>
       ) : (
-        <div className="rounded-3xl border border-dashed border-white/10 px-6 py-20 text-center text-[10px] font-bold uppercase tracking-[0.35em] text-zinc-600">
+        <div className="relative z-10 rounded-3xl border border-dashed border-white/10 px-6 py-20 text-center text-[10px] font-bold uppercase tracking-[0.35em] text-zinc-600">
           No certificate found
         </div>
       )}
 
-      <div className="mt-9 flex items-center justify-center gap-3">
+      <div className="relative z-10 mt-9 flex items-center justify-center gap-3">
         <button
           type="button"
           onClick={() => setPage((current) => Math.max(1, current - 1))}

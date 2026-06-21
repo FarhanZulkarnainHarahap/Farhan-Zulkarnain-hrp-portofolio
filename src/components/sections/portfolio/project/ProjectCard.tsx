@@ -65,7 +65,7 @@ export default function ProjectCard({
         />
       )}
 
-      <div className={`relative overflow-hidden rounded-[18px] bg-slate-950 ${variant === "orbit" ? "h-36" : "h-44 sm:h-53"}`}>
+      <div className={`relative overflow-hidden rounded-[18px] bg-slate-950 ${variant === "orbit" ? "h-36" : "h-38 sm:h-42 lg:h-44"}`}>
         <Image
           src={imageUrl || "/placeholder-project.jpg"}
           alt={title}
@@ -93,7 +93,7 @@ export default function ProjectCard({
         </span>
       )}
 
-      <div className={variant === "orbit" ? "px-2 pb-2 pt-4" : "px-3 pb-3 pt-5 text-center"}>
+      <div className={variant === "orbit" ? "px-2 pb-2 pt-4" : "px-3 pb-3 pt-4 text-center"}>
         <p className="text-[9px] font-black uppercase tracking-[0.24em]" style={{ color: accent }}>
           Web Application
         </p>
@@ -103,7 +103,7 @@ export default function ProjectCard({
 
         {isFeatured && (
           <>
-            <p className="mx-auto mt-3 max-w-xs text-[11px] leading-relaxed text-zinc-400 sm:text-xs">
+            <p className="mx-auto mt-3 line-clamp-3 max-w-xs text-[11px] leading-relaxed text-zinc-400 sm:text-xs">
               {description || fallbackDescription}
             </p>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5">
@@ -116,14 +116,14 @@ export default function ProjectCard({
                 </span>
               ))}
             </div>
-            <div className="mt-5 flex items-center justify-center gap-3">
+            <div className="mt-4 flex items-center justify-center gap-3">
               {onDetails && (
                 <button
                   type="button"
                   onClick={onDetails}
                   data-cursor-label="CASE"
                   aria-label={`Open case study for ${title}`}
-                  className="group/case flex h-11 items-center gap-2 rounded-full border border-blue-500/35 bg-blue-500/12 px-4 text-[9px] font-black uppercase tracking-[0.16em] text-blue-200 transition-all hover:scale-105 hover:border-blue-300 hover:bg-blue-500 hover:text-white"
+                  className="group/case flex h-10 items-center gap-2 rounded-full border border-blue-500/35 bg-blue-500/12 px-4 text-[9px] font-black uppercase tracking-[0.16em] text-blue-200 transition-all hover:scale-105 hover:border-blue-300 hover:bg-blue-500 hover:text-white"
                 >
                   <FiBookOpen size={14} />
                   Case
@@ -136,7 +136,7 @@ export default function ProjectCard({
                   rel="noopener noreferrer"
                   data-cursor-label="OPEN"
                   aria-label={`Open demo ${title}`}
-                  className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_0_22px_rgba(37,99,235,0.6)] transition-transform hover:scale-110"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_0_22px_rgba(37,99,235,0.6)] transition-transform hover:scale-110"
                 >
                   <FiArrowUpRight size={18} />
                 </a>
@@ -148,7 +148,7 @@ export default function ProjectCard({
                   rel="noopener noreferrer"
                   data-cursor-label="CODE"
                   aria-label={`Open repository ${title}`}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-all hover:scale-110 hover:bg-white/15"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-all hover:scale-110 hover:bg-white/15"
                 >
                   <FaGithub size={17} />
                 </a>

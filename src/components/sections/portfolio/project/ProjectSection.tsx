@@ -15,6 +15,7 @@ import {
   LuTarget,
   LuX,
 } from "react-icons/lu";
+import GalaxyScene from "@/components/GalaxyScene";
 import ProjectCard from "./ProjectCard";
 
 interface Project {
@@ -39,8 +40,8 @@ interface Project {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const PROJECTS_PER_PAGE = 6;
-const MOBILE_PROJECTS_PER_PAGE = 1;
+const PROJECTS_PER_PAGE = 3;
+const MOBILE_PROJECTS_PER_PAGE = 3;
 const projectAccents = ["#3b82f6", "#10b981", "#facc15", "#a855f7"];
 
 const splitListValue = (value?: string[] | string | null) => {
@@ -291,9 +292,10 @@ const ProjectCaseStudyModal = ({
 
 const ProjectSkeleton = () => (
   <section className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:py-24">
+    <GalaxyScene className="z-0 opacity-45" count={520} />
     <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.18),transparent_55%)]" />
 
-    <div className="mx-auto w-full max-w-7xl">
+    <div className="relative z-10 mx-auto w-full max-w-7xl">
       <div className="mb-10 animate-pulse border-b border-white/10 pb-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
@@ -305,7 +307,7 @@ const ProjectSkeleton = () => (
         </div>
       </div>
 
-      <div className="mx-auto grid w-full max-w-sm grid-cols-1 gap-5 md:max-w-none md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: PROJECTS_PER_PAGE }, (_, index) => (
           <div
             key={index}
@@ -409,12 +411,13 @@ export default function PortfolioSection() {
 
   return (
     <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:py-24">
+      <GalaxyScene className="z-0 opacity-50" count={760} />
       <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.2),transparent_55%)]" />
       <div className="absolute inset-0 -z-20 bg-linear-to-b from-transparent via-[#030406]/14 to-transparent" />
       <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
       <div className="absolute -bottom-28 -left-28 -z-10 h-80 w-80 rounded-full border border-blue-500/25 opacity-50" />
 
-      <div className="mx-auto w-full max-w-7xl">
+      <div className="relative z-10 mx-auto w-full max-w-7xl">
         <div className="mb-10 border-b border-white/10 pb-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
@@ -437,7 +440,7 @@ export default function PortfolioSection() {
         </div>
 
         {visibleProjects.length > 0 ? (
-          <div className="mx-auto grid w-full max-w-sm grid-cols-1 gap-5 md:max-w-none md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {visibleProjects.map((project, index) => {
               const projectIndex = (safePage - 1) * projectsPerPage + index;
 
