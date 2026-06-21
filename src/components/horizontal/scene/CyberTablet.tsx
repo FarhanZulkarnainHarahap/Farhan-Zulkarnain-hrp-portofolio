@@ -2,7 +2,7 @@
 
 /* eslint-disable react-hooks/immutability */
 
-import { Text } from "@react-three/drei";
+import { Html, Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import type { MutableRefObject } from "react";
 import { useMemo, useRef } from "react";
@@ -39,9 +39,32 @@ const fragmentShader = `
   }
 `;
 
-const ProjectPlane = ({ index, title, position, velocityRef }: {
-  index: number;
+interface Project {
+  id: number;
   title: string;
+  desc: string;
+  tech: string[];
+  link?: string;
+}
+
+const projects: Project[] = [
+  {
+    id: 1,
+    title: "Backend Architecture",
+    desc: "High-performance API node systems with strict indexing.",
+    tech: ["Node.js", "PostgreSQL"],
+  },
+  {
+    id: 2,
+    title: "UI System Node",
+    desc: "Cyberpunk responsive design libraries and theme engine.",
+    tech: ["Next.js", "Tailwind"],
+  },
+];
+
+const ProjectPlane = ({ index, project, position, velocityRef }: {
+  index: number;
+  project: Project;
   position: [number, number, number];
   velocityRef: MutableRefObject<number>;
 }) => {
@@ -71,18 +94,34 @@ const ProjectPlane = ({ index, title, position, velocityRef }: {
   return (
     <group position={position}>
       <mesh material={material}>
-        <planeGeometry args={[1.42, 0.86, 42, 22]} />
+        <planeGeometry args={[1.82, 1.08, 42, 22]} />
       </mesh>
-      <Text position={[0, -0.03, 0.08]} fontSize={0.105} maxWidth={1.1} color="#ffffff" anchorX="center" anchorY="middle">
-        {String(index + 1).padStart(2, "0")} / {title}
+      <Text position={[-0.76, 0.36, 0.08]} fontSize={0.11} color="#00ffcc" anchorX="left" anchorY="middle">
+        0{index + 1}
       </Text>
+      <Html transform center position={[0, -0.02, 0.12]} distanceFactor={3.35}>
+        <article className="w-[270px] rounded-[22px] border border-blue-400/25 bg-black/58 p-5 text-left text-white shadow-[0_0_38px_rgba(59,130,246,0.14)] backdrop-blur-xl">
+          <p className="text-[9px] font-black uppercase tracking-[0.35em] text-[#00ffcc]">Project Node</p>
+          <h3 className="mt-3 text-lg font-black uppercase leading-tight text-white">{project.title}</h3>
+          <p className="mt-3 text-xs leading-5 text-slate-300">{project.desc}</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {project.tech.map((tech) => (
+              <span
+                key={tech}
+                className="rounded-full border border-[#3b82f6]/35 bg-[#3b82f6]/15 px-2.5 py-1 text-[8px] font-black uppercase tracking-[0.18em] text-blue-100"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        </article>
+      </Html>
     </group>
   );
 };
 
 export const CyberTablet = ({ velocityRef }: { velocityRef: MutableRefObject<number> }) => {
   const tabletRef = useRef<THREE.Group>(null);
-  const projects = ["Learnova", "Nexxora", "Market-Snap", "ReservA"];
 
   useFrame((_, delta) => {
     if (!tabletRef.current) {
@@ -94,28 +133,28 @@ export const CyberTablet = ({ velocityRef }: { velocityRef: MutableRefObject<num
   });
 
   return (
-    <group ref={tabletRef} position={[10, 0, 0]}>
+    <group ref={tabletRef} position={[12, 0, 0]}>
       <mesh>
-        <boxGeometry args={[4.7, 2.95, 0.16]} />
+        <boxGeometry args={[5.15, 3.02, 0.16]} />
         <meshPhysicalMaterial color="#020617" roughness={0.42} metalness={0.75} emissive="#0033aa" emissiveIntensity={0.2} />
       </mesh>
 
       <mesh position={[0, 0, 0.09]}>
-        <planeGeometry args={[4.34, 2.56]} />
+        <planeGeometry args={[4.78, 2.64]} />
         <meshBasicMaterial color="#001a66" transparent opacity={0.2} blending={THREE.AdditiveBlending} />
       </mesh>
 
+      <Text position={[-2.16, 1.16, 0.2]} fontSize={0.13} letterSpacing={0.18} color="#00f0ff" anchorX="left">
+        LIVE PROJECT FEED
+      </Text>
+
       {projects.map((project, index) => (
         <ProjectPlane
-          key={project}
+          key={project.id}
           index={index}
-          title={project}
+          project={project}
           velocityRef={velocityRef}
-          position={[
-            index % 2 === 0 ? -1.08 : 1.08,
-            index < 2 ? 0.62 : -0.62,
-            0.16,
-          ]}
+          position={[index === 0 ? -1.18 : 1.18, -0.08, 0.16]}
         />
       ))}
 
