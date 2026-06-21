@@ -1,9 +1,37 @@
 "use client";
 
-import { useRef } from "react";
+import dynamic from "next/dynamic";
+import { Component, ReactNode, useRef } from "react";
 import { FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { useHorizontalScroll } from "./hooks/useHorizontalScroll";
-import { HorizontalScene } from "./scene/HorizontalScene";
+
+const HorizontalScene = dynamic(
+  () => import("./scene/HorizontalScene").then((module) => module.HorizontalScene),
+  {
+    ssr: false,
+    loading: () => <div className="fixed inset-0 z-0 bg-black" />,
+  },
+);
+
+class SceneErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error("Horizontal scene failed:", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div className="fixed inset-0 z-0 bg-[radial-gradient(circle_at_center,rgba(0,85,255,0.22),transparent_45%),#000]" />;
+    }
+
+    return this.props.children;
+  }
+}
 
 const skills = ["Next.js", "TypeScript", "Node.js", "Prisma", "PostgreSQL", "UI/UX", "GSAP", "R3F"];
 const projects = ["Learnova", "Nexxora", "Market-Snap", "ReservA"];
@@ -16,7 +44,9 @@ export default function HorizontalPortfolio() {
 
   return (
     <main ref={wrapperRef} className="relative min-h-screen bg-black text-white">
-      <HorizontalScene progressRef={progressRef} velocityRef={velocityRef} />
+      <SceneErrorBoundary>
+        <HorizontalScene progressRef={progressRef} velocityRef={velocityRef} />
+      </SceneErrorBoundary>
 
       <div
         ref={trackRef}
