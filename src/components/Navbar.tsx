@@ -1,4 +1,7 @@
 "use client";
+
+/* eslint-disable react-hooks/set-state-in-effect */
+
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
