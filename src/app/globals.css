@@ -79,11 +79,6 @@ body::-webkit-scrollbar-thumb:hover {
   background: transparent;
 }
 
-.portfolio-bg > * {
-  position: relative;
-  z-index: 1;
-}
-
 .hero-profile-card {
   position: relative;
   width: min(78vw, 330px);
