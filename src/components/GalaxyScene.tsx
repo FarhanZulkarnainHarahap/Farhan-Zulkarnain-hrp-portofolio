@@ -81,8 +81,8 @@ const GalaxyParticles = ({ count = 900 }: { count?: number }) => {
       return;
     }
 
-    pointsRef.current.rotation.y += delta * 0.035;
-    pointsRef.current.rotation.x = Math.sin(Date.now() * 0.00018) * 0.08;
+    pointsRef.current.rotation.y += delta * 0.055;
+    pointsRef.current.rotation.x = 0.08 + Math.sin(Date.now() * 0.00022) * 0.1;
   });
 
   return (
@@ -106,6 +106,40 @@ const GalaxyParticles = ({ count = 900 }: { count?: number }) => {
   );
 };
 
+const GalaxyOrbitRings = () => {
+  const groupRef = useRef<THREE.Group>(null);
+
+  useFrame((_, delta) => {
+    if (!groupRef.current) {
+      return;
+    }
+
+    groupRef.current.rotation.z += delta * 0.08;
+    groupRef.current.rotation.y = Math.sin(Date.now() * 0.00016) * 0.18;
+  });
+
+  return (
+    <group ref={groupRef} rotation={[1.05, 0.2, -0.42]}>
+      {[1.55, 2.2, 2.9].map((radius, index) => (
+        <mesh key={radius} rotation={[index * 0.18, index * 0.26, 0]}>
+          <torusGeometry args={[radius, 0.006, 8, 180]} />
+          <meshBasicMaterial
+            color={index === 1 ? "#22d3ee" : "#3b82f6"}
+            transparent
+            opacity={index === 1 ? 0.34 : 0.2}
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
+      ))}
+
+      <mesh position={[0.2, 0, 0]}>
+        <sphereGeometry args={[0.09, 24, 24]} />
+        <meshBasicMaterial color="#93c5fd" transparent opacity={0.52} blending={THREE.AdditiveBlending} />
+      </mesh>
+    </group>
+  );
+};
+
 export default function GalaxyScene({ className = "", count }: GalaxySceneProps) {
   return (
     <div aria-hidden="true" className={`pointer-events-none ${className || "absolute inset-0"}`}>
@@ -114,6 +148,7 @@ export default function GalaxyScene({ className = "", count }: GalaxySceneProps)
         dpr={[1, 1.5]}
         gl={{ alpha: true, antialias: false, powerPreference: "low-power" }}
       >
+        <GalaxyOrbitRings />
         <GalaxyParticles count={count} />
       </Canvas>
     </div>

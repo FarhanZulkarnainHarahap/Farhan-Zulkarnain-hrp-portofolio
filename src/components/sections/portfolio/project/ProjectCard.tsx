@@ -51,7 +51,7 @@ export default function ProjectCard({
         variant === "featured"
           ? "w-92 rounded-[28px] p-3 xl:w-100"
           : variant === "mobile"
-            ? "w-full rounded-[18px] p-1.5 sm:rounded-[22px] sm:p-2 lg:rounded-[26px] lg:p-2.5"
+            ? "w-full rounded-[28px] p-3 sm:rounded-[26px] sm:p-2.5 lg:p-3"
             : "w-62 rounded-[22px] p-2.5 xl:w-68"
       }`}
     >
@@ -68,7 +68,7 @@ export default function ProjectCard({
       <div className={`relative overflow-hidden bg-slate-950 ${
         variant === "orbit"
           ? "h-36 rounded-[18px]"
-          : "h-22 rounded-[14px] sm:h-32 sm:rounded-[16px] md:h-38 lg:h-44 lg:rounded-[18px]"
+          : "h-52 rounded-[20px] sm:h-40 sm:rounded-[18px] md:h-44 lg:h-48"
       }`}>
         <Image
           src={imageUrl || "/placeholder-project.jpg"}
@@ -81,7 +81,7 @@ export default function ProjectCard({
       </div>
 
       <span
-        className="absolute left-1 top-1 flex h-7 w-7 items-center justify-center rounded-full border bg-[#071020] font-mono text-[10px] font-black text-white shadow-lg sm:h-8 sm:w-8 sm:text-[11px] lg:h-9 lg:w-9 lg:text-xs"
+        className="absolute left-3 top-3 flex h-10 w-10 items-center justify-center rounded-full border bg-[#071020] font-mono text-xs font-black text-white shadow-lg sm:h-9 sm:w-9"
         style={{ borderColor: accent, boxShadow: `0 0 18px ${accent}80` }}
       >
         {projectNumber}
@@ -97,20 +97,20 @@ export default function ProjectCard({
         </span>
       )}
 
-      <div className={variant === "orbit" ? "px-2 pb-2 pt-4" : "px-1.5 pb-1.5 pt-2 text-center sm:px-2 sm:pb-2 sm:pt-3 lg:px-3 lg:pb-3 lg:pt-4"}>
-        <p className="text-[7px] font-black uppercase tracking-[0.14em] sm:text-[8px] sm:tracking-[0.2em] lg:text-[9px] lg:tracking-[0.24em]" style={{ color: accent }}>
+      <div className={variant === "orbit" ? "px-2 pb-2 pt-4" : "px-3 pb-3 pt-4 text-center sm:px-3 sm:pb-3 sm:pt-4"}>
+        <p className="text-[9px] font-black uppercase tracking-[0.24em]" style={{ color: accent }}>
           Web Application
         </p>
-        <h3 className={`mt-1.5 line-clamp-2 font-black uppercase tracking-tight text-white sm:mt-2 ${variant === "orbit" ? "text-lg" : "text-[11px] leading-tight sm:text-base lg:text-2xl"}`}>
+        <h3 className={`mt-2 line-clamp-2 font-black uppercase tracking-tight text-white ${variant === "orbit" ? "text-lg" : "text-2xl leading-tight sm:text-xl lg:text-2xl"}`}>
           {title}
         </h3>
 
         {isFeatured && (
           <>
-            <p className="mx-auto mt-3 hidden max-w-xs text-[11px] leading-relaxed text-zinc-400 md:line-clamp-3 md:block lg:text-xs">
+            <p className="mx-auto mt-3 line-clamp-3 max-w-xs text-xs leading-relaxed text-zinc-400 sm:text-[11px] md:text-xs">
               {description || fallbackDescription}
             </p>
-            <div className="mt-4 hidden flex-wrap items-center justify-center gap-1.5 md:flex">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5">
               {["Responsive UI", "Modern Web", "Scalable"].map((tag) => (
                 <span
                   key={tag}
@@ -120,17 +120,18 @@ export default function ProjectCard({
                 </span>
               ))}
             </div>
-            <div className="mt-2 flex items-center justify-center gap-1.5 sm:mt-3 sm:gap-2 lg:mt-4 lg:gap-3">
+            <div className="mt-4 flex items-center justify-center gap-2.5 lg:gap-3">
               {onDetails && (
                 <button
                   type="button"
                   onClick={onDetails}
                   data-cursor-label="CASE"
                   aria-label={`Open case study for ${title}`}
-                  className="group/case flex h-8 items-center gap-1 rounded-full border border-blue-500/35 bg-blue-500/12 px-2 text-[7px] font-black uppercase tracking-[0.1em] text-blue-200 transition-all hover:scale-105 hover:border-blue-300 hover:bg-blue-500 hover:text-white sm:h-9 sm:px-3 sm:text-[8px] lg:h-10 lg:gap-2 lg:px-4 lg:text-[9px] lg:tracking-[0.16em]"
+                  className="group/case flex h-11 items-center gap-2 rounded-full border border-blue-500/35 bg-blue-500/12 px-4 text-[9px] font-black uppercase tracking-[0.16em] text-blue-200 transition-all hover:scale-105 hover:border-blue-300 hover:bg-blue-500 hover:text-white sm:h-10 sm:px-3"
                 >
-                  <FiBookOpen className="hidden sm:block" size={14} />
-                  Case
+                  <FiBookOpen size={14} />
+                  <span className="sm:hidden lg:inline">Case Study</span>
+                  <span className="hidden sm:inline lg:hidden">Case</span>
                 </button>
               )}
               {demoUrl && (
@@ -140,9 +141,9 @@ export default function ProjectCard({
                   rel="noopener noreferrer"
                   data-cursor-label="OPEN"
                   aria-label={`Open demo ${title}`}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_0_22px_rgba(37,99,235,0.6)] transition-transform hover:scale-110 sm:h-9 sm:w-9 lg:h-10 lg:w-10"
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_0_22px_rgba(37,99,235,0.6)] transition-transform hover:scale-110 sm:h-10 sm:w-10"
                 >
-                  <FiArrowUpRight size={16} />
+                  <FiArrowUpRight size={18} />
                 </a>
               )}
               {repoUrl && (
@@ -152,9 +153,9 @@ export default function ProjectCard({
                   rel="noopener noreferrer"
                   data-cursor-label="CODE"
                   aria-label={`Open repository ${title}`}
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-all hover:scale-110 hover:bg-white/15 sm:h-9 sm:w-9 lg:h-10 lg:w-10"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition-all hover:scale-110 hover:bg-white/15 sm:h-10 sm:w-10"
                 >
-                  <FaGithub size={15} />
+                  <FaGithub size={17} />
                 </a>
               )}
             </div>

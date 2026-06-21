@@ -11,6 +11,7 @@ import {
   LuGithub,
   LuLayers,
   LuRocket,
+  LuSearch,
   LuSparkles,
   LuTarget,
   LuX,
@@ -60,6 +61,9 @@ const splitListValue = (value?: string[] | string | null) => {
 
 const firstText = (...values: Array<string | null | undefined>) =>
   values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();
+
+const getProjectCategory = (project: Project) =>
+  firstText(project.caseType, project.type, project.category) ?? "Web Application";
 
 const inferProjectDetails = (project: Project) => {
   const text = `${project.title} ${project.description}`.toLowerCase();
@@ -305,26 +309,26 @@ const ProjectSkeleton = () => (
         </div>
       </div>
 
-      <div className="grid w-full grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
+      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: PROJECTS_PER_PAGE }, (_, index) => (
           <div
             key={index}
             className="animate-pulse overflow-hidden rounded-[26px] border border-white/7 bg-[#101720]/92 p-2.5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]"
           >
-            <div className="h-24 rounded-[18px] bg-linear-to-br from-white/14 via-white/8 to-blue-500/8 sm:h-34 lg:h-53" />
-            <div className="px-2 pb-2 pt-3 text-center sm:px-3 sm:pb-3 sm:pt-5">
+            <div className="h-52 rounded-[18px] bg-linear-to-br from-white/14 via-white/8 to-blue-500/8 sm:h-44 lg:h-53" />
+            <div className="px-3 pb-3 pt-5 text-center">
               <div className="mx-auto h-3 w-32 rounded-full bg-blue-500/18" />
-              <div className="mx-auto mt-3 h-5 w-full max-w-32 rounded-xl bg-white/10 sm:mt-4 sm:h-7 sm:max-w-54" />
-              <div className="mx-auto mt-3 hidden h-16 w-full max-w-xs rounded-2xl bg-white/6 md:block" />
-              <div className="mt-4 hidden justify-center gap-2 md:flex">
+              <div className="mx-auto mt-4 h-7 w-54 rounded-xl bg-white/10" />
+              <div className="mx-auto mt-4 h-16 w-full max-w-xs rounded-2xl bg-white/6" />
+              <div className="mt-4 flex justify-center gap-2">
                 <div className="h-6 w-24 rounded-full border border-white/8 bg-white/5" />
                 <div className="h-6 w-22 rounded-full border border-white/8 bg-white/5" />
                 <div className="h-6 w-20 rounded-full border border-white/8 bg-white/5" />
               </div>
-              <div className="mt-3 flex justify-center gap-2 sm:mt-5 sm:gap-3">
-                <div className="h-8 w-14 rounded-full border border-blue-500/18 bg-blue-500/10 sm:h-11 sm:w-22" />
-                <div className="h-8 w-8 rounded-full bg-blue-500/14 sm:h-11 sm:w-11" />
-                <div className="h-8 w-8 rounded-full border border-white/10 bg-white/5 sm:h-11 sm:w-11" />
+              <div className="mt-5 flex justify-center gap-3">
+                <div className="h-11 w-22 rounded-full border border-blue-500/18 bg-blue-500/10" />
+                <div className="h-11 w-11 rounded-full bg-blue-500/14" />
+                <div className="h-11 w-11 rounded-full border border-white/10 bg-white/5" />
               </div>
             </div>
           </div>
@@ -345,6 +349,8 @@ export default function PortfolioSection() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [isMobileCarousel, setIsMobileCarousel] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
@@ -392,12 +398,38 @@ export default function PortfolioSection() {
   }, []);
 
   const projectsPerPage = isMobileCarousel ? MOBILE_PROJECTS_PER_PAGE : PROJECTS_PER_PAGE;
-  const pageCount = Math.max(1, Math.ceil(projects.length / projectsPerPage));
+  const categories = useMemo(
+    () => Array.from(new Set(projects.map((project) => getProjectCategory(project)).filter(Boolean))),
+    [projects],
+  );
+  const filteredProjects = useMemo(() => {
+    const keyword = searchTerm.trim().toLowerCase();
+
+    return projects.filter((project) => {
+      const category = getProjectCategory(project);
+      const searchable = `${project.title} ${project.description} ${category}`.toLowerCase();
+      const matchesSearch = searchable.includes(keyword);
+      const matchesCategory = categoryFilter === "all" || category === categoryFilter;
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [categoryFilter, projects, searchTerm]);
+  const pageCount = Math.max(1, Math.ceil(filteredProjects.length / projectsPerPage));
   const safePage = Math.min(page, pageCount);
   const visibleProjects = useMemo(
-    () => projects.slice((safePage - 1) * projectsPerPage, safePage * projectsPerPage),
-    [projects, projectsPerPage, safePage],
+    () => filteredProjects.slice((safePage - 1) * projectsPerPage, safePage * projectsPerPage),
+    [filteredProjects, projectsPerPage, safePage],
   );
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setPage(1);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setCategoryFilter(value);
+    setPage(1);
+  };
 
   useEffect(() => {
     setPage((current) => Math.min(current, pageCount));
@@ -431,13 +463,39 @@ export default function PortfolioSection() {
             </div>
 
             <p className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-500">
-              {projects.length} Project Assets
+              {filteredProjects.length} / {projects.length} Project Assets
             </p>
           </div>
         </div>
 
+        <div className="mb-7 grid gap-3 md:grid-cols-[1fr_260px]">
+          <label className="group relative">
+            <LuSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/70 transition-colors group-focus-within:text-blue-300" size={16} />
+            <input
+              type="search"
+              value={searchTerm}
+              onChange={(event) => handleSearchChange(event.target.value)}
+              placeholder="Search projects..."
+              className="h-13 w-full rounded-2xl border border-blue-500/15 bg-[#07101d]/82 pl-12 pr-4 text-sm font-semibold text-white shadow-[0_18px_55px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition-colors placeholder:text-zinc-500 focus:border-blue-400/70"
+            />
+          </label>
+
+          <select
+            value={categoryFilter}
+            onChange={(event) => handleCategoryChange(event.target.value)}
+            className="h-13 w-full rounded-2xl border border-blue-500/15 bg-[#07101d]/82 px-4 text-sm font-bold text-zinc-200 shadow-[0_18px_55px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition-colors focus:border-blue-400/70"
+          >
+            <option value="all">All Categories</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {visibleProjects.length > 0 ? (
-          <div className="grid w-full grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
+          <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {visibleProjects.map((project, index) => {
               const projectIndex = (safePage - 1) * projectsPerPage + index;
 

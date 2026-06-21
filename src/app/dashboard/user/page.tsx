@@ -22,8 +22,8 @@ const sectionClass = "portfolio-section-bg relative z-10 min-h-screen w-full";
 export default function Home() {
   return (
     <main className="portfolio-bg relative text-white">
-      <GalaxyScene className="fixed inset-0 z-0 opacity-45" count={1200} />
-      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.16),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.1),transparent_34%)]" />
+      <GalaxyScene className="fixed inset-0 z-[1] opacity-75 mix-blend-screen" count={1500} />
+      <div className="pointer-events-none fixed inset-0 z-[1] bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.16),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.1),transparent_34%)]" />
 
       {/* SECTION 1: HOME */}
       <motion.section id="home" data-cursor-label="HOME" className={`${sectionClass} shrink-0`} {...sectionMotion}>
