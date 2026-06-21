@@ -9,13 +9,13 @@ import { TextureLoader } from "three";
 import { Html, Text } from "@react-three/drei";
 import { useMouseParallax } from "../hooks/useMouseParallax";
 
-const about = {
+const fallbackAbout = {
   name: "Farhan Zulkarnain",
   role: "Full-Stack Web Developer & UI/UX Designer",
   bio: "Farhan Zulkarnain | Full-Stack Web Developer & UI/UX Designer. Rebuilding a Dark Tech OS portfolio into an immersive 3D horizontal system.",
 };
 
-const skills: string[] = ["Next.js", "TypeScript", "Node.js", "Prisma", "PostgreSQL", "UI/UX", "GSAP", "R3F"];
+const fallbackSkills: string[] = ["Next.js", "TypeScript", "Node.js", "Prisma", "PostgreSQL", "UI/UX", "GSAP", "R3F"];
 
 const photoUrls = [
   "https://res.cloudinary.com/dpanr1qqp/image/upload/v1765874955/bake-bliss/b1v5qdy9whqszyqohdjb.jpg",
@@ -77,7 +77,14 @@ const PhotoPlane = ({ url, position, rotation }: { url: string; position: [numbe
   );
 };
 
-export const FloatingPhotoFrames = () => {
+type FloatingPhotoFramesProps = {
+  about?: typeof fallbackAbout;
+  skills?: string[];
+};
+
+export const FloatingPhotoFrames = ({ about = fallbackAbout, skills = fallbackSkills }: FloatingPhotoFramesProps) => {
+  const visibleSkills = skills.length ? skills.slice(0, 8) : fallbackSkills;
+
   return (
     <group position={[0, 0, 0]}>
       <Suspense fallback={null}>
@@ -94,7 +101,7 @@ export const FloatingPhotoFrames = () => {
           <p className="mt-2 text-[10px] font-black uppercase tracking-[0.24em] text-[#00ffcc]">{about.role}</p>
           <p className="mt-4 text-sm leading-7 text-slate-200">{about.bio}</p>
           <div className="mt-6 grid grid-cols-2 gap-2">
-            {skills.map((skill) => (
+            {visibleSkills.map((skill) => (
               <span
                 key={skill}
                 className="rounded-full border border-[#00ffcc]/25 bg-[#00ffcc]/10 px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#dffcff]"

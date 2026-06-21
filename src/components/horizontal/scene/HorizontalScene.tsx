@@ -13,6 +13,19 @@ import { GlassWhiteboard } from "./GlassWhiteboard";
 type HorizontalSceneProps = {
   progressRef: MutableRefObject<number>;
   velocityRef: MutableRefObject<number>;
+  about: {
+    name: string;
+    role: string;
+    bio: string;
+  };
+  skills: string[];
+  projects: Array<{
+    id: number;
+    title: string;
+    desc: string;
+    tech: string[];
+  }>;
+  documents: string[];
 };
 
 const CameraController = ({ progressRef }: { progressRef: MutableRefObject<number> }) => {
@@ -131,7 +144,7 @@ const DataNodeNetwork = ({ progressRef }: { progressRef: MutableRefObject<number
   );
 };
 
-export const HorizontalScene = ({ progressRef, velocityRef }: HorizontalSceneProps) => {
+export const HorizontalScene = ({ progressRef, velocityRef, about, skills, projects, documents }: HorizontalSceneProps) => {
   return (
     <div className="fixed inset-0 z-0 bg-black">
       <Canvas
@@ -149,9 +162,9 @@ export const HorizontalScene = ({ progressRef, velocityRef }: HorizontalScenePro
 
         <Suspense fallback={null}>
           <DataNodeNetwork progressRef={progressRef} />
-          <FloatingPhotoFrames />
-          <CyberTablet velocityRef={velocityRef} />
-          <GlassWhiteboard />
+          <FloatingPhotoFrames about={about} skills={skills} />
+          <CyberTablet velocityRef={velocityRef} projects={projects} />
+          <GlassWhiteboard documents={documents} />
           <DataRail />
         </Suspense>
       </Canvas>

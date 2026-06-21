@@ -5,14 +5,15 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
 
-const documents: string[] = [
+const fallbackDocuments: string[] = [
   "Full-Stack Developer Certification",
   "UI/UX Advanced Engineering Credential",
   "Verified CV & Tech Stack Portfolio Node",
 ];
 
-export const GlassWhiteboard = () => {
+export const GlassWhiteboard = ({ documents = fallbackDocuments }: { documents?: string[] }) => {
   const boardRef = useRef<THREE.Group>(null);
+  const visibleDocuments = documents.length ? documents.slice(0, 3) : fallbackDocuments;
 
   useFrame((_, delta) => {
     if (!boardRef.current) {
@@ -55,11 +56,11 @@ export const GlassWhiteboard = () => {
           <div className="mb-5 flex items-center justify-between">
             <p className="text-[9px] font-black uppercase tracking-[0.42em] text-[#00ffcc]">Verified Documents</p>
             <span className="rounded-full border border-[#3b82f6]/35 bg-[#3b82f6]/15 px-3 py-1 text-[8px] font-black uppercase tracking-[0.2em] text-blue-100">
-              {documents.length} Assets
+              {visibleDocuments.length} Assets
             </span>
           </div>
           <div className="space-y-3">
-            {documents.map((document, index) => (
+            {visibleDocuments.map((document, index) => (
               <div
                 key={document}
                 className="flex items-center gap-4 rounded-2xl border border-[#00ffcc]/18 bg-[#001a66]/20 px-4 py-3"
@@ -74,7 +75,7 @@ export const GlassWhiteboard = () => {
         </div>
       </Html>
 
-      {documents.map((document, index) => (
+      {visibleDocuments.map((document, index) => (
         <mesh key={document} position={[-1.98 + index * 1.98, -1.0, 0.14]}>
           <sphereGeometry args={[0.06, 18, 18]} />
           <meshBasicMaterial color={index === 1 ? "#3b82f6" : "#00ffcc"} transparent opacity={0.85} blending={THREE.AdditiveBlending} />

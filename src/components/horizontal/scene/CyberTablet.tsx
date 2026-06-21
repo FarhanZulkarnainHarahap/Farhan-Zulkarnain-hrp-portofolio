@@ -47,7 +47,7 @@ interface Project {
   link?: string;
 }
 
-const projects: Project[] = [
+const fallbackProjects: Project[] = [
   {
     id: 1,
     title: "Backend Architecture",
@@ -120,8 +120,15 @@ const ProjectPlane = ({ index, project, position, velocityRef }: {
   );
 };
 
-export const CyberTablet = ({ velocityRef }: { velocityRef: MutableRefObject<number> }) => {
+export const CyberTablet = ({
+  velocityRef,
+  projects = fallbackProjects,
+}: {
+  velocityRef: MutableRefObject<number>;
+  projects?: Project[];
+}) => {
   const tabletRef = useRef<THREE.Group>(null);
+  const visibleProjects = projects.length ? projects.slice(0, 2) : fallbackProjects;
 
   useFrame((_, delta) => {
     if (!tabletRef.current) {
@@ -148,7 +155,7 @@ export const CyberTablet = ({ velocityRef }: { velocityRef: MutableRefObject<num
         LIVE PROJECT FEED
       </Text>
 
-      {projects.map((project, index) => (
+      {visibleProjects.map((project, index) => (
         <ProjectPlane
           key={project.id}
           index={index}
