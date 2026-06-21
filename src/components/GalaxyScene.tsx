@@ -11,6 +11,38 @@ type GalaxySceneProps = {
 
 const GalaxyParticles = ({ count = 900 }: { count?: number }) => {
   const pointsRef = useRef<THREE.Points>(null);
+  const particleTexture = useMemo(() => {
+    if (typeof document === "undefined") {
+      return null;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 96;
+    canvas.height = 96;
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      return null;
+    }
+
+    const gradient = context.createRadialGradient(48, 48, 0, 48, 48, 48);
+    gradient.addColorStop(0, "rgba(255,255,255,1)");
+    gradient.addColorStop(0.18, "rgba(147,197,253,0.95)");
+    gradient.addColorStop(0.48, "rgba(59,130,246,0.42)");
+    gradient.addColorStop(0.78, "rgba(37,99,235,0.12)");
+    gradient.addColorStop(1, "rgba(37,99,235,0)");
+
+    context.clearRect(0, 0, 96, 96);
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, 96, 96);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.needsUpdate = true;
+
+    return texture;
+  }, []);
+
   const { positions, colors } = useMemo(() => {
     const positionArray = new Float32Array(count * 3);
     const colorArray = new Float32Array(count * 3);
@@ -60,11 +92,13 @@ const GalaxyParticles = ({ count = 900 }: { count?: number }) => {
         <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial
+        map={particleTexture ?? undefined}
         vertexColors
         transparent
+        alphaTest={0.01}
         depthWrite={false}
-        opacity={0.78}
-        size={0.022}
+        opacity={0.82}
+        size={0.036}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
       />
@@ -74,7 +108,7 @@ const GalaxyParticles = ({ count = 900 }: { count?: number }) => {
 
 export default function GalaxyScene({ className = "", count }: GalaxySceneProps) {
   return (
-    <div aria-hidden="true" className={`pointer-events-none absolute inset-0 ${className}`}>
+    <div aria-hidden="true" className={`pointer-events-none ${className || "absolute inset-0"}`}>
       <Canvas
         camera={{ position: [0, 1.1, 5.2], fov: 58 }}
         dpr={[1, 1.5]}

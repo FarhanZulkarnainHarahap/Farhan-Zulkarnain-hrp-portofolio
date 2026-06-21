@@ -14,7 +14,6 @@ import {
   FaSearch,
   FaUserGraduate,
 } from "react-icons/fa";
-import GalaxyScene from "@/components/GalaxyScene";
 
 interface DocumentData {
   id: string;
@@ -30,7 +29,6 @@ const DOCS_PER_PAGE = 6;
 
 const DocumentSkeleton = () => (
   <section className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6">
-    <GalaxyScene className="z-0 opacity-35" count={480} />
     <div className="relative z-10 mb-10 animate-pulse border-b border-white/10 pb-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
@@ -46,22 +44,22 @@ const DocumentSkeleton = () => (
       <div className="h-12 w-full rounded-lg border border-white/8 bg-[#111722]/80 md:w-56" />
     </div>
 
-    <div className="relative z-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
       {Array.from({ length: DOCS_PER_PAGE }, (_, index) => (
         <div
           key={index}
           className="animate-pulse overflow-hidden rounded-xl border border-white/7 bg-[#101720]/92 shadow-[0_18px_60px_rgba(0,0,0,0.22)]"
         >
-          <div className="h-44 bg-linear-to-br from-white/14 via-white/8 to-blue-500/8 md:h-50" />
-          <div className="p-4">
+          <div className="h-24 bg-linear-to-br from-white/14 via-white/8 to-blue-500/8 sm:h-34 md:h-50" />
+          <div className="p-2 sm:p-3 md:p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 space-y-2">
                 <div className="h-4 w-4/5 rounded-full bg-white/12" />
                 <div className="h-3 w-2/5 rounded-full bg-white/8" />
               </div>
-              <div className="h-10 w-10 rounded-lg border border-white/8 bg-white/6" />
+              <div className="h-7 w-7 rounded-lg border border-white/8 bg-white/6 sm:h-9 sm:w-9 md:h-10 md:w-10" />
             </div>
-            <div className="mt-5 flex items-center justify-between">
+            <div className="mt-3 hidden items-center justify-between sm:flex md:mt-5">
               <div className="h-3 w-28 rounded-full bg-white/8" />
               <div className="h-7 w-24 rounded-md border border-blue-500/10 bg-blue-500/12" />
             </div>
@@ -168,7 +166,6 @@ export default function DocSection() {
 
   return (
     <section id="documents" className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6">
-      <GalaxyScene className="z-0 opacity-35" count={560} />
       <div className="relative z-10 mb-10 border-b border-white/10 pb-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
@@ -213,7 +210,7 @@ export default function DocSection() {
       </div>
 
       {visibleDocs.length > 0 ? (
-        <div className="relative z-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
           {visibleDocs.map((doc, index) => {
             const previewType = getPreviewType(doc);
 
@@ -231,7 +228,7 @@ export default function DocSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cursor-label="OPEN"
-                  className="relative block h-38 overflow-hidden bg-white md:h-42"
+                  className="relative block h-24 overflow-hidden bg-white sm:h-34 md:h-42"
                   aria-label={`Open ${doc.name}`}
                 >
                   {doc.previewUrl && (
@@ -245,30 +242,30 @@ export default function DocSection() {
                   )}
 
                   {!doc.previewUrl && previewType === "pdf" && (
-                    <div className="relative h-full overflow-hidden bg-[#f8fafc] p-5 text-slate-900">
-                      <div className="absolute inset-y-0 right-0 w-23 bg-linear-to-l from-slate-200 to-transparent" />
-                      <div className="absolute -right-5 -top-5 h-28 w-28 rounded-full bg-blue-100" />
+                    <div className="relative h-full overflow-hidden bg-[#f8fafc] p-2.5 text-slate-900 sm:p-4 md:p-5">
+                      <div className="absolute inset-y-0 right-0 w-12 bg-linear-to-l from-slate-200 to-transparent sm:w-20 md:w-23" />
+                      <div className="absolute -right-5 -top-5 h-20 w-20 rounded-full bg-blue-100 md:h-28 md:w-28" />
                       <div className="relative z-10 flex h-full flex-col">
                         <div className="flex items-start justify-between">
                           <div>
-                            <p className="text-xs font-black uppercase tracking-tight text-blue-700">
+                            <p className="text-[8px] font-black uppercase tracking-tight text-blue-700 sm:text-[10px] md:text-xs">
                               {doc.category || "certificate"}
                             </p>
-                            <h4 className="mt-3 max-w-52 text-2xl font-black uppercase leading-none tracking-tight">
+                            <h4 className="mt-1 max-w-30 text-sm font-black uppercase leading-none tracking-tight sm:mt-2 sm:max-w-42 sm:text-lg md:mt-3 md:max-w-52 md:text-2xl">
                               Certificate
                             </h4>
                           </div>
-                          <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-slate-300 bg-white text-blue-600 shadow-sm">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-slate-300 bg-white text-blue-600 shadow-sm sm:h-10 sm:w-10 md:h-12 md:w-12 md:border-4">
                             {getIcon(doc.category)}
                           </div>
                         </div>
 
                         <div className="mt-auto">
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                          <p className="hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 sm:block">
                             Awarded to
                           </p>
-                          <p className="mt-1 text-sm font-bold text-slate-900">Farhan Zulkarnain</p>
-                          <p className="mt-3 line-clamp-2 max-w-80 text-sm font-semibold leading-snug text-slate-600">
+                          <p className="hidden mt-1 text-sm font-bold text-slate-900 sm:block">Farhan Zulkarnain</p>
+                          <p className="mt-1 line-clamp-2 max-w-80 text-[9px] font-semibold leading-snug text-slate-600 sm:mt-2 sm:text-xs md:mt-3 md:text-sm">
                             {doc.name}
                           </p>
                         </div>
@@ -298,13 +295,13 @@ export default function DocSection() {
                   )}
                 </a>
 
-                <div className="relative p-3.5">
-                  <div className="flex items-start justify-between gap-3">
+                <div className="relative p-2 sm:p-3 md:p-3.5">
+                  <div className="flex items-start justify-between gap-1.5 sm:gap-3">
                     <div className="min-w-0">
-                      <h3 className="truncate text-base font-bold text-white">
+                      <h3 className="line-clamp-2 text-[10px] font-bold leading-tight text-white sm:text-xs md:truncate md:text-base">
                         {doc.name}
                       </h3>
-                      <p className="mt-1 truncate text-sm text-zinc-500">{doc.category}</p>
+                      <p className="mt-1 hidden truncate text-sm text-zinc-500 sm:block">{doc.category}</p>
                     </div>
                     <a
                       href={doc.fileUrl}
@@ -313,18 +310,18 @@ export default function DocSection() {
                       download
                       data-cursor-label="DOWNLOAD"
                       aria-label={`Download ${doc.name}`}
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/4 text-zinc-400 transition-colors hover:border-blue-500/50 hover:text-blue-400"
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/4 text-zinc-400 transition-colors hover:border-blue-500/50 hover:text-blue-400 sm:h-9 sm:w-9 md:h-10 md:w-10"
                     >
-                      <FaDownload size={13} />
+                      <FaDownload size={11} />
                     </a>
                   </div>
 
-                  <div className="mt-3 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2 text-xs text-zinc-500">
+                  <div className="mt-2 flex items-center justify-between gap-2 sm:mt-3 sm:gap-3">
+                    <div className="hidden items-center gap-2 text-xs text-zinc-500 sm:flex">
                       <FaCalendarAlt size={11} />
                       {formatDate(doc.createdAt)}
                     </div>
-                    <span className="rounded-md border border-blue-500/20 bg-blue-500/12 px-2.5 py-1 text-[10px] font-bold text-blue-300">
+                    <span className="rounded-md border border-blue-500/20 bg-blue-500/12 px-1.5 py-0.5 text-[8px] font-bold text-blue-300 sm:px-2.5 sm:py-1 sm:text-[10px]">
                       {doc.category || formatSize(doc.size)}
                     </span>
                   </div>

@@ -7,6 +7,7 @@ import PortfolioSection from "@/components/sections/portfolio/project/ProjectSec
 import DocSection from "@/components/sections/document/DocSection";
 import SocialProofSection from "@/components/sections/social/SocialProofSection";
 import ContactSection from "@/components/sections/contact/ContactSection";
+import GalaxyScene from "@/components/GalaxyScene";
 import { FaLinkedin, FaInstagram, FaGithub } from "react-icons/fa";
 
 const sectionMotion = {
@@ -16,11 +17,14 @@ const sectionMotion = {
   transition: { duration: 0.72, ease: [0.16, 1, 0.3, 1] as const },
 };
 
-const sectionClass = "portfolio-section-bg min-h-screen w-full";
+const sectionClass = "portfolio-section-bg relative z-10 min-h-screen w-full";
 
 export default function Home() {
   return (
-    <main className="portfolio-bg text-white">
+    <main className="portfolio-bg relative text-white">
+      <GalaxyScene className="fixed inset-0 z-0 opacity-45" count={1200} />
+      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.16),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.1),transparent_34%)]" />
+
       {/* SECTION 1: HOME */}
       <motion.section id="home" data-cursor-label="HOME" className={`${sectionClass} shrink-0`} {...sectionMotion}>
         <HeroCard />
@@ -62,7 +66,7 @@ export default function Home() {
       </motion.section>
 
       {/* SECTION 6: PROOF */}
-      <motion.section id="proof" data-cursor-label="PROOF" className="portfolio-section-bg w-full" {...sectionMotion}>
+      <motion.section id="proof" data-cursor-label="PROOF" className="portfolio-section-bg relative z-10 w-full" {...sectionMotion}>
         <SocialProofSection />
       </motion.section>
 
@@ -74,7 +78,7 @@ export default function Home() {
       </motion.section>
 
       {/* SECTION 8: FOOTER */}
-      <motion.footer data-cursor-label="FARHAN" className="portfolio-section-bg w-full flex flex-col items-center justify-center py-10 md:py-16 gap-6 px-4 md:px-6" {...sectionMotion}>
+      <motion.footer data-cursor-label="FARHAN" className="portfolio-section-bg relative z-10 w-full flex flex-col items-center justify-center py-10 md:py-16 gap-6 px-4 md:px-6" {...sectionMotion}>
         <div className="flex flex-wrap justify-center gap-6 text-gray-500">
           <FaLinkedin size={24} href="https://www.linkedin.com/in/farhan-zulkarnain-71801a347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" className="hover:text-blue-500 transition-all cursor-pointer hover:scale-110" /> 
           <FaInstagram size={24} href="https://www.instagram.com/farhan.nexxus?igsh=bmw4cmI4djQzeTN1" className="hover:text-pink-500 transition-all cursor-pointer hover:scale-110" /> 

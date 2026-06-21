@@ -15,7 +15,6 @@ import {
   LuTarget,
   LuX,
 } from "react-icons/lu";
-import GalaxyScene from "@/components/GalaxyScene";
 import ProjectCard from "./ProjectCard";
 
 interface Project {
@@ -292,7 +291,6 @@ const ProjectCaseStudyModal = ({
 
 const ProjectSkeleton = () => (
   <section className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:py-24">
-    <GalaxyScene className="z-0 opacity-45" count={520} />
     <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.18),transparent_55%)]" />
 
     <div className="relative z-10 mx-auto w-full max-w-7xl">
@@ -307,26 +305,26 @@ const ProjectSkeleton = () => (
         </div>
       </div>
 
-      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid w-full grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
         {Array.from({ length: PROJECTS_PER_PAGE }, (_, index) => (
           <div
             key={index}
             className="animate-pulse overflow-hidden rounded-[26px] border border-white/7 bg-[#101720]/92 p-2.5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]"
           >
-            <div className="h-53 rounded-[18px] bg-linear-to-br from-white/14 via-white/8 to-blue-500/8" />
-            <div className="px-3 pb-3 pt-5 text-center">
+            <div className="h-24 rounded-[18px] bg-linear-to-br from-white/14 via-white/8 to-blue-500/8 sm:h-34 lg:h-53" />
+            <div className="px-2 pb-2 pt-3 text-center sm:px-3 sm:pb-3 sm:pt-5">
               <div className="mx-auto h-3 w-32 rounded-full bg-blue-500/18" />
-              <div className="mx-auto mt-4 h-7 w-54 rounded-xl bg-white/10" />
-              <div className="mx-auto mt-4 h-16 w-full max-w-xs rounded-2xl bg-white/6" />
-              <div className="mt-4 flex justify-center gap-2">
+              <div className="mx-auto mt-3 h-5 w-full max-w-32 rounded-xl bg-white/10 sm:mt-4 sm:h-7 sm:max-w-54" />
+              <div className="mx-auto mt-3 hidden h-16 w-full max-w-xs rounded-2xl bg-white/6 md:block" />
+              <div className="mt-4 hidden justify-center gap-2 md:flex">
                 <div className="h-6 w-24 rounded-full border border-white/8 bg-white/5" />
                 <div className="h-6 w-22 rounded-full border border-white/8 bg-white/5" />
                 <div className="h-6 w-20 rounded-full border border-white/8 bg-white/5" />
               </div>
-              <div className="mt-5 flex justify-center gap-3">
-                <div className="h-11 w-22 rounded-full border border-blue-500/18 bg-blue-500/10" />
-                <div className="h-11 w-11 rounded-full bg-blue-500/14" />
-                <div className="h-11 w-11 rounded-full border border-white/10 bg-white/5" />
+              <div className="mt-3 flex justify-center gap-2 sm:mt-5 sm:gap-3">
+                <div className="h-8 w-14 rounded-full border border-blue-500/18 bg-blue-500/10 sm:h-11 sm:w-22" />
+                <div className="h-8 w-8 rounded-full bg-blue-500/14 sm:h-11 sm:w-11" />
+                <div className="h-8 w-8 rounded-full border border-white/10 bg-white/5 sm:h-11 sm:w-11" />
               </div>
             </div>
           </div>
@@ -411,7 +409,6 @@ export default function PortfolioSection() {
 
   return (
     <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:py-24">
-      <GalaxyScene className="z-0 opacity-50" count={760} />
       <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.2),transparent_55%)]" />
       <div className="absolute inset-0 -z-20 bg-linear-to-b from-transparent via-[#030406]/14 to-transparent" />
       <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
@@ -440,7 +437,7 @@ export default function PortfolioSection() {
         </div>
 
         {visibleProjects.length > 0 ? (
-          <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid w-full grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
             {visibleProjects.map((project, index) => {
               const projectIndex = (safePage - 1) * projectsPerPage + index;
 
