@@ -296,7 +296,7 @@ const ProjectCaseStudyModal = ({
 };
 
 const ProjectSkeleton = () => (
-  <section className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:py-24">
+  <section className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:py-10">
     <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.18),transparent_55%)]" />
 
     <div className="relative z-10 mx-auto w-full max-w-7xl">
@@ -442,14 +442,14 @@ export default function PortfolioSection() {
   }
 
   return (
-    <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:py-24">
+    <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:py-10">
       <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.2),transparent_55%)]" />
       <div className="absolute inset-0 -z-20 bg-linear-to-b from-transparent via-[#030406]/14 to-transparent" />
       <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
       <div className="absolute -bottom-28 -left-28 -z-10 h-80 w-80 rounded-full border border-blue-500/25 opacity-50" />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl">
-        <div className="mb-10 border-b border-white/10 pb-8">
+        <div className="mb-8 border-b border-white/10 pb-6 lg:mb-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="mb-3 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400">
@@ -470,7 +470,7 @@ export default function PortfolioSection() {
           </div>
         </div>
 
-        <div className="mb-7 grid gap-3 md:grid-cols-[1fr_260px]">
+        <div className="mb-6 grid gap-3 md:grid-cols-[1fr_260px]">
           <label className="group relative">
             <LuSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/70 transition-colors group-focus-within:text-blue-300" size={16} />
             <input

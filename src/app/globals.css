@@ -79,6 +79,16 @@ body::-webkit-scrollbar-thumb:hover {
   background: transparent;
 }
 
+@media (min-width: 1024px) {
+  [data-horizontal-stage] {
+    scrollbar-width: none;
+  }
+
+  [data-horizontal-stage]::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 .hero-profile-card {
   position: relative;
   width: min(78vw, 330px);

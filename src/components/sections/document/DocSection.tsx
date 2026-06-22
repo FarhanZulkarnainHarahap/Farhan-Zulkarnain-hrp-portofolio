@@ -25,10 +25,10 @@ interface DocumentData {
   createdAt: string;
 }
 
-const DOCS_PER_PAGE = 6;
+const DOCS_PER_PAGE = 3;
 
 const DocumentSkeleton = () => (
-  <section className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6">
+  <section className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:py-10">
     <div className="relative z-10 mb-10 animate-pulse border-b border-white/10 pb-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
@@ -44,7 +44,7 @@ const DocumentSkeleton = () => (
       <div className="h-12 w-full rounded-lg border border-white/8 bg-[#111722]/80 md:w-56" />
     </div>
 
-    <div className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
+    <div className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3 lg:gap-5">
       {Array.from({ length: DOCS_PER_PAGE }, (_, index) => (
         <div
           key={index}
@@ -165,8 +165,8 @@ export default function DocSection() {
   }
 
   return (
-    <section id="documents" className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6">
-      <div className="relative z-10 mb-10 border-b border-white/10 pb-8">
+    <section id="documents" className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:py-10">
+      <div className="relative z-10 mb-8 border-b border-white/10 pb-6 lg:mb-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400">
@@ -210,7 +210,7 @@ export default function DocSection() {
       </div>
 
       {visibleDocs.length > 0 ? (
-        <div className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
+        <div className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3 lg:gap-5">
           {visibleDocs.map((doc, index) => {
             const previewType = getPreviewType(doc);
 
@@ -228,7 +228,7 @@ export default function DocSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cursor-label="OPEN"
-                  className="relative block h-24 overflow-hidden bg-white sm:h-34 md:h-42"
+                  className="relative block h-24 overflow-hidden bg-white sm:h-34 md:h-42 lg:h-56"
                   aria-label={`Open ${doc.name}`}
                 >
                   {doc.previewUrl && (
