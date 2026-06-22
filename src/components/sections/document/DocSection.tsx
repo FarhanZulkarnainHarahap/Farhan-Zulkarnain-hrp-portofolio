@@ -28,7 +28,7 @@ interface DocumentData {
 const DOCS_PER_PAGE = 3;
 
 const DocumentSkeleton = () => (
-  <section className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-start lg:pb-28 lg:pt-8">
+  <section className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-start lg:pb-32 lg:pt-18">
     <div className="relative z-10 mb-10 animate-pulse border-b border-white/10 pb-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
@@ -165,14 +165,14 @@ export default function DocSection() {
   }
 
   return (
-  <section id="documents" className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-start lg:pb-28 lg:pt-8">
-      <div className="relative z-10 mb-8 border-b border-white/10 pb-6 lg:mb-5 lg:pb-5">
+  <section id="documents" className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-start lg:pb-32 lg:pt-18">
+      <div className="relative z-10 mb-8 border-b border-white/10 pb-6 lg:mb-4 lg:pb-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400 lg:mb-2">
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400 lg:mb-1">
               Document Preview
             </p>
-            <h2 className="text-4xl font-black uppercase italic leading-none tracking-tight text-white md:text-5xl xl:text-6xl">
+            <h2 className="text-4xl font-black uppercase italic leading-none tracking-tight text-white md:text-5xl lg:text-4xl xl:text-5xl">
               Credential <span className="text-zinc-500">&</span> Assets<span className="text-blue-500">.</span>
             </h2>
           </div>
@@ -183,7 +183,7 @@ export default function DocSection() {
         </div>
       </div>
 
-      <div className="relative z-10 mb-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between lg:mb-5">
+      <div className="relative z-10 mb-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between lg:mb-4">
         <label className="relative w-full md:max-w-sm">
           <FaSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={13} />
           <input

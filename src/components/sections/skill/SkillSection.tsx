@@ -85,7 +85,7 @@ export default function SkillSection() {
   const categoryOrder = ["FRONTEND", "BACKEND", "TOOLS", "OTHERS"];
 
   return (
-    <div className="relative w-full flex flex-col gap-6 md:gap-8 overflow-visible">
+    <div className="relative w-full max-w-6xl flex flex-col gap-6 overflow-visible md:gap-8 lg:gap-4">
       
       {/* 🌌 LAYER ANIMASI GALAXY (Background) */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden min-h-125">
@@ -116,7 +116,7 @@ export default function SkillSection() {
       </div>
 
       {/* --- CONTENT LAYER --- */}
-      <div className="relative z-10 w-full flex flex-col gap-6">
+      <div className="relative z-10 w-full flex flex-col gap-6 lg:gap-4">
         {loading ? (
           <SkillSkeleton />
         ) : (
@@ -134,34 +134,34 @@ export default function SkillSection() {
                 className="w-full"
               >
                 {/* Category Header */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-1.5 bg-blue-500/10 rounded-md border border-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                <div className="mb-4 flex items-center gap-3 lg:mb-3">
+                  <div className="rounded-md border border-blue-500/20 bg-blue-500/10 p-1.5 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.1)] lg:p-1">
                     <Lu.LuCode size={14} />
                   </div>
-                  <h4 className="text-zinc-200 font-bold text-[9px] tracking-[0.5em] uppercase italic">
+                  <h4 className="text-[9px] font-bold uppercase italic tracking-[0.5em] text-zinc-200 lg:text-[8px]">
                     {catKey}
                   </h4>
                   <div className="h-px flex-1 bg-linear-to-r from-zinc-800 to-transparent" />
                 </div>
 
                 {/* Grid Skill Ikon */}
-                <div className="flex flex-wrap gap-x-10 gap-y-6 pl-2">
+                <div className="flex flex-wrap gap-x-10 gap-y-6 pl-2 lg:gap-x-8 lg:gap-y-4">
                   {skillsInCat.map((skill: SkillData) => (
                     <motion.div 
                       key={skill.id}
                       whileHover={{ y: -6, scale: 1.1 }}
-                      className="group relative flex flex-col items-center justify-center min-w-15"
+                      className="group relative flex min-w-15 flex-col items-center justify-center lg:min-w-12"
                     >
                       {/* Aura Glow saat Hover */}
                       <div className="absolute inset-0 bg-blue-500/20 blur-[25px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                       
                       {/* Icon */}
-                      <div className="relative z-10 text-zinc-500 group-hover:text-blue-400 group-hover:drop-shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-all duration-500">
+                      <div className="relative z-10 scale-100 text-zinc-500 transition-all duration-500 group-hover:text-blue-400 group-hover:drop-shadow-[0_0_12px_rgba(59,130,246,0.7)] lg:scale-90">
                         <DynamicIcon name={skill.iconName || skill.name} />
                       </div>
                       
                       {/* Name Label */}
-                      <span className="relative z-10 mt-2 text-[8px] font-black text-zinc-600 group-hover:text-white uppercase tracking-[0.2em] transition-colors text-center">
+                      <span className="relative z-10 mt-2 text-center text-[8px] font-black uppercase tracking-[0.2em] text-zinc-600 transition-colors group-hover:text-white lg:mt-1.5 lg:text-[7px]">
                         {skill.name}
                       </span>
                     </motion.div>
