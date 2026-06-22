@@ -6,9 +6,9 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
-const PARTICLE_COUNT = 680;
-const CONNECTION_DISTANCE = 1.65;
-const MAX_CONNECTIONS_PER_NODE = 5;
+const PARTICLE_COUNT = 520;
+const CONNECTION_DISTANCE = 1.55;
+const MAX_CONNECTIONS_PER_NODE = 4;
 
 const seededRandom = (seed: number) => {
   const value = Math.sin(seed * 12.9898) * 43758.5453;
@@ -212,7 +212,7 @@ export default function AntiGravity() {
     <div className="pointer-events-none fixed inset-0 z-[1] opacity-95">
       <Canvas
         camera={{ position: [0, 0, 9.8], fov: 54 }}
-        dpr={[1, 1.5]}
+        dpr={[1, 1.25]}
         gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
       >
         <ambientLight intensity={0.55} />

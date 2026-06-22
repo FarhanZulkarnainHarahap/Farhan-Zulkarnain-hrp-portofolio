@@ -2,7 +2,7 @@
 
 /* eslint-disable react-hooks/set-state-in-effect */
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -10,10 +10,8 @@ import {
   LuFileText,
   LuHouse,
   LuMail,
-  LuMenu,
-  LuSparkles,
+  LuRocket,
   LuUser,
-  LuX,
   LuZap,
 } from "react-icons/lu";
 
@@ -28,27 +26,7 @@ const menuItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("HOME");
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const html = document.documentElement;
-    const body = document.body;
-    const previousHtmlOverflow = html.style.overflow;
-    const previousBodyOverflow = body.style.overflow;
-
-    html.style.overflow = "hidden";
-    body.style.overflow = "hidden";
-
-    return () => {
-      html.style.overflow = previousHtmlOverflow;
-      body.style.overflow = previousBodyOverflow;
-    };
-  }, [isOpen]);
 
   useEffect(() => {
     const getActiveSection = () => {
@@ -115,22 +93,10 @@ export default function Navbar() {
       });
     }
 
-    setIsOpen(false);
   };
 
   return (
     <>
-      <motion.button
-        type="button"
-        onClick={() => setIsOpen((current) => !current)}
-        data-cursor-label="MENU"
-        className="fixed right-6 top-6 z-120 flex h-12 w-12 items-center justify-center rounded-full border border-blue-500/20 bg-black/55 text-blue-300 shadow-[0_0_30px_rgba(37,99,235,0.16)] backdrop-blur-xl lg:hidden"
-        aria-label="Toggle Menu"
-        whileTap={{ scale: 0.92 }}
-      >
-        {isOpen ? <LuX size={22} /> : <LuMenu size={22} />}
-      </motion.button>
-
       <button
         type="button"
         onClick={() => handleNavigation(menuItems[0])}
@@ -144,13 +110,19 @@ export default function Navbar() {
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed bottom-5 left-1/2 z-120 hidden -translate-x-1/2 lg:block"
-        aria-label="Desktop section navigation"
+        className="fixed bottom-3 left-1/2 z-120 w-[calc(100%-1rem)] max-w-[24rem] -translate-x-1/2 sm:bottom-4 sm:max-w-[34rem] lg:bottom-5 lg:w-auto lg:max-w-none"
+        aria-label="Section navigation"
       >
-        <div className="relative flex items-center rounded-full border border-blue-500/20 bg-black/58 px-5 py-4 shadow-[0_22px_80px_rgba(0,0,0,0.35),0_0_40px_rgba(37,99,235,0.14)] backdrop-blur-2xl">
-          <div className="absolute left-10 right-10 top-1/2 h-0.5 -translate-y-1/2 bg-blue-400/28" />
+        <div className="relative flex items-center justify-center rounded-[1.75rem] border border-blue-500/24 bg-black/70 px-3 py-2 shadow-[0_22px_80px_rgba(0,0,0,0.45),0_0_48px_rgba(37,99,235,0.18)] backdrop-blur-2xl sm:px-4 sm:py-3 lg:rounded-full lg:px-5 lg:py-4">
+          <div className="absolute -top-3 left-1/2 hidden -translate-x-1/2 items-center gap-1 rounded-full border border-blue-400/25 bg-[#030712]/92 px-3 py-1 text-[7px] font-black uppercase tracking-[0.24em] text-blue-200 shadow-[0_0_24px_rgba(37,99,235,0.28)] sm:flex">
+            <LuRocket size={10} />
+            Galaxy Nav
+          </div>
+          <div className="absolute left-8 right-8 top-1/2 h-0.5 -translate-y-1/2 bg-linear-to-r from-transparent via-blue-400/35 to-transparent sm:left-10 sm:right-10" />
+          <div className="absolute -left-2 top-1/2 h-8 w-5 -translate-y-1/2 rounded-l-full border border-blue-500/20 bg-blue-500/8 blur-[1px]" />
+          <div className="absolute -right-2 top-1/2 h-8 w-5 -translate-y-1/2 rounded-r-full border border-blue-500/20 bg-blue-500/8 blur-[1px]" />
 
-          <ul className="relative z-10 flex items-center gap-8">
+          <ul className="relative z-10 grid w-full grid-cols-6 items-center gap-1.5 sm:gap-3 lg:flex lg:w-auto lg:gap-8">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.label;
@@ -161,7 +133,7 @@ export default function Navbar() {
                     type="button"
                     onClick={() => handleNavigation(item)}
                     data-cursor-label={item.label}
-                    className="group relative flex flex-col items-center gap-2"
+                    className="group relative flex flex-col items-center gap-1.5 sm:gap-2"
                     aria-label={item.label}
                   >
                     <motion.span
@@ -171,11 +143,11 @@ export default function Navbar() {
                         borderColor: isActive ? "rgba(147,197,253,0.9)" : "rgba(147,197,253,0.36)",
                       }}
                       transition={{ type: "spring", stiffness: 240, damping: 18 }}
-                      className="grid h-11 w-11 place-items-center rounded-full border text-white shadow-[0_0_24px_rgba(37,99,235,0.18)]"
+                      className="grid h-9 w-9 place-items-center rounded-full border text-white shadow-[0_0_24px_rgba(37,99,235,0.18)] sm:h-10 sm:w-10 lg:h-11 lg:w-11"
                     >
-                      <Icon size={17} />
+                      <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     </motion.span>
-                    <span className={`text-[8px] font-black uppercase tracking-[0.22em] transition-colors ${isActive ? "text-blue-300" : "text-white/45 group-hover:text-white"}`}>
+                    <span className={`text-[6px] font-black uppercase tracking-[0.14em] transition-colors sm:text-[7px] sm:tracking-[0.18em] lg:text-[8px] lg:tracking-[0.22em] ${isActive ? "text-blue-300" : "text-white/45 group-hover:text-white"}`}>
                       {item.label}
                     </span>
                   </button>
@@ -185,50 +157,6 @@ export default function Navbar() {
           </ul>
         </div>
       </motion.nav>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-115 flex h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-[#030406] lg:hidden"
-          >
-            <div className="mb-8 flex items-center gap-3 text-blue-300">
-              <LuSparkles size={18} />
-              <span className="text-[10px] font-black uppercase tracking-[0.35em]">Navigation</span>
-            </div>
-            <ul className="flex flex-col items-center gap-7">
-              {menuItems.map((item, index) => {
-                const Icon = item.icon;
-                const isActive = activeSection === item.label;
-
-                return (
-                  <motion.li
-                    key={item.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.08 * index + 0.15 }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => handleNavigation(item)}
-                      data-cursor-label={item.label}
-                      className={`flex items-center gap-4 text-2xl font-black uppercase tracking-[0.18em] transition-all ${
-                        isActive ? "scale-110 text-blue-500" : "text-white"
-                      }`}
-                    >
-                      <Icon size={24} />
-                      {item.label}
-                    </button>
-                  </motion.li>
-                );
-              })}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }
