@@ -25,6 +25,20 @@ const socialLinks = [
 ];
 
 export default function HeroCard() {
+  const scrollToProjects = () => {
+    const element = document.getElementById("projects");
+    const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
+    const isDesktopHorizontal = window.matchMedia("(min-width: 1024px)").matches && horizontalStage;
+
+    window.history.pushState(null, "", "/home");
+
+    element?.scrollIntoView({
+      behavior: "smooth",
+      block: isDesktopHorizontal ? "nearest" : "start",
+      inline: isDesktopHorizontal ? "center" : "nearest",
+    });
+  };
+
   const fadeInUp: Variants = {
     hidden: { y: 30, opacity: 0 },
     visible: {
@@ -121,12 +135,15 @@ export default function HeroCard() {
           </motion.p>
 
           <motion.div initial="hidden" animate="visible" variants={fadeInUp} className="pt-4 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
-            <Link href="#projects">
-              <button data-cursor-label="EXPLORE" className="group flex items-center gap-4 bg-blue-600 hover:bg-blue-700 text-white px-8 md:px-10 py-3.5 md:py-4 rounded-full transition-all shadow-xl shadow-blue-500/20 active:scale-95">
-                <span className="text-[10px] md:text-xs font-black uppercase tracking-widest">View My Projects</span>
-                <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
-              </button>
-            </Link>
+            <button
+              type="button"
+              onClick={scrollToProjects}
+              data-cursor-label="EXPLORE"
+              className="group flex items-center gap-4 bg-blue-600 hover:bg-blue-700 text-white px-8 md:px-10 py-3.5 md:py-4 rounded-full transition-all shadow-xl shadow-blue-500/20 active:scale-95"
+            >
+              <span className="text-[10px] md:text-xs font-black uppercase tracking-widest">View My Projects</span>
+              <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
+            </button>
             <Link href="/documents">
               <motion.button
                 data-cursor-label="RESUME"

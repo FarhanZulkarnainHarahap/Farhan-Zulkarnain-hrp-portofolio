@@ -80,10 +80,9 @@ export default function Navbar() {
     const element = document.getElementById(item.id);
     const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
     const isDesktopHorizontal = window.matchMedia("(min-width: 1024px)").matches && horizontalStage;
-    const nextPath = item.id === "home" ? "/home" : `/home#${item.id}`;
 
     setActiveSection(item.label);
-    window.history.pushState(null, "", nextPath);
+    window.history.pushState(null, "", "/home");
 
     if (element) {
       element.scrollIntoView({
