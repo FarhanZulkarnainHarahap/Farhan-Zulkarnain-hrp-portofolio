@@ -3,6 +3,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -147,6 +148,7 @@ const ProjectCaseStudyModal = ({
   accent: string;
   onClose: () => void;
 }) => {
+  const [mounted, setMounted] = useState(false);
   const details = inferProjectDetails(project);
   const cards = [
     { icon: LuTarget, title: "Problem", text: details.problem },
@@ -154,12 +156,20 @@ const ProjectCaseStudyModal = ({
     { icon: LuRocket, title: "Result", text: details.result },
   ];
 
-  return (
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
+  return createPortal(
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[1000] flex items-start justify-center overflow-y-auto bg-black/80 px-4 pb-6 pt-24 backdrop-blur-xl md:pb-8 md:pt-28"
+      className="fixed inset-0 z-[9999] flex items-start justify-center overflow-y-auto overscroll-contain bg-black/88 px-4 pb-24 pt-20 backdrop-blur-xl md:pb-28 md:pt-24"
       role="dialog"
       aria-modal="true"
       aria-label={`${project.title} case study`}
@@ -291,7 +301,8 @@ const ProjectCaseStudyModal = ({
           </div>
         </div>
       </motion.div>
-    </motion.div>
+    </motion.div>,
+    document.body,
   );
 };
 
@@ -377,15 +388,26 @@ export default function PortfolioSection() {
 
     const html = document.documentElement;
     const body = document.body;
+    const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
     const previousHtmlOverflow = html.style.overflow;
     const previousBodyOverflow = body.style.overflow;
+    const previousStageOverflowX = horizontalStage?.style.overflowX;
+    const previousStageOverflowY = horizontalStage?.style.overflowY;
 
     html.style.overflow = "hidden";
     body.style.overflow = "hidden";
+    if (horizontalStage) {
+      horizontalStage.style.overflowX = "hidden";
+      horizontalStage.style.overflowY = "hidden";
+    }
 
     return () => {
       html.style.overflow = previousHtmlOverflow;
       body.style.overflow = previousBodyOverflow;
+      if (horizontalStage) {
+        horizontalStage.style.overflowX = previousStageOverflowX ?? "";
+        horizontalStage.style.overflowY = previousStageOverflowY ?? "";
+      }
     };
   }, [selectedProject]);
 
