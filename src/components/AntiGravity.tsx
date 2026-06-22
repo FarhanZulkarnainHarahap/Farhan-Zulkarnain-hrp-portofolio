@@ -193,7 +193,7 @@ const CyberDataNetwork = () => {
 
 export default function AntiGravity() {
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 opacity-80 [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]">
+    <div className="pointer-events-none fixed inset-0 z-[1] opacity-95">
       <Canvas
         camera={{ position: [0, 0, 9.8], fov: 54 }}
         dpr={[1, 1.5]}
