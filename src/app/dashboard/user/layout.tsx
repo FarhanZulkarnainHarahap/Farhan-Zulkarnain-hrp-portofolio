@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import InteractiveCursor from "@/components/InteractiveCursor";
 import EntranceScreen from "@/components/EntranceScreen";
+import AntiGravity from "@/components/AntiGravity";
 
 export default function UserLayout({
   children,
@@ -10,11 +11,12 @@ export default function UserLayout({
   return (
     <>
       <EntranceScreen />
+      <AntiGravity />
       <InteractiveCursor />
       {/* Premium navbar */}
       <Navbar />
       
-      <main className="min-h-screen bg-[#030406]">
+      <main className="relative z-10 min-h-screen bg-transparent">
         {children}
       </main>
     </>
