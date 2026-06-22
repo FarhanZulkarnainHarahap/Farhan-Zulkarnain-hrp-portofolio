@@ -16,6 +16,18 @@ const seededRandom = (seed: number) => {
 };
 
 const getScrollProgress = () => {
+  const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
+  const isHorizontalStage = window.matchMedia("(min-width: 1024px)").matches && horizontalStage;
+
+  if (isHorizontalStage) {
+    const scrollableWidth = horizontalStage.scrollWidth - horizontalStage.clientWidth;
+    if (scrollableWidth <= 0) {
+      return 0;
+    }
+
+    return Math.min(Math.max(horizontalStage.scrollLeft / scrollableWidth, 0), 1);
+  }
+
   const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
   if (scrollableHeight <= 0) {
     return 0;
@@ -99,14 +111,18 @@ const CyberDataNetwork = () => {
     };
 
     updateScroll();
+    const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
+
     window.addEventListener("mousemove", updateMouse, { passive: true });
     window.addEventListener("scroll", updateScroll, { passive: true });
     window.addEventListener("resize", updateScroll, { passive: true });
+    horizontalStage?.addEventListener("scroll", updateScroll, { passive: true });
 
     return () => {
       window.removeEventListener("mousemove", updateMouse);
       window.removeEventListener("scroll", updateScroll);
       window.removeEventListener("resize", updateScroll);
+      horizontalStage?.removeEventListener("scroll", updateScroll);
     };
   }, []);
 

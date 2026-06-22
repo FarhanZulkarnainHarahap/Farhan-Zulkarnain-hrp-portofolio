@@ -118,8 +118,6 @@ export default function Navbar() {
     setIsOpen(false);
   };
 
-  const activeIndex = Math.max(menuItems.findIndex((item) => item.label === activeSection), 0);
-
   return (
     <>
       <motion.button
@@ -151,11 +149,6 @@ export default function Navbar() {
       >
         <div className="relative flex items-center rounded-full border border-blue-500/20 bg-black/58 px-5 py-4 shadow-[0_22px_80px_rgba(0,0,0,0.35),0_0_40px_rgba(37,99,235,0.14)] backdrop-blur-2xl">
           <div className="absolute left-10 right-10 top-1/2 h-0.5 -translate-y-1/2 bg-blue-400/28" />
-          <motion.div
-            className="absolute left-5 top-4 h-11 w-11 rounded-full bg-blue-600/95 shadow-[0_0_30px_rgba(37,99,235,0.65)]"
-            animate={{ x: activeIndex * 76 }}
-            transition={{ type: "spring", stiffness: 180, damping: 22 }}
-          />
 
           <ul className="relative z-10 flex items-center gap-8">
             {menuItems.map((item) => {

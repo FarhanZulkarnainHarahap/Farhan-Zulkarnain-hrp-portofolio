@@ -28,7 +28,7 @@ interface DocumentData {
 const DOCS_PER_PAGE = 3;
 
 const DocumentSkeleton = () => (
-  <section className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:py-10">
+  <section className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-start lg:pb-28 lg:pt-8">
     <div className="relative z-10 mb-10 animate-pulse border-b border-white/10 pb-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
@@ -165,14 +165,14 @@ export default function DocSection() {
   }
 
   return (
-    <section id="documents" className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:py-10">
-      <div className="relative z-10 mb-8 border-b border-white/10 pb-6 lg:mb-6">
+  <section id="documents" className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-start lg:pb-28 lg:pt-8">
+      <div className="relative z-10 mb-8 border-b border-white/10 pb-6 lg:mb-5 lg:pb-5">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400">
+            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400 lg:mb-2">
               Document Preview
             </p>
-            <h2 className="text-4xl font-black uppercase italic leading-none tracking-tight text-white md:text-6xl">
+            <h2 className="text-4xl font-black uppercase italic leading-none tracking-tight text-white md:text-5xl xl:text-6xl">
               Credential <span className="text-zinc-500">&</span> Assets<span className="text-blue-500">.</span>
             </h2>
           </div>
@@ -183,7 +183,7 @@ export default function DocSection() {
         </div>
       </div>
 
-      <div className="relative z-10 mb-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="relative z-10 mb-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between lg:mb-5">
         <label className="relative w-full md:max-w-sm">
           <FaSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={13} />
           <input
@@ -228,7 +228,7 @@ export default function DocSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cursor-label="OPEN"
-                  className="relative block h-24 overflow-hidden bg-white sm:h-34 md:h-42 lg:h-56"
+                  className="relative block h-24 overflow-hidden bg-white sm:h-34 md:h-42 lg:h-38 xl:h-44"
                   aria-label={`Open ${doc.name}`}
                 >
                   {doc.previewUrl && (
@@ -336,7 +336,7 @@ export default function DocSection() {
         </div>
       )}
 
-      <div className="relative z-10 mt-9 flex items-center justify-center gap-3">
+      <div className="relative z-10 mt-9 flex items-center justify-center gap-3 lg:mt-5">
         <button
           type="button"
           onClick={() => setPage((current) => Math.max(1, current - 1))}
