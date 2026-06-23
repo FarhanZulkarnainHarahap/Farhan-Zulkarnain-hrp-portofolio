@@ -9,6 +9,13 @@ import * as THREE from "three";
 const PARTICLE_COUNT = 520;
 const CONNECTION_DISTANCE = 1.55;
 const MAX_CONNECTIONS_PER_NODE = 4;
+const TRAIL_COUNT = 10;
+
+interface TrailPoint {
+  x: number;
+  y: number;
+  life: number;
+}
 
 const seededRandom = (seed: number) => {
   const value = Math.sin(seed * 12.9898) * 43758.5453;
@@ -42,6 +49,8 @@ const CyberDataNetwork = () => {
   const linesRef = useRef<THREE.LineSegments>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const scrollRef = useRef(0);
+  const trailRef = useRef<TrailPoint[]>([]);
+  const burstRef = useRef({ x: 0, y: 0, power: 0 });
 
   // Initialization: create stable GPU buffers for nodes, animated positions, and nearby edge pairs.
   const { basePositions, livePositions, pointGeometry, lineGeometry, connections } = useMemo(() => {
@@ -102,24 +111,43 @@ const CyberDataNetwork = () => {
 
   useEffect(() => {
     const updateMouse = (event: MouseEvent) => {
-      mouseRef.current.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouseRef.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      const nextX = (event.clientX / window.innerWidth) * 2 - 1;
+      const nextY = -(event.clientY / window.innerHeight) * 2 + 1;
+      const distance = Math.hypot(nextX - mouseRef.current.x, nextY - mouseRef.current.y);
+
+      mouseRef.current.x = nextX;
+      mouseRef.current.y = nextY;
+
+      if (distance > 0.006) {
+        trailRef.current.unshift({ x: nextX, y: nextY, life: 1 });
+        trailRef.current = trailRef.current.slice(0, TRAIL_COUNT);
+      }
     };
 
     const updateScroll = () => {
       scrollRef.current = getScrollProgress();
     };
 
+    const triggerBurst = (event: MouseEvent) => {
+      burstRef.current = {
+        x: (event.clientX / window.innerWidth) * 2 - 1,
+        y: -(event.clientY / window.innerHeight) * 2 + 1,
+        power: 1,
+      };
+    };
+
     updateScroll();
     const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
 
     window.addEventListener("mousemove", updateMouse, { passive: true });
+    window.addEventListener("mousedown", triggerBurst, { passive: true });
     window.addEventListener("scroll", updateScroll, { passive: true });
     window.addEventListener("resize", updateScroll, { passive: true });
     horizontalStage?.addEventListener("scroll", updateScroll, { passive: true });
 
     return () => {
       window.removeEventListener("mousemove", updateMouse);
+      window.removeEventListener("mousedown", triggerBurst);
       window.removeEventListener("scroll", updateScroll);
       window.removeEventListener("resize", updateScroll);
       horizontalStage?.removeEventListener("scroll", updateScroll);
@@ -134,6 +162,9 @@ const CyberDataNetwork = () => {
     const time = clock.elapsedTime;
     const mouseWorldX = mouseRef.current.x * viewport.width * 0.5;
     const mouseWorldY = mouseRef.current.y * viewport.height * 0.5;
+    const trailPoints = trailRef.current;
+    const burstWorldX = burstRef.current.x * viewport.width * 0.5;
+    const burstWorldY = burstRef.current.y * viewport.height * 0.5;
 
     // Scroll-linked animation: orbit and depth shift follow vertical page progress.
     const targetRotationY = scrollRef.current * Math.PI * 0.75;
@@ -156,15 +187,38 @@ const CyberDataNetwork = () => {
       const dy = baseY - mouseWorldY;
       const mouseDistance = Math.hypot(dx, dy);
       const influence = Math.max(0, 1 - mouseDistance / 2.7);
+      let trailPullX = 0;
+      let trailPullY = 0;
+      let trailEnergy = influence;
 
-      const targetX = baseX + driftX + (mouseWorldX - baseX) * influence * 0.18;
-      const targetY = baseY + driftY + (mouseWorldY - baseY) * influence * 0.18;
-      const targetZ = baseZ + driftZ + influence * 0.75;
+      trailPoints.forEach((point, trailIndex) => {
+        const trailWorldX = point.x * viewport.width * 0.5;
+        const trailWorldY = point.y * viewport.height * 0.5;
+        const trailDistance = Math.hypot(baseX - trailWorldX, baseY - trailWorldY);
+        const trailInfluence = Math.max(0, 1 - trailDistance / (1.45 + trailIndex * 0.06)) * point.life;
+
+        trailPullX += (trailWorldX - baseX) * trailInfluence * 0.055;
+        trailPullY += (trailWorldY - baseY) * trailInfluence * 0.055;
+        trailEnergy += trailInfluence * 0.58;
+      });
+
+      const burstDistance = Math.hypot(baseX - burstWorldX, baseY - burstWorldY);
+      const burstInfluence = Math.max(0, 1 - burstDistance / 3.15) * burstRef.current.power;
+      const burstAngle = Math.atan2(baseY - burstWorldY, baseX - burstWorldX);
+
+      const targetX = baseX + driftX + (mouseWorldX - baseX) * influence * 0.14 + trailPullX + Math.cos(burstAngle) * burstInfluence * 0.55;
+      const targetY = baseY + driftY + (mouseWorldY - baseY) * influence * 0.14 + trailPullY + Math.sin(burstAngle) * burstInfluence * 0.55;
+      const targetZ = baseZ + driftZ + Math.min(trailEnergy, 1.8) * 0.72 + burstInfluence * 1.4;
 
       livePositions[i3] = THREE.MathUtils.lerp(livePositions[i3], targetX, 0.035);
       livePositions[i3 + 1] = THREE.MathUtils.lerp(livePositions[i3 + 1], targetY, 0.035);
       livePositions[i3 + 2] = THREE.MathUtils.lerp(livePositions[i3 + 2], targetZ, 0.035);
     }
+
+    trailRef.current = trailPoints
+      .map((point) => ({ ...point, life: point.life - delta * 1.8 }))
+      .filter((point) => point.life > 0);
+    burstRef.current.power = Math.max(0, burstRef.current.power - delta * 2.6);
 
     // Edge update: reuse fixed nearby pairs while copying their animated node positions into one line buffer.
     const lineAttribute = linesRef.current.geometry.attributes.position;
