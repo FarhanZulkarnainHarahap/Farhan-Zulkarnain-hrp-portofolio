@@ -10,7 +10,6 @@ import {
   LuFileText,
   LuHouse,
   LuMail,
-  LuRocket,
   LuUser,
   LuZap,
 } from "react-icons/lu";
@@ -113,10 +112,6 @@ export default function Navbar() {
         aria-label="Section navigation"
       >
         <div className="relative flex items-center justify-center rounded-[1.75rem] border border-blue-500/24 bg-black/70 px-3 py-2 shadow-[0_22px_80px_rgba(0,0,0,0.45),0_0_48px_rgba(37,99,235,0.18)] backdrop-blur-2xl sm:px-4 sm:py-3 lg:rounded-full lg:px-5 lg:py-4">
-          <div className="absolute -top-3 left-1/2 hidden -translate-x-1/2 items-center gap-1 rounded-full border border-blue-400/25 bg-[#030712]/92 px-3 py-1 text-[7px] font-black uppercase tracking-[0.24em] text-blue-200 shadow-[0_0_24px_rgba(37,99,235,0.28)] sm:flex">
-            <LuRocket size={10} />
-            Galaxy Nav
-          </div>
           <div className="absolute left-8 right-8 top-1/2 h-0.5 -translate-y-1/2 bg-linear-to-r from-transparent via-blue-400/35 to-transparent sm:left-10 sm:right-10" />
           <div className="absolute -left-2 top-1/2 h-8 w-5 -translate-y-1/2 rounded-l-full border border-blue-500/20 bg-blue-500/8 blur-[1px]" />
           <div className="absolute -right-2 top-1/2 h-8 w-5 -translate-y-1/2 rounded-r-full border border-blue-500/20 bg-blue-500/8 blur-[1px]" />
