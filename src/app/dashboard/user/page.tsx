@@ -55,7 +55,7 @@ export default function Home() {
           <div className="mb-10 text-center lg:mb-6">
             <p className="mb-4 text-[10px] font-black uppercase tracking-[0.45em] text-blue-400 lg:mb-3 lg:text-[9px]">My Expertise</p>
             <h2 className="text-4xl font-black uppercase leading-none text-white md:text-6xl lg:text-5xl">
-              Skills <span className="text-blue-500">Database.</span>
+              Skills<span className="text-blue-500">.</span>
             </h2>
           </div>
           <SkillSection />
