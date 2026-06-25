@@ -66,12 +66,6 @@ Create `.env` in `web/`:
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-For production, point it to:
-
-```env
-NEXT_PUBLIC_API_URL=https://api2.farhanzulkarnainhrp.com
-```
-
 ## Scripts
 
 | Command | Description |
