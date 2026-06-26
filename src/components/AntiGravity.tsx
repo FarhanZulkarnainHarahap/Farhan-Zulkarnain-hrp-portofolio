@@ -3,12 +3,11 @@
 /* eslint-disable react-hooks/immutability */
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
-const PARTICLE_COUNT = 520;
-const CONNECTION_DISTANCE = 1.55;
-const MAX_CONNECTIONS_PER_NODE = 4;
+const CONNECTION_DISTANCE = 1.35;
+const MAX_CONNECTIONS_PER_NODE = 3;
 const TRAIL_COUNT = 10;
 
 interface TrailPoint {
@@ -43,7 +42,7 @@ const getScrollProgress = () => {
   return Math.min(Math.max(window.scrollY / scrollableHeight, 0), 1);
 };
 
-const CyberDataNetwork = () => {
+const CyberDataNetwork = ({ particleCount }: { particleCount: number }) => {
   const groupRef = useRef<THREE.Group>(null);
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
@@ -54,14 +53,14 @@ const CyberDataNetwork = () => {
 
   // Initialization: create stable GPU buffers for nodes, animated positions, and nearby edge pairs.
   const { basePositions, livePositions, pointGeometry, lineGeometry, connections } = useMemo(() => {
-    const base = new Float32Array(PARTICLE_COUNT * 3);
-    const live = new Float32Array(PARTICLE_COUNT * 3);
+    const base = new Float32Array(particleCount * 3);
+    const live = new Float32Array(particleCount * 3);
 
-    for (let index = 0; index < PARTICLE_COUNT; index += 1) {
+    for (let index = 0; index < particleCount; index += 1) {
       const i3 = index * 3;
       const angle = seededRandom(index + 17) * Math.PI * 2;
       const radius = 2.2 + seededRandom(index + 31) * 8.4;
-      const spiral = (index / PARTICLE_COUNT) * Math.PI * 6;
+      const spiral = (index / particleCount) * Math.PI * 6;
 
       base[i3] = Math.cos(angle + spiral) * radius;
       base[i3 + 1] = (seededRandom(index + 73) - 0.5) * 8.2;
@@ -74,13 +73,13 @@ const CyberDataNetwork = () => {
 
     const edgePairs: Array<[number, number]> = [];
 
-    for (let index = 0; index < PARTICLE_COUNT; index += 1) {
+    for (let index = 0; index < particleCount; index += 1) {
       let links = 0;
       const ix = base[index * 3];
       const iy = base[index * 3 + 1];
       const iz = base[index * 3 + 2];
 
-      for (let target = index + 1; target < PARTICLE_COUNT && links < MAX_CONNECTIONS_PER_NODE; target += 1) {
+      for (let target = index + 1; target < particleCount && links < MAX_CONNECTIONS_PER_NODE; target += 1) {
         const tx = base[target * 3];
         const ty = base[target * 3 + 1];
         const tz = base[target * 3 + 2];
@@ -107,7 +106,7 @@ const CyberDataNetwork = () => {
       lineGeometry: lines,
       connections: edgePairs,
     };
-  }, []);
+  }, [particleCount]);
 
   useEffect(() => {
     const updateMouse = (event: MouseEvent) => {
@@ -175,7 +174,7 @@ const CyberDataNetwork = () => {
     camera.position.z = THREE.MathUtils.damp(camera.position.z, 9.8 - scrollRef.current * 1.2, 1.6, delta);
 
     // Idle animation + hover attraction: each node drifts slowly, then nearby nodes lerp toward the cursor.
-    for (let index = 0; index < PARTICLE_COUNT; index += 1) {
+    for (let index = 0; index < particleCount; index += 1) {
       const i3 = index * 3;
       const baseX = basePositions[i3];
       const baseY = basePositions[i3 + 1];
@@ -262,15 +261,38 @@ const CyberDataNetwork = () => {
 };
 
 export default function AntiGravity() {
+  const [particleCount, setParticleCount] = useState(260);
+
+  useEffect(() => {
+    const updateQuality = () => {
+      if (window.matchMedia("(max-width: 767px)").matches) {
+        setParticleCount(150);
+        return;
+      }
+
+      if (window.matchMedia("(max-width: 1023px)").matches) {
+        setParticleCount(210);
+        return;
+      }
+
+      setParticleCount(320);
+    };
+
+    updateQuality();
+    window.addEventListener("resize", updateQuality, { passive: true });
+
+    return () => window.removeEventListener("resize", updateQuality);
+  }, []);
+
   return (
     <div className="pointer-events-none fixed inset-0 z-[1] opacity-95">
       <Canvas
         camera={{ position: [0, 0, 9.8], fov: 54 }}
-        dpr={[1, 1.25]}
-        gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
+        dpr={[1, 1]}
+        gl={{ alpha: true, antialias: false, powerPreference: "high-performance" }}
       >
         <ambientLight intensity={0.55} />
-        <CyberDataNetwork />
+        <CyberDataNetwork particleCount={particleCount} />
       </Canvas>
     </div>
   );

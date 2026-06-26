@@ -1,6 +1,4 @@
-import Navbar from "@/components/Navbar";
-import InteractiveCursor from "@/components/InteractiveCursor";
-import EntranceScreen from "@/components/EntranceScreen";
+import UserChrome from "@/components/UserChrome";
 
 export default function UserLayout({
   children,
@@ -9,10 +7,7 @@ export default function UserLayout({
 }) {
   return (
     <>
-      <EntranceScreen />
-      <InteractiveCursor />
-      {/* Premium navbar */}
-      <Navbar />
+      <UserChrome />
       
       <main className="relative z-10 min-h-screen bg-transparent">
         {children}
