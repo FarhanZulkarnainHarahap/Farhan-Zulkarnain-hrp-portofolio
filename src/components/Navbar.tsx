@@ -95,10 +95,10 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className="fixed bottom-3 left-1/2 z-120 w-[calc(100%-1rem)] max-w-[94rem] -translate-x-1/2 sm:bottom-4 lg:bottom-5"
+        className="fixed bottom-3 left-1/2 z-120 w-[calc(100%-0.75rem)] max-w-[94rem] -translate-x-1/2 sm:bottom-4 sm:w-[calc(100%-1rem)] lg:bottom-5"
         aria-label="Section navigation"
       >
-        <div className="relative overflow-hidden border border-blue-400/55 bg-[#020712]/88 px-2 py-2 shadow-[0_0_28px_rgba(37,99,235,0.45),inset_0_0_42px_rgba(37,99,235,0.12)] backdrop-blur-2xl [clip-path:polygon(2.5%_0,17%_0,18.2%_6%,82%_6%,83.2%_0,97.5%_0,100%_28%,100%_72%,97.5%_100%,82%_100%,80.8%_94%,19.2%_94%,18%_100%,2.5%_100%,0_72%,0_28%)] sm:px-3 sm:py-3 lg:px-5 lg:py-4">
+        <div className="relative overflow-hidden border border-blue-400/55 bg-[#020712]/90 px-1.5 py-1.5 shadow-[0_0_28px_rgba(37,99,235,0.45),inset_0_0_42px_rgba(37,99,235,0.12)] backdrop-blur-2xl [clip-path:polygon(4%_0,18%_0,19.5%_8%,80.5%_8%,82%_0,96%_0,100%_26%,100%_74%,96%_100%,82%_100%,80.5%_92%,19.5%_92%,18%_100%,4%_100%,0_74%,0_26%)] sm:px-3 sm:py-3 lg:px-5 lg:py-4 lg:[clip-path:polygon(2.5%_0,17%_0,18.2%_6%,82%_6%,83.2%_0,97.5%_0,100%_28%,100%_72%,97.5%_100%,82%_100%,80.8%_94%,19.2%_94%,18%_100%,2.5%_100%,0_72%,0_28%)]">
           <div className="pointer-events-none absolute inset-x-10 top-1 h-px bg-linear-to-r from-transparent via-blue-300 to-transparent" />
           <div className="pointer-events-none absolute inset-x-14 bottom-1 h-px bg-linear-to-r from-transparent via-blue-500/80 to-transparent" />
           <div className="pointer-events-none absolute left-4 top-4 hidden h-16 w-16 border-l border-t border-blue-400/30 sm:block" />
@@ -127,7 +127,7 @@ export default function Navbar() {
               </span>
             </button>
 
-            <ul className="grid w-full grid-cols-6 items-stretch gap-0 overflow-hidden rounded-[1.15rem] border border-blue-500/20 bg-black/28 lg:flex lg:w-auto lg:rounded-none lg:border-0 lg:bg-transparent">
+            <ul className="grid w-full grid-cols-6 items-stretch gap-0 overflow-hidden rounded-[0.95rem] border border-blue-500/20 bg-black/28 lg:flex lg:w-auto lg:rounded-none lg:border-0 lg:bg-transparent">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.label || activeSection === item.id.toUpperCase();
@@ -138,7 +138,7 @@ export default function Navbar() {
                     type="button"
                     onClick={() => handleNavigation(item)}
                     data-cursor-label={item.label}
-                    className={`group relative flex h-16 min-w-0 flex-col items-center justify-center gap-1 border-r border-blue-500/16 px-1 text-center last:border-r-0 sm:h-18 sm:gap-1.5 lg:h-18 lg:min-w-30 lg:border-r lg:px-4 xl:min-w-36 ${
+                    className={`group relative flex h-14 min-w-0 flex-col items-center justify-center gap-1 border-r border-blue-500/16 px-0.5 text-center last:border-r-0 sm:h-18 sm:gap-1.5 sm:px-1 lg:h-18 lg:min-w-30 lg:border-r lg:px-4 xl:min-w-36 ${
                       isActive
                         ? "bg-blue-500/16 shadow-[inset_0_0_32px_rgba(37,99,235,0.28)] lg:[clip-path:polygon(0_0,100%_0,100%_82%,82%_100%,18%_100%,0_82%)]"
                         : "bg-transparent hover:bg-blue-500/8"
@@ -148,11 +148,11 @@ export default function Navbar() {
                     <span className={`${isActive ? "text-blue-300 drop-shadow-[0_0_10px_rgba(96,165,250,0.9)]" : "text-blue-300/80 group-hover:text-blue-200"}`}>
                       <Icon className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8" />
                     </span>
-                    <span className={`truncate text-[7px] font-black uppercase tracking-[0.08em] transition-colors sm:text-[9px] sm:tracking-[0.12em] lg:text-sm lg:tracking-[0.02em] ${isActive ? "text-white" : "text-white/75 group-hover:text-white"}`}>
+                    <span className={`max-w-full truncate text-[6px] font-black uppercase tracking-[0.04em] transition-colors min-[390px]:text-[7px] sm:text-[9px] sm:tracking-[0.12em] lg:text-sm lg:tracking-[0.02em] ${isActive ? "text-white" : "text-white/75 group-hover:text-white"}`}>
                       {item.label}
                     </span>
                     {isActive && (
-                      <span className="absolute bottom-2 h-0.5 w-8 rounded-full bg-blue-300 shadow-[0_0_12px_rgba(96,165,250,0.95)] sm:w-10" />
+                      <span className="absolute bottom-1.5 h-0.5 w-7 rounded-full bg-blue-300 shadow-[0_0_12px_rgba(96,165,250,0.95)] sm:bottom-2 sm:w-10" />
                     )}
                   </button>
                 </li>
