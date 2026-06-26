@@ -16,9 +16,6 @@ const ProjectSection = dynamic(() => import("@/components/sections/portfolio/pro
 const DocSection = dynamic(() => import("@/components/sections/document/DocSection"), {
   loading: () => <SectionBlockSkeleton label="Documents" />,
 });
-const SocialProofSection = dynamic(() => import("@/components/sections/social/SocialProofSection"), {
-  loading: () => <SectionBlockSkeleton label="Proof" />,
-});
 const ContactSection = dynamic(() => import("@/components/sections/contact/ContactSection"), {
   loading: () => <SectionBlockSkeleton label="Contact" />,
 });
@@ -88,9 +85,6 @@ export default function Home() {
         </div>
         <div className="lg:h-screen lg:w-screen lg:shrink-0 lg:snap-center lg:overflow-hidden">
           <DocSection />
-        </div>
-        <div className="lg:h-screen lg:w-screen lg:shrink-0 lg:snap-center lg:overflow-hidden">
-          <SocialProofSection />
         </div>
         <section id="contact" className="portfolio-section-bg px-0 py-20 md:py-24 lg:flex lg:h-screen lg:w-screen lg:shrink-0 lg:snap-center lg:items-center lg:justify-center lg:overflow-hidden lg:py-0">
           <ContactSection />
