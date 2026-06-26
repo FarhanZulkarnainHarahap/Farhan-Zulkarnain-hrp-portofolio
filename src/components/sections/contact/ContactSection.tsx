@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { FaLinkedin, FaInstagram, FaGithub, FaEnvelope, FaPhoneAlt, FaWhatsapp } from "react-icons/fa";
 import { IoSendSharp } from "react-icons/io5";
 import { LuLoader } from "react-icons/lu";
@@ -51,10 +50,7 @@ export default function ContactSection() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         
         {/* Left Side: Contact Form */}
-        <motion.div 
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
+        <div
           className="space-y-8"
         >
           <div className="space-y-4">
@@ -114,11 +110,9 @@ export default function ContactSection() {
               </div>
             )}
 
-            <motion.button 
+            <button
               type="submit"
               disabled={loading}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
               className="flex items-center justify-center gap-3 w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.3em] transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
@@ -126,15 +120,12 @@ export default function ContactSection() {
               ) : (
                 <>SEND MESSAGE <IoSendSharp size={14} /></>
               )}
-            </motion.button>
+            </button>
           </form>
-        </motion.div>
+        </div>
 
         {/* Right Side: Details & Social Cards */}
-        <motion.div 
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
+        <div
           className="grid grid-cols-1 gap-6"
         >
           <div className="p-5 sm:p-8 space-y-6 border border-white/5 bg-linear-to-br from-white/2 to-transparent rounded-3xl">
@@ -172,17 +163,16 @@ export default function ContactSection() {
               { name: "GitHub", icon: FaGithub, link: "https://github.com/FarhanZulkarnainHarahap", color: "hover:bg-white hover:text-black" },
               { name: "WhatsApp", icon: FaWhatsapp, link: "https://wa.me/6281958169283", color: "hover:bg-green-600" }
             ].map((social, i) => (
-              <motion.a
+              <a
                 key={i}
                 href={social.link}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={social.name}
-                whileHover={{ y: -5 }}
                 className={`aspect-square flex items-center justify-center rounded-2xl border border-white/10 bg-white/2 text-gray-400 transition-all duration-500 ${social.color}`}
               >
                 <social.icon size={22} />
-              </motion.a>
+              </a>
             ))}
           </div>
 
@@ -190,7 +180,7 @@ export default function ContactSection() {
              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
              <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-gray-400">Open for new opportunities</span>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

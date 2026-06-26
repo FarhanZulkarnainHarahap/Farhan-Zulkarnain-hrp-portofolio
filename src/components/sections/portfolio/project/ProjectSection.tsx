@@ -5,7 +5,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   LuArrowLeft,
   LuArrowRight,
@@ -164,21 +163,14 @@ const ProjectCaseStudyModal = ({
   }
 
   return createPortal(
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
       className="fixed inset-0 z-[9999] flex items-start justify-center overflow-y-auto overscroll-contain bg-black/88 px-4 pb-24 pt-20 backdrop-blur-xl md:pb-28 md:pt-24"
       role="dialog"
       aria-modal="true"
       aria-label={`${project.title} case study`}
       onClick={onClose}
     >
-      <motion.div
-        initial={{ y: 40, scale: 0.94, opacity: 0 }}
-        animate={{ y: 0, scale: 1, opacity: 1 }}
-        exit={{ y: 30, scale: 0.96, opacity: 0 }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      <div
         onClick={(event) => event.stopPropagation()}
         className="relative w-full max-w-5xl overflow-hidden rounded-[28px] border bg-[#060a12]/98 p-4 shadow-[0_32px_120px_rgba(37,99,235,0.2)] md:p-5"
         style={{ borderColor: `${accent}70` }}
@@ -203,27 +195,22 @@ const ProjectCaseStudyModal = ({
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-linear-to-t from-[#060a12] via-transparent to-transparent" />
-              <motion.div
-                animate={{ x: ["-18%", "18%", "-18%"], opacity: [0.15, 0.35, 0.15] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              <div
                 className="absolute -bottom-20 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full blur-[70px]"
                 style={{ backgroundColor: accent }}
               />
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              {cards.map(({ icon: Icon, title, text }, index) => (
-                <motion.div
+              {cards.map(({ icon: Icon, title, text }) => (
+                <div
                   key={title}
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.12 + index * 0.08 }}
                   className="min-h-0 rounded-2xl border border-white/8 bg-white/4 p-4"
                 >
                   <Icon className="mb-3 text-blue-400" size={20} />
                   <h4 className="text-xs font-black uppercase tracking-[0.18em] text-white">{title}</h4>
                   <p className="mt-2 line-clamp-6 text-[11px] leading-relaxed text-zinc-400">{text}</p>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -257,17 +244,14 @@ const ProjectCaseStudyModal = ({
             </div>
 
             <div className="mt-5 grid gap-2.5 sm:grid-cols-2">
-              {details.features.map((feature, index) => (
-                <motion.div
+              {details.features.map((feature) => (
+                <div
                   key={feature}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 + index * 0.06 }}
                   className="flex min-h-12 items-center gap-2.5 rounded-2xl border border-white/7 bg-white/4 px-3.5 py-2.5 text-xs leading-snug text-zinc-300"
                 >
                   <LuCircleCheck className="shrink-0 text-blue-400" size={15} />
                   <span className="line-clamp-2">{feature}</span>
-                </motion.div>
+                </div>
               ))}
             </div>
 
@@ -299,8 +283,8 @@ const ProjectCaseStudyModal = ({
             </div>
           </div>
         </div>
-      </motion.div>
-    </motion.div>,
+      </div>
+    </div>,
     document.body,
   );
 };
@@ -579,15 +563,13 @@ export default function PortfolioSection() {
         </div>
       </div>
 
-      <AnimatePresence>
-        {selectedProject && (
-          <ProjectCaseStudyModal
-            project={selectedProject}
-            accent={projectAccents[Math.max(projects.findIndex((project) => project.id === selectedProject.id), 0) % projectAccents.length]}
-            onClose={() => setSelectedProject(null)}
-          />
-        )}
-      </AnimatePresence>
+      {selectedProject && (
+        <ProjectCaseStudyModal
+          project={selectedProject}
+          accent={projectAccents[Math.max(projects.findIndex((project) => project.id === selectedProject.id), 0) % projectAccents.length]}
+          onClose={() => setSelectedProject(null)}
+        />
+      )}
     </section>
   );
 }

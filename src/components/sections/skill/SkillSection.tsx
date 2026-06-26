@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
 import type { IconType } from "react-icons";
 import * as Lu from "react-icons/lu";
 import * as Fa from "react-icons/fa6";
@@ -52,15 +51,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 export default function SkillSection() {
   const [skills, setSkills] = useState<SkillData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stars] = useState(() => (
-    [...Array(30)].map((_, i) => ({
-      id: i,
-      size: Math.random() * 2 + 0.5,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      duration: Math.random() * 5 + 3,
-    }))
-  ));
 
   useEffect(() => {
     // 1. Fetch Data
@@ -87,50 +77,18 @@ export default function SkillSection() {
   return (
     <div className="relative w-full max-w-6xl flex flex-col gap-6 overflow-visible md:gap-8 lg:gap-4">
       
-      {/* 🌌 LAYER ANIMASI GALAXY (Background) */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden min-h-125">
-        {stars.map((star) => (
-          <motion.div
-            key={star.id}
-            animate={{ 
-              opacity: [0.1, 0.7, 0.1], 
-              scale: [1, 1.4, 1],
-              y: [0, -40, 0] 
-            }}
-            transition={{ 
-              duration: star.duration, 
-              repeat: Infinity, 
-              ease: "easeInOut",
-              delay: star.id * 0.1
-            }}
-            style={{ 
-              position: "absolute",
-              left: `${star.x}%`, 
-              top: `${star.y}%`,
-              width: `${star.size}px`,
-              height: `${star.size}px`
-            }}
-            className="bg-blue-400 rounded-full blur-[0.8px] shadow-[0_0_10px_rgba(59,130,246,0.5)]"
-          />
-        ))}
-      </div>
-
       {/* --- CONTENT LAYER --- */}
       <div className="relative z-10 w-full flex flex-col gap-6 lg:gap-4">
         {loading ? (
           <SkillSkeleton />
         ) : (
-          categoryOrder.map((catKey, idx) => {
+          categoryOrder.map((catKey) => {
             const skillsInCat = groupedSkills[catKey];
             if (!skillsInCat || skillsInCat.length === 0) return null;
 
             return (
-              <motion.div 
+              <div
                 key={catKey}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: idx * 0.1 }}
                 className="w-full"
               >
                 {/* Category Header */}
@@ -147,9 +105,8 @@ export default function SkillSection() {
                 {/* Grid Skill Ikon */}
                 <div className="flex flex-wrap gap-x-10 gap-y-6 pl-2 lg:gap-x-8 lg:gap-y-4">
                   {skillsInCat.map((skill: SkillData) => (
-                    <motion.div 
+                    <div
                       key={skill.id}
-                      whileHover={{ y: -6, scale: 1.1 }}
                       className="group relative flex min-w-15 flex-col items-center justify-center lg:min-w-12"
                     >
                       {/* Aura Glow saat Hover */}
@@ -164,10 +121,10 @@ export default function SkillSection() {
                       <span className="relative z-10 mt-2 text-center text-[8px] font-black uppercase tracking-[0.2em] text-zinc-600 transition-colors group-hover:text-white lg:mt-1.5 lg:text-[7px]">
                         {skill.name}
                       </span>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             );
           })
         )}

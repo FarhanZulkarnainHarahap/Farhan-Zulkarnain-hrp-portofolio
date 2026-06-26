@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import {
   FaCalendarAlt,
   FaCertificate,
@@ -212,16 +211,12 @@ export default function DocSection() {
 
       {visibleDocs.length > 0 ? (
         <div className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3 lg:gap-5">
-          {visibleDocs.map((doc, index) => {
+          {visibleDocs.map((doc) => {
             const previewType = getPreviewType(doc);
 
             return (
-              <motion.article
+              <article
                 key={doc.id}
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.06 }}
                 className="group overflow-hidden rounded-xl border border-white/7 bg-[#101720]/92 shadow-[0_18px_60px_rgba(0,0,0,0.22)] transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/35"
               >
                 <a
@@ -327,7 +322,7 @@ export default function DocSection() {
                     </span>
                   </div>
                 </div>
-              </motion.article>
+              </article>
             );
           })}
         </div>

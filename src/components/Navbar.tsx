@@ -2,7 +2,6 @@
 
 /* eslint-disable react-hooks/set-state-in-effect */
 
-import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -104,10 +103,7 @@ export default function Navbar() {
         Farhan Z.
       </button>
 
-      <motion.nav
-        initial={{ y: 40, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+      <nav
         className="fixed bottom-3 left-1/2 z-120 w-[calc(100%-1rem)] max-w-[24rem] -translate-x-1/2 sm:bottom-4 sm:max-w-[34rem] lg:bottom-5 lg:w-auto lg:max-w-none"
         aria-label="Section navigation"
       >
@@ -130,17 +126,15 @@ export default function Navbar() {
                     className="group relative flex flex-col items-center gap-1.5 sm:gap-2"
                     aria-label={item.label}
                   >
-                    <motion.span
-                      animate={{
-                        scale: isActive ? 1.18 : 1,
-                        backgroundColor: isActive ? "rgba(37,99,235,0.95)" : "rgba(3,7,18,0.95)",
-                        borderColor: isActive ? "rgba(147,197,253,0.9)" : "rgba(147,197,253,0.36)",
-                      }}
-                      transition={{ type: "spring", stiffness: 240, damping: 18 }}
-                      className="grid h-9 w-9 place-items-center rounded-full border text-white shadow-[0_0_24px_rgba(37,99,235,0.18)] sm:h-10 sm:w-10 lg:h-11 lg:w-11"
+                    <span
+                      className={`grid h-9 w-9 place-items-center rounded-full border text-white shadow-[0_0_24px_rgba(37,99,235,0.18)] sm:h-10 sm:w-10 lg:h-11 lg:w-11 ${
+                        isActive
+                          ? "scale-[1.18] border-blue-200/90 bg-blue-600"
+                          : "border-blue-200/35 bg-slate-950/95"
+                      }`}
                     >
                       <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    </motion.span>
+                    </span>
                     <span className={`text-[6px] font-black uppercase tracking-[0.14em] transition-colors sm:text-[7px] sm:tracking-[0.18em] lg:text-[8px] lg:tracking-[0.22em] ${isActive ? "text-blue-300" : "text-white/45 group-hover:text-white"}`}>
                       {item.label}
                     </span>
@@ -150,7 +144,7 @@ export default function Navbar() {
             })}
           </ul>
         </div>
-      </motion.nav>
+      </nav>
     </>
   );
 }

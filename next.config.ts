@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
     },
   },
   experimental: {
-    optimizePackageImports: ["react-icons", "framer-motion"],
+    optimizePackageImports: ["react-icons"],
   },
   async rewrites() {
     return [

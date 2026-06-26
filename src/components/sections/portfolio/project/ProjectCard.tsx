@@ -2,7 +2,6 @@
 
 import type { CSSProperties } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { FaGithub, FaStar } from "react-icons/fa";
 import { FiArrowUpRight, FiBookOpen } from "react-icons/fi";
 
@@ -43,11 +42,7 @@ export default function ProjectCard({
   } as CSSProperties;
 
   return (
-    <motion.article
-      initial={{ opacity: 0, scale: 0.92 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.92 }}
-      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+    <article
       style={cardStyle}
       className={`group relative overflow-hidden border bg-[#080b14]/98 ${
         variant === "featured"
@@ -179,6 +174,6 @@ export default function ProjectCard({
           </>
         )}
       </div>
-    </motion.article>
+    </article>
   );
 }
