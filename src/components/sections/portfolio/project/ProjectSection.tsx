@@ -15,7 +15,6 @@ import {
   LuLayers,
   LuRocket,
   LuSearch,
-  LuSparkles,
   LuTarget,
   LuX,
 } from "react-icons/lu";
@@ -311,15 +310,10 @@ const ProjectSkeleton = () => (
     <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.18),transparent_55%)]" />
 
     <div className="relative z-10 mx-auto w-full max-w-7xl">
-      <div className="mb-10 animate-pulse border-b border-white/10 pb-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <div className="mb-4 h-3 w-36 rounded-full bg-blue-500/18" />
-            <div className="h-12 w-80 rounded-2xl bg-white/10 md:h-16 md:w-135" />
-            <div className="mt-5 h-16 w-full max-w-lg rounded-2xl bg-white/6" />
-          </div>
-          <div className="h-3 w-36 rounded-full bg-white/8" />
-        </div>
+      <div className="mb-10 animate-pulse text-center">
+        <div className="mx-auto mb-4 h-9 w-32 rounded-full border border-blue-500/20 bg-blue-500/10" />
+        <div className="mx-auto h-12 w-80 rounded-2xl bg-white/10 md:h-14 md:w-96" />
+        <div className="mx-auto mt-5 h-14 w-full max-w-md rounded-2xl bg-white/6" />
       </div>
 
       <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -464,35 +458,29 @@ export default function PortfolioSection() {
   }
 
   return (
-    <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:flex lg:h-screen lg:flex-col lg:justify-start lg:px-10 lg:pb-34 lg:pt-18 xl:px-16">
+    <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:px-10 lg:pb-32 lg:pt-12 xl:px-16">
       <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.2),transparent_55%)]" />
       <div className="absolute inset-0 -z-20 bg-linear-to-b from-transparent via-[#030406]/14 to-transparent" />
       <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
       <div className="absolute -bottom-28 -left-28 -z-10 h-80 w-80 rounded-full border border-blue-500/25 opacity-50" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl">
-        <div className="mb-8 border-b border-white/10 pb-6 lg:mb-3 lg:pb-3">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="mb-3 flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400 lg:mb-1 lg:text-[9px]">
-                <LuSparkles size={14} />
-                My Works
-              </p>
-              <h2 className="text-4xl font-black uppercase leading-none tracking-tight text-white md:text-5xl lg:text-[2.5rem] xl:text-5xl">
-                Projects Built With <span className="text-blue-500">Purpose.</span>
-              </h2>
-              <p className="mt-5 max-w-lg text-sm leading-relaxed text-zinc-400 lg:mt-2 lg:max-w-md lg:text-xs">
-                A collection of digital products, crafted with clean code, modern design, and scalable architecture.
-              </p>
-            </div>
-
-            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-500">
-              {filteredProjects.length} / {projects.length} Project Assets
-            </p>
-          </div>
+      <div className="relative z-10 mx-auto w-full max-w-7xl lg:max-w-[86rem]">
+        <div className="mb-7 text-left md:mb-9 lg:mb-6 lg:text-center">
+          <p className="mb-5 inline-flex h-9 items-center rounded-full border border-blue-500/45 bg-blue-500/8 px-5 text-xs font-bold uppercase tracking-[0.18em] text-blue-400 shadow-[0_0_25px_rgba(37,99,235,0.16)]">
+            Projects
+          </p>
+          <h2 className="text-4xl font-black leading-tight tracking-tight text-white md:text-5xl lg:text-4xl xl:text-5xl">
+            Selected <span className="text-blue-500">Projects</span>
+          </h2>
+          <p className="mt-4 max-w-lg text-lg leading-relaxed text-zinc-400 md:text-xl lg:mx-auto lg:max-w-xl lg:text-base">
+            A collection of digital products I&apos;ve designed and built with focus on user experience, performance, and impact.
+          </p>
+          <p className="mt-4 text-[10px] font-black uppercase tracking-[0.35em] text-zinc-500 lg:hidden">
+            {filteredProjects.length} / {projects.length} Project Assets
+          </p>
         </div>
 
-        <div className="mb-6 grid gap-3 md:grid-cols-[1fr_260px] lg:mb-3">
+        <div className="mb-6 grid gap-3 md:grid-cols-[1fr_260px] lg:mb-5">
           <label className="group relative">
             <LuSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/70 transition-colors group-focus-within:text-blue-300" size={16} />
             <input
@@ -500,14 +488,14 @@ export default function PortfolioSection() {
               value={searchTerm}
               onChange={(event) => handleSearchChange(event.target.value)}
               placeholder="Search projects..."
-              className="h-13 w-full rounded-2xl border border-blue-500/15 bg-[#07101d]/82 pl-12 pr-4 text-sm font-semibold text-white shadow-[0_18px_55px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition-colors placeholder:text-zinc-500 focus:border-blue-400/70 lg:h-10 lg:rounded-xl lg:text-xs"
+              className="h-13 w-full rounded-2xl border border-blue-500/15 bg-[#07101d]/82 pl-12 pr-4 text-sm font-semibold text-white shadow-[0_18px_55px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition-colors placeholder:text-zinc-500 focus:border-blue-400/70 lg:h-11 lg:rounded-2xl"
             />
           </label>
 
           <select
             value={categoryFilter}
             onChange={(event) => handleCategoryChange(event.target.value)}
-            className="h-13 w-full rounded-2xl border border-blue-500/15 bg-[#07101d]/82 px-4 text-sm font-bold text-zinc-200 shadow-[0_18px_55px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition-colors focus:border-blue-400/70 lg:h-10 lg:rounded-xl lg:text-xs"
+            className="h-13 w-full rounded-2xl border border-blue-500/15 bg-[#07101d]/82 px-4 text-sm font-bold text-zinc-200 shadow-[0_18px_55px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition-colors focus:border-blue-400/70 lg:h-11 lg:rounded-2xl"
           >
             <option value="all">All Categories</option>
             {categories.map((category) => (
@@ -519,7 +507,7 @@ export default function PortfolioSection() {
         </div>
 
         {visibleProjects.length > 0 ? (
-          <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-3">
+          <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-4">
             {visibleProjects.map((project, index) => {
               const projectIndex = (safePage - 1) * projectsPerPage + index;
 
@@ -531,6 +519,7 @@ export default function PortfolioSection() {
                   imageUrl={project.imageUrl}
                   demoUrl={project.demoUrl}
                   repoUrl={project.repoUrl}
+                  categoryLabel={getProjectCategory(project)}
                   index={projectIndex}
                   variant="mobile"
                   accent={projectAccents[projectIndex % projectAccents.length]}
@@ -545,7 +534,7 @@ export default function PortfolioSection() {
           </div>
         )}
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2 sm:mt-9 sm:gap-3 lg:mt-2">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2 sm:mt-9 sm:gap-3 lg:mt-4">
           <button
             type="button"
             onClick={() => setPage((current) => Math.max(1, current - 1))}
