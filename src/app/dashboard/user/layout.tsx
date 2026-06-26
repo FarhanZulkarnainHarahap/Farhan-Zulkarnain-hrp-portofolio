@@ -1,4 +1,4 @@
-import UserChrome from "@/components/UserChrome";
+import Navbar from "@/components/Navbar";
 
 export default function UserLayout({
   children,
@@ -7,7 +7,7 @@ export default function UserLayout({
 }) {
   return (
     <>
-      <UserChrome />
+      <Navbar />
       
       <main className="relative z-10 min-h-screen bg-transparent">
         {children}

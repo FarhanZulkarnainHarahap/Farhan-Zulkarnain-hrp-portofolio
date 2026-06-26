@@ -196,6 +196,7 @@ export default function DocSection() {
         </label>
 
         <select
+          aria-label="Filter documents by category"
           value={categoryFilter}
           onChange={(event) => changeFilter(event.target.value)}
           className="h-12 w-full rounded-lg border border-white/10 bg-[#111722]/80 px-4 text-sm text-zinc-300 outline-none transition-colors focus:border-blue-500/55 md:w-56"

@@ -88,7 +88,6 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api2.farhanzulkarnainhrp.com" />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>

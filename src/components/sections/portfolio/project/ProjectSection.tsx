@@ -493,6 +493,7 @@ export default function PortfolioSection() {
           </label>
 
           <select
+            aria-label="Filter projects by category"
             value={categoryFilter}
             onChange={(event) => handleCategoryChange(event.target.value)}
             className="h-13 w-full rounded-2xl border border-blue-500/15 bg-[#07101d]/82 px-4 text-sm font-bold text-zinc-200 shadow-[0_18px_55px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition-colors focus:border-blue-400/70 lg:h-11 lg:rounded-2xl"

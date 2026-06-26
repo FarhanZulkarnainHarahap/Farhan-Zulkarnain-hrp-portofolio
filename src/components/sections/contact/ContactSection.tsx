@@ -167,16 +167,17 @@ export default function ContactSection() {
           {/* Social Media Grid */}
           <div className="grid grid-cols-4 gap-4">
             {[
-              { icon: FaLinkedin, link: "https://www.linkedin.com/in/farhan-zulkarnain-71801a347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", color: "hover:bg-blue-600" },
-              { icon: FaInstagram, link: "https://www.instagram.com/farhan.nexxus?igsh=bmw4cmI4djQzeTN1", color: "hover:bg-pink-600" },
-              { icon: FaGithub, link: "https://github.com/FarhanZulkarnainHarahap", color: "hover:bg-white hover:text-black" },
-              { icon: FaWhatsapp, link: "https://wa.me/6281958169283", color: "hover:bg-green-600" }
+              { name: "LinkedIn", icon: FaLinkedin, link: "https://www.linkedin.com/in/farhan-zulkarnain-71801a347?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", color: "hover:bg-blue-600" },
+              { name: "Instagram", icon: FaInstagram, link: "https://www.instagram.com/farhan.nexxus?igsh=bmw4cmI4djQzeTN1", color: "hover:bg-pink-600" },
+              { name: "GitHub", icon: FaGithub, link: "https://github.com/FarhanZulkarnainHarahap", color: "hover:bg-white hover:text-black" },
+              { name: "WhatsApp", icon: FaWhatsapp, link: "https://wa.me/6281958169283", color: "hover:bg-green-600" }
             ].map((social, i) => (
               <motion.a
                 key={i}
                 href={social.link}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={social.name}
                 whileHover={{ y: -5 }}
                 className={`aspect-square flex items-center justify-center rounded-2xl border border-white/10 bg-white/2 text-gray-400 transition-all duration-500 ${social.color}`}
               >
