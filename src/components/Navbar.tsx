@@ -109,7 +109,7 @@ export default function Navbar() {
             className="pointer-events-none select-none object-fill"
           />
 
-          <div className="relative z-10 flex items-center gap-2 lg:gap-2">
+          <div className="relative z-10 flex items-center justify-center gap-2 lg:mx-auto lg:w-fit lg:gap-2">
             <button
               type="button"
               onClick={() => handleNavigation(menuItems[0])}
