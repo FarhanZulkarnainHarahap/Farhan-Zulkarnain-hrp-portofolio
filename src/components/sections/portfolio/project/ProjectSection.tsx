@@ -17,6 +17,8 @@ import {
   LuTarget,
   LuX,
 } from "react-icons/lu";
+import { fetchCachedJson } from "@/lib/client-cache";
+import { getOptimizedImageUrl } from "@/lib/image";
 import ProjectCard from "./ProjectCard";
 
 interface Project {
@@ -188,7 +190,7 @@ const ProjectCaseStudyModal = ({
           <div>
             <div className="relative h-52 overflow-hidden rounded-[22px] border border-white/10 bg-slate-950 md:h-64">
               <Image
-                src={project.imageUrl || "/placeholder-project.jpg"}
+                src={getOptimizedImageUrl(project.imageUrl || "/placeholder-project.jpg", 1100)}
                 alt={project.title}
                 fill
                 sizes="(max-width: 1024px) 100vw, 520px"
@@ -347,8 +349,10 @@ export default function PortfolioSection() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/portofolios`);
-        const result = await res.json();
+        const result = await fetchCachedJson<{ success: boolean; data: Project[] }>(
+          `${API_URL}/api/portofolios`,
+          `portfolio-projects:${API_URL}`,
+        );
         if (result.success) setProjects(result.data);
       } catch (error) {
         console.error("Failed:", error);

@@ -6,6 +6,7 @@ import * as Lu from "react-icons/lu";
 import * as Fa from "react-icons/fa6";
 import * as Si from "react-icons/si";
 import * as Di from "react-icons/di";
+import { fetchCachedJson } from "@/lib/client-cache";
 interface SkillData {
   id: string;
   name: string;
@@ -53,13 +54,21 @@ export default function SkillSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Fetch Data
-    fetch(`${API_URL}/api/skills`)
-      .then(res => res.json())
-      .then(data => {
+    const fetchSkills = async () => {
+      try {
+        const data = await fetchCachedJson<SkillData[] | { data?: SkillData[] }>(
+          `${API_URL}/api/skills`,
+          `portfolio-skills:${API_URL}`,
+        );
         setSkills(Array.isArray(data) ? data : data.data || []);
+      } catch (error) {
+        console.error("Failed to fetch skills:", error);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchSkills();
   }, []);
 
   // --- LOGIKA GROUPING ---

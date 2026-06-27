@@ -22,6 +22,11 @@ body {
   overscroll-behavior-y: none;
 }
 
+button,
+a {
+  touch-action: manipulation;
+}
+
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   width: 10px;
@@ -86,6 +91,25 @@ body::-webkit-scrollbar-thumb:hover {
 
   [data-horizontal-stage]::-webkit-scrollbar {
     display: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .portfolio-bg {
+    background-attachment: scroll;
+  }
+
+  .portfolio-bg::before {
+    position: absolute;
+  }
+
+  #about,
+  #skills,
+  #projects,
+  #documents,
+  #contact {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
   }
 }
 

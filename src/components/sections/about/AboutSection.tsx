@@ -2,6 +2,12 @@
 import { FaArrowRight, FaTerminal, FaLayerGroup, FaLightbulb } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
+import { getOptimizedImageUrl } from "@/lib/image";
+
+const profileImage = getOptimizedImageUrl(
+  "https://res.cloudinary.com/dpanr1qqp/image/upload/v1765874955/bake-bliss/b1v5qdy9whqszyqohdjb.jpg",
+  720,
+);
 
 export default function AboutSection() {
   return (
@@ -23,7 +29,7 @@ export default function AboutSection() {
           >
             <div className="relative z-10 h-60 w-48 overflow-hidden rounded-sm border border-white/5 bg-[#020203] shadow-2xl md:h-80 md:w-64 lg:h-96 lg:w-72">
               <Image 
-                src="https://res.cloudinary.com/dpanr1qqp/image/upload/v1765874955/bake-bliss/b1v5qdy9whqszyqohdjb.jpg" 
+                src={profileImage}
                 alt="Farhan Workspace" 
                 fill 
                 sizes="(max-width: 768px) 192px, (max-width: 1024px) 256px, 320px"

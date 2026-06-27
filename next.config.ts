@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-
+  compress: true,
+  poweredByHeader: false,
+  productionBrowserSourceMaps: false,
   reactCompiler: false,
   compiler: {
     removeConsole: {
@@ -10,6 +12,28 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ["react-icons"],
+  },
+  async headers() {
+    return [
+      {
+        source: "/cyber-navbar-frame.svg",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/:path(home|about|skills|projects|documents|contact)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+          },
+        ],
+      },
+    ];
   },
   async rewrites() {
     return [
@@ -70,6 +94,7 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30,
+    qualities: [55, 65, 72, 75, 80],
     remotePatterns: [
       {
         protocol: 'https',

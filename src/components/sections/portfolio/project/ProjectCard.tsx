@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import { FaGithub, FaStar } from "react-icons/fa";
 import { FiArrowUpRight, FiBookOpen } from "react-icons/fi";
+import { getOptimizedImageUrl } from "@/lib/image";
 
 interface CardProps {
   title: string;
@@ -68,7 +69,7 @@ export default function ProjectCard({
           : "h-full min-h-44 rounded-[20px] sm:min-h-48 sm:rounded-[18px] md:min-h-52 lg:h-36 lg:min-h-0"
       }`}>
         <Image
-          src={imageUrl || "/placeholder-project.jpg"}
+          src={getOptimizedImageUrl(imageUrl || "/placeholder-project.jpg", 900)}
           alt={title}
           fill
           sizes={variant === "orbit" ? "272px" : "(max-width: 768px) 100vw, 400px"}

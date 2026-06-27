@@ -3,7 +3,13 @@
 import { FaArrowRight, FaDownload, FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
+import { getOptimizedImageUrl } from "@/lib/image";
 import ShinyText from "./ShinyText";
+
+const profileImage = getOptimizedImageUrl(
+  "https://res.cloudinary.com/dpanr1qqp/image/upload/v1765874955/bake-bliss/b1v5qdy9whqszyqohdjb.jpg",
+  720,
+);
 
 const socialLinks = [
   {
@@ -52,7 +58,7 @@ export default function HeroCard() {
             <div className="hero-profile-content">
               <div className="hero-profile-image">
                 <Image
-                  src="https://res.cloudinary.com/dpanr1qqp/image/upload/v1765874955/bake-bliss/b1v5qdy9whqszyqohdjb.jpg"
+                  src={profileImage}
                   alt="Farhan Zulkarnain"
                   fill
                   priority

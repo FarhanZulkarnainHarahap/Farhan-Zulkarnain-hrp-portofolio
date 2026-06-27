@@ -13,6 +13,8 @@ import {
   FaSearch,
   FaUserGraduate,
 } from "react-icons/fa";
+import { fetchCachedJson } from "@/lib/client-cache";
+import { getOptimizedImageUrl } from "@/lib/image";
 
 interface DocumentData {
   id: string;
@@ -80,8 +82,10 @@ export default function DocSection() {
   useEffect(() => {
     const fetchDocs = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/documents`);
-        const result = await response.json();
+        const result = await fetchCachedJson<{ success: boolean; data: DocumentData[] }>(
+          `${API_URL}/api/documents`,
+          `portfolio-documents:${API_URL}`,
+        );
         if (result.success) {
           setDocs(result.data);
         }
@@ -229,7 +233,7 @@ export default function DocSection() {
                 >
                   {doc.previewUrl && (
                     <Image
-                      src={doc.previewUrl}
+                      src={getOptimizedImageUrl(doc.previewUrl, 1000)}
                       alt={`${doc.name} preview`}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
@@ -271,7 +275,7 @@ export default function DocSection() {
 
                   {!doc.previewUrl && previewType === "image" && (
                     <Image
-                      src={doc.fileUrl}
+                      src={getOptimizedImageUrl(doc.fileUrl, 1000)}
                       alt={doc.name}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
