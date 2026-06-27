@@ -3,6 +3,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   LuBriefcase,
@@ -98,22 +99,17 @@ export default function Navbar() {
         className="fixed bottom-2.5 left-1/2 z-120 w-[calc(100vw-1rem)] -translate-x-1/2 sm:bottom-3 sm:w-[min(calc(100vw-1.5rem),48rem)] lg:bottom-4 lg:w-[calc(100%-2rem)] lg:max-w-[66rem]"
         aria-label="Section navigation"
       >
-        <div className="relative overflow-hidden border border-blue-400/65 bg-[#020712]/94 px-2.5 py-2.5 shadow-[0_0_30px_rgba(37,99,235,0.45),inset_0_0_46px_rgba(37,99,235,0.14)] backdrop-blur-2xl [clip-path:polygon(18px_0,calc(100%-18px)_0,100%_18px,100%_calc(100%-18px),calc(100%-18px)_100%,18px_100%,0_calc(100%-18px),0_18px)] sm:px-4 sm:py-3 lg:px-4 lg:py-2.5 lg:[clip-path:polygon(22px_0,calc(100%-22px)_0,100%_22px,100%_calc(100%-22px),calc(100%-22px)_100%,22px_100%,0_calc(100%-22px),0_22px)]">
-          <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-linear-to-r from-blue-500/40 via-blue-200 to-blue-500/40 lg:inset-x-16" />
-          <div className="pointer-events-none absolute inset-x-8 bottom-0 h-px bg-linear-to-r from-blue-500/40 via-blue-300 to-blue-500/40 lg:inset-x-16" />
-          <div className="pointer-events-none absolute left-0 top-[18px] h-[calc(100%-36px)] w-px bg-blue-300/80 lg:top-7 lg:h-[calc(100%-56px)]" />
-          <div className="pointer-events-none absolute right-0 top-[18px] h-[calc(100%-36px)] w-px bg-blue-300/80 lg:top-7 lg:h-[calc(100%-56px)]" />
-          <div className="pointer-events-none absolute left-4 top-4 hidden h-16 w-16 border-l border-t border-blue-400/30 sm:block" />
-          <div className="pointer-events-none absolute bottom-4 right-4 hidden h-16 w-16 border-b border-r border-blue-400/30 sm:block" />
-          <div className="pointer-events-none absolute left-1/2 top-0 h-0.5 w-12 -translate-x-1/2 bg-blue-200 shadow-[0_0_16px_rgba(96,165,250,0.9)] lg:w-16" />
-          <div className="pointer-events-none absolute bottom-2 left-1/2 hidden -translate-x-1/2 gap-1.5 lg:flex">
-            <span className="h-1 w-1 rounded-full bg-blue-400" />
-            <span className="h-1 w-1 rounded-full bg-blue-400" />
-            <span className="h-1 w-1 rounded-full bg-blue-400" />
-            <span className="h-1 w-1 rounded-full bg-blue-400" />
-          </div>
+        <div className="relative px-4 py-3 sm:px-5 lg:px-5 lg:py-3">
+          <Image
+            src="/cyber-navbar-frame.svg"
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 1023px) 100vw, 1056px"
+            className="pointer-events-none select-none object-fill"
+          />
 
-          <div className="relative z-10 flex items-center gap-2 lg:gap-3">
+          <div className="relative z-10 flex items-center gap-2 lg:gap-2">
             <button
               type="button"
               onClick={() => handleNavigation(menuItems[0])}

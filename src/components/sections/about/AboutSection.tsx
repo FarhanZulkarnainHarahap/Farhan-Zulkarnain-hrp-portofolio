@@ -19,7 +19,7 @@ export default function AboutSection() {
           
           {/* Left Side: Visual Element */}
           <div
-            className="relative group shrink-0"
+            className="group relative shrink-0 lg:order-2"
           >
             <div className="relative z-10 h-60 w-48 overflow-hidden rounded-sm border border-white/5 bg-[#020203] shadow-2xl md:h-80 md:w-64 lg:h-96 lg:w-72">
               <Image 
@@ -39,7 +39,7 @@ export default function AboutSection() {
           </div>
 
           {/* SISI KANAN: Konten Utama */}
-          <div className="flex-1 space-y-8 md:space-y-10 text-center lg:text-left z-10">
+          <div className="z-10 flex-1 space-y-8 text-center md:space-y-10 lg:order-1 lg:text-left">
             <div
               className="space-y-4"
             >

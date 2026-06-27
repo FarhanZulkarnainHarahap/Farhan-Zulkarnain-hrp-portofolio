@@ -46,7 +46,7 @@ export default function ContactSection() {
   };
 
   return (
-    <section className="relative mx-auto w-full max-w-5xl px-6 py-12 lg:rounded-[26px] lg:border lg:border-blue-500/10 lg:bg-[#06101d]/28 lg:px-8 lg:py-8">
+    <section className="relative mx-auto w-full max-w-5xl px-6 py-12 lg:px-8 lg:py-8">
       <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2 lg:gap-10">
         
         {/* Left Side: Contact Form */}

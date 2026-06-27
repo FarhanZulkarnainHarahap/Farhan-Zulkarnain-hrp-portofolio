@@ -1,0 +1,49 @@
+<svg width="1600" height="150" viewBox="0 0 1600 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="panel" x1="800" y1="4" x2="800" y2="146" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071426" stop-opacity=".98"/>
+      <stop offset=".5" stop-color="#020814" stop-opacity=".98"/>
+      <stop offset="1" stop-color="#061122" stop-opacity=".98"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="30" y1="75" x2="1570" y2="75" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#69C9FF"/>
+      <stop offset=".15" stop-color="#1478FF"/>
+      <stop offset=".5" stop-color="#73C7FF"/>
+      <stop offset=".84" stop-color="#126DFF"/>
+      <stop offset="1" stop-color="#6CD4FF"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-100%" width="140%" height="300%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <path d="M42 8H238L252 16H1348L1362 8H1548L1592 47V103L1548 142H1362L1348 134H252L238 142H42L8 108V42L42 8Z" fill="url(#panel)" stroke="url(#edge)" stroke-width="2"/>
+  <path d="M58 24H260L272 30H1328L1340 24H1532L1575 59V91L1532 126H1340L1328 120H272L260 126H58L25 98V52L58 24Z" stroke="#1267DA" stroke-opacity=".52"/>
+
+  <path d="M190 8H252L266 16H350" stroke="#6CCBFF" stroke-width="3" filter="url(#glow)"/>
+  <path d="M220 8L232 16M238 8L250 16M256 9L266 16" stroke="#70CFFF" stroke-width="5"/>
+  <path d="M1348 16H1420L1432 8H1492" stroke="#197DFF" stroke-width="5" filter="url(#glow)"/>
+  <path d="M610 16H760" stroke="#183A65"/>
+  <path d="M760 16H840" stroke="#79D8FF" stroke-width="3" filter="url(#glow)"/>
+  <path d="M840 16H990" stroke="#173961"/>
+  <circle cx="790" cy="27" r="2" fill="#1688FF"/>
+  <circle cx="800" cy="27" r="2" fill="#1688FF"/>
+  <circle cx="810" cy="27" r="2" fill="#1688FF"/>
+
+  <path d="M190 142H285L300 134H440" stroke="#1479FF" stroke-width="4" filter="url(#glow)"/>
+  <path d="M650 134H765" stroke="#163862"/>
+  <path d="M765 134H835" stroke="#72CFFF" stroke-width="3" filter="url(#glow)"/>
+  <path d="M835 134H980" stroke="#163862"/>
+  <path d="M1320 134H1435L1448 142H1510" stroke="#1B7FFF" stroke-width="4" filter="url(#glow)"/>
+  <circle cx="770" cy="124" r="2" fill="#1688FF"/>
+  <circle cx="780" cy="124" r="2" fill="#1688FF"/>
+  <circle cx="790" cy="124" r="2" fill="#1688FF"/>
+
+  <path d="M46 48V102M1554 48V102" stroke="#53BFFF" stroke-opacity=".8"/>
+  <path d="M75 36H150L178 26M1525 36H1450L1422 26" stroke="#0A438B" stroke-opacity=".65"/>
+  <path d="M75 114H150L178 124M1525 114H1450L1422 124" stroke="#0A438B" stroke-opacity=".65"/>
+</svg>
