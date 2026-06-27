@@ -95,15 +95,17 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className="fixed bottom-3 left-1/2 z-120 w-[min(calc(100vw-1rem),22.5rem)] -translate-x-1/2 sm:bottom-4 sm:w-[min(calc(100vw-1.5rem),28rem)] lg:bottom-5 lg:w-[calc(100%-1rem)] lg:max-w-[94rem]"
+        className="fixed bottom-3 left-1/2 z-120 w-[min(calc(100vw-0.75rem),24rem)] -translate-x-1/2 sm:bottom-4 sm:w-[min(calc(100vw-1rem),32rem)] lg:bottom-5 lg:w-[calc(100%-2rem)] lg:max-w-[96rem]"
         aria-label="Section navigation"
       >
-        <div className="relative overflow-hidden rounded-2xl border border-blue-400/55 bg-[#020712]/90 px-1.5 py-1.5 shadow-[0_0_28px_rgba(37,99,235,0.45),inset_0_0_42px_rgba(37,99,235,0.12)] backdrop-blur-2xl sm:px-2 sm:py-2 lg:rounded-none lg:px-5 lg:py-4 lg:[clip-path:polygon(2.5%_0,17%_0,18.2%_6%,82%_6%,83.2%_0,97.5%_0,100%_28%,100%_72%,97.5%_100%,82%_100%,80.8%_94%,19.2%_94%,18%_100%,2.5%_100%,0_72%,0_28%)]">
-          <div className="pointer-events-none absolute inset-x-10 top-1 h-px bg-linear-to-r from-transparent via-blue-300 to-transparent" />
-          <div className="pointer-events-none absolute inset-x-14 bottom-1 h-px bg-linear-to-r from-transparent via-blue-500/80 to-transparent" />
+        <div className="relative overflow-hidden border border-blue-400/65 bg-[#020712]/92 px-2 py-2 shadow-[0_0_30px_rgba(37,99,235,0.45),inset_0_0_46px_rgba(37,99,235,0.14)] backdrop-blur-2xl [clip-path:polygon(18px_0,calc(100%-18px)_0,100%_18px,100%_calc(100%-18px),calc(100%-18px)_100%,18px_100%,0_calc(100%-18px),0_18px)] sm:px-3 sm:py-2.5 lg:px-6 lg:py-4 lg:[clip-path:polygon(28px_0,calc(100%-28px)_0,100%_28px,100%_calc(100%-28px),calc(100%-28px)_100%,28px_100%,0_calc(100%-28px),0_28px)]">
+          <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-linear-to-r from-blue-500/40 via-blue-200 to-blue-500/40 lg:inset-x-16" />
+          <div className="pointer-events-none absolute inset-x-8 bottom-0 h-px bg-linear-to-r from-blue-500/40 via-blue-300 to-blue-500/40 lg:inset-x-16" />
+          <div className="pointer-events-none absolute left-0 top-[18px] h-[calc(100%-36px)] w-px bg-blue-300/80 lg:top-7 lg:h-[calc(100%-56px)]" />
+          <div className="pointer-events-none absolute right-0 top-[18px] h-[calc(100%-36px)] w-px bg-blue-300/80 lg:top-7 lg:h-[calc(100%-56px)]" />
           <div className="pointer-events-none absolute left-4 top-4 hidden h-16 w-16 border-l border-t border-blue-400/30 sm:block" />
           <div className="pointer-events-none absolute bottom-4 right-4 hidden h-16 w-16 border-b border-r border-blue-400/30 sm:block" />
-          <div className="pointer-events-none absolute left-1/2 top-1 h-0.5 w-12 -translate-x-1/2 rounded-full bg-blue-300 shadow-[0_0_16px_rgba(96,165,250,0.9)] lg:top-2 lg:h-1 lg:w-18" />
+          <div className="pointer-events-none absolute left-1/2 top-0 h-0.5 w-12 -translate-x-1/2 bg-blue-200 shadow-[0_0_16px_rgba(96,165,250,0.9)] lg:h-1 lg:w-20" />
           <div className="pointer-events-none absolute bottom-2 left-1/2 hidden -translate-x-1/2 gap-1.5 lg:flex">
             <span className="h-1 w-1 rounded-full bg-blue-400" />
             <span className="h-1 w-1 rounded-full bg-blue-400" />
@@ -127,7 +129,7 @@ export default function Navbar() {
               </span>
             </button>
 
-            <ul className="grid w-full grid-cols-6 items-stretch gap-0 overflow-hidden rounded-xl border border-blue-500/20 bg-black/28 lg:flex lg:w-auto lg:rounded-none lg:border-0 lg:bg-transparent">
+            <ul className="grid w-full grid-cols-6 items-stretch gap-0 overflow-hidden border border-blue-500/20 bg-black/28 lg:flex lg:w-auto lg:border-0 lg:bg-transparent">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.label || activeSection === item.id.toUpperCase();
