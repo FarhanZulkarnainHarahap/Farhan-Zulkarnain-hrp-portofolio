@@ -7,22 +7,11 @@ export default function AboutSection() {
   return (
     <section id="about" className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-transparent py-20 lg:h-screen lg:py-0">
       
-      {/* 1. DEKORASI BERGERAK */}
+      {/* Background accent */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
           className="absolute -top-20 -right-20 w-80 h-80 md:w-125 md:h-125 bg-blue-600/10 rounded-full blur-[100px] md:blur-[120px]" 
         />
-      </div>
-
-      {/* Background Big Text */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden opacity-20 lg:opacity-100">
-        <div
-          className="flex whitespace-nowrap"
-        >
-          <h2 className="text-[35vw] lg:text-[25vw] font-black text-white/5 leading-none tracking-tighter uppercase pr-20">
-            CREATIVE CREATIVE CREATIVE
-          </h2>
-        </div>
       </div>
 
       <div className="max-w-7xl w-full mx-auto px-6 md:px-12 z-10">
