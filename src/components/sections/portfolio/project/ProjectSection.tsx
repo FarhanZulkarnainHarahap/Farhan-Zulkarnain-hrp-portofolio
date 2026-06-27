@@ -442,21 +442,21 @@ export default function PortfolioSection() {
   }
 
   return (
-    <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:px-10 lg:pb-32 lg:pt-12 xl:px-16">
+    <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:px-10 lg:pb-28 lg:pt-10">
       <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.2),transparent_55%)]" />
       <div className="absolute inset-0 -z-20 bg-linear-to-b from-transparent via-[#030406]/14 to-transparent" />
       <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
       <div className="absolute -bottom-28 -left-28 -z-10 h-80 w-80 rounded-full border border-blue-500/25 opacity-50" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl lg:max-w-[86rem]">
-        <div className="mb-7 text-left md:mb-9 lg:mb-6 lg:text-center">
-          <p className="mb-5 inline-flex h-9 items-center rounded-full border border-blue-500/45 bg-blue-500/8 px-5 text-xs font-bold uppercase tracking-[0.18em] text-blue-400 shadow-[0_0_25px_rgba(37,99,235,0.16)]">
+      <div className="relative z-10 mx-auto w-full max-w-6xl">
+        <div className="mb-7 text-left md:mb-9 lg:mb-4 lg:text-center">
+          <p className="mb-5 inline-flex h-9 items-center rounded-full border border-blue-500/45 bg-blue-500/8 px-5 text-xs font-bold uppercase tracking-[0.18em] text-blue-400 shadow-[0_0_25px_rgba(37,99,235,0.16)] lg:mb-3 lg:h-8 lg:text-[10px]">
             Projects
           </p>
-          <h2 className="text-4xl font-black leading-tight tracking-tight text-white md:text-5xl lg:text-4xl xl:text-5xl">
+          <h2 className="text-4xl font-black leading-tight tracking-tight text-white md:text-5xl lg:text-4xl">
             Selected <span className="text-blue-500">Projects</span>
           </h2>
-          <p className="mt-4 max-w-lg text-lg leading-relaxed text-zinc-400 md:text-xl lg:mx-auto lg:max-w-xl lg:text-base">
+          <p className="mt-4 max-w-lg text-lg leading-relaxed text-zinc-400 md:text-xl lg:mx-auto lg:mt-2 lg:max-w-xl lg:text-sm">
             A collection of digital products I&apos;ve designed and built with focus on user experience, performance, and impact.
           </p>
           <p className="mt-4 text-[10px] font-black uppercase tracking-[0.35em] text-zinc-500 lg:hidden">
@@ -464,7 +464,7 @@ export default function PortfolioSection() {
           </p>
         </div>
 
-        <div className="mb-6 grid gap-3 md:grid-cols-[1fr_260px] lg:mb-5">
+        <div className="mb-6 grid gap-3 md:grid-cols-[1fr_260px] lg:mb-4">
           <label className="group relative">
             <LuSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/70 transition-colors group-focus-within:text-blue-300" size={16} />
             <input
@@ -472,7 +472,7 @@ export default function PortfolioSection() {
               value={searchTerm}
               onChange={(event) => handleSearchChange(event.target.value)}
               placeholder="Search projects..."
-              className="h-13 w-full rounded-2xl border border-blue-500/15 bg-[#07101d]/82 pl-12 pr-4 text-sm font-semibold text-white shadow-[0_18px_55px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition-colors placeholder:text-zinc-500 focus:border-blue-400/70 lg:h-11 lg:rounded-2xl"
+              className="h-13 w-full rounded-2xl border border-blue-500/15 bg-[#07101d]/82 pl-12 pr-4 text-sm font-semibold text-white shadow-[0_18px_55px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition-colors placeholder:text-zinc-500 focus:border-blue-400/70 lg:h-10 lg:rounded-xl"
             />
           </label>
 
@@ -480,7 +480,7 @@ export default function PortfolioSection() {
             aria-label="Filter projects by category"
             value={categoryFilter}
             onChange={(event) => handleCategoryChange(event.target.value)}
-            className="h-13 w-full rounded-2xl border border-blue-500/15 bg-[#07101d]/82 px-4 text-sm font-bold text-zinc-200 shadow-[0_18px_55px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition-colors focus:border-blue-400/70 lg:h-11 lg:rounded-2xl"
+            className="h-13 w-full rounded-2xl border border-blue-500/15 bg-[#07101d]/82 px-4 text-sm font-bold text-zinc-200 shadow-[0_18px_55px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition-colors focus:border-blue-400/70 lg:h-10 lg:rounded-xl lg:text-xs"
           >
             <option value="all">All Categories</option>
             {categories.map((category) => (

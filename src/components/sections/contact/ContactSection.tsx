@@ -46,16 +46,16 @@ export default function ContactSection() {
   };
 
   return (
-    <section className="relative w-full max-w-6xl mx-auto py-12 px-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+    <section className="relative mx-auto w-full max-w-5xl px-6 py-12 lg:rounded-[26px] lg:border lg:border-blue-500/10 lg:bg-[#06101d]/28 lg:px-8 lg:py-8">
+      <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2 lg:gap-10">
         
         {/* Left Side: Contact Form */}
         <div
-          className="space-y-8"
+          className="space-y-8 lg:space-y-6"
         >
           <div className="space-y-4">
             <h4 className="text-blue-500 font-bold text-[10px] tracking-[0.5em] uppercase">Connect</h4>
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-none">
+            <h2 className="text-4xl font-black uppercase leading-none tracking-tighter text-white md:text-5xl lg:text-4xl">
               Get in <span className="text-blue-500 italic">Touch.</span>
             </h2>
             <p className="text-gray-500 text-sm max-w-md">
@@ -63,7 +63,7 @@ export default function ContactSection() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-[10px] text-gray-600 font-bold uppercase tracking-widest ml-1">Name</label>
@@ -74,7 +74,7 @@ export default function ContactSection() {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Your Name" 
-                  className="w-full bg-white/3 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-all placeholder:text-gray-700" 
+                  className="w-full rounded-xl border border-white/10 bg-white/3 p-4 text-sm text-white transition-all placeholder:text-gray-700 focus:border-blue-500/50 focus:outline-none lg:p-3"
                 />
               </div>
               <div className="space-y-2">
@@ -86,20 +86,20 @@ export default function ContactSection() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="email@example.com" 
-                  className="w-full bg-white/3 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-all placeholder:text-gray-700" 
+                  className="w-full rounded-xl border border-white/10 bg-white/3 p-4 text-sm text-white transition-all placeholder:text-gray-700 focus:border-blue-500/50 focus:outline-none lg:p-3"
                 />
               </div>
             </div>
             <div className="space-y-2">
               <label className="text-[10px] text-gray-600 font-bold uppercase tracking-widest ml-1">Message</label>
               <textarea 
-                rows={4} 
+                rows={3}
                 name="message"
                 required
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="How can I help you?" 
-                className="w-full bg-white/3 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-all placeholder:text-gray-700 resize-none" 
+                className="w-full resize-none rounded-xl border border-white/10 bg-white/3 p-4 text-sm text-white transition-all placeholder:text-gray-700 focus:border-blue-500/50 focus:outline-none lg:p-3"
               />
             </div>
             
@@ -113,7 +113,7 @@ export default function ContactSection() {
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center justify-center gap-3 w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.3em] transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex w-full items-center justify-center gap-3 rounded-xl bg-blue-600 py-4 text-[10px] font-black uppercase tracking-[0.3em] text-white shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 lg:py-3"
             >
               {loading ? (
                 <>SENDING... <LuLoader className="animate-spin" size={14} /></>
@@ -126,9 +126,9 @@ export default function ContactSection() {
 
         {/* Right Side: Details & Social Cards */}
         <div
-          className="grid grid-cols-1 gap-6"
+          className="grid grid-cols-1 gap-6 lg:gap-4"
         >
-          <div className="p-5 sm:p-8 space-y-6 border border-white/5 bg-linear-to-br from-white/2 to-transparent rounded-3xl">
+          <div className="space-y-6 rounded-3xl border border-white/5 bg-linear-to-br from-white/2 to-transparent p-5 sm:p-8 lg:p-6">
              <div className="flex items-center gap-4 sm:gap-6 group">
                 <div className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-500">
                   <FaEnvelope size={20} />

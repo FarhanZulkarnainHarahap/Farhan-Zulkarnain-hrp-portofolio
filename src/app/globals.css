@@ -148,6 +148,24 @@ body::-webkit-scrollbar-thumb:hover {
   }
 }
 
+@media (min-width: 1024px) {
+  .hero-profile-card {
+    width: 280px;
+    border-radius: 22px;
+    padding: 8px;
+  }
+
+  .hero-profile-content {
+    border-radius: 16px;
+    padding: 7px;
+  }
+
+  .hero-profile-image {
+    height: 295px;
+    border-radius: 12px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-profile-card::before,
   .hero-profile-image {

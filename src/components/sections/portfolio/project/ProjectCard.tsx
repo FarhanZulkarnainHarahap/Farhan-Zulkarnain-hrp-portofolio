@@ -48,7 +48,7 @@ export default function ProjectCard({
         variant === "featured"
           ? "w-92 rounded-[28px] p-3 xl:w-100"
         : variant === "mobile"
-            ? "grid w-full grid-cols-[0.92fr_1fr] gap-4 rounded-[26px] p-3 sm:grid-cols-[0.82fr_1fr] sm:items-center sm:gap-5 md:p-4 lg:block lg:rounded-[22px] lg:p-2"
+            ? "grid w-full grid-cols-[0.92fr_1fr] gap-4 rounded-[26px] p-3 sm:grid-cols-[0.82fr_1fr] sm:items-center sm:gap-5 md:p-4 lg:block lg:rounded-[20px] lg:p-2"
             : "w-62 rounded-[22px] p-2.5 xl:w-68"
       }`}
     >
@@ -65,7 +65,7 @@ export default function ProjectCard({
       <div className={`relative overflow-hidden bg-slate-950 ${
         variant === "orbit"
           ? "h-36 rounded-[18px]"
-          : "h-full min-h-44 rounded-[20px] sm:min-h-48 sm:rounded-[18px] md:min-h-52 lg:h-44 lg:min-h-0 xl:h-48"
+          : "h-full min-h-44 rounded-[20px] sm:min-h-48 sm:rounded-[18px] md:min-h-52 lg:h-36 lg:min-h-0"
       }`}>
         <Image
           src={imageUrl || "/placeholder-project.jpg"}
@@ -99,16 +99,16 @@ export default function ProjectCard({
           <span className="lg:hidden text-xl font-black leading-none">{projectNumber}</span>
           {categoryLabel}
         </p>
-        <h3 className={`mt-2 line-clamp-2 font-black tracking-tight text-white ${variant === "orbit" ? "text-lg" : "text-2xl leading-tight sm:text-3xl lg:mt-3 lg:text-2xl xl:text-[1.65rem]"}`}>
+        <h3 className={`mt-2 line-clamp-2 font-black tracking-tight text-white ${variant === "orbit" ? "text-lg" : "text-2xl leading-tight sm:text-3xl lg:mt-2 lg:text-xl"}`}>
           {title}
         </h3>
 
         {isFeatured && (
           <>
-            <p className="mt-3 line-clamp-3 max-w-md text-sm leading-relaxed text-zinc-400 sm:text-base md:text-lg lg:mx-auto lg:mt-3 lg:line-clamp-3 lg:max-w-sm lg:text-sm lg:leading-relaxed">
+            <p className="mt-3 line-clamp-3 max-w-md text-sm leading-relaxed text-zinc-400 sm:text-base md:text-lg lg:mx-auto lg:mt-2 lg:line-clamp-2 lg:max-w-sm lg:text-xs lg:leading-relaxed">
               {description || fallbackDescription}
             </p>
-            <div className="mt-4 flex flex-wrap items-center gap-2 lg:justify-center">
+            <div className="mt-4 flex flex-wrap items-center gap-2 lg:mt-3 lg:justify-center">
               {["Responsive UI", "Modern Web", "Scalable"].map((tag) => (
                 <span
                   key={tag}
@@ -118,7 +118,7 @@ export default function ProjectCard({
                 </span>
               ))}
             </div>
-            <div className="mt-5 flex items-center gap-3 lg:justify-center">
+            <div className="mt-5 flex items-center gap-3 lg:mt-3 lg:justify-center">
               {onDetails && (
                 <button
                   type="button"

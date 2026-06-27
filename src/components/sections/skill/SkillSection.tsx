@@ -75,10 +75,10 @@ export default function SkillSection() {
   const categoryOrder = ["FRONTEND", "BACKEND", "TOOLS", "OTHERS"];
 
   return (
-    <div className="relative flex w-full max-w-6xl flex-col gap-8 overflow-visible md:gap-8 lg:gap-4">
+    <div className="relative flex w-full max-w-5xl flex-col gap-8 overflow-visible md:gap-8 lg:gap-3">
       
       {/* --- CONTENT LAYER --- */}
-      <div className="relative z-10 flex w-full flex-col gap-8 lg:gap-4">
+      <div className="relative z-10 flex w-full flex-col gap-8 lg:gap-3">
         {loading ? (
           <SkillSkeleton />
         ) : (
@@ -103,7 +103,7 @@ export default function SkillSection() {
                 </div>
 
                 {/* Grid Skill Ikon */}
-                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:flex lg:flex-wrap lg:gap-x-8 lg:gap-y-4 lg:pl-2">
+                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:flex lg:flex-wrap lg:gap-x-7 lg:gap-y-3 lg:pl-2">
                   {skillsInCat.map((skill: SkillData) => (
                     <div
                       key={skill.id}

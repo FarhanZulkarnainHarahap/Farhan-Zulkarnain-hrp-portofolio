@@ -42,7 +42,7 @@ export default function HeroCard() {
     <section className="relative flex min-h-[100svh] w-full items-center justify-center bg-transparent pb-28 pt-16 sm:pb-30 sm:pt-20 lg:h-screen lg:overflow-hidden lg:py-0">
       <div className="absolute top-1/4 -left-20 hidden w-80 h-80 bg-blue-600/8 rounded-full blur-[90px] pointer-events-none md:block" />
       
-      <div className="max-w-7xl w-full mx-auto px-6 md:px-12 z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      <div className="z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-6 md:px-12 lg:grid-cols-12 lg:gap-12">
         
         {/* Profile Photo Column */}
         <div
@@ -96,7 +96,7 @@ export default function HeroCard() {
               <span className="h-px w-8 md:w-10 bg-blue-500"></span> Available for projects
             </div>
             
-            <h1 className="text-4xl md:text-7xl lg:text-8xl font-black leading-[0.9] tracking-tighter uppercase flex flex-col items-center lg:items-start">
+            <h1 className="flex flex-col items-center text-4xl font-black uppercase leading-[0.9] tracking-tighter md:text-7xl lg:items-start lg:text-7xl">
               <ShinyText
                 text="FARHAN"
                 speed={3}
@@ -113,7 +113,7 @@ export default function HeroCard() {
           </div>
 
           <p
-            className="max-w-xl mx-auto lg:mx-0 text-gray-500 text-base md:text-xl font-light leading-relaxed px-2 md:px-0"
+            className="mx-auto max-w-xl px-2 text-base font-light leading-relaxed text-gray-500 md:px-0 md:text-xl lg:mx-0 lg:text-lg"
           >
             Crafting high-performance digital experiences through <span className="text-white font-medium underline decoration-blue-500/30">clean code</span> and <span className="text-white font-medium italic">immersive design</span>.
           </p>

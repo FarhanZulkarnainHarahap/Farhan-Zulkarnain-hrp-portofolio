@@ -14,14 +14,14 @@ export default function AboutSection() {
         />
       </div>
 
-      <div className="max-w-7xl w-full mx-auto px-6 md:px-12 z-10">
-        <div className="flex flex-col lg:flex-row items-center lg:items-end gap-12 lg:gap-20">
+      <div className="z-10 mx-auto w-full max-w-6xl px-6 md:px-12">
+        <div className="flex flex-col items-center gap-12 lg:flex-row lg:items-end lg:gap-16">
           
           {/* Left Side: Visual Element */}
           <div
             className="relative group shrink-0"
           >
-            <div className="relative w-48 h-60 md:w-64 md:h-80 lg:w-80 lg:h-112.5 overflow-hidden rounded-sm border border-white/5 z-10 bg-[#020203] shadow-2xl">
+            <div className="relative z-10 h-60 w-48 overflow-hidden rounded-sm border border-white/5 bg-[#020203] shadow-2xl md:h-80 md:w-64 lg:h-96 lg:w-72">
               <Image 
                 src="https://res.cloudinary.com/dpanr1qqp/image/upload/v1765874955/bake-bliss/b1v5qdy9whqszyqohdjb.jpg" 
                 alt="Farhan Workspace" 
@@ -49,7 +49,7 @@ export default function AboutSection() {
                 ></span> 
                 About Me
               </div>
-              <h3 className="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tight uppercase">
+              <h3 className="text-3xl font-black uppercase leading-[1.1] tracking-tight text-white md:text-5xl lg:text-5xl">
                 CODE IS MY <br />
                 <span className="italic font-serif font-light text-blue-400">Language.</span>
               </h3>

@@ -71,10 +71,10 @@ export default function Home() {
         <div className="lg:h-screen lg:w-screen lg:shrink-0 lg:snap-center lg:overflow-hidden">
         <AboutSection />
       </div>
-        <section id="skills" className="portfolio-section-bg mx-auto w-full max-w-7xl px-5 pb-34 pt-16 sm:px-7 md:px-12 md:py-24 lg:flex lg:h-screen lg:w-screen lg:max-w-none lg:shrink-0 lg:snap-center lg:flex-col lg:items-center lg:justify-center lg:overflow-hidden lg:px-16 lg:pb-32 lg:pt-18">
+        <section id="skills" className="portfolio-section-bg mx-auto w-full max-w-7xl px-5 pb-34 pt-16 sm:px-7 md:px-12 md:py-24 lg:flex lg:h-screen lg:w-screen lg:max-w-none lg:shrink-0 lg:snap-center lg:flex-col lg:items-center lg:justify-center lg:overflow-hidden lg:px-16 lg:pb-28 lg:pt-14">
           <div className="mb-9 text-left sm:text-center lg:mb-6">
             <p className="mb-4 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400 sm:tracking-[0.45em] lg:mb-3 lg:text-[9px]">My Expertise</p>
-            <h2 className="text-5xl font-black uppercase leading-none text-white sm:text-6xl lg:text-5xl">
+            <h2 className="text-5xl font-black uppercase leading-none text-white sm:text-6xl lg:text-4xl">
               Skills<span className="text-blue-500">.</span>
             </h2>
           </div>

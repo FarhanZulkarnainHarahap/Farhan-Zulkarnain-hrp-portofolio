@@ -164,14 +164,14 @@ export default function DocSection() {
   }
 
   return (
-  <section id="documents" className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-start lg:pb-32 lg:pt-18">
-      <div className="relative z-10 mb-8 border-b border-white/10 pb-6 lg:mb-4 lg:pb-4">
+  <section id="documents" className="relative mx-auto w-full max-w-6xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:pb-28 lg:pt-10">
+      <div className="relative z-10 mb-8 border-b border-white/10 pb-6 lg:mb-3 lg:pb-3">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400 lg:mb-1">
               Document Preview
             </p>
-            <h2 className="text-4xl font-black uppercase italic leading-none tracking-tight text-white md:text-5xl lg:text-4xl xl:text-5xl">
+            <h2 className="text-4xl font-black uppercase italic leading-none tracking-tight text-white md:text-5xl lg:text-4xl">
               Credential <span className="text-zinc-500">&</span> Assets<span className="text-blue-500">.</span>
             </h2>
           </div>
@@ -182,7 +182,7 @@ export default function DocSection() {
         </div>
       </div>
 
-      <div className="relative z-10 mb-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between lg:mb-4">
+      <div className="relative z-10 mb-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between lg:mb-3">
         <label className="relative w-full md:max-w-sm">
           <FaSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={13} />
           <input
@@ -190,7 +190,7 @@ export default function DocSection() {
             value={searchTerm}
             onChange={(event) => changeSearch(event.target.value)}
             placeholder="Search certificate..."
-            className="h-12 w-full rounded-lg border border-white/10 bg-[#111722]/80 pl-11 pr-4 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-blue-500/55"
+            className="h-12 w-full rounded-lg border border-white/10 bg-[#111722]/80 pl-11 pr-4 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-blue-500/55 lg:h-10 lg:text-xs"
           />
         </label>
 
@@ -198,7 +198,7 @@ export default function DocSection() {
           aria-label="Filter documents by category"
           value={categoryFilter}
           onChange={(event) => changeFilter(event.target.value)}
-          className="h-12 w-full rounded-lg border border-white/10 bg-[#111722]/80 px-4 text-sm text-zinc-300 outline-none transition-colors focus:border-blue-500/55 md:w-56"
+          className="h-12 w-full rounded-lg border border-white/10 bg-[#111722]/80 px-4 text-sm text-zinc-300 outline-none transition-colors focus:border-blue-500/55 md:w-56 lg:h-10 lg:text-xs"
         >
           <option value="all">All Categories</option>
           {categories.map((category) => (
@@ -224,7 +224,7 @@ export default function DocSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cursor-label="OPEN"
-                  className="relative block h-24 overflow-hidden bg-white sm:h-34 md:h-42 lg:h-38 xl:h-44"
+                  className="relative block h-24 overflow-hidden bg-white sm:h-34 md:h-42 lg:h-34"
                   aria-label={`Open ${doc.name}`}
                 >
                   {doc.previewUrl && (
@@ -332,7 +332,7 @@ export default function DocSection() {
         </div>
       )}
 
-      <div className="relative z-10 mt-9 flex items-center justify-center gap-3 lg:mt-5">
+      <div className="relative z-10 mt-9 flex items-center justify-center gap-3 lg:mt-4">
         <button
           type="button"
           onClick={() => setPage((current) => Math.max(1, current - 1))}
