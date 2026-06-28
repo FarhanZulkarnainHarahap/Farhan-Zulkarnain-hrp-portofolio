@@ -78,18 +78,6 @@ body::-webkit-scrollbar-thumb:hover {
   mask-image: linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
 }
 
-.cyber-three-background {
-  background:
-    radial-gradient(circle at 50% 110%, rgba(37, 99, 235, 0.1), transparent 42%),
-    linear-gradient(180deg, #03050a 0%, #02040a 58%, #05030a 100%);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cyber-three-background {
-    opacity: 0.72;
-  }
-}
-
 .portfolio-section-bg {
   position: relative;
   isolation: isolate;
