@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
+import CyberBackground from "@/components/CyberBackground";
 import HeroCard from "@/components/sections/hero/HeroCard";
 
 const AboutSection = dynamic(() => import("@/components/sections/about/AboutSection"), {
@@ -94,6 +95,7 @@ export default function Home() {
       data-horizontal-stage
       className="portfolio-bg relative text-white lg:h-screen lg:overflow-x-auto lg:overflow-y-hidden lg:snap-x lg:snap-mandatory"
     >
+      <CyberBackground />
       <div className="relative z-10 lg:flex lg:w-max">
         <section id="home" className="lg:h-screen lg:w-screen lg:shrink-0 lg:snap-center lg:overflow-hidden">
           <HeroCard />

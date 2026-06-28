@@ -3,7 +3,6 @@
 import { FaArrowRight, FaDownload, FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
-import CyberBackground from "@/components/CyberBackground";
 import { getOptimizedImageUrl } from "@/lib/image";
 import ShinyText from "./ShinyText";
 
@@ -47,7 +46,6 @@ export default function HeroCard() {
 
   return (
     <section className="relative isolate flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-transparent pb-40 pt-16 sm:pb-40 sm:pt-20 md:pb-44 lg:h-screen lg:py-0">
-      <CyberBackground />
       <div className="absolute top-1/4 -left-20 hidden w-80 h-80 bg-blue-600/8 rounded-full blur-[90px] pointer-events-none md:block" />
       
       <div className="z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-6 md:px-12 lg:grid-cols-12 lg:gap-12">
