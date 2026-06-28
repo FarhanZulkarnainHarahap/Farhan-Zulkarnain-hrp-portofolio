@@ -2,13 +2,11 @@
 
 /* eslint-disable react-hooks/set-state-in-effect */
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   LuBriefcase,
-  LuCodeXml,
-  LuFileText,
   LuHouse,
   LuMail,
   LuUser,
@@ -17,14 +15,13 @@ import {
 const menuItems = [
   { id: "home", label: "HOME", shortLabel: "HOME", icon: LuHouse },
   { id: "about", label: "ABOUT", shortLabel: "ABOUT", icon: LuUser },
-  { id: "skills", label: "SKILL", shortLabel: "SKILL", icon: LuCodeXml },
   { id: "projects", label: "PROJECT", shortLabel: "PROJ", icon: LuBriefcase },
-  { id: "documents", label: "DOCUMENTS", shortLabel: "DOCS", icon: LuFileText },
   { id: "contact", label: "CONTACT", shortLabel: "MAIL", icon: LuMail },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [activeSection, setActiveSection] = useState("HOME");
 
   useEffect(() => {
@@ -69,6 +66,11 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
+    if (pathname === "/about") {
+      setActiveSection("ABOUT");
+      return;
+    }
+
     const pathSection = pathname.replace("/", "").toUpperCase() || "HOME";
     if (menuItems.some((item) => item.label === pathSection || item.id.toUpperCase() === pathSection)) {
       setActiveSection(pathSection);
@@ -81,16 +83,24 @@ export default function Navbar() {
     const isDesktopHorizontal = window.matchMedia("(min-width: 1024px)").matches && horizontalStage;
 
     setActiveSection(item.id.toUpperCase());
-    window.history.pushState(null, "", "/home");
 
     if (element) {
+      window.history.pushState(null, "", item.id === "home" ? "/home" : `/home#${item.id}`);
       element.scrollIntoView({
         behavior: "smooth",
         block: isDesktopHorizontal ? "nearest" : "start",
         inline: isDesktopHorizontal ? "center" : "nearest",
       });
+      return;
     }
 
+    if (pathname === "/about" && item.id === "about") {
+      window.history.replaceState(null, "", "/about");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    router.push(item.id === "home" ? "/home" : `/home#${item.id}`);
   };
 
   return (
@@ -125,7 +135,7 @@ export default function Navbar() {
               </span>
             </button>
 
-            <ul className="grid w-full grid-cols-6 items-stretch gap-0 overflow-hidden border border-blue-500/20 bg-black/28 lg:flex lg:w-auto lg:border-0 lg:bg-transparent">
+            <ul className="grid w-full grid-cols-4 items-stretch gap-0 overflow-hidden border border-blue-500/20 bg-black/28 lg:flex lg:w-auto lg:border-0 lg:bg-transparent">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.label || activeSection === item.id.toUpperCase();

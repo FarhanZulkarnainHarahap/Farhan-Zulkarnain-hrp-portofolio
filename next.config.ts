@@ -35,31 +35,35 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/skills",
+        destination: "/about#about-skills",
+        permanent: false,
+      },
+      {
+        source: "/documents",
+        destination: "/about#about-documents",
+        permanent: false,
+      },
+      {
+        source: "/projects",
+        destination: "/home#projects",
+        permanent: false,
+      },
+      {
+        source: "/contact",
+        destination: "/home#contact",
+        permanent: false,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {
         source: '/home',    // URL yang diketik di browser
         destination: '/dashboard/user', // Folder asli di kodingan
-      },
-      {
-        source: '/about',
-        destination: '/dashboard/user',
-      },
-      {
-        source: '/contact',
-        destination: '/dashboard/user',
-      },
-      {
-        source: '/documents',
-        destination: '/dashboard/user',
-      },
-      {
-        source: '/skills',
-        destination: '/dashboard/user',
-      },
-      {
-        source: '/projects',
-        destination: '/dashboard/user',
       },
       {
         source: '/admin/home',    // URL yang diketik di browser

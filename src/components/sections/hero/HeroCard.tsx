@@ -35,7 +35,7 @@ export default function HeroCard() {
     const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
     const isDesktopHorizontal = window.matchMedia("(min-width: 1024px)").matches && horizontalStage;
 
-    window.history.pushState(null, "", "/home");
+    window.history.pushState(null, "", "/home#projects");
 
     element?.scrollIntoView({
       behavior: "smooth",
@@ -134,7 +134,7 @@ export default function HeroCard() {
               <span className="text-[10px] md:text-xs font-black uppercase tracking-widest">View My Projects</span>
               <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
             </button>
-            <Link href="/documents">
+            <Link href="/about#about-documents">
               <button
                 data-cursor-label="RESUME"
                 className="group relative flex items-center gap-3 overflow-hidden rounded-full border border-white/12 bg-white/5 px-8 py-3.5 text-white transition-all hover:border-blue-400/60 hover:bg-blue-500/10 md:px-9 md:py-4"

@@ -26,7 +26,7 @@ interface DocumentData {
   createdAt: string;
 }
 
-const DOCS_PER_PAGE = 3;
+const DOCS_PER_PAGE = 5;
 
 const DocumentSkeleton = () => (
   <section className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-start lg:pb-32 lg:pt-18">
@@ -45,7 +45,7 @@ const DocumentSkeleton = () => (
       <div className="h-12 w-full rounded-lg border border-white/8 bg-[#111722]/80 md:w-56" />
     </div>
 
-    <div className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3 lg:gap-5">
+    <div className="relative z-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 xl:gap-4">
       {Array.from({ length: DOCS_PER_PAGE }, (_, index) => (
         <div
           key={index}
@@ -168,7 +168,7 @@ export default function DocSection() {
   }
 
   return (
-  <section id="documents" className="relative mx-auto w-full max-w-6xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:pb-28 lg:pt-10">
+  <section id="documents" className="relative mx-auto w-full max-w-7xl px-5 py-20 sm:px-8 lg:flex lg:min-h-screen lg:flex-col lg:justify-center lg:px-10 lg:pb-32 lg:pt-14">
       <div className="relative z-10 mb-8 border-b border-white/10 pb-6 lg:mb-3 lg:pb-3">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
@@ -214,7 +214,7 @@ export default function DocSection() {
       </div>
 
       {visibleDocs.length > 0 ? (
-        <div className="relative z-10 grid grid-cols-3 gap-2 sm:gap-3 lg:gap-5">
+        <div className="relative z-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 xl:gap-4">
           {visibleDocs.map((doc) => {
             const previewType = getPreviewType(doc);
 
