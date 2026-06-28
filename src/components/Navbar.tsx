@@ -107,20 +107,20 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className="fixed bottom-2.5 left-1/2 z-120 w-[calc(100vw-1rem)] -translate-x-1/2 sm:bottom-3 sm:w-[min(calc(100vw-1.5rem),48rem)] lg:bottom-4 lg:w-[calc(100%-2rem)] lg:max-w-[66rem]"
+        className="fixed bottom-3 left-1/2 z-120 w-[calc(100vw-1rem)] max-w-[32rem] -translate-x-1/2 sm:bottom-4 sm:w-[calc(100vw-2rem)] sm:max-w-[36rem] lg:w-[calc(100%-2rem)] lg:max-w-[66rem]"
         aria-label="Section navigation"
       >
-        <div className="relative px-4 py-3 sm:px-5 lg:px-5 lg:py-3">
+        <div className="relative rounded-2xl border border-blue-400/35 bg-[#030711]/94 p-1.5 shadow-[0_14px_45px_rgba(0,0,0,0.55),0_0_28px_rgba(37,99,235,0.16)] backdrop-blur-xl sm:p-2 lg:rounded-none lg:border-0 lg:bg-transparent lg:px-5 lg:py-3 lg:shadow-none lg:backdrop-blur-none">
           <Image
             src="/cyber-navbar-frame.svg"
             alt=""
             fill
             priority
-            sizes="(max-width: 1023px) 100vw, 1056px"
-            className="pointer-events-none select-none object-fill"
+            sizes="1056px"
+            className="pointer-events-none hidden select-none object-fill lg:block"
           />
 
-          <div className="relative z-10 flex items-center justify-center gap-2 lg:mx-auto lg:w-fit lg:gap-2">
+          <div className="relative z-10 flex items-center justify-center lg:mx-auto lg:w-fit lg:gap-2">
             <button
               type="button"
               onClick={() => handleNavigation(menuItems[0])}
@@ -142,7 +142,7 @@ export default function Navbar() {
               </span>
             </button>
 
-            <ul className="grid w-full grid-cols-4 items-stretch gap-0 overflow-hidden border border-blue-500/20 bg-black/28 lg:flex lg:w-auto lg:border-0 lg:bg-transparent">
+            <ul className="grid w-full grid-cols-4 items-stretch overflow-hidden rounded-xl bg-black/18 lg:flex lg:w-auto lg:rounded-none lg:border-0 lg:bg-transparent">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.label || activeSection === item.id.toUpperCase();
@@ -153,21 +153,21 @@ export default function Navbar() {
                     type="button"
                     onClick={() => handleNavigation(item)}
                     data-cursor-label={item.label}
-                    className={`group relative flex h-16 min-w-0 flex-col items-center justify-center gap-1 border-r border-blue-500/16 px-0.5 text-center last:border-r-0 sm:h-17 sm:px-1 lg:h-15 lg:min-w-18 lg:gap-1 lg:border-r lg:px-2 xl:min-w-20 ${
+                    className={`group relative flex h-14 w-full min-w-0 flex-col items-center justify-center gap-1 border-r border-blue-500/18 px-1 text-center transition-colors last:border-r-0 sm:h-15 sm:px-2 lg:h-15 lg:min-w-18 lg:gap-1 lg:px-2 xl:min-w-20 ${
                       isActive
-                        ? "bg-blue-500/16 shadow-[inset_0_0_32px_rgba(37,99,235,0.28)] lg:[clip-path:polygon(0_0,100%_0,100%_82%,82%_100%,18%_100%,0_82%)]"
+                        ? "bg-blue-500/20 shadow-[inset_0_0_26px_rgba(37,99,235,0.25)] lg:[clip-path:polygon(0_0,100%_0,100%_82%,82%_100%,18%_100%,0_82%)]"
                         : "bg-transparent hover:bg-blue-500/8"
                     }`}
                     aria-label={item.label}
                   >
                     <span className={`${isActive ? "text-blue-300 drop-shadow-[0_0_10px_rgba(96,165,250,0.9)]" : "text-blue-300/80 group-hover:text-blue-200"}`}>
-                      <Icon className="h-5 w-5 sm:h-6 sm:w-6 lg:h-6 lg:w-6" />
+                      <Icon className="h-5 w-5 sm:h-5.5 sm:w-5.5 lg:h-6 lg:w-6" />
                     </span>
-                    <span className={`max-w-full truncate text-[6px] font-black uppercase tracking-[-0.03em] transition-colors min-[390px]:text-[7px] sm:text-[8px] sm:tracking-[0.02em] lg:text-[10px] lg:tracking-[0.02em] ${isActive ? "text-white" : "text-white/75 group-hover:text-white"}`}>
+                    <span className={`max-w-full truncate text-[8px] font-black uppercase tracking-[0.04em] transition-colors sm:text-[9px] lg:text-[10px] lg:tracking-[0.02em] ${isActive ? "text-white" : "text-white/70 group-hover:text-white"}`}>
                       <span>{item.label}</span>
                     </span>
                     {isActive && (
-                      <span className="absolute bottom-1 h-0.5 w-7 bg-blue-300 shadow-[0_0_12px_rgba(96,165,250,0.95)] lg:w-8" />
+                      <span className="absolute bottom-0 h-0.5 w-8 rounded-full bg-blue-300 shadow-[0_0_12px_rgba(96,165,250,0.95)] lg:bottom-1" />
                     )}
                   </button>
                 </li>

@@ -104,7 +104,7 @@ export default function Home() {
         <div className="lg:h-screen lg:w-screen lg:shrink-0 lg:snap-center lg:overflow-hidden">
           <ProjectSection />
         </div>
-        <section id="contact" className="portfolio-section-bg px-0 py-20 md:py-24 lg:flex lg:h-screen lg:w-screen lg:shrink-0 lg:snap-center lg:items-center lg:justify-center lg:overflow-hidden lg:py-0">
+        <section id="contact" className="portfolio-section-bg px-0 pb-32 pt-20 md:pb-36 md:pt-24 lg:flex lg:h-screen lg:w-screen lg:shrink-0 lg:snap-center lg:items-center lg:justify-center lg:overflow-hidden lg:py-0">
           <ContactSection />
         </section>
       </div>
