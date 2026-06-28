@@ -22,6 +22,14 @@ body {
   overscroll-behavior-y: none;
 }
 
+@media (pointer: fine) {
+  html.cyber-cursor-active,
+  html.cyber-cursor-active body,
+  html.cyber-cursor-active body * {
+    cursor: none !important;
+  }
+}
+
 button,
 a {
   touch-action: manipulation;
