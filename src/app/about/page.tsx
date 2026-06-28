@@ -100,9 +100,15 @@ export default function AboutPage() {
             type="button"
             onClick={() => goToSection("about-overview")}
             aria-label="Go to About Me"
-            className="mx-auto grid h-20 w-20 place-items-center border border-blue-400/60 bg-blue-500/8 text-3xl font-black italic text-white shadow-[0_0_28px_rgba(37,99,235,0.35),inset_0_0_22px_rgba(37,99,235,0.12)] [clip-path:polygon(50%_0,93%_25%,93%_75%,50%_100%,7%_75%,7%_25%)]"
+            className="mx-auto grid h-20 w-20 place-items-center overflow-hidden rounded-full border border-blue-400/60 bg-black shadow-[0_0_28px_rgba(37,99,235,0.35),inset_0_0_22px_rgba(37,99,235,0.12)]"
           >
-            N
+            <Image
+              src="/fz-logo.png"
+              alt="FZ Dev"
+              width={80}
+              height={80}
+              className="h-full w-full object-cover"
+            />
           </button>
 
           <nav className="relative mt-12" aria-label="About page sections">

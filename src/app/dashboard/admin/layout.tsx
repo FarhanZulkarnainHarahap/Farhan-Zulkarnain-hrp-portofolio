@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { 
@@ -136,8 +137,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         ${isOpen ? "w-64" : "w-0 -left-64 md:left-0 md:w-20"}`}
       >
         <div className="h-16 flex items-center px-6 border-b border-gray-700 whitespace-nowrap overflow-hidden">
-          <div className="min-w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold italic mr-3">
-            N
+          <div className="mr-3 h-8 min-w-8 overflow-hidden rounded-lg border border-blue-400/30 bg-black">
+            <Image
+              src="/fz-logo.png"
+              alt="FZ Dev"
+              width={32}
+              height={32}
+              className="h-full w-full object-cover"
+            />
           </div>
           <span className={`text-xl font-semibold text-white transition-opacity duration-300 ${!isOpen && "opacity-0"}`}>
             Nexxuswebdev

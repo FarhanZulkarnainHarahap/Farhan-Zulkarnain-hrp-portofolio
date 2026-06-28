@@ -132,8 +132,14 @@ export default function Navbar() {
               data-cursor-label="HOME"
               className="hidden h-15 min-w-48 items-center gap-3 border border-blue-500/35 bg-black/35 px-4 text-left shadow-[inset_0_0_34px_rgba(37,99,235,0.12)] [clip-path:polygon(7%_0,100%_0,100%_82%,93%_100%,0_100%,0_18%)] lg:flex"
             >
-              <span className="grid h-10 w-10 place-items-center border border-blue-400/55 bg-blue-500/10 text-xl font-black italic text-blue-300 shadow-[0_0_24px_rgba(59,130,246,0.45)] [clip-path:polygon(50%_0,93%_25%,93%_75%,50%_100%,7%_75%,7%_25%)]">
-                N
+              <span className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-blue-400/55 bg-black shadow-[0_0_24px_rgba(59,130,246,0.45)]">
+                <Image
+                  src="/fz-logo.png"
+                  alt="FZ Dev"
+                  width={40}
+                  height={40}
+                  className="h-full w-full object-cover"
+                />
               </span>
               <span>
                 <span className="block text-sm font-black uppercase tracking-[0.28em] text-white">Nexxus</span>

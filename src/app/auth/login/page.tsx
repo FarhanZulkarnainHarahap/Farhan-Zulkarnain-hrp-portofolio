@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { LuMail, LuLock, LuEye, LuEyeOff, LuRefreshCw, LuArrowRight } from "react-icons/lu";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -44,8 +45,14 @@ export default function LoginPage() {
       
       <div className="w-full max-w-100 z-10">
         <div className="text-center mb-10">
-          <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-indigo-500/20 rotate-3">
-             <span className="text-white text-2xl font-black italic">N</span>
+          <div className="mx-auto mb-6 h-14 w-14 overflow-hidden rounded-2xl border border-blue-400/30 bg-black shadow-2xl shadow-blue-500/20">
+            <Image
+              src="/fz-logo.png"
+              alt="FZ Dev"
+              width={56}
+              height={56}
+              className="h-full w-full object-cover"
+            />
           </div>
           <h1 className="text-3xl font-black text-white tracking-tighter uppercase italic">Access System</h1>
           <p className="text-zinc-500 text-[10px] mt-2 uppercase tracking-[0.3em] font-bold">Nexxus Portfolio Console</p>
