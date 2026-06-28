@@ -54,12 +54,12 @@ body::-webkit-scrollbar-thumb:hover {
 .portfolio-bg {
   position: relative;
   isolation: isolate;
-  background-color: rgba(3, 4, 6, 0.52);
+  background-color: rgba(3, 4, 6, 0.42);
   background-image:
-    radial-gradient(circle at 18% 12%, rgba(37, 99, 235, 0.11), transparent 32%),
-    radial-gradient(circle at 78% 18%, rgba(14, 165, 233, 0.07), transparent 28%),
-    radial-gradient(circle at 50% 82%, rgba(30, 64, 175, 0.08), transparent 34%),
-    linear-gradient(180deg, rgba(3, 4, 6, 0.58) 0%, rgba(2, 4, 10, 0.5) 55%, rgba(3, 4, 6, 0.58) 100%);
+    radial-gradient(circle at 16% 18%, rgba(139, 92, 246, 0.1), transparent 30%),
+    radial-gradient(circle at 82% 16%, rgba(245, 158, 11, 0.075), transparent 24%),
+    radial-gradient(circle at 72% 78%, rgba(14, 165, 233, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(3, 4, 6, 0.44) 0%, rgba(2, 4, 10, 0.34) 55%, rgba(3, 4, 6, 0.48) 100%);
   background-attachment: fixed;
   background-size: cover;
 }
@@ -74,8 +74,20 @@ body::-webkit-scrollbar-thumb:hover {
     linear-gradient(rgba(59, 130, 246, 0.024) 1px, transparent 1px),
     linear-gradient(90deg, rgba(59, 130, 246, 0.024) 1px, transparent 1px);
   background-size: 72px 72px;
-  opacity: 0.24;
+  opacity: 0.12;
   mask-image: linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
+}
+
+.cyber-three-background {
+  background:
+    radial-gradient(circle at 50% 110%, rgba(37, 99, 235, 0.1), transparent 42%),
+    linear-gradient(180deg, #03050a 0%, #02040a 58%, #05030a 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cyber-three-background {
+    opacity: 0.72;
+  }
 }
 
 .portfolio-section-bg {
