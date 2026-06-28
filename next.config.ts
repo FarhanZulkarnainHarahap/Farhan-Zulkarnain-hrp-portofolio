@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/:path(home|about|skills|projects|documents|contact)",
+        source: "/:path(home|explore|about|skills|projects|documents|contact)",
         headers: [
           {
             key: "Cache-Control",
@@ -54,6 +54,10 @@ const nextConfig: NextConfig = {
       {
         source: '/home',    // URL yang diketik di browser
         destination: '/dashboard/user', // Folder asli di kodingan
+      },
+      {
+        source: '/explore',
+        destination: '/dashboard/user',
       },
       {
         source: '/projects',

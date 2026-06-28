@@ -56,7 +56,13 @@ export default function Home() {
 
   useEffect(() => {
     const targetId =
-      pathname === "/projects" ? "projects" : pathname === "/contact" ? "contact" : "home";
+      pathname === "/explore"
+        ? "about"
+        : pathname === "/projects"
+          ? "projects"
+          : pathname === "/contact"
+            ? "contact"
+            : "home";
     let animationFrame = 0;
     let attempts = 0;
 

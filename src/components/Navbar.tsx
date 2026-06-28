@@ -14,7 +14,7 @@ import {
 
 const menuItems = [
   { id: "home", href: "/home", label: "HOME", shortLabel: "HOME", icon: LuHouse },
-  { id: "about", href: "/about", label: "ABOUT", shortLabel: "ABOUT", icon: LuUser },
+  { id: "about", href: "/explore", label: "ABOUT", shortLabel: "ABOUT", icon: LuUser },
   { id: "projects", href: "/projects", label: "PROJECT", shortLabel: "PROJ", icon: LuBriefcase },
   { id: "contact", href: "/contact", label: "CONTACT", shortLabel: "MAIL", icon: LuMail },
 ];
@@ -66,7 +66,7 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (pathname === "/about") {
+    if (pathname === "/about" || pathname === "/explore") {
       setActiveSection("ABOUT");
       return;
     }
@@ -78,15 +78,10 @@ export default function Navbar() {
   }, [pathname]);
 
   const handleNavigation = (item: (typeof menuItems)[number]) => {
-    if (item.id === "about") {
+    if (item.id === "about" && pathname === "/about") {
       setActiveSection("ABOUT");
-
-      if (pathname === "/about") {
-        window.history.replaceState(null, "", "/about");
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } else {
-        router.push("/about");
-      }
+      window.history.replaceState(null, "", "/about");
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
