@@ -13,6 +13,14 @@
   <img src="https://img.shields.io/badge/Framer_Motion-12-93C5FD?style=for-the-badge&logo=framer&logoColor=030406" alt="Framer Motion" />
 </p>
 
+## Desktop Preview
+
+<p align="center">
+  <a href="https://farhanzulkarnainhrp.com/home">
+    <img src="./docs/screenshots/desktop-home.png" alt="Farhan Zulkarnain portfolio desktop preview" width="100%" />
+  </a>
+</p>
+
 ## Overview
 
 `web` adalah frontend portofolio Farhan Zulkarnain. Website ini menampilkan hero animated, interactive cursor particle, project showcase carousel, skills, document preview, dan contact section.
