@@ -35,7 +35,7 @@ export default function HeroCard() {
     const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
     const isDesktopHorizontal = window.matchMedia("(min-width: 1024px)").matches && horizontalStage;
 
-    window.history.pushState(null, "", "/home#projects");
+    window.history.pushState(null, "", "/projects");
 
     element?.scrollIntoView({
       behavior: "smooth",

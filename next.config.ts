@@ -47,16 +47,6 @@ const nextConfig: NextConfig = {
         destination: "/about",
         permanent: false,
       },
-      {
-        source: "/projects",
-        destination: "/home#projects",
-        permanent: false,
-      },
-      {
-        source: "/contact",
-        destination: "/home#contact",
-        permanent: false,
-      },
     ];
   },
   async rewrites() {
@@ -64,6 +54,14 @@ const nextConfig: NextConfig = {
       {
         source: '/home',    // URL yang diketik di browser
         destination: '/dashboard/user', // Folder asli di kodingan
+      },
+      {
+        source: '/projects',
+        destination: '/dashboard/user',
+      },
+      {
+        source: '/contact',
+        destination: '/dashboard/user',
       },
       {
         source: '/admin/home',    // URL yang diketik di browser

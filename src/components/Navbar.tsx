@@ -13,10 +13,10 @@ import {
 } from "react-icons/lu";
 
 const menuItems = [
-  { id: "home", label: "HOME", shortLabel: "HOME", icon: LuHouse },
-  { id: "about", label: "ABOUT", shortLabel: "ABOUT", icon: LuUser },
-  { id: "projects", label: "PROJECT", shortLabel: "PROJ", icon: LuBriefcase },
-  { id: "contact", label: "CONTACT", shortLabel: "MAIL", icon: LuMail },
+  { id: "home", href: "/home", label: "HOME", shortLabel: "HOME", icon: LuHouse },
+  { id: "about", href: "/about", label: "ABOUT", shortLabel: "ABOUT", icon: LuUser },
+  { id: "projects", href: "/projects", label: "PROJECT", shortLabel: "PROJ", icon: LuBriefcase },
+  { id: "contact", href: "/contact", label: "CONTACT", shortLabel: "MAIL", icon: LuMail },
 ];
 
 export default function Navbar() {
@@ -78,6 +78,18 @@ export default function Navbar() {
   }, [pathname]);
 
   const handleNavigation = (item: (typeof menuItems)[number]) => {
+    if (item.id === "about") {
+      setActiveSection("ABOUT");
+
+      if (pathname === "/about") {
+        window.history.replaceState(null, "", "/about");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        router.push("/about");
+      }
+      return;
+    }
+
     const element = document.getElementById(item.id);
     const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
     const isDesktopHorizontal = window.matchMedia("(min-width: 1024px)").matches && horizontalStage;
@@ -85,7 +97,7 @@ export default function Navbar() {
     setActiveSection(item.id.toUpperCase());
 
     if (element) {
-      window.history.pushState(null, "", item.id === "home" ? "/home" : `/home#${item.id}`);
+      window.history.pushState(null, "", item.href);
       element.scrollIntoView({
         behavior: "smooth",
         block: isDesktopHorizontal ? "nearest" : "start",
@@ -94,13 +106,7 @@ export default function Navbar() {
       return;
     }
 
-    if (pathname === "/about" && item.id === "about") {
-      window.history.replaceState(null, "", "/about");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-
-    router.push(item.id === "home" ? "/home" : `/home#${item.id}`);
+    router.push(item.href);
   };
 
   return (

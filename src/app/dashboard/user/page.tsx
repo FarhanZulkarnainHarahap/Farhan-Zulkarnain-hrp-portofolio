@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import HeroCard from "@/components/sections/hero/HeroCard";
 
@@ -26,6 +27,7 @@ const SectionBlockSkeleton = ({ label }: { label: string }) => (
 );
 
 export default function Home() {
+  const pathname = usePathname();
   const stageRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -51,6 +53,34 @@ export default function Home() {
       stage.removeEventListener("wheel", handleWheel);
     };
   }, []);
+
+  useEffect(() => {
+    const targetId =
+      pathname === "/projects" ? "projects" : pathname === "/contact" ? "contact" : "home";
+    let animationFrame = 0;
+    let attempts = 0;
+
+    const scrollToRoute = () => {
+      const target = document.getElementById(targetId);
+      const stage = stageRef.current;
+
+      if (!target || !stage) {
+        attempts += 1;
+        if (attempts < 30) animationFrame = window.requestAnimationFrame(scrollToRoute);
+        return;
+      }
+
+      const isDesktopHorizontal = window.matchMedia("(min-width: 1024px)").matches;
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: isDesktopHorizontal ? "nearest" : "start",
+        inline: isDesktopHorizontal ? "center" : "nearest",
+      });
+    };
+
+    animationFrame = window.requestAnimationFrame(scrollToRoute);
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [pathname]);
 
   return (
     <main
