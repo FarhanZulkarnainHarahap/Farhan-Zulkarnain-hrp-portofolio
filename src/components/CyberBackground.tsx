@@ -34,6 +34,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
   const pointerRef = useRef(new THREE.Vector2());
   const previousScrollRef = useRef(0);
   const hasScrollSampleRef = useRef(false);
+  const motionAxisRef = useRef<"horizontal" | "vertical" | null>(null);
   const scrollVelocityRef = useRef(0);
   const scrollProgressRef = useRef(0);
   const { size } = useThree();
@@ -128,19 +129,31 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
 
   useEffect(() => {
     const handlePointerMove = (event: PointerEvent) => {
-      if (event.pointerType === "touch") return;
-
       pointerTargetRef.current.set(
         (event.clientX / window.innerWidth) * 2 - 1,
         -((event.clientY / window.innerHeight) * 2 - 1),
       );
     };
 
+    const handlePointerEnd = (event: PointerEvent) => {
+      if (event.pointerType === "touch") {
+        pointerTargetRef.current.set(0, 0);
+      }
+    };
+
     window.addEventListener("pointermove", handlePointerMove, {
       passive: true,
     });
+    window.addEventListener("pointerup", handlePointerEnd, { passive: true });
+    window.addEventListener("pointercancel", handlePointerEnd, {
+      passive: true,
+    });
 
-    return () => window.removeEventListener("pointermove", handlePointerMove);
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerEnd);
+      window.removeEventListener("pointercancel", handlePointerEnd);
+    };
   }, []);
 
   useEffect(() => {
@@ -173,26 +186,46 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     }
 
     const stage = stageRef.current;
-    const stageScroll = stage?.scrollLeft ?? 0;
-    const horizontalScroll = window.scrollX + stageScroll;
+    const isDesktop = size.width >= 1024;
+    const motionAxis = isDesktop ? "horizontal" : "vertical";
+    const horizontalScroll = window.scrollX + (stage?.scrollLeft ?? 0);
     const maxHorizontalScroll = stage
       ? Math.max(stage.scrollWidth - stage.clientWidth, 1)
       : Math.max(
           document.documentElement.scrollWidth - window.innerWidth,
           1,
         );
+    const scrollingElement =
+      document.scrollingElement ?? document.documentElement;
+    const verticalScroll = window.scrollY || scrollingElement.scrollTop;
+    const maxVerticalScroll = Math.max(
+      scrollingElement.scrollHeight - window.innerHeight,
+      1,
+    );
+    const motionOffset = isDesktop ? horizontalScroll : verticalScroll;
+    const maxMotionOffset = isDesktop
+      ? maxHorizontalScroll
+      : maxVerticalScroll;
+
+    if (motionAxisRef.current !== motionAxis) {
+      motionAxisRef.current = motionAxis;
+      previousScrollRef.current = motionOffset;
+      hasScrollSampleRef.current = false;
+      scrollVelocityRef.current = 0;
+    }
+
     const targetProgress = THREE.MathUtils.clamp(
-      horizontalScroll / maxHorizontalScroll,
+      motionOffset / maxMotionOffset,
       0,
       1,
     );
     const rawVelocity = hasScrollSampleRef.current
-      ? (horizontalScroll - previousScrollRef.current) /
+      ? (motionOffset - previousScrollRef.current) /
         Math.max(delta, 1 / 240)
       : 0;
 
     hasScrollSampleRef.current = true;
-    previousScrollRef.current = horizontalScroll;
+    previousScrollRef.current = motionOffset;
     scrollVelocityRef.current = THREE.MathUtils.lerp(
       scrollVelocityRef.current,
       rawVelocity,
@@ -213,15 +246,18 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     const phase = progress * Math.PI * 6;
     const velocity = scrollVelocityRef.current;
     const warp = Math.min(Math.abs(velocity) * 0.00032, 1);
-    const compact = size.width < 768;
+    const compact = !isDesktop;
     const smoothing = 1 - Math.exp(-delta * 3.8);
-    const coreTravel = compact ? 0.85 : 2.3;
-    const coreTargetX =
-      Math.cos(progress * Math.PI * 1.5) * coreTravel +
-      pointerRef.current.x * 0.28;
-    const coreTargetY =
-      Math.sin(progress * Math.PI * 3) * (compact ? 0.35 : 0.78) +
-      pointerRef.current.y * 0.2;
+    const coreTargetX = isDesktop
+      ? Math.cos(progress * Math.PI * 1.5) * 2.3 +
+        pointerRef.current.x * 0.28
+      : Math.sin(progress * Math.PI * 4) * 0.72 +
+        pointerRef.current.x * 0.14;
+    const coreTargetY = isDesktop
+      ? Math.sin(progress * Math.PI * 3) * 0.78 +
+        pointerRef.current.y * 0.2
+      : Math.cos(progress * Math.PI * 5) * 1.28 +
+        pointerRef.current.y * 0.14;
     const coreScale = (compact ? 0.66 : 0.92) + warp * 0.12;
 
     core.position.x = THREE.MathUtils.lerp(
@@ -241,27 +277,32 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     );
     core.rotation.x = THREE.MathUtils.lerp(
       core.rotation.x,
-      elapsed * 0.035 - pointerRef.current.y * 0.18 + progress * 0.7,
+      elapsed * 0.035 -
+        pointerRef.current.y * 0.18 +
+        progress * (isDesktop ? 0.7 : 2.4),
       smoothing,
     );
     core.rotation.y = THREE.MathUtils.lerp(
       core.rotation.y,
-      elapsed * 0.052 + pointerRef.current.x * 0.24 + phase * 0.22,
+      elapsed * 0.052 +
+        pointerRef.current.x * 0.24 +
+        phase * (isDesktop ? 0.22 : 0.08),
       smoothing,
     );
     core.rotation.z = THREE.MathUtils.lerp(
       core.rotation.z,
-      Math.sin(phase) * 0.12 - Math.sign(velocity) * warp * 0.08,
+      Math.sin(phase) * 0.12 -
+        Math.sign(velocity) * warp * (isDesktop ? 0.08 : 0.16),
       smoothing,
     );
     core.scale.x = THREE.MathUtils.lerp(
       core.scale.x,
-      coreScale * (1 + warp * 0.38),
+      coreScale * (isDesktop ? 1 + warp * 0.38 : 1 - warp * 0.07),
       smoothing,
     );
     core.scale.y = THREE.MathUtils.lerp(
       core.scale.y,
-      coreScale * (1 - warp * 0.08),
+      coreScale * (isDesktop ? 1 - warp * 0.08 : 1 + warp * 0.42),
       smoothing,
     );
     core.scale.z = THREE.MathUtils.lerp(
@@ -272,12 +313,16 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
 
     field.position.x = THREE.MathUtils.lerp(
       field.position.x,
-      Math.sin(phase * 0.55) * 0.72 - pointerRef.current.x * 0.32,
+      isDesktop
+        ? Math.sin(phase * 0.55) * 0.72 - pointerRef.current.x * 0.32
+        : Math.sin(phase * 0.38) * 0.28 - pointerRef.current.x * 0.12,
       smoothing,
     );
     field.position.y = THREE.MathUtils.lerp(
       field.position.y,
-      pointerRef.current.y * 0.24,
+      isDesktop
+        ? pointerRef.current.y * 0.24
+        : Math.cos(phase * 0.46) * 0.58 + pointerRef.current.y * 0.16,
       smoothing,
     );
     field.position.z = THREE.MathUtils.lerp(
@@ -287,31 +332,63 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     );
     field.rotation.z = THREE.MathUtils.lerp(
       field.rotation.z,
-      progress * 0.16 + pointerRef.current.x * 0.018,
+      progress * (isDesktop ? 0.16 : -0.28) +
+        pointerRef.current.x * 0.018,
       smoothing,
     );
 
     const gridStep = 30 / 42;
-    grid.position.z = -5 + ((horizontalScroll * 0.006) % gridStep);
+    grid.position.x = THREE.MathUtils.lerp(
+      grid.position.x,
+      isDesktop ? 0 : Math.sin(phase * 0.32) * 0.2,
+      smoothing,
+    );
+    grid.position.y = THREE.MathUtils.lerp(
+      grid.position.y,
+      isDesktop
+        ? -3.1
+        : -gridStep / 2 + ((verticalScroll * 0.006) % gridStep),
+      smoothing,
+    );
+    grid.position.z = THREE.MathUtils.lerp(
+      grid.position.z,
+      isDesktop
+        ? -5 + ((horizontalScroll * 0.006) % gridStep)
+        : -6.4,
+      smoothing,
+    );
+    grid.rotation.x = THREE.MathUtils.lerp(
+      grid.rotation.x,
+      isDesktop ? 0 : Math.PI / 2,
+      smoothing,
+    );
     grid.rotation.z = THREE.MathUtils.lerp(
       grid.rotation.z,
-      pointerRef.current.x * 0.025 - Math.sign(velocity) * warp * 0.01,
+      pointerRef.current.x * 0.025 -
+        Math.sign(velocity) * warp * (isDesktop ? 0.01 : 0.025),
       smoothing,
     );
 
     if (primaryRingRef.current) {
       primaryRingRef.current.rotation.z =
-        elapsed * 0.24 + phase * 0.32;
+        elapsed * 0.24 + phase * (isDesktop ? 0.32 : 0.12);
+      primaryRingRef.current.rotation.x = isDesktop
+        ? Math.PI / 2
+        : Math.PI / 2 + Math.sin(phase) * 0.24;
     }
     if (secondaryRingRef.current) {
       secondaryRingRef.current.rotation.x =
-        Math.PI / 2 + elapsed * 0.16 - phase * 0.18;
+        Math.PI / 2 +
+        elapsed * 0.16 -
+        phase * (isDesktop ? 0.18 : 0.34);
     }
     if (satelliteRef.current) {
-      satelliteRef.current.position.x =
-        Math.cos(elapsed * 0.42 + phase) * (compact ? 2.6 : 4.8);
-      satelliteRef.current.position.y =
-        Math.sin(elapsed * 0.55 + phase * 0.7) * (compact ? 1.4 : 2.35);
+      satelliteRef.current.position.x = isDesktop
+        ? Math.cos(elapsed * 0.42 + phase) * 4.8
+        : Math.sin(elapsed * 0.42 + phase * 0.62) * 1.55;
+      satelliteRef.current.position.y = isDesktop
+        ? Math.sin(elapsed * 0.55 + phase * 0.7) * 2.35
+        : Math.cos(elapsed * 0.55 + phase) * 2.75;
       satelliteRef.current.rotation.x = elapsed * 0.32 + phase;
       satelliteRef.current.rotation.y = elapsed * 0.46 + phase * 0.5;
     }
@@ -512,9 +589,17 @@ export default function CyberBackground() {
         <AdaptiveDpr pixelated />
       </Canvas>
 
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_38%,rgba(0,243,255,0.07),transparent_26%),radial-gradient(circle_at_24%_64%,rgba(255,0,85,0.045),transparent_24%),linear-gradient(90deg,rgba(3,4,6,0.42)_0%,rgba(3,4,6,0.08)_50%,rgba(3,4,6,0.42)_100%)]" />
+      <div className="absolute inset-0 hidden bg-[radial-gradient(circle_at_70%_38%,rgba(0,243,255,0.07),transparent_26%),radial-gradient(circle_at_24%_64%,rgba(255,0,85,0.045),transparent_24%),linear-gradient(90deg,rgba(3,4,6,0.42)_0%,rgba(3,4,6,0.08)_50%,rgba(3,4,6,0.42)_100%)] lg:block" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(0,243,255,0.075),transparent_28%),radial-gradient(circle_at_42%_76%,rgba(255,0,85,0.05),transparent_26%),linear-gradient(180deg,rgba(3,4,6,0.38)_0%,rgba(3,4,6,0.08)_48%,rgba(3,4,6,0.46)_100%)] lg:hidden" />
       <div
-        className="absolute inset-0 opacity-[0.035]"
+        className="absolute inset-0 hidden opacity-[0.035] lg:block"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(90deg, transparent 0, transparent 3px, rgba(0,243,255,0.32) 4px)",
+        }}
+      />
+      <div
+        className="absolute inset-0 opacity-[0.035] lg:hidden"
         style={{
           backgroundImage:
             "repeating-linear-gradient(0deg, transparent 0, transparent 3px, rgba(0,243,255,0.32) 4px)",
