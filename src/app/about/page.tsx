@@ -257,7 +257,7 @@ export default function AboutPage() {
                 deployment workflows, and the design tools needed to turn a concept into a clear
                 digital experience.
               </p>
-              <div className="mt-10 rounded-3xl border border-blue-500/18 bg-[#050b14]/58 p-5 shadow-[0_24px_90px_rgba(0,0,0,0.24)] sm:p-8">
+              <div className="mt-10 rounded-3xl border border-blue-500/18 bg-[#050b14]/58 p-5 shadow-[0_24px_90px_rgba(0,0,0,0.24)] sm:p-8 lg:mt-8 lg:p-6">
                 <SkillSection />
               </div>
             </div>

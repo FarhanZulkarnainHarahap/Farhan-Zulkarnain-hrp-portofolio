@@ -15,7 +15,7 @@ interface SkillData {
 }
 
 const SkillSkeleton = () => (
-  <div className="w-full space-y-8">
+  <div className="w-full space-y-8 lg:col-span-2">
     {Array.from({ length: 3 }, (_, sectionIndex) => (
       <div key={sectionIndex} className="space-y-4 animate-pulse">
         <div className="flex items-center gap-3">
@@ -87,7 +87,7 @@ export default function SkillSection() {
     <div className="relative flex w-full max-w-5xl flex-col gap-8 overflow-visible md:gap-8 lg:gap-3">
       
       {/* --- CONTENT LAYER --- */}
-      <div className="relative z-10 flex w-full flex-col gap-8 lg:gap-3">
+      <div className="relative z-10 flex w-full flex-col gap-8 lg:grid lg:grid-cols-2 lg:gap-x-10 lg:gap-y-5">
         {loading ? (
           <SkillSkeleton />
         ) : (
