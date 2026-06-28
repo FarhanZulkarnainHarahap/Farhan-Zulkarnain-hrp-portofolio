@@ -137,7 +137,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         ${isOpen ? "w-64" : "w-0 -left-64 md:left-0 md:w-20"}`}
       >
         <div className="h-16 flex items-center px-6 border-b border-gray-700 whitespace-nowrap overflow-hidden">
-          <div className="mr-3 h-8 min-w-8 overflow-hidden rounded-lg border border-blue-400/30 bg-black">
+          <div className="mr-3 h-8 min-w-8 overflow-hidden rounded-lg border border-blue-400/30 bg-transparent">
             <Image
               src="/fz-logo.png"
               alt="FZ Dev"

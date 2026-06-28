@@ -45,7 +45,7 @@ export default function LoginPage() {
       
       <div className="w-full max-w-100 z-10">
         <div className="text-center mb-10">
-          <div className="mx-auto mb-6 h-14 w-14 overflow-hidden rounded-2xl border border-blue-400/30 bg-black shadow-2xl shadow-blue-500/20">
+          <div className="mx-auto mb-6 h-14 w-14 overflow-hidden rounded-2xl border border-blue-400/30 bg-transparent shadow-2xl shadow-blue-500/20">
             <Image
               src="/fz-logo.png"
               alt="FZ Dev"

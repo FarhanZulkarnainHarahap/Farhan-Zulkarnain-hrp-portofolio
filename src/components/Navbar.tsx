@@ -132,7 +132,7 @@ export default function Navbar() {
               data-cursor-label="HOME"
               className="hidden h-15 min-w-48 items-center gap-3 border border-blue-500/35 bg-black/35 px-4 text-left shadow-[inset_0_0_34px_rgba(37,99,235,0.12)] [clip-path:polygon(7%_0,100%_0,100%_82%,93%_100%,0_100%,0_18%)] lg:flex"
             >
-              <span className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-blue-400/55 bg-black shadow-[0_0_24px_rgba(59,130,246,0.45)]">
+              <span className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-blue-400/55 bg-transparent shadow-[0_0_24px_rgba(59,130,246,0.45)]">
                 <Image
                   src="/fz-logo.png"
                   alt="FZ Dev"
