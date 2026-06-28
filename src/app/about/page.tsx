@@ -172,7 +172,7 @@ export default function AboutPage() {
 
           <section
             id="about-overview"
-            className="about-detail-section relative flex min-h-[100svh] scroll-mt-16 items-center px-5 pb-32 pt-18 sm:px-8 lg:px-14 lg:pb-44 xl:scroll-mt-0 xl:px-18 xl:pb-48"
+            className="about-detail-section relative flex min-h-[100svh] scroll-mt-16 items-center px-5 pb-32 pt-18 sm:px-8 lg:px-14 lg:pb-52 xl:scroll-mt-0 xl:px-18 xl:pb-56"
           >
             <div className="pointer-events-none absolute right-[6%] top-[12%] h-48 w-48 bg-[radial-gradient(circle,#3b82f6_1px,transparent_1.5px)] bg-size-[14px_14px] opacity-20" />
             <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
@@ -195,7 +195,7 @@ export default function AboutPage() {
                   with thoughtful interfaces and dependable backend systems.
                 </p>
 
-                <div className="mt-8 grid max-w-2xl grid-cols-2 overflow-hidden rounded-2xl border border-blue-500/25 bg-[#07101c]/65 shadow-[inset_0_0_30px_rgba(37,99,235,0.05)]">
+                <div className="mt-8 grid max-w-2xl grid-cols-2 overflow-hidden rounded-2xl border border-blue-500/25 bg-[#07101c]/65 shadow-[inset_0_0_30px_rgba(37,99,235,0.05)] lg:mt-6">
                   {[
                     { icon: LuCalendarDays, label: "Experience", value: "2+ Years" },
                     { icon: LuCodeXml, label: "Technologies", value: "20+" },
@@ -204,7 +204,7 @@ export default function AboutPage() {
                   ].map(({ icon: Icon, label, value }, index) => (
                     <div
                       key={label}
-                      className={`flex min-h-24 items-center gap-3 p-4 sm:p-5 ${
+                      className={`flex min-h-20 items-center gap-3 p-4 ${
                         index % 2 === 0 ? "border-r border-blue-500/16" : ""
                       } ${index < 2 ? "border-b border-blue-500/16" : ""}`}
                     >
