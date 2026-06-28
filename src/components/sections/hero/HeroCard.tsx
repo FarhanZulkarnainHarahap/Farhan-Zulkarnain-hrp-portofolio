@@ -134,7 +134,10 @@ export default function HeroCard() {
               <span className="text-[10px] md:text-xs font-black uppercase tracking-widest">View My Projects</span>
               <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
             </button>
-            <Link href="/about#about-documents">
+            <Link
+              href="/about"
+              onClick={() => window.sessionStorage.setItem("about:target", "about-documents")}
+            >
               <button
                 data-cursor-label="RESUME"
                 className="group relative flex items-center gap-3 overflow-hidden rounded-full border border-white/12 bg-white/5 px-8 py-3.5 text-white transition-all hover:border-blue-400/60 hover:bg-blue-500/10 md:px-9 md:py-4"

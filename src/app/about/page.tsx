@@ -58,6 +58,17 @@ export default function AboutPage() {
       .map(({ id }) => document.getElementById(id))
       .filter((section): section is HTMLElement => Boolean(section));
 
+    window.history.replaceState(null, "", "/about");
+
+    const storedTarget = window.sessionStorage.getItem("about:target");
+    if (storedTarget && journeySections.some(({ id }) => id === storedTarget)) {
+      window.sessionStorage.removeItem("about:target");
+      window.requestAnimationFrame(() => {
+        document.getElementById(storedTarget)?.scrollIntoView({ block: "start" });
+        setActiveSection(storedTarget);
+      });
+    }
+
     const updateActiveSection = () => {
       const target = sections
         .map((section) => ({
@@ -77,7 +88,7 @@ export default function AboutPage() {
   const goToSection = (id: string) => {
     setActiveSection(id);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    window.history.replaceState(null, "", `/about#${id}`);
+    window.history.replaceState(null, "", "/about");
   };
 
   return (

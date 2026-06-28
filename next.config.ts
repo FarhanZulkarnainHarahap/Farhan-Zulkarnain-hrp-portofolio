@@ -39,12 +39,12 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/skills",
-        destination: "/about#about-skills",
+        destination: "/about",
         permanent: false,
       },
       {
         source: "/documents",
-        destination: "/about#about-documents",
+        destination: "/about",
         permanent: false,
       },
       {
