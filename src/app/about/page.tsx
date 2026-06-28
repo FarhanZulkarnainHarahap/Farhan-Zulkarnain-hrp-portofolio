@@ -172,7 +172,7 @@ export default function AboutPage() {
 
           <section
             id="about-overview"
-            className="about-detail-section relative flex min-h-[100svh] scroll-mt-16 items-center px-5 pb-32 pt-18 sm:px-8 lg:px-14 xl:scroll-mt-0 xl:px-18"
+            className="about-detail-section relative flex min-h-[100svh] scroll-mt-16 items-center px-5 pb-32 pt-18 sm:px-8 lg:px-14 lg:pb-44 xl:scroll-mt-0 xl:px-18 xl:pb-48"
           >
             <div className="pointer-events-none absolute right-[6%] top-[12%] h-48 w-48 bg-[radial-gradient(circle,#3b82f6_1px,transparent_1.5px)] bg-size-[14px_14px] opacity-20" />
             <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
