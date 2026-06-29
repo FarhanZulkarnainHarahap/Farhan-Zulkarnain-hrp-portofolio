@@ -214,8 +214,8 @@ export default function AboutPage() {
 
                 <div className="mt-8 grid max-w-2xl grid-cols-2 overflow-hidden rounded-2xl border border-blue-500/25 bg-[#07101c]/65 shadow-[inset_0_0_30px_rgba(37,99,235,0.05)] lg:mt-6">
                   {[
-                    { icon: LuCalendarDays, label: "Experience", value: "2+ Years" },
-                    { icon: LuCodeXml, label: "Technologies", value: "20+" },
+                    { icon: LuCalendarDays, label: "Experience", value: "1 Years" },
+                    { icon: LuCodeXml, label: "Technologies", value: "10+" },
                     { icon: LuMapPin, label: "Location", value: "Medan, Indonesia" },
                     { icon: LuPanelsTopLeft, label: "Focus", value: "Frontend & Backend" },
                   ].map(({ icon: Icon, label, value }, index) => (
