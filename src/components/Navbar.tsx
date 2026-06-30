@@ -7,8 +7,6 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   LuBriefcase,
-  LuCpu,
-  LuFileText,
   LuHouse,
   LuMail,
   LuUser,
@@ -17,10 +15,16 @@ import {
 const menuItems = [
   { id: "home", href: "/home", label: "HOME", shortLabel: "HOME", icon: LuHouse },
   { id: "about", href: "/explore", label: "ABOUT", shortLabel: "ABOUT", icon: LuUser },
-  { id: "skills", href: "/skills", label: "SKILL", shortLabel: "SKILL", icon: LuCpu },
   { id: "projects", href: "/projects", label: "PROJECT", shortLabel: "PROJ", icon: LuBriefcase },
-  { id: "documents", href: "/documents", label: "DOCUMENT", shortLabel: "DOCS", icon: LuFileText },
   { id: "contact", href: "/contact", label: "CONTACT", shortLabel: "MAIL", icon: LuMail },
+];
+const observedSectionIds = [
+  "home",
+  "about",
+  "skills",
+  "projects",
+  "documents",
+  "contact",
 ];
 
 export default function Navbar() {
@@ -33,8 +37,8 @@ export default function Navbar() {
 
     const getActiveSection = () => {
       frame = 0;
-      const sections = menuItems
-        .map((item) => document.getElementById(item.id))
+      const sections = observedSectionIds
+        .map((id) => document.getElementById(id))
         .filter((section): section is HTMLElement => Boolean(section));
 
       if (!sections.length) {
@@ -58,7 +62,9 @@ export default function Navbar() {
             .sort((a, b) => a.distance - b.distance)[0];
 
       if (closest?.id) {
-        const nextSection = closest.id.toUpperCase();
+        const nextSection = menuItems.some((item) => item.id === closest.id)
+          ? closest.id.toUpperCase()
+          : "";
         setActiveSection((current) =>
           current === nextSection ? current : nextSection,
         );
@@ -154,7 +160,7 @@ export default function Navbar() {
               </span>
             </button>
 
-            <ul className="grid w-full grid-cols-6 items-stretch overflow-hidden rounded-xl bg-black/18 lg:flex lg:w-auto lg:rounded-none lg:border-0 lg:bg-transparent">
+            <ul className="grid w-full grid-cols-4 items-stretch overflow-hidden rounded-xl bg-black/18 lg:flex lg:w-auto lg:rounded-none lg:border-0 lg:bg-transparent">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.label || activeSection === item.id.toUpperCase();
@@ -176,7 +182,7 @@ export default function Navbar() {
                     <span className={`${isActive ? "text-blue-300 drop-shadow-[0_0_10px_rgba(96,165,250,0.9)]" : "text-blue-300/80 group-hover:text-blue-200"}`}>
                       <Icon className="h-5 w-5 sm:h-5.5 sm:w-5.5 lg:h-6 lg:w-6" />
                     </span>
-                    <span className={`max-w-full truncate text-[7px] font-black uppercase tracking-[-0.01em] transition-colors sm:text-[8px] sm:tracking-[0.02em] lg:text-[9px] ${isActive ? "text-white" : "text-white/70 group-hover:text-white"}`}>
+                    <span className={`max-w-full truncate text-[8px] font-black uppercase tracking-[0.02em] transition-colors sm:text-[9px] lg:text-[10px] ${isActive ? "text-white" : "text-white/70 group-hover:text-white"}`}>
                       <span className="sm:hidden">{item.shortLabel}</span>
                       <span className="hidden sm:inline">{item.label}</span>
                     </span>

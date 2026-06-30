@@ -175,7 +175,7 @@ export default function DocSection() {
       style={sectionStyle}
       className="relative min-h-screen w-full scroll-mt-4"
     >
-      <div className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-5 pb-36 pt-20 sm:px-8 lg:sticky lg:top-0 lg:px-10 lg:pb-28 lg:pt-14">
+      <div className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-5 pb-36 pt-20 sm:px-8 lg:sticky lg:top-0 lg:justify-start lg:px-10 lg:pb-40 lg:pt-10">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_50%,rgba(139,92,246,0.12),transparent_36%)]" />
 
         <div className="relative z-10 mx-auto w-full max-w-7xl">
@@ -248,7 +248,7 @@ export default function DocSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cursor-label="OPEN"
-                  className="relative block h-52 origin-bottom overflow-hidden rounded-[20px] bg-white transition-transform duration-500 group-hover:[transform:perspective(900px)_translateY(-3px)_rotateX(-2deg)] sm:h-62"
+                  className="relative block h-52 origin-bottom overflow-hidden rounded-[20px] bg-white transition-transform duration-500 group-hover:[transform:perspective(900px)_translateY(-3px)_rotateX(-2deg)] sm:h-62 lg:h-48"
                   aria-label={`Open ${doc.name}`}
                 >
                   {doc.previewUrl && (

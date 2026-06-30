@@ -422,7 +422,7 @@ export default function PortfolioSection() {
       style={sectionStyle}
       className="relative isolate min-h-screen w-full scroll-mt-4 bg-transparent"
     >
-      <div className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-4 pb-36 pt-20 sm:px-6 lg:sticky lg:top-0 lg:px-10 lg:pb-28 lg:pt-12">
+      <div className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-4 pb-36 pt-20 sm:px-6 lg:sticky lg:top-0 lg:justify-start lg:px-10 lg:pb-40 lg:pt-8">
         <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.2),transparent_55%)]" />
         <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
 

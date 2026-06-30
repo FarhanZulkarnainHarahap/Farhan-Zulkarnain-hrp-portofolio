@@ -80,7 +80,7 @@ export default function ProjectCard({
         variant === "featured"
           ? "w-92 rounded-[28px] p-3 xl:w-100"
         : variant === "showcase"
-          ? "w-[86vw] shrink-0 rounded-[28px] p-3 sm:w-[76vw] sm:max-w-190 lg:grid lg:w-190 lg:grid-cols-[1.08fr_0.92fr] lg:gap-5 lg:p-4"
+          ? "w-[86vw] shrink-0 rounded-[28px] p-3 sm:w-[76vw] sm:max-w-190 lg:grid lg:w-176 lg:grid-cols-[1.08fr_0.92fr] lg:gap-4 lg:p-3"
         : variant === "mobile"
             ? "grid w-full grid-cols-[0.92fr_1fr] gap-4 rounded-[26px] p-3 sm:grid-cols-[0.82fr_1fr] sm:items-center sm:gap-5 md:p-4 lg:block lg:rounded-[20px] lg:p-2"
             : "w-62 rounded-[22px] p-2.5 xl:w-68"
@@ -108,7 +108,7 @@ export default function ProjectCard({
         variant === "orbit"
           ? "h-36 rounded-[18px]"
           : variant === "showcase"
-            ? "h-54 rounded-[22px] sm:h-68 lg:h-full lg:min-h-96"
+            ? "h-54 rounded-[22px] sm:h-68 lg:h-full lg:min-h-80"
           : "h-full min-h-44 rounded-[20px] sm:min-h-48 sm:rounded-[18px] md:min-h-52 lg:h-30 lg:min-h-0"
       }`}>
         <Image
