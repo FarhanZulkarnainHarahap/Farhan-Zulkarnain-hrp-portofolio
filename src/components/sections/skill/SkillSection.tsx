@@ -142,7 +142,7 @@ export default function SkillSection() {
                   {skillsInCat.map((skill: SkillData) => (
                     <div
                       key={skill.id}
-                      className="group relative flex min-w-0 flex-col items-center justify-center rounded-2xl border border-white/7 bg-white/[0.035] px-2 py-4 shadow-[0_14px_34px_rgba(0,0,0,0.16)] transition-[transform,border-color,background-color,box-shadow] duration-300 hover:border-blue-400/45 hover:bg-blue-500/8 hover:shadow-[0_18px_45px_rgba(37,99,235,0.2)] hover:[transform:perspective(700px)_translateY(-7px)_rotateX(4deg)_rotateY(-4deg)] lg:min-w-20 lg:px-3 lg:py-4"
+                      className="premium-static-tilt group relative flex min-w-0 flex-col items-center justify-center rounded-2xl border border-white/7 bg-white/[0.035] px-2 py-4 shadow-[0_14px_34px_rgba(0,0,0,0.16)] hover:border-blue-400/45 hover:bg-blue-500/8 hover:shadow-[0_18px_45px_rgba(37,99,235,0.2)] lg:min-w-20 lg:px-3 lg:py-4"
                     >
                       {/* Aura Glow saat Hover */}
                       <div className="absolute inset-0 bg-blue-500/20 blur-[25px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />

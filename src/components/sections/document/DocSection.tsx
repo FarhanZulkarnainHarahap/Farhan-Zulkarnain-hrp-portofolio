@@ -234,16 +234,21 @@ export default function DocSection() {
             const previewType = getPreviewType(doc);
 
             return (
-              <article
+              <div
                 key={doc.id}
-                className="group w-[82vw] max-w-100 shrink-0 snap-center overflow-hidden rounded-[26px] border border-white/9 bg-[#101720]/88 p-2 shadow-[0_22px_70px_rgba(0,0,0,0.3)] backdrop-blur-xl transition-[transform,border-color,box-shadow] duration-500 hover:border-blue-400/45 hover:shadow-[0_28px_80px_rgba(37,99,235,0.2)] hover:[transform:perspective(900px)_translateY(-8px)_rotateX(2deg)_rotateY(-2deg)]"
+                data-showcase-item
+                className="w-[82vw] max-w-100 shrink-0 snap-center pt-3 transition-[opacity,filter] duration-300"
               >
+              <article className="premium-static-tilt group relative overflow-hidden rounded-[26px] border border-cyan-300/12 bg-[linear-gradient(145deg,rgba(16,28,48,0.92),rgba(5,11,22,0.82))] p-2 shadow-[0_22px_70px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl hover:border-cyan-300/45 hover:shadow-[0_28px_80px_rgba(37,99,235,0.22),0_0_35px_rgba(34,211,238,0.1)]">
+                <span className="pointer-events-none absolute left-6 top-0 z-20 h-5 w-32 rounded-b-xl border-x border-b border-cyan-300/20 bg-cyan-300/8 shadow-[0_6px_24px_rgba(34,211,238,0.12)]" />
+                <span className="pointer-events-none absolute inset-x-5 top-3 z-20 h-px bg-linear-to-r from-transparent via-cyan-300/60 to-transparent" />
                 <a
+                  data-folder-cover
                   href={doc.fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cursor-label="OPEN"
-                  className="relative block h-52 overflow-hidden rounded-[20px] bg-white sm:h-62"
+                  className="relative block h-52 origin-bottom overflow-hidden rounded-[20px] bg-white transition-transform duration-500 group-hover:[transform:perspective(900px)_translateY(-3px)_rotateX(-2deg)] sm:h-62"
                   aria-label={`Open ${doc.name}`}
                 >
                   {doc.previewUrl && (
@@ -353,6 +358,7 @@ export default function DocSection() {
                   </a>
                 </div>
               </article>
+              </div>
             );
                 })}
               </div>
@@ -363,9 +369,15 @@ export default function DocSection() {
             </div>
           )}
 
-          <div className="mt-3 flex items-center justify-between gap-4 text-[9px] font-black uppercase tracking-[0.24em] text-zinc-500">
+          <div className="mt-3 flex flex-col items-start justify-between gap-1 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 sm:flex-row sm:items-center sm:gap-4 sm:tracking-[0.24em]">
             <span>{filteredDocs.length} / {docs.length} verified files</span>
             <span>Scroll down · Swipe on touch</span>
+          </div>
+          <div className="mt-3 h-px overflow-hidden bg-white/8">
+            <span
+              className="block h-full origin-left bg-linear-to-r from-fuchsia-500 via-blue-400 to-cyan-300 shadow-[0_0_16px_rgba(59,130,246,0.75)]"
+              style={{ transform: "scaleX(var(--showcase-progress, 0))" }}
+            />
           </div>
         </div>
       </div>

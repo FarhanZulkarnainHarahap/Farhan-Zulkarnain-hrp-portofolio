@@ -67,6 +67,54 @@ body::-webkit-scrollbar-thumb:hover {
   display: none;
 }
 
+.premium-tilt {
+  transform:
+    perspective(1100px)
+    translateY(var(--tilt-lift, 0))
+    rotateX(var(--tilt-x, 0deg))
+    rotateY(var(--tilt-y, 0deg));
+  transform-style: preserve-3d;
+  transition:
+    transform 180ms ease-out,
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+  will-change: transform;
+}
+
+.premium-tilt:hover {
+  --tilt-lift: -8px;
+}
+
+.premium-static-tilt {
+  transform-style: preserve-3d;
+  transition:
+    transform 300ms ease,
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+@media (hover: hover) {
+  .premium-static-tilt:hover {
+    transform: perspective(900px) translateY(-8px) rotateX(2deg) rotateY(-2deg);
+  }
+}
+
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .premium-tilt,
+  .premium-tilt:hover,
+  .premium-static-tilt,
+  .premium-static-tilt:hover {
+    --tilt-lift: 0;
+    --tilt-x: 0deg;
+    --tilt-y: 0deg;
+    transform: none;
+  }
+
+  [data-folder-cover] {
+    transform: none !important;
+  }
+}
+
 .portfolio-bg {
   position: relative;
   isolation: isolate;

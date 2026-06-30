@@ -479,7 +479,11 @@ export default function PortfolioSection() {
                 className="flex w-max snap-x snap-mandatory gap-5 pr-6 will-change-transform lg:gap-8 lg:pl-[8vw] lg:pr-[18vw]"
               >
                 {filteredProjects.map((project, index) => (
-                  <div key={project.id} className="snap-center">
+                  <div
+                    key={project.id}
+                    data-showcase-item
+                    className="snap-center pt-3 transition-[opacity,filter] duration-300"
+                  >
                     <ProjectCard
                       title={project.title}
                       description={project.description}
@@ -503,9 +507,15 @@ export default function PortfolioSection() {
             </div>
           )}
 
-          <div className="mt-3 flex items-center justify-between gap-4 text-[9px] font-black uppercase tracking-[0.24em] text-zinc-500">
+          <div className="mt-3 flex flex-col items-start justify-between gap-1 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 sm:flex-row sm:items-center sm:gap-4 sm:tracking-[0.24em]">
             <span>{filteredProjects.length} / {projects.length} projects</span>
             <span>Scroll down · Swipe on touch</span>
+          </div>
+          <div className="mt-3 h-px overflow-hidden bg-white/8">
+            <span
+              className="block h-full origin-left bg-linear-to-r from-blue-500 via-cyan-300 to-fuchsia-500 shadow-[0_0_16px_rgba(34,211,238,0.75)]"
+              style={{ transform: "scaleX(var(--showcase-progress, 0))" }}
+            />
           </div>
         </div>
 

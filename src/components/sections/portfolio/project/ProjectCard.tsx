@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import { useRef, type CSSProperties, type PointerEvent } from "react";
 import Image from "next/image";
 import { FaGithub, FaStar } from "react-icons/fa";
 import { FiArrowUpRight, FiBookOpen } from "react-icons/fi";
@@ -35,19 +35,48 @@ export default function ProjectCard({
   onSelect,
   onDetails,
 }: CardProps) {
+  const cardRef = useRef<HTMLElement>(null);
   const isFeatured = variant !== "orbit";
   const projectNumber = String(index + 1).padStart(2, "0");
   const fallbackDescription = "A carefully crafted digital product with a clean and scalable interface.";
   const cardStyle = {
     "--project-accent": accent,
+    "--tilt-x": "0deg",
+    "--tilt-y": "0deg",
+    "--tilt-glow-x": "50%",
+    "--tilt-glow-y": "50%",
     borderColor: `${accent}70`,
     boxShadow: `0 16px 42px ${accent}14`,
   } as CSSProperties;
 
+  const handlePointerMove = (event: PointerEvent<HTMLElement>) => {
+    if (event.pointerType === "touch" || !cardRef.current) return;
+
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+
+    cardRef.current.style.setProperty("--tilt-x", `${(0.5 - y) * 5}deg`);
+    cardRef.current.style.setProperty("--tilt-y", `${(x - 0.5) * 6}deg`);
+    cardRef.current.style.setProperty("--tilt-glow-x", `${x * 100}%`);
+    cardRef.current.style.setProperty("--tilt-glow-y", `${y * 100}%`);
+  };
+
+  const resetTilt = () => {
+    if (!cardRef.current) return;
+    cardRef.current.style.setProperty("--tilt-x", "0deg");
+    cardRef.current.style.setProperty("--tilt-y", "0deg");
+    cardRef.current.style.setProperty("--tilt-glow-x", "50%");
+    cardRef.current.style.setProperty("--tilt-glow-y", "50%");
+  };
+
   return (
     <article
+      ref={cardRef}
       style={cardStyle}
-      className={`group relative overflow-hidden border bg-[#080b14]/95 backdrop-blur-xl transition-[transform,box-shadow] duration-500 hover:[transform:perspective(1100px)_translateY(-8px)_rotateX(1.5deg)_rotateY(-1.5deg)] ${
+      onPointerMove={handlePointerMove}
+      onPointerLeave={resetTilt}
+      className={`premium-tilt group relative overflow-hidden border bg-[#080b14]/95 backdrop-blur-xl ${
         variant === "featured"
           ? "w-92 rounded-[28px] p-3 xl:w-100"
         : variant === "showcase"
@@ -57,6 +86,14 @@ export default function ProjectCard({
             : "w-62 rounded-[22px] p-2.5 xl:w-68"
       }`}
     >
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-20 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(circle at var(--tilt-glow-x) var(--tilt-glow-y), color-mix(in srgb, var(--project-accent) 20%, transparent), transparent 34%)",
+        }}
+      />
       {variant === "orbit" && (
         <button
           type="button"

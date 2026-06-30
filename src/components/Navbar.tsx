@@ -29,7 +29,10 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState("HOME");
 
   useEffect(() => {
+    let frame = 0;
+
     const getActiveSection = () => {
+      frame = 0;
       const sections = menuItems
         .map((item) => document.getElementById(item.id))
         .filter((section): section is HTMLElement => Boolean(section));
@@ -55,18 +58,25 @@ export default function Navbar() {
             .sort((a, b) => a.distance - b.distance)[0];
 
       if (closest?.id) {
-        setActiveSection(closest.id.toUpperCase());
+        const nextSection = closest.id.toUpperCase();
+        setActiveSection((current) =>
+          current === nextSection ? current : nextSection,
+        );
       }
     };
 
-    getActiveSection();
+    const requestSectionUpdate = () => {
+      if (!frame) frame = window.requestAnimationFrame(getActiveSection);
+    };
 
-    window.addEventListener("scroll", getActiveSection, { passive: true });
-    window.addEventListener("resize", getActiveSection, { passive: true });
+    requestSectionUpdate();
+    window.addEventListener("scroll", requestSectionUpdate, { passive: true });
+    window.addEventListener("resize", requestSectionUpdate, { passive: true });
 
     return () => {
-      window.removeEventListener("scroll", getActiveSection);
-      window.removeEventListener("resize", getActiveSection);
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestSectionUpdate);
+      window.removeEventListener("resize", requestSectionUpdate);
     };
   }, []);
 
@@ -109,7 +119,7 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className="fixed bottom-3 left-1/2 z-120 w-[calc(100vw-1rem)] max-w-[32rem] -translate-x-1/2 sm:bottom-4 sm:w-[calc(100vw-2rem)] sm:max-w-[36rem] lg:w-[calc(100%-2rem)] lg:max-w-[66rem]"
+        className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 z-120 w-[calc(100vw-1rem)] max-w-[32rem] -translate-x-1/2 sm:bottom-4 sm:w-[calc(100vw-2rem)] sm:max-w-[36rem] lg:w-[calc(100%-2rem)] lg:max-w-[66rem]"
         aria-label="Section navigation"
       >
         <div className="relative rounded-2xl border border-blue-400/35 bg-[#030711]/94 p-1.5 shadow-[0_14px_45px_rgba(0,0,0,0.55),0_0_28px_rgba(37,99,235,0.16)] backdrop-blur-xl sm:p-2 lg:rounded-none lg:border-0 lg:bg-transparent lg:px-5 lg:py-3 lg:shadow-none lg:backdrop-blur-none">
@@ -155,10 +165,11 @@ export default function Navbar() {
                     type="button"
                     onClick={() => handleNavigation(item)}
                     data-cursor-label={item.label}
-                    className={`group relative flex h-14 w-full min-w-0 flex-col items-center justify-center gap-1 border-r border-blue-500/18 px-1 text-center transition-colors last:border-r-0 sm:h-15 sm:px-2 lg:h-15 lg:min-w-18 lg:gap-1 lg:px-2 xl:min-w-20 ${
+                    aria-current={isActive ? "page" : undefined}
+                    className={`group relative flex h-14 w-full min-w-0 flex-col items-center justify-center gap-1 border-r border-blue-500/18 px-1 text-center transition-all duration-300 last:border-r-0 sm:h-15 sm:px-2 lg:h-15 lg:min-w-18 lg:gap-1 lg:px-2 xl:min-w-20 ${
                       isActive
-                        ? "bg-blue-500/20 shadow-[inset_0_0_26px_rgba(37,99,235,0.25)] lg:[clip-path:polygon(0_0,100%_0,100%_82%,82%_100%,18%_100%,0_82%)]"
-                        : "bg-transparent hover:bg-blue-500/8"
+                        ? "bg-blue-500/22 shadow-[inset_0_0_30px_rgba(37,99,235,0.3),0_0_18px_rgba(34,211,238,0.08)] lg:[clip-path:polygon(0_0,100%_0,100%_82%,82%_100%,18%_100%,0_82%)]"
+                        : "bg-transparent opacity-72 hover:bg-blue-500/8 hover:opacity-100"
                     }`}
                     aria-label={item.label}
                   >
@@ -170,7 +181,11 @@ export default function Navbar() {
                       <span className="hidden sm:inline">{item.label}</span>
                     </span>
                     {isActive && (
-                      <span className="absolute bottom-0 h-0.5 w-8 rounded-full bg-blue-300 shadow-[0_0_12px_rgba(96,165,250,0.95)] lg:bottom-1" />
+                      <>
+                        <span className="absolute inset-x-2 top-0 h-px bg-linear-to-r from-transparent via-cyan-200 to-transparent shadow-[0_0_12px_rgba(103,232,249,0.9)]" />
+                        <span className="absolute -top-0.5 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rotate-45 bg-cyan-200 shadow-[0_0_12px_#67e8f9]" />
+                        <span className="absolute bottom-0 h-0.5 w-8 rounded-full bg-blue-300 shadow-[0_0_12px_rgba(96,165,250,0.95)] lg:bottom-1" />
+                      </>
                     )}
                   </button>
                 </li>

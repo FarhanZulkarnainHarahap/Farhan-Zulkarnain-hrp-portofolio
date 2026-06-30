@@ -22,6 +22,7 @@ const createSeededRandom = (initialSeed: number) => {
 };
 
 function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
+  const cameraRigRef = useRef<THREE.Group>(null);
   const coreRef = useRef<THREE.Group>(null);
   const fieldRef = useRef<THREE.Group>(null);
   const corePointsRef = useRef<THREE.Points>(null);
@@ -284,12 +285,17 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
       ? (motionOffset - previousScrollRef.current) /
         Math.max(delta, 1 / 240)
       : 0;
+    const boundedVelocity = THREE.MathUtils.clamp(
+      rawVelocity,
+      -6000,
+      6000,
+    );
 
     hasScrollSampleRef.current = true;
     previousScrollRef.current = motionOffset;
     scrollVelocityRef.current = THREE.MathUtils.lerp(
       scrollVelocityRef.current,
-      rawVelocity,
+      boundedVelocity,
       1 - Math.exp(-delta * 8),
     );
     scrollProgressRef.current = THREE.MathUtils.lerp(
@@ -341,6 +347,35 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
         : activeSection === "skills"
           ? 0.84
           : 1;
+
+    if (cameraRigRef.current) {
+      const rigTargetZ = activeSection === "about"
+        ? 0.52
+        : activeSection === "projects"
+          ? -0.3
+          : activeSection === "contact"
+            ? -0.48
+            : 0;
+
+      cameraRigRef.current.position.x = THREE.MathUtils.damp(
+        cameraRigRef.current.position.x,
+        -pointerRef.current.x * (compact ? 0.06 : 0.16),
+        3.2,
+        delta,
+      );
+      cameraRigRef.current.position.y = THREE.MathUtils.damp(
+        cameraRigRef.current.position.y,
+        -pointerRef.current.y * (compact ? 0.05 : 0.12),
+        3.2,
+        delta,
+      );
+      cameraRigRef.current.position.z = THREE.MathUtils.damp(
+        cameraRigRef.current.position.z,
+        rigTargetZ,
+        2.6,
+        delta,
+      );
+    }
     const coreTargetX = useHorizontalMotion
       ? Math.cos(progress * Math.PI * 1.5) * 2.3 +
         pointerRef.current.x * 0.28
@@ -430,6 +465,16 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
       field.rotation.z,
       progress * (useHorizontalMotion ? 0.16 : -0.28) +
         pointerRef.current.x * 0.018,
+      smoothing,
+    );
+    field.rotation.x = THREE.MathUtils.lerp(
+      field.rotation.x,
+      pointerRef.current.y * 0.025 + Math.sin(elapsed * 0.11) * 0.012,
+      smoothing,
+    );
+    field.rotation.y = THREE.MathUtils.lerp(
+      field.rotation.y,
+      pointerRef.current.x * 0.03 + Math.cos(elapsed * 0.09) * 0.015,
       smoothing,
     );
 
@@ -535,7 +580,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
   });
 
   return (
-    <>
+    <group ref={cameraRigRef}>
       <group ref={fieldRef}>
         <points ref={fieldPointsRef}>
           <bufferGeometry>
@@ -734,7 +779,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
           toneMapped={false}
         />
       </mesh>
-    </>
+    </group>
   );
 }
 
