@@ -5,8 +5,6 @@ import Image from "next/image";
 import {
   FaCalendarAlt,
   FaCertificate,
-  FaChevronLeft,
-  FaChevronRight,
   FaDownload,
   FaFilePdf,
   FaFileSignature,
@@ -15,6 +13,7 @@ import {
 } from "react-icons/fa";
 import { fetchCachedJson } from "@/lib/client-cache";
 import { getOptimizedImageUrl } from "@/lib/image";
+import { useHorizontalShowcase } from "@/hooks/useHorizontalShowcase";
 
 interface DocumentData {
   id: string;
@@ -76,7 +75,6 @@ export default function DocSection() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [page, setPage] = useState(1);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   useEffect(() => {
@@ -114,9 +112,14 @@ export default function DocSection() {
     });
   }, [categoryFilter, docs, searchTerm]);
 
-  const pageCount = Math.max(1, Math.ceil(filteredDocs.length / DOCS_PER_PAGE));
-  const safePage = Math.min(page, pageCount);
-  const visibleDocs = filteredDocs.slice((safePage - 1) * DOCS_PER_PAGE, safePage * DOCS_PER_PAGE);
+  const {
+    sectionRef,
+    viewportRef,
+    trackRef,
+    sectionStyle,
+  } = useHorizontalShowcase(
+    `${filteredDocs.length}:${searchTerm}:${categoryFilter}`,
+  );
 
   const formatSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
@@ -155,12 +158,10 @@ export default function DocSection() {
 
   const changeFilter = (nextCategory: string) => {
     setCategoryFilter(nextCategory);
-    setPage(1);
   };
 
   const changeSearch = (value: string) => {
     setSearchTerm(value);
-    setPage(1);
   };
 
   if (loading) {
@@ -168,67 +169,81 @@ export default function DocSection() {
   }
 
   return (
-  <section id="documents" className="relative mx-auto w-full max-w-7xl px-5 py-20 sm:px-8 lg:flex lg:min-h-screen lg:flex-col lg:justify-center lg:px-10 lg:pb-32 lg:pt-14">
-      <div className="relative z-10 mb-8 border-b border-white/10 pb-6 lg:mb-3 lg:pb-3">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400 lg:mb-1">
-              Document Preview
-            </p>
-            <h2 className="text-4xl font-black uppercase italic leading-none tracking-tight text-white md:text-5xl lg:text-4xl">
-              Credential <span className="text-zinc-500">&</span> Assets<span className="text-blue-500">.</span>
-            </h2>
+    <section
+      ref={sectionRef}
+      id="documents"
+      style={sectionStyle}
+      className="relative min-h-screen w-full scroll-mt-4"
+    >
+      <div className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-5 pb-36 pt-20 sm:px-8 lg:sticky lg:top-0 lg:px-10 lg:pb-28 lg:pt-14">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_50%,rgba(139,92,246,0.12),transparent_36%)]" />
+
+        <div className="relative z-10 mx-auto w-full max-w-7xl">
+          <div className="mb-6 grid gap-5 lg:grid-cols-[1fr_440px] lg:items-end">
+            <div>
+              <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400">
+                Horizontal Document Vault
+              </p>
+              <h2 className="text-4xl font-black uppercase italic leading-none tracking-tight text-white md:text-5xl">
+                Credential <span className="text-zinc-500">&</span> Assets<span className="text-blue-500">.</span>
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400">
+                Verified certificates, résumé files, documentation, and professional assets
+                presented as a floating glass archive.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
+              <label className="relative">
+                <FaSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={13} />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(event) => changeSearch(event.target.value)}
+                  placeholder="Search documents..."
+                  className="h-11 w-full rounded-xl border border-white/10 bg-[#111722]/80 pl-11 pr-4 text-xs text-white outline-none placeholder:text-zinc-500 focus:border-blue-500/55"
+                />
+              </label>
+
+              <select
+                aria-label="Filter documents by category"
+                value={categoryFilter}
+                onChange={(event) => changeFilter(event.target.value)}
+                className="h-11 w-full rounded-xl border border-white/10 bg-[#111722]/80 px-3 text-xs text-zinc-300 outline-none focus:border-blue-500/55"
+              >
+                <option value="all">All Categories</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-zinc-500">
-            {docs.length} Verified Files
-          </p>
-        </div>
-      </div>
-
-      <div className="relative z-10 mb-7 flex flex-col gap-4 md:flex-row md:items-center md:justify-between lg:mb-3">
-        <label className="relative w-full md:max-w-sm">
-          <FaSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={13} />
-          <input
-            type="search"
-            value={searchTerm}
-            onChange={(event) => changeSearch(event.target.value)}
-            placeholder="Search certificate..."
-            className="h-12 w-full rounded-lg border border-white/10 bg-[#111722]/80 pl-11 pr-4 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-blue-500/55 lg:h-10 lg:text-xs"
-          />
-        </label>
-
-        <select
-          aria-label="Filter documents by category"
-          value={categoryFilter}
-          onChange={(event) => changeFilter(event.target.value)}
-          className="h-12 w-full rounded-lg border border-white/10 bg-[#111722]/80 px-4 text-sm text-zinc-300 outline-none transition-colors focus:border-blue-500/55 md:w-56 lg:h-10 lg:text-xs"
-        >
-          <option value="all">All Categories</option>
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {visibleDocs.length > 0 ? (
-        <div className="relative z-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 xl:gap-4">
-          {visibleDocs.map((doc) => {
+          {filteredDocs.length > 0 ? (
+            <div
+              ref={viewportRef}
+              className="scrollbar-none w-full overflow-x-auto overscroll-x-contain pb-4 lg:overflow-hidden"
+            >
+              <div
+                ref={trackRef}
+                className="flex w-max snap-x snap-mandatory gap-5 pr-6 will-change-transform lg:gap-7 lg:pl-[8vw] lg:pr-[20vw]"
+              >
+                {filteredDocs.map((doc) => {
             const previewType = getPreviewType(doc);
 
             return (
               <article
                 key={doc.id}
-                className="group overflow-hidden rounded-xl border border-white/7 bg-[#101720]/92 shadow-[0_18px_60px_rgba(0,0,0,0.22)] transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/35"
+                className="group w-[82vw] max-w-100 shrink-0 snap-center overflow-hidden rounded-[26px] border border-white/9 bg-[#101720]/88 p-2 shadow-[0_22px_70px_rgba(0,0,0,0.3)] backdrop-blur-xl transition-[transform,border-color,box-shadow] duration-500 hover:border-blue-400/45 hover:shadow-[0_28px_80px_rgba(37,99,235,0.2)] hover:[transform:perspective(900px)_translateY(-8px)_rotateX(2deg)_rotateY(-2deg)]"
               >
                 <a
                   href={doc.fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cursor-label="OPEN"
-                  className="relative block h-24 overflow-hidden bg-white sm:h-34 md:h-42 lg:h-34"
+                  className="relative block h-52 overflow-hidden rounded-[20px] bg-white sm:h-62"
                   aria-label={`Open ${doc.name}`}
                 >
                   {doc.previewUrl && (
@@ -295,10 +310,10 @@ export default function DocSection() {
                   )}
                 </a>
 
-                <div className="relative p-2 sm:p-3 md:p-3.5">
+                <div className="relative p-3 sm:p-4">
                   <div className="flex items-start justify-between gap-1.5 sm:gap-3">
                     <div className="min-w-0">
-                      <h3 className="line-clamp-2 text-[10px] font-bold leading-tight text-white sm:text-xs md:truncate md:text-base">
+                      <h3 className="line-clamp-2 text-sm font-bold leading-tight text-white sm:text-base">
                         {doc.name}
                       </h3>
                       <p className="mt-1 hidden truncate text-sm text-zinc-500 sm:block">{doc.category}</p>
@@ -325,55 +340,34 @@ export default function DocSection() {
                       {doc.category || formatSize(doc.size)}
                     </span>
                   </div>
+
+                  <a
+                    href={doc.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-cursor-label="VIEW"
+                    className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-blue-400/30 bg-blue-500/10 text-[9px] font-black uppercase tracking-[0.2em] text-blue-200 transition-all hover:border-blue-300 hover:bg-blue-500 hover:text-white"
+                  >
+                    <FaFilePdf size={13} />
+                    View Document
+                  </a>
                 </div>
               </article>
             );
-          })}
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-3xl border border-dashed border-white/10 px-6 py-20 text-center text-[10px] font-bold uppercase tracking-[0.35em] text-zinc-600">
+              No document found
+            </div>
+          )}
+
+          <div className="mt-3 flex items-center justify-between gap-4 text-[9px] font-black uppercase tracking-[0.24em] text-zinc-500">
+            <span>{filteredDocs.length} / {docs.length} verified files</span>
+            <span>Scroll down · Swipe on touch</span>
+          </div>
         </div>
-      ) : (
-        <div className="relative z-10 rounded-3xl border border-dashed border-white/10 px-6 py-20 text-center text-[10px] font-bold uppercase tracking-[0.35em] text-zinc-600">
-          No certificate found
-        </div>
-      )}
-
-      <div className="relative z-10 mt-9 flex items-center justify-center gap-3 lg:mt-4">
-        <button
-          type="button"
-          onClick={() => setPage((current) => Math.max(1, current - 1))}
-          disabled={safePage === 1}
-          aria-label="Previous document page"
-          className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/3 text-zinc-400 transition-colors hover:border-blue-500/45 hover:text-blue-400 disabled:cursor-not-allowed disabled:opacity-35"
-        >
-          <FaChevronLeft size={12} />
-        </button>
-
-        {Array.from({ length: pageCount }, (_, index) => {
-          const pageNumber = index + 1;
-          return (
-            <button
-              key={pageNumber}
-              type="button"
-              onClick={() => setPage(pageNumber)}
-              className={`flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-bold transition-colors ${
-                pageNumber === safePage
-                  ? "border-blue-400 bg-blue-500 text-white shadow-[0_0_24px_rgba(59,130,246,0.35)]"
-                  : "border-white/10 bg-white/3 text-zinc-400 hover:border-blue-500/45 hover:text-blue-400"
-              }`}
-            >
-              {pageNumber}
-            </button>
-          );
-        })}
-
-        <button
-          type="button"
-          onClick={() => setPage((current) => Math.min(pageCount, current + 1))}
-          disabled={safePage === pageCount}
-          aria-label="Next document page"
-          className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/3 text-zinc-400 transition-colors hover:border-blue-500/45 hover:text-blue-400 disabled:cursor-not-allowed disabled:opacity-35"
-        >
-          <FaChevronRight size={12} />
-        </button>
       </div>
     </section>
   );

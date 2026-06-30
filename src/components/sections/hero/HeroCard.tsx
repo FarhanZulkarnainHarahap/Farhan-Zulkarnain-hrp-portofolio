@@ -1,8 +1,7 @@
 "use client";
 
-import { FaArrowRight, FaDownload, FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa";
+import { FaArrowRight, FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import Image from "next/image";
-import Link from "next/link";
 import { getOptimizedImageUrl } from "@/lib/image";
 import ShinyText from "./ShinyText";
 
@@ -30,17 +29,12 @@ const socialLinks = [
 ];
 
 export default function HeroCard() {
-  const scrollToProjects = () => {
-    const element = document.getElementById("projects");
-    const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
-    const isDesktopHorizontal = window.matchMedia("(min-width: 1024px)").matches && horizontalStage;
-
-    window.history.pushState(null, "", "/projects");
-
+  const scrollToSection = (id: string, path: string) => {
+    const element = document.getElementById(id);
+    window.history.pushState(null, "", path);
     element?.scrollIntoView({
       behavior: "smooth",
-      block: isDesktopHorizontal ? "nearest" : "start",
-      inline: isDesktopHorizontal ? "center" : "nearest",
+      block: "start",
     });
   };
 
@@ -110,12 +104,18 @@ export default function HeroCard() {
                 shineColor="#ffffff"
               />
               <ShinyText
-                text="ZULKARNAIN."
+                text="ZULKARNAIN"
                 speed={3}
                 color="#3b82f6"
                 shineColor="#ffffff"
               />
+              <span className="mt-1 text-[0.56em] tracking-[0.12em] text-white/75">
+                HARAHAP.
+              </span>
             </h1>
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-blue-300/80 sm:text-xs sm:tracking-[0.34em]">
+              Full Stack Web Developer / UI Developer
+            </p>
           </div>
 
           <p
@@ -127,25 +127,22 @@ export default function HeroCard() {
           <div className="pt-4 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
             <button
               type="button"
-              onClick={scrollToProjects}
+              onClick={() => scrollToSection("about", "/explore")}
               data-cursor-label="EXPLORE"
-              className="group flex items-center gap-4 bg-blue-600 hover:bg-blue-700 text-white px-8 md:px-10 py-3.5 md:py-4 rounded-full transition-all shadow-xl shadow-blue-500/20 active:scale-95"
+              className="group relative flex items-center gap-4 overflow-hidden rounded-full border border-blue-400/45 bg-blue-500/8 px-8 py-3.5 text-white transition-all hover:border-blue-300 hover:bg-blue-500/16 md:px-10 md:py-4"
             >
-              <span className="text-[10px] md:text-xs font-black uppercase tracking-widest">View My Projects</span>
+              <span className="text-[10px] font-black uppercase tracking-widest md:text-xs">Explore Me</span>
               <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
             </button>
-            <Link
-              href="/about"
-              onClick={() => window.sessionStorage.setItem("about:target", "about-documents")}
+            <button
+              type="button"
+              onClick={() => scrollToSection("projects", "/projects")}
+              data-cursor-label="PROJECTS"
+              className="group flex items-center gap-4 rounded-full bg-blue-600 px-8 py-3.5 text-white shadow-xl shadow-blue-500/20 transition-all hover:bg-blue-700 active:scale-95 md:px-10 md:py-4"
             >
-              <button
-                data-cursor-label="RESUME"
-                className="group relative flex items-center gap-3 overflow-hidden rounded-full border border-white/12 bg-white/5 px-8 py-3.5 text-white transition-all hover:border-blue-400/60 hover:bg-blue-500/10 md:px-9 md:py-4"
-              >
-                <span className="relative text-[10px] font-black uppercase tracking-widest md:text-xs">View Resume</span>
-                <FaDownload className="relative text-blue-400 transition-transform group-hover:-translate-y-0.5" />
-              </button>
-            </Link>
+              <span className="text-[10px] font-black uppercase tracking-widest md:text-xs">View Projects</span>
+              <FaArrowRight className="transition-transform group-hover:translate-x-2" />
+            </button>
           </div>
         </div>
 

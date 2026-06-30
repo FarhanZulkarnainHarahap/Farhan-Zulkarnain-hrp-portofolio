@@ -23,7 +23,7 @@ export default function AboutSection() {
       </div>
 
       <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-18">
-        <div className="order-2 text-center lg:order-1 lg:text-left">
+        <div className="order-2 rounded-[30px] border border-white/8 bg-[#07101d]/58 p-6 text-center shadow-[0_28px_90px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl sm:p-8 lg:order-1 lg:text-left">
           <div className="mb-6 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.42em] text-blue-400 lg:justify-start">
             <span className="h-px w-10 bg-blue-500" />
             About Me
@@ -36,9 +36,9 @@ export default function AboutSection() {
           <div className="mx-auto mt-7 h-px w-22 bg-linear-to-r from-blue-400 to-transparent lg:mx-0" />
 
           <p className="mx-auto mt-7 max-w-lg text-base leading-relaxed text-zinc-400 sm:text-lg lg:mx-0">
-            Let&apos;s turn ideas into reality.
-            <br />
-            Discover my journey, expertise, and credentials.
+            I&apos;m Farhan Zulkarnain Harahap, a full-stack web developer and UI developer
+            based in Medan. I turn complex product ideas into responsive interfaces,
+            dependable APIs, and digital experiences that feel clear from the first click.
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">

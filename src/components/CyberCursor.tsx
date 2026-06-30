@@ -26,6 +26,7 @@ function CyberCursorScene({
   const outerRingRef = useRef<THREE.Mesh>(null);
   const trailRef = useRef<THREE.Points>(null);
   const stageRef = useRef<HTMLElement | null>(null);
+  const stageLookupDoneRef = useRef(false);
   const previousScrollRef = useRef(0);
   const hasScrollSampleRef = useRef(false);
   const scrollVelocityRef = useRef(0);
@@ -59,22 +60,33 @@ function CyberCursorScene({
 
     if (!cursor || !trail || !hardware) return;
 
-    if (!stageRef.current?.isConnected) {
+    if (
+      !stageLookupDoneRef.current ||
+      (stageRef.current && !stageRef.current.isConnected)
+    ) {
       stageRef.current = document.querySelector<HTMLElement>(
         "[data-horizontal-stage]",
       );
+      stageLookupDoneRef.current = true;
     }
 
-    const horizontalScroll =
-      window.scrollX + (stageRef.current?.scrollLeft ?? 0);
+    const hasHorizontalStage = Boolean(
+      stageRef.current &&
+      stageRef.current.scrollWidth > stageRef.current.clientWidth + 8,
+    );
+    const motionOffset = hasHorizontalStage
+      ? window.scrollX + (stageRef.current?.scrollLeft ?? 0)
+      : window.scrollY;
 
     /*
      * Normalize through document space before returning to viewport space.
      * This explicitly removes window/stage horizontal offsets, preventing
      * section-local coordinates from drifting after long horizontal scrolls.
      */
-    const documentX = hardware.clientX + horizontalScroll;
-    const viewportX = documentX - horizontalScroll;
+    const documentX =
+      hardware.clientX + (hasHorizontalStage ? motionOffset : 0);
+    const viewportX =
+      documentX - (hasHorizontalStage ? motionOffset : 0);
     const viewportY = hardware.clientY;
 
     const pointerX = THREE.MathUtils.clamp(
@@ -109,12 +121,12 @@ function CyberCursorScene({
     cursor.position.copy(cursorPositionRef.current);
 
     const rawScrollVelocity = hasScrollSampleRef.current
-      ? (horizontalScroll - previousScrollRef.current) /
+      ? (motionOffset - previousScrollRef.current) /
         Math.max(delta, 1 / 240)
       : 0;
 
     hasScrollSampleRef.current = true;
-    previousScrollRef.current = horizontalScroll;
+    previousScrollRef.current = motionOffset;
     scrollVelocityRef.current = THREE.MathUtils.lerp(
       scrollVelocityRef.current,
       rawScrollVelocity,
@@ -276,6 +288,8 @@ const PUBLIC_CURSOR_ROUTES = [
   "/explore",
   "/about",
   "/projects",
+  "/skills",
+  "/documents",
   "/contact",
   "/dashboard/user",
 ];

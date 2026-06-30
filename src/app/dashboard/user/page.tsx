@@ -2,22 +2,30 @@
 
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
-import CyberBackground from "@/components/CyberBackground";
+import { useEffect } from "react";
 import HeroCard from "@/components/sections/hero/HeroCard";
 
+const CyberBackground = dynamic(() => import("@/components/CyberBackground"), {
+  ssr: false,
+});
 const AboutSection = dynamic(() => import("@/components/sections/about/AboutSection"), {
   loading: () => <SectionBlockSkeleton label="About" />,
 });
 const ProjectSection = dynamic(() => import("@/components/sections/portfolio/project/ProjectSection"), {
   loading: () => <SectionBlockSkeleton label="Projects" />,
 });
+const SkillSection = dynamic(() => import("@/components/sections/skill/SkillSection"), {
+  loading: () => <SectionBlockSkeleton label="Skills" />,
+});
+const DocSection = dynamic(() => import("@/components/sections/document/DocSection"), {
+  loading: () => <SectionBlockSkeleton label="Documents" />,
+});
 const ContactSection = dynamic(() => import("@/components/sections/contact/ContactSection"), {
   loading: () => <SectionBlockSkeleton label="Contact" />,
 });
 
 const SectionBlockSkeleton = ({ label }: { label: string }) => (
-  <div className="portfolio-section-bg flex min-h-[70svh] w-full items-center justify-center px-6 py-20 lg:h-screen lg:w-screen">
+  <div className="portfolio-section-bg flex min-h-[70svh] w-full items-center justify-center px-6 py-20">
     <div className="w-full max-w-3xl animate-pulse rounded-[28px] border border-blue-500/10 bg-[#07101d]/55 p-8 text-center shadow-[0_24px_80px_rgba(37,99,235,0.08)]">
       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400/70">{label}</p>
       <div className="mx-auto mt-5 h-9 w-64 rounded-2xl bg-white/8" />
@@ -29,59 +37,31 @@ const SectionBlockSkeleton = ({ label }: { label: string }) => (
 
 export default function Home() {
   const pathname = usePathname();
-  const stageRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage) {
-      return;
-    }
-
-    const media = window.matchMedia("(min-width: 1024px)");
-
-    const handleWheel = (event: WheelEvent) => {
-      if (!media.matches || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) {
-        return;
-      }
-
-      event.preventDefault();
-      stage.scrollBy({ left: event.deltaY, behavior: "smooth" });
+    const routeTargets: Record<string, string> = {
+      "/explore": "about",
+      "/skills": "skills",
+      "/projects": "projects",
+      "/documents": "documents",
+      "/contact": "contact",
     };
-
-    stage.addEventListener("wheel", handleWheel, { passive: false });
-
-    return () => {
-      stage.removeEventListener("wheel", handleWheel);
-    };
-  }, []);
-
-  useEffect(() => {
-    const targetId =
-      pathname === "/explore"
-        ? "about"
-        : pathname === "/projects"
-          ? "projects"
-          : pathname === "/contact"
-            ? "contact"
-            : "home";
+    const targetId = routeTargets[pathname] ?? "home";
     let animationFrame = 0;
     let attempts = 0;
 
     const scrollToRoute = () => {
       const target = document.getElementById(targetId);
-      const stage = stageRef.current;
 
-      if (!target || !stage) {
+      if (!target) {
         attempts += 1;
         if (attempts < 30) animationFrame = window.requestAnimationFrame(scrollToRoute);
         return;
       }
 
-      const isDesktopHorizontal = window.matchMedia("(min-width: 1024px)").matches;
       target.scrollIntoView({
         behavior: "smooth",
-        block: isDesktopHorizontal ? "nearest" : "start",
-        inline: isDesktopHorizontal ? "center" : "nearest",
+        block: "start",
       });
     };
 
@@ -91,22 +71,38 @@ export default function Home() {
 
   return (
     <main
-      ref={stageRef}
-      data-horizontal-stage
-      className="portfolio-bg relative text-white lg:h-screen lg:overflow-x-auto lg:overflow-y-hidden lg:snap-x lg:snap-mandatory"
+      data-portfolio-root
+      className="portfolio-bg relative overflow-x-clip text-white"
     >
       <CyberBackground />
-      <div className="relative z-10 lg:flex lg:w-max">
-        <section id="home" className="lg:h-screen lg:w-screen lg:shrink-0 lg:snap-center lg:overflow-hidden">
+      <div className="relative z-10">
+        <section id="home" className="scroll-mt-4">
           <HeroCard />
         </section>
-        <div className="lg:h-screen lg:w-screen lg:shrink-0 lg:snap-center lg:overflow-hidden">
-          <AboutSection />
-        </div>
-        <div className="lg:h-screen lg:w-screen lg:shrink-0 lg:snap-center lg:overflow-hidden">
-          <ProjectSection />
-        </div>
-        <section id="contact" className="portfolio-section-bg px-0 pb-32 pt-20 md:pb-36 md:pt-24 lg:flex lg:h-screen lg:w-screen lg:shrink-0 lg:snap-center lg:items-center lg:justify-center lg:overflow-hidden lg:py-0">
+        <AboutSection />
+        <section
+          id="skills"
+          className="portfolio-section-bg relative flex min-h-screen scroll-mt-4 items-center px-5 pb-32 pt-24 sm:px-8 lg:px-12 lg:py-28"
+        >
+          <div className="mx-auto w-full max-w-6xl">
+            <div className="mb-10 max-w-3xl">
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400">
+                Developer Toolkit
+              </p>
+              <h2 className="mt-4 text-4xl font-black uppercase leading-none text-white sm:text-6xl">
+                Skills & <span className="text-blue-500">Expertise</span>
+              </h2>
+              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-zinc-400 sm:text-base">
+                A practical full-stack toolkit grouped by discipline—focused on
+                clean interfaces, dependable systems, and thoughtful product design.
+              </p>
+            </div>
+            <SkillSection />
+          </div>
+        </section>
+        <ProjectSection />
+        <DocSection />
+        <section id="contact" className="portfolio-section-bg relative flex min-h-screen scroll-mt-4 items-center px-0 pb-36 pt-24 md:pb-40 lg:py-28">
           <ContactSection />
         </section>
       </div>

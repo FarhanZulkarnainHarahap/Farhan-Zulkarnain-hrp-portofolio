@@ -59,6 +59,14 @@ body::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #93c5fd, #3b82f6);
 }
 
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 .portfolio-bg {
   position: relative;
   isolation: isolate;

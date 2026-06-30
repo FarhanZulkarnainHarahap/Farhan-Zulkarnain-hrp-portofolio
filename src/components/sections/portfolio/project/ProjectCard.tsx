@@ -13,8 +13,9 @@ interface CardProps {
   demoUrl: string | null;
   repoUrl: string | null;
   categoryLabel?: string;
+  tags?: string[];
   index: number;
-  variant: "featured" | "orbit" | "mobile";
+  variant: "featured" | "orbit" | "mobile" | "showcase";
   accent?: string;
   onSelect?: () => void;
   onDetails?: () => void;
@@ -27,6 +28,7 @@ export default function ProjectCard({
   demoUrl,
   repoUrl,
   categoryLabel = "Web Application",
+  tags = ["Responsive UI", "Modern Web", "Scalable"],
   index,
   variant,
   accent = "#3b82f6",
@@ -45,9 +47,11 @@ export default function ProjectCard({
   return (
     <article
       style={cardStyle}
-      className={`group relative overflow-hidden border bg-[#080b14]/98 ${
+      className={`group relative overflow-hidden border bg-[#080b14]/95 backdrop-blur-xl transition-[transform,box-shadow] duration-500 hover:[transform:perspective(1100px)_translateY(-8px)_rotateX(1.5deg)_rotateY(-1.5deg)] ${
         variant === "featured"
           ? "w-92 rounded-[28px] p-3 xl:w-100"
+        : variant === "showcase"
+          ? "w-[86vw] shrink-0 rounded-[28px] p-3 sm:w-[76vw] sm:max-w-190 lg:grid lg:w-190 lg:grid-cols-[1.08fr_0.92fr] lg:gap-5 lg:p-4"
         : variant === "mobile"
             ? "grid w-full grid-cols-[0.92fr_1fr] gap-4 rounded-[26px] p-3 sm:grid-cols-[0.82fr_1fr] sm:items-center sm:gap-5 md:p-4 lg:block lg:rounded-[20px] lg:p-2"
             : "w-62 rounded-[22px] p-2.5 xl:w-68"
@@ -66,13 +70,21 @@ export default function ProjectCard({
       <div className={`relative overflow-hidden bg-slate-950 ${
         variant === "orbit"
           ? "h-36 rounded-[18px]"
+          : variant === "showcase"
+            ? "h-54 rounded-[22px] sm:h-68 lg:h-full lg:min-h-96"
           : "h-full min-h-44 rounded-[20px] sm:min-h-48 sm:rounded-[18px] md:min-h-52 lg:h-30 lg:min-h-0"
       }`}>
         <Image
           src={getOptimizedImageUrl(imageUrl || "/placeholder-project.jpg", 900)}
           alt={title}
           fill
-          sizes={variant === "orbit" ? "272px" : "(max-width: 768px) 100vw, 400px"}
+          sizes={
+            variant === "orbit"
+              ? "272px"
+              : variant === "showcase"
+                ? "(max-width: 1023px) 86vw, 760px"
+                : "(max-width: 768px) 100vw, 400px"
+          }
           className="object-cover opacity-85 transition-[transform,opacity] duration-500 group-hover:scale-105 group-hover:opacity-100"
         />
         <div className="absolute inset-0 bg-linear-to-t from-[#060812] via-transparent to-transparent" />
@@ -95,7 +107,13 @@ export default function ProjectCard({
         </span>
       )}
 
-      <div className={variant === "orbit" ? "px-2 pb-2 pt-4" : "flex min-w-0 flex-col justify-center px-1 py-1 text-left lg:px-3 lg:pb-2 lg:pt-3 lg:text-center"}>
+      <div className={
+        variant === "orbit"
+          ? "px-2 pb-2 pt-4"
+          : variant === "showcase"
+            ? "flex min-w-0 flex-col justify-center px-2 pb-3 pt-5 text-left sm:px-4 lg:p-3"
+            : "flex min-w-0 flex-col justify-center px-1 py-1 text-left lg:px-3 lg:pb-2 lg:pt-3 lg:text-center"
+      }>
         <p className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.16em] sm:text-xs lg:block lg:line-clamp-1 lg:text-[9px] lg:tracking-[0.24em]" style={{ color: accent }}>
           <span className="lg:hidden text-xl font-black leading-none">{projectNumber}</span>
           {categoryLabel}
@@ -110,7 +128,7 @@ export default function ProjectCard({
               {description || fallbackDescription}
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-2 lg:mt-2 lg:justify-center">
-              {["Responsive UI", "Modern Web", "Scalable"].map((tag) => (
+              {tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
                   className="rounded-full border border-white/10 bg-white/4 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-zinc-300 lg:px-2.5 lg:py-0.5 lg:text-[8px] lg:text-zinc-400"

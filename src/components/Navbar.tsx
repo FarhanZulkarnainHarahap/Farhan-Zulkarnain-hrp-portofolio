@@ -7,6 +7,8 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   LuBriefcase,
+  LuCpu,
+  LuFileText,
   LuHouse,
   LuMail,
   LuUser,
@@ -15,7 +17,9 @@ import {
 const menuItems = [
   { id: "home", href: "/home", label: "HOME", shortLabel: "HOME", icon: LuHouse },
   { id: "about", href: "/explore", label: "ABOUT", shortLabel: "ABOUT", icon: LuUser },
+  { id: "skills", href: "/skills", label: "SKILL", shortLabel: "SKILL", icon: LuCpu },
   { id: "projects", href: "/projects", label: "PROJECT", shortLabel: "PROJ", icon: LuBriefcase },
+  { id: "documents", href: "/documents", label: "DOCUMENT", shortLabel: "DOCS", icon: LuFileText },
   { id: "contact", href: "/contact", label: "CONTACT", shortLabel: "MAIL", icon: LuMail },
 ];
 
@@ -34,17 +38,21 @@ export default function Navbar() {
         return;
       }
 
-      const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
-      const isDesktopHorizontal = window.matchMedia("(min-width: 1024px)").matches && horizontalStage;
-      const viewportCenter = isDesktopHorizontal ? window.innerWidth / 2 : window.innerHeight / 2;
+      const viewportCenter = window.innerHeight / 2;
+      const containingSection = sections.find((section) => {
+        const rect = section.getBoundingClientRect();
+        return rect.top <= viewportCenter && rect.bottom >= viewportCenter;
+      });
 
-      const closest = sections
-        .map((section) => {
-          const rect = section.getBoundingClientRect();
-          const sectionCenter = isDesktopHorizontal ? rect.left + rect.width / 2 : rect.top + rect.height / 2;
-          return { id: section.id, distance: Math.abs(sectionCenter - viewportCenter) };
-        })
-        .sort((a, b) => a.distance - b.distance)[0];
+      const closest = containingSection
+        ? { id: containingSection.id }
+        : sections
+            .map((section) => {
+              const rect = section.getBoundingClientRect();
+              const sectionCenter = rect.top + Math.min(rect.height, window.innerHeight) / 2;
+              return { id: section.id, distance: Math.abs(sectionCenter - viewportCenter) };
+            })
+            .sort((a, b) => a.distance - b.distance)[0];
 
       if (closest?.id) {
         setActiveSection(closest.id.toUpperCase());
@@ -53,15 +61,12 @@ export default function Navbar() {
 
     getActiveSection();
 
-    const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
     window.addEventListener("scroll", getActiveSection, { passive: true });
     window.addEventListener("resize", getActiveSection, { passive: true });
-    horizontalStage?.addEventListener("scroll", getActiveSection, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", getActiveSection);
       window.removeEventListener("resize", getActiveSection);
-      horizontalStage?.removeEventListener("scroll", getActiveSection);
     };
   }, []);
 
@@ -86,8 +91,6 @@ export default function Navbar() {
     }
 
     const element = document.getElementById(item.id);
-    const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
-    const isDesktopHorizontal = window.matchMedia("(min-width: 1024px)").matches && horizontalStage;
 
     setActiveSection(item.id.toUpperCase());
 
@@ -95,8 +98,7 @@ export default function Navbar() {
       window.history.pushState(null, "", item.href);
       element.scrollIntoView({
         behavior: "smooth",
-        block: isDesktopHorizontal ? "nearest" : "start",
-        inline: isDesktopHorizontal ? "center" : "nearest",
+        block: "start",
       });
       return;
     }
@@ -142,7 +144,7 @@ export default function Navbar() {
               </span>
             </button>
 
-            <ul className="grid w-full grid-cols-4 items-stretch overflow-hidden rounded-xl bg-black/18 lg:flex lg:w-auto lg:rounded-none lg:border-0 lg:bg-transparent">
+            <ul className="grid w-full grid-cols-6 items-stretch overflow-hidden rounded-xl bg-black/18 lg:flex lg:w-auto lg:rounded-none lg:border-0 lg:bg-transparent">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.label || activeSection === item.id.toUpperCase();
@@ -163,8 +165,9 @@ export default function Navbar() {
                     <span className={`${isActive ? "text-blue-300 drop-shadow-[0_0_10px_rgba(96,165,250,0.9)]" : "text-blue-300/80 group-hover:text-blue-200"}`}>
                       <Icon className="h-5 w-5 sm:h-5.5 sm:w-5.5 lg:h-6 lg:w-6" />
                     </span>
-                    <span className={`max-w-full truncate text-[8px] font-black uppercase tracking-[0.04em] transition-colors sm:text-[9px] lg:text-[10px] lg:tracking-[0.02em] ${isActive ? "text-white" : "text-white/70 group-hover:text-white"}`}>
-                      <span>{item.label}</span>
+                    <span className={`max-w-full truncate text-[7px] font-black uppercase tracking-[-0.01em] transition-colors sm:text-[8px] sm:tracking-[0.02em] lg:text-[9px] ${isActive ? "text-white" : "text-white/70 group-hover:text-white"}`}>
+                      <span className="sm:hidden">{item.shortLabel}</span>
+                      <span className="hidden sm:inline">{item.label}</span>
                     </span>
                     {isActive && (
                       <span className="absolute bottom-0 h-0.5 w-8 rounded-full bg-blue-300 shadow-[0_0_12px_rgba(96,165,250,0.95)] lg:bottom-1" />

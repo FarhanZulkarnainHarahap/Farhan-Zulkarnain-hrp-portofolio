@@ -11,8 +11,34 @@ interface SkillData {
   id: string;
   name: string;
   iconName: string;
-  category: "FRONTEND" | "BACKEND" | "TOOLS" | "OTHERS";
+  category: string;
 }
+
+const getDisplayCategory = (skill: SkillData) => {
+  const rawCategory = skill.category?.toUpperCase() || "TOOLS";
+  const identity = `${skill.name} ${skill.iconName}`.toLowerCase();
+
+  if (
+    rawCategory === "DATABASE" ||
+    /(postgres|mysql|mongo|redis|supabase|prisma|firebase|database|sql)/.test(identity)
+  ) {
+    return "DATABASE";
+  }
+
+  if (
+    rawCategory === "UIUX" ||
+    rawCategory === "UI/UX" ||
+    /(figma|adobe|canva|design|ui|ux|photoshop)/.test(identity)
+  ) {
+    return "UI/UX";
+  }
+
+  if (["FRONTEND", "BACKEND", "TOOLS"].includes(rawCategory)) {
+    return rawCategory;
+  }
+
+  return "TOOLS";
+};
 
 const SkillSkeleton = () => (
   <div className="w-full space-y-8 lg:col-span-2">
@@ -74,14 +100,14 @@ export default function SkillSection() {
   // --- LOGIKA GROUPING ---
   const groupedSkills = useMemo(() => {
     return skills.reduce<Record<string, SkillData[]>>((acc, skill) => {
-      const cat = skill.category || "OTHERS";
+      const cat = getDisplayCategory(skill);
       if (!acc[cat]) acc[cat] = [];
       acc[cat].push(skill);
       return acc;
     }, {});
   }, [skills]);
 
-  const categoryOrder = ["FRONTEND", "BACKEND", "TOOLS", "OTHERS"];
+  const categoryOrder = ["FRONTEND", "BACKEND", "DATABASE", "TOOLS", "UI/UX"];
 
   return (
     <div className="relative flex w-full max-w-5xl flex-col gap-8 overflow-visible md:gap-8 lg:gap-3">
@@ -116,7 +142,7 @@ export default function SkillSection() {
                   {skillsInCat.map((skill: SkillData) => (
                     <div
                       key={skill.id}
-                      className="group relative flex min-w-0 flex-col items-center justify-center rounded-2xl border border-white/6 bg-white/[0.025] px-2 py-4 shadow-[0_14px_34px_rgba(0,0,0,0.16)] lg:min-w-12 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none"
+                      className="group relative flex min-w-0 flex-col items-center justify-center rounded-2xl border border-white/7 bg-white/[0.035] px-2 py-4 shadow-[0_14px_34px_rgba(0,0,0,0.16)] transition-[transform,border-color,background-color,box-shadow] duration-300 hover:border-blue-400/45 hover:bg-blue-500/8 hover:shadow-[0_18px_45px_rgba(37,99,235,0.2)] hover:[transform:perspective(700px)_translateY(-7px)_rotateX(4deg)_rotateY(-4deg)] lg:min-w-20 lg:px-3 lg:py-4"
                     >
                       {/* Aura Glow saat Hover */}
                       <div className="absolute inset-0 bg-blue-500/20 blur-[25px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />

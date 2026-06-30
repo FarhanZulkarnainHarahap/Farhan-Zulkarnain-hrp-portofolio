@@ -9,9 +9,9 @@ export default function UserLayout({
     <>
       <Navbar />
       
-      <main className="relative z-10 min-h-screen bg-transparent">
+      <div className="relative z-10 min-h-screen bg-transparent">
         {children}
-      </main>
+      </div>
     </>
   );
 }

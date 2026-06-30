@@ -10,6 +10,7 @@ const FIELD_PARTICLE_COUNT = 720;
 const NETWORK_SEGMENT_COUNT = 190;
 const CYAN = new THREE.Color("#00f3ff");
 const MAGENTA = new THREE.Color("#ff0055");
+const SECTION_IDS = ["home", "about", "skills", "projects", "documents", "contact"];
 
 const createSeededRandom = (initialSeed: number) => {
   let seed = initialSeed;
@@ -23,13 +24,20 @@ const createSeededRandom = (initialSeed: number) => {
 function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
   const coreRef = useRef<THREE.Group>(null);
   const fieldRef = useRef<THREE.Group>(null);
+  const corePointsRef = useRef<THREE.Points>(null);
+  const fieldPointsRef = useRef<THREE.Points>(null);
   const primaryRingRef = useRef<THREE.Mesh>(null);
   const secondaryRingRef = useRef<THREE.Mesh>(null);
   const satelliteRef = useRef<THREE.Mesh>(null);
+  const skillOrbitRef = useRef<THREE.Group>(null);
+  const documentGroupRef = useRef<THREE.Group>(null);
   const gridRef = useRef<THREE.GridHelper>(null);
+  const coreWireMaterialRef = useRef<THREE.MeshBasicMaterial>(null);
   const fieldMaterialRef = useRef<THREE.PointsMaterial>(null);
   const lineMaterialRef = useRef<THREE.LineBasicMaterial>(null);
   const stageRef = useRef<HTMLElement | null>(null);
+  const stageLookupDoneRef = useRef(false);
+  const activeSectionRef = useRef("home");
   const pointerTargetRef = useRef(new THREE.Vector2());
   const pointerRef = useRef(new THREE.Vector2());
   const previousScrollRef = useRef(0);
@@ -173,21 +181,74 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     });
   }, []);
 
+  useEffect(() => {
+    let frame = 0;
+
+    const updateActiveSection = () => {
+      frame = 0;
+      const sections = SECTION_IDS.map((id) => document.getElementById(id))
+        .filter((section): section is HTMLElement => Boolean(section));
+      const viewportCenter = window.innerHeight / 2;
+      const containingSection = sections.find((section) => {
+        const rect = section.getBoundingClientRect();
+        return rect.top <= viewportCenter && rect.bottom >= viewportCenter;
+      });
+
+      activeSectionRef.current = containingSection?.id ??
+        sections
+          .map((section) => {
+            const rect = section.getBoundingClientRect();
+            return {
+              id: section.id,
+              distance: Math.abs(
+                rect.top +
+                  Math.min(rect.height, window.innerHeight) / 2 -
+                  viewportCenter,
+              ),
+            };
+          })
+          .sort((a, b) => a.distance - b.distance)[0]?.id ??
+        "home";
+    };
+
+    const requestUpdate = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateActiveSection);
+    };
+
+    requestUpdate();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate, { passive: true });
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+    };
+  }, []);
+
   useFrame((state, delta) => {
     const core = coreRef.current;
     const field = fieldRef.current;
     const grid = gridRef.current;
     if (!core || !field || !grid) return;
 
-    if (!stageRef.current?.isConnected) {
+    if (
+      !stageLookupDoneRef.current ||
+      (stageRef.current && !stageRef.current.isConnected)
+    ) {
       stageRef.current = document.querySelector<HTMLElement>(
         "[data-horizontal-stage]",
       );
+      stageLookupDoneRef.current = true;
     }
 
     const stage = stageRef.current;
-    const isDesktop = size.width >= 1024;
-    const motionAxis = isDesktop ? "horizontal" : "vertical";
+    const useHorizontalMotion = Boolean(
+      size.width >= 1024 &&
+      stage &&
+      stage.scrollWidth > stage.clientWidth + 8,
+    );
+    const motionAxis = useHorizontalMotion ? "horizontal" : "vertical";
     const horizontalScroll = window.scrollX + (stage?.scrollLeft ?? 0);
     const maxHorizontalScroll = stage
       ? Math.max(stage.scrollWidth - stage.clientWidth, 1)
@@ -202,8 +263,8 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
       scrollingElement.scrollHeight - window.innerHeight,
       1,
     );
-    const motionOffset = isDesktop ? horizontalScroll : verticalScroll;
-    const maxMotionOffset = isDesktop
+    const motionOffset = useHorizontalMotion ? horizontalScroll : verticalScroll;
+    const maxMotionOffset = useHorizontalMotion
       ? maxHorizontalScroll
       : maxVerticalScroll;
 
@@ -246,19 +307,54 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     const phase = progress * Math.PI * 6;
     const velocity = scrollVelocityRef.current;
     const warp = Math.min(Math.abs(velocity) * 0.00032, 1);
-    const compact = !isDesktop;
+    const compact = size.width < 1024;
     const smoothing = 1 - Math.exp(-delta * 3.8);
-    const coreTargetX = isDesktop
+    corePointsRef.current?.geometry.setDrawRange(
+      0,
+      compact ? 780 : CORE_PARTICLE_COUNT,
+    );
+    fieldPointsRef.current?.geometry.setDrawRange(
+      0,
+      compact ? 380 : FIELD_PARTICLE_COUNT,
+    );
+    const activeSection = activeSectionRef.current;
+    const sectionX = {
+      home: 0,
+      about: compact ? 0.45 : 1.85,
+      skills: compact ? -0.35 : 0.75,
+      projects: compact ? -0.45 : -2.15,
+      documents: compact ? 0.4 : 2.05,
+      contact: 0,
+    }[activeSection] ?? 0;
+    const sectionY = {
+      home: 0,
+      about: compact ? -0.4 : 0.25,
+      skills: compact ? 0.55 : -0.25,
+      projects: compact ? -0.5 : 0,
+      documents: compact ? 0.5 : 0.1,
+      contact: compact ? -0.4 : 0,
+    }[activeSection] ?? 0;
+    const sectionScale = activeSection === "about"
+      ? 1.12
+      : activeSection === "contact"
+        ? 0.62
+        : activeSection === "skills"
+          ? 0.84
+          : 1;
+    const coreTargetX = useHorizontalMotion
       ? Math.cos(progress * Math.PI * 1.5) * 2.3 +
         pointerRef.current.x * 0.28
-      : Math.sin(progress * Math.PI * 4) * 0.72 +
-        pointerRef.current.x * 0.14;
-    const coreTargetY = isDesktop
+      : sectionX +
+        Math.sin(progress * Math.PI * 5) * (compact ? 0.18 : 0.28) +
+        pointerRef.current.x * (compact ? 0.12 : 0.22);
+    const coreTargetY = useHorizontalMotion
       ? Math.sin(progress * Math.PI * 3) * 0.78 +
         pointerRef.current.y * 0.2
-      : Math.cos(progress * Math.PI * 5) * 1.28 +
-        pointerRef.current.y * 0.14;
-    const coreScale = (compact ? 0.66 : 0.92) + warp * 0.12;
+      : sectionY +
+        Math.cos(progress * Math.PI * 4) * (compact ? 0.16 : 0.25) +
+        pointerRef.current.y * (compact ? 0.12 : 0.2);
+    const coreScale =
+      ((compact ? 0.66 : 0.92) + warp * 0.12) * sectionScale;
 
     core.position.x = THREE.MathUtils.lerp(
       core.position.x,
@@ -277,32 +373,32 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     );
     core.rotation.x = THREE.MathUtils.lerp(
       core.rotation.x,
-      elapsed * 0.035 -
+        elapsed * 0.035 -
         pointerRef.current.y * 0.18 +
-        progress * (isDesktop ? 0.7 : 2.4),
+        progress * (useHorizontalMotion ? 0.7 : 2.4),
       smoothing,
     );
     core.rotation.y = THREE.MathUtils.lerp(
       core.rotation.y,
-      elapsed * 0.052 +
+        elapsed * 0.052 +
         pointerRef.current.x * 0.24 +
-        phase * (isDesktop ? 0.22 : 0.08),
+        phase * (useHorizontalMotion ? 0.22 : 0.08),
       smoothing,
     );
     core.rotation.z = THREE.MathUtils.lerp(
       core.rotation.z,
       Math.sin(phase) * 0.12 -
-        Math.sign(velocity) * warp * (isDesktop ? 0.08 : 0.16),
+        Math.sign(velocity) * warp * (useHorizontalMotion ? 0.08 : 0.16),
       smoothing,
     );
     core.scale.x = THREE.MathUtils.lerp(
       core.scale.x,
-      coreScale * (isDesktop ? 1 + warp * 0.38 : 1 - warp * 0.07),
+      coreScale * (useHorizontalMotion ? 1 + warp * 0.38 : 1 - warp * 0.07),
       smoothing,
     );
     core.scale.y = THREE.MathUtils.lerp(
       core.scale.y,
-      coreScale * (isDesktop ? 1 - warp * 0.08 : 1 + warp * 0.42),
+      coreScale * (useHorizontalMotion ? 1 - warp * 0.08 : 1 + warp * 0.42),
       smoothing,
     );
     core.scale.z = THREE.MathUtils.lerp(
@@ -313,14 +409,14 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
 
     field.position.x = THREE.MathUtils.lerp(
       field.position.x,
-      isDesktop
+      useHorizontalMotion
         ? Math.sin(phase * 0.55) * 0.72 - pointerRef.current.x * 0.32
         : Math.sin(phase * 0.38) * 0.28 - pointerRef.current.x * 0.12,
       smoothing,
     );
     field.position.y = THREE.MathUtils.lerp(
       field.position.y,
-      isDesktop
+      useHorizontalMotion
         ? pointerRef.current.y * 0.24
         : Math.cos(phase * 0.46) * 0.58 + pointerRef.current.y * 0.16,
       smoothing,
@@ -332,7 +428,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     );
     field.rotation.z = THREE.MathUtils.lerp(
       field.rotation.z,
-      progress * (isDesktop ? 0.16 : -0.28) +
+      progress * (useHorizontalMotion ? 0.16 : -0.28) +
         pointerRef.current.x * 0.018,
       smoothing,
     );
@@ -340,39 +436,39 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     const gridStep = 30 / 42;
     grid.position.x = THREE.MathUtils.lerp(
       grid.position.x,
-      isDesktop ? 0 : Math.sin(phase * 0.32) * 0.2,
+      useHorizontalMotion ? 0 : Math.sin(phase * 0.32) * 0.2,
       smoothing,
     );
     grid.position.y = THREE.MathUtils.lerp(
       grid.position.y,
-      isDesktop
+      useHorizontalMotion
         ? -3.1
         : -gridStep / 2 + ((verticalScroll * 0.006) % gridStep),
       smoothing,
     );
     grid.position.z = THREE.MathUtils.lerp(
       grid.position.z,
-      isDesktop
+      useHorizontalMotion
         ? -5 + ((horizontalScroll * 0.006) % gridStep)
         : -6.4,
       smoothing,
     );
     grid.rotation.x = THREE.MathUtils.lerp(
       grid.rotation.x,
-      isDesktop ? 0 : Math.PI / 2,
+      useHorizontalMotion ? 0 : Math.PI / 2,
       smoothing,
     );
     grid.rotation.z = THREE.MathUtils.lerp(
       grid.rotation.z,
       pointerRef.current.x * 0.025 -
-        Math.sign(velocity) * warp * (isDesktop ? 0.01 : 0.025),
+        Math.sign(velocity) * warp * (useHorizontalMotion ? 0.01 : 0.025),
       smoothing,
     );
 
     if (primaryRingRef.current) {
       primaryRingRef.current.rotation.z =
-        elapsed * 0.24 + phase * (isDesktop ? 0.32 : 0.12);
-      primaryRingRef.current.rotation.x = isDesktop
+        elapsed * 0.24 + phase * (useHorizontalMotion ? 0.32 : 0.12);
+      primaryRingRef.current.rotation.x = useHorizontalMotion
         ? Math.PI / 2
         : Math.PI / 2 + Math.sin(phase) * 0.24;
     }
@@ -380,31 +476,68 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
       secondaryRingRef.current.rotation.x =
         Math.PI / 2 +
         elapsed * 0.16 -
-        phase * (isDesktop ? 0.18 : 0.34);
+        phase * (useHorizontalMotion ? 0.18 : 0.34);
     }
     if (satelliteRef.current) {
-      satelliteRef.current.position.x = isDesktop
+      satelliteRef.current.position.x = useHorizontalMotion
         ? Math.cos(elapsed * 0.42 + phase) * 4.8
         : Math.sin(elapsed * 0.42 + phase * 0.62) * 1.55;
-      satelliteRef.current.position.y = isDesktop
+      satelliteRef.current.position.y = useHorizontalMotion
         ? Math.sin(elapsed * 0.55 + phase * 0.7) * 2.35
         : Math.cos(elapsed * 0.55 + phase) * 2.75;
       satelliteRef.current.rotation.x = elapsed * 0.32 + phase;
       satelliteRef.current.rotation.y = elapsed * 0.46 + phase * 0.5;
     }
     if (fieldMaterialRef.current) {
-      fieldMaterialRef.current.opacity = 0.48 + warp * 0.24;
+      const calmFactor = activeSection === "contact" ? 0.55 : 1;
+      fieldMaterialRef.current.opacity = (0.48 + warp * 0.24) * calmFactor;
       fieldMaterialRef.current.size = 0.026 + warp * 0.024;
     }
     if (lineMaterialRef.current) {
       lineMaterialRef.current.opacity = 0.22 + warp * 0.18;
+    }
+    if (coreWireMaterialRef.current) {
+      coreWireMaterialRef.current.opacity = THREE.MathUtils.lerp(
+        coreWireMaterialRef.current.opacity,
+        activeSection === "about" ? 0.16 : 0.075,
+        smoothing,
+      );
+    }
+    if (skillOrbitRef.current) {
+      const targetScale = activeSection === "skills" ? 1 : 0.001;
+      skillOrbitRef.current.scale.setScalar(
+        THREE.MathUtils.lerp(
+          skillOrbitRef.current.scale.x,
+          targetScale,
+          smoothing,
+        ),
+      );
+      skillOrbitRef.current.rotation.z = elapsed * 0.18 + phase * 0.08;
+      skillOrbitRef.current.rotation.y = elapsed * 0.12;
+    }
+    if (documentGroupRef.current) {
+      const targetScale = activeSection === "documents" ? 1 : 0.001;
+      documentGroupRef.current.scale.setScalar(
+        THREE.MathUtils.lerp(
+          documentGroupRef.current.scale.x,
+          targetScale,
+          smoothing,
+        ),
+      );
+      documentGroupRef.current.rotation.y = THREE.MathUtils.lerp(
+        documentGroupRef.current.rotation.y,
+        pointerRef.current.x * 0.18 + Math.sin(elapsed * 0.3) * 0.08,
+        smoothing,
+      );
+      documentGroupRef.current.position.y =
+        Math.sin(elapsed * 0.45) * 0.12;
     }
   });
 
   return (
     <>
       <group ref={fieldRef}>
-        <points>
+        <points ref={fieldPointsRef}>
           <bufferGeometry>
             <bufferAttribute
               attach="attributes-position"
@@ -458,7 +591,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
       />
 
       <group ref={coreRef} position={[2.3, 0, -0.25]}>
-        <points>
+        <points ref={corePointsRef}>
           <bufferGeometry>
             <bufferAttribute
               attach="attributes-position"
@@ -484,6 +617,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
         <mesh scale={0.94}>
           <icosahedronGeometry args={[1.8, 2]} />
           <meshBasicMaterial
+            ref={coreWireMaterialRef}
             color="#00f3ff"
             wireframe
             transparent
@@ -535,6 +669,57 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
             depthWrite={false}
           />
         </mesh>
+      </group>
+
+      <group ref={skillOrbitRef} scale={0.001} position={[0, 0, -0.8]}>
+        {Array.from({ length: 9 }, (_, index) => {
+          const angle = (index / 9) * Math.PI * 2;
+          const radius = index % 2 === 0 ? 2.8 : 3.45;
+
+          return (
+            <mesh
+              key={index}
+              position={[
+                Math.cos(angle) * radius,
+                Math.sin(angle) * radius * 0.58,
+                Math.sin(angle * 2) * 0.6,
+              ]}
+              rotation={[angle, angle * 0.7, 0]}
+            >
+              <octahedronGeometry args={[index % 3 === 0 ? 0.22 : 0.14, 0]} />
+              <meshBasicMaterial
+                color={index % 3 === 0 ? "#ff0055" : "#00f3ff"}
+                wireframe
+                transparent
+                opacity={0.64}
+                depthWrite={false}
+                blending={THREE.AdditiveBlending}
+                toneMapped={false}
+              />
+            </mesh>
+          );
+        })}
+      </group>
+
+      <group ref={documentGroupRef} scale={0.001} position={[0, 0, -1]}>
+        {[-1, 0, 1].map((offset, index) => (
+          <mesh
+            key={offset}
+            position={[offset * 0.78, Math.abs(offset) * -0.12, -Math.abs(offset) * 0.25]}
+            rotation={[0.08 * offset, -0.16 * offset, 0.05 * offset]}
+          >
+            <boxGeometry args={[1.05, 1.45, 0.06]} />
+            <meshBasicMaterial
+              color={index === 1 ? "#ff0055" : "#00f3ff"}
+              wireframe
+              transparent
+              opacity={index === 1 ? 0.58 : 0.42}
+              depthWrite={false}
+              blending={THREE.AdditiveBlending}
+              toneMapped={false}
+            />
+          </mesh>
+        ))}
       </group>
 
       <mesh ref={satelliteRef} position={[-4.8, 2.2, -2.8]}>

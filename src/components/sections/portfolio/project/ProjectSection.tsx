@@ -6,8 +6,6 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import {
-  LuArrowLeft,
-  LuArrowRight,
   LuCircleCheck,
   LuExternalLink,
   LuGithub,
@@ -19,6 +17,7 @@ import {
 } from "react-icons/lu";
 import { fetchCachedJson } from "@/lib/client-cache";
 import { getOptimizedImageUrl } from "@/lib/image";
+import { useHorizontalShowcase } from "@/hooks/useHorizontalShowcase";
 import ProjectCard from "./ProjectCard";
 
 interface Project {
@@ -44,7 +43,6 @@ interface Project {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const PROJECTS_PER_PAGE = 3;
-const MOBILE_PROJECTS_PER_PAGE = 3;
 const projectAccents = ["#3b82f6", "#10b981", "#facc15", "#a855f7"];
 
 const splitListValue = (value?: string[] | string | null) => {
@@ -340,8 +338,6 @@ const ProjectSkeleton = () => (
 export default function PortfolioSection() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [isMobileCarousel, setIsMobileCarousel] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -370,40 +366,18 @@ export default function PortfolioSection() {
 
     const html = document.documentElement;
     const body = document.body;
-    const horizontalStage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
     const previousHtmlOverflow = html.style.overflow;
     const previousBodyOverflow = body.style.overflow;
-    const previousStageOverflowX = horizontalStage?.style.overflowX;
-    const previousStageOverflowY = horizontalStage?.style.overflowY;
 
     html.style.overflow = "hidden";
     body.style.overflow = "hidden";
-    if (horizontalStage) {
-      horizontalStage.style.overflowX = "hidden";
-      horizontalStage.style.overflowY = "hidden";
-    }
 
     return () => {
       html.style.overflow = previousHtmlOverflow;
       body.style.overflow = previousBodyOverflow;
-      if (horizontalStage) {
-        horizontalStage.style.overflowX = previousStageOverflowX ?? "";
-        horizontalStage.style.overflowY = previousStageOverflowY ?? "";
-      }
     };
   }, [selectedProject]);
 
-  useEffect(() => {
-    const media = window.matchMedia("(max-width: 767px)");
-    const updateMode = () => setIsMobileCarousel(media.matches);
-
-    updateMode();
-    media.addEventListener("change", updateMode);
-
-    return () => media.removeEventListener("change", updateMode);
-  }, []);
-
-  const projectsPerPage = isMobileCarousel ? MOBILE_PROJECTS_PER_PAGE : PROJECTS_PER_PAGE;
   const categories = useMemo(
     () => Array.from(new Set(projects.map((project) => getProjectCategory(project)).filter(Boolean))),
     [projects],
@@ -420,160 +394,129 @@ export default function PortfolioSection() {
       return matchesSearch && matchesCategory;
     });
   }, [categoryFilter, projects, searchTerm]);
-  const pageCount = Math.max(1, Math.ceil(filteredProjects.length / projectsPerPage));
-  const safePage = Math.min(page, pageCount);
-  const visibleProjects = useMemo(
-    () => filteredProjects.slice((safePage - 1) * projectsPerPage, safePage * projectsPerPage),
-    [filteredProjects, projectsPerPage, safePage],
+  const {
+    sectionRef,
+    viewportRef,
+    trackRef,
+    sectionStyle,
+  } = useHorizontalShowcase(
+    `${filteredProjects.length}:${searchTerm}:${categoryFilter}`,
   );
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
-    setPage(1);
   };
 
   const handleCategoryChange = (value: string) => {
     setCategoryFilter(value);
-    setPage(1);
   };
-
-  useEffect(() => {
-    setPage((current) => Math.min(current, pageCount));
-  }, [pageCount]);
 
   if (loading) {
     return <ProjectSkeleton />;
   }
 
   return (
-    <section id="projects" className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 pb-32 pt-16 sm:px-5 sm:pb-36 md:px-8 md:pb-40 md:pt-20 lg:flex lg:h-screen lg:flex-col lg:justify-start lg:px-10 lg:pb-32 lg:pt-12">
-      <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.2),transparent_55%)]" />
-      <div className="absolute inset-0 -z-20 bg-linear-to-b from-transparent via-[#030406]/14 to-transparent" />
-      <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
-      <div className="absolute -bottom-28 -left-28 -z-10 h-80 w-80 rounded-full border border-blue-500/25 opacity-50" />
+    <section
+      ref={sectionRef}
+      id="projects"
+      style={sectionStyle}
+      className="relative isolate min-h-screen w-full scroll-mt-4 bg-transparent"
+    >
+      <div className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-4 pb-36 pt-20 sm:px-6 lg:sticky lg:top-0 lg:px-10 lg:pb-28 lg:pt-12">
+        <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.2),transparent_55%)]" />
+        <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl">
-        <div className="mb-7 text-left md:mb-9 lg:mb-3">
-          <p className="mb-5 inline-flex h-9 items-center rounded-full border border-blue-500/45 bg-blue-500/8 px-5 text-xs font-bold uppercase tracking-[0.18em] text-blue-400 shadow-[0_0_25px_rgba(37,99,235,0.16)] lg:mb-3 lg:h-8 lg:text-[10px]">
-            Projects
-          </p>
-          <h2 className="text-4xl font-black leading-tight tracking-tight text-white md:text-5xl lg:text-4xl">
-            Selected <span className="text-blue-500">Projects</span>
-          </h2>
-          <p className="mt-4 max-w-lg text-lg leading-relaxed text-zinc-400 md:text-xl lg:mt-2 lg:max-w-3xl lg:text-sm">
-            A collection of digital products I&apos;ve designed and built with focus on user experience, performance, and impact.
-          </p>
-          <p className="mt-4 text-[10px] font-black uppercase tracking-[0.35em] text-zinc-500 lg:hidden">
-            {filteredProjects.length} / {projects.length} Project Assets
-          </p>
-        </div>
+        <div className="relative z-10 mx-auto w-full max-w-7xl">
+          <div className="mb-6 grid gap-5 lg:grid-cols-[1fr_440px] lg:items-end">
+            <div>
+              <p className="mb-4 inline-flex h-9 items-center rounded-full border border-blue-500/45 bg-blue-500/8 px-5 text-[10px] font-bold uppercase tracking-[0.22em] text-blue-400">
+                Horizontal Project Showcase
+              </p>
+              <h2 className="text-4xl font-black leading-tight tracking-tight text-white md:text-5xl">
+                Selected <span className="text-blue-500">Projects</span>
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400 md:text-base">
+                Scroll vertically to move through the work. Each case combines product thinking,
+                interface craft, and full-stack implementation.
+              </p>
+            </div>
 
-        <div className="mb-6 grid gap-3 md:grid-cols-[1fr_260px] lg:mb-3">
-          <label className="group relative">
-            <LuSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/70 transition-colors group-focus-within:text-blue-300" size={16} />
-            <input
-              type="search"
-              value={searchTerm}
-              onChange={(event) => handleSearchChange(event.target.value)}
-              placeholder="Search projects..."
-              className="h-13 w-full rounded-2xl border border-blue-500/15 bg-[#07101d]/82 pl-12 pr-4 text-sm font-semibold text-white shadow-[0_18px_55px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition-colors placeholder:text-zinc-500 focus:border-blue-400/70 lg:h-10 lg:rounded-xl"
-            />
-          </label>
-
-          <select
-            aria-label="Filter projects by category"
-            value={categoryFilter}
-            onChange={(event) => handleCategoryChange(event.target.value)}
-            className="h-13 w-full rounded-2xl border border-blue-500/15 bg-[#07101d]/82 px-4 text-sm font-bold text-zinc-200 shadow-[0_18px_55px_rgba(0,0,0,0.24)] outline-none backdrop-blur-md transition-colors focus:border-blue-400/70 lg:h-10 lg:rounded-xl lg:text-xs"
-          >
-            <option value="all">All Categories</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {visibleProjects.length > 0 ? (
-          <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-4">
-            {visibleProjects.map((project, index) => {
-              const projectIndex = (safePage - 1) * projectsPerPage + index;
-
-              return (
-                <ProjectCard
-                  key={project.id}
-                  title={project.title}
-                  description={project.description}
-                  imageUrl={project.imageUrl}
-                  demoUrl={project.demoUrl}
-                  repoUrl={project.repoUrl}
-                  categoryLabel={getProjectCategory(project)}
-                  index={projectIndex}
-                  variant="mobile"
-                  accent={projectAccents[projectIndex % projectAccents.length]}
-                  onDetails={() => setSelectedProject(project)}
+            <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
+              <label className="group relative">
+                <LuSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-blue-300/70" size={16} />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(event) => handleSearchChange(event.target.value)}
+                  placeholder="Search projects..."
+                  className="h-11 w-full rounded-xl border border-blue-500/15 bg-[#07101d]/82 pl-11 pr-4 text-xs font-semibold text-white outline-none backdrop-blur-md transition-colors placeholder:text-zinc-500 focus:border-blue-400/70"
                 />
-              );
-            })}
-          </div>
-        ) : (
-          <div className="rounded-3xl border border-dashed border-white/10 px-6 py-24 text-center text-[10px] font-bold uppercase tracking-[0.35em] text-zinc-600">
-            No digital assets found in archive
-          </div>
-        )}
+              </label>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2 sm:mt-9 sm:gap-3 lg:mt-3">
-          <button
-            type="button"
-            onClick={() => setPage((current) => Math.max(1, current - 1))}
-            disabled={safePage === 1}
-            data-cursor-label="PREV"
-            aria-label="Previous project page"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/3 text-zinc-400 transition-colors hover:border-blue-500/45 hover:text-blue-400 disabled:cursor-not-allowed disabled:opacity-35 sm:h-10 sm:w-10 lg:h-8 lg:w-8"
-          >
-            <LuArrowLeft size={14} />
-          </button>
-
-          {Array.from({ length: pageCount }, (_, index) => {
-            const pageNumber = index + 1;
-            return (
-              <button
-                key={pageNumber}
-                type="button"
-                onClick={() => setPage(pageNumber)}
-                data-cursor-label={`PAGE ${pageNumber}`}
-                className={`flex h-9 w-9 items-center justify-center rounded-lg border text-xs font-bold transition-colors sm:h-10 sm:w-10 sm:text-sm lg:h-8 lg:w-8 lg:text-xs ${
-                  pageNumber === safePage
-                    ? "border-blue-400 bg-blue-500 text-white shadow-[0_0_24px_rgba(59,130,246,0.35)]"
-                    : "border-white/10 bg-white/3 text-zinc-400 hover:border-blue-500/45 hover:text-blue-400"
-                }`}
+              <select
+                aria-label="Filter projects by category"
+                value={categoryFilter}
+                onChange={(event) => handleCategoryChange(event.target.value)}
+                className="h-11 w-full rounded-xl border border-blue-500/15 bg-[#07101d]/82 px-3 text-xs font-bold text-zinc-200 outline-none backdrop-blur-md focus:border-blue-400/70"
               >
-                {pageNumber}
-              </button>
-            );
-          })}
+                <option value="all">All Categories</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-          <button
-            type="button"
-            onClick={() => setPage((current) => Math.min(pageCount, current + 1))}
-            disabled={safePage === pageCount}
-            data-cursor-label="NEXT"
-            aria-label="Next project page"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/3 text-zinc-400 transition-colors hover:border-blue-500/45 hover:text-blue-400 disabled:cursor-not-allowed disabled:opacity-35 sm:h-10 sm:w-10 lg:h-8 lg:w-8"
-          >
-            <LuArrowRight size={14} />
-          </button>
+          {filteredProjects.length > 0 ? (
+            <div
+              ref={viewportRef}
+              className="scrollbar-none w-full overflow-x-auto overscroll-x-contain pb-4 lg:overflow-hidden"
+            >
+              <div
+                ref={trackRef}
+                className="flex w-max snap-x snap-mandatory gap-5 pr-6 will-change-transform lg:gap-8 lg:pl-[8vw] lg:pr-[18vw]"
+              >
+                {filteredProjects.map((project, index) => (
+                  <div key={project.id} className="snap-center">
+                    <ProjectCard
+                      title={project.title}
+                      description={project.description}
+                      imageUrl={project.imageUrl}
+                      demoUrl={project.demoUrl}
+                      repoUrl={project.repoUrl}
+                      categoryLabel={getProjectCategory(project)}
+                      tags={inferProjectDetails(project).tags}
+                      index={index}
+                      variant="showcase"
+                      accent={projectAccents[index % projectAccents.length]}
+                      onDetails={() => setSelectedProject(project)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-3xl border border-dashed border-white/10 px-6 py-24 text-center text-[10px] font-bold uppercase tracking-[0.35em] text-zinc-600">
+              No digital assets found in archive
+            </div>
+          )}
+
+          <div className="mt-3 flex items-center justify-between gap-4 text-[9px] font-black uppercase tracking-[0.24em] text-zinc-500">
+            <span>{filteredProjects.length} / {projects.length} projects</span>
+            <span>Scroll down · Swipe on touch</span>
+          </div>
         </div>
-      </div>
 
-      {selectedProject && (
-        <ProjectCaseStudyModal
-          project={selectedProject}
-          accent={projectAccents[Math.max(projects.findIndex((project) => project.id === selectedProject.id), 0) % projectAccents.length]}
-          onClose={() => setSelectedProject(null)}
-        />
-      )}
+        {selectedProject && (
+          <ProjectCaseStudyModal
+            project={selectedProject}
+            accent={projectAccents[Math.max(projects.findIndex((project) => project.id === selectedProject.id), 0) % projectAccents.length]}
+            onClose={() => setSelectedProject(null)}
+          />
+        )}
+      </div>
     </section>
   );
 }
