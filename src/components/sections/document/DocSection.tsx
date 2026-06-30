@@ -170,6 +170,15 @@ export default function DocSection() {
     return "unsupported";
   };
 
+  const getDownloadUrl = (doc: DocumentData) => {
+    const params = new URLSearchParams({
+      url: doc.fileUrl,
+      name: doc.name,
+    });
+
+    return `/api/documents/download?${params.toString()}`;
+  };
+
   const changeFilter = (nextCategory: string) => {
     setCategoryFilter(nextCategory);
     viewportRef.current?.scrollTo({ left: 0, behavior: "smooth" });
@@ -245,6 +254,7 @@ export default function DocSection() {
               >
                 {filteredDocs.map((doc) => {
             const previewType = getPreviewType(doc);
+            const downloadUrl = getDownloadUrl(doc);
 
             return (
               <div
@@ -256,12 +266,11 @@ export default function DocSection() {
                 <span className="pointer-events-none absolute inset-x-5 top-3 z-20 h-px bg-linear-to-r from-transparent via-cyan-300/60 to-transparent" />
                 <a
                   data-folder-cover
-                  href={doc.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-cursor-label="OPEN"
+                  href={downloadUrl}
+                  download
+                  data-cursor-label="DOWNLOAD"
                   className="relative block h-52 origin-bottom overflow-hidden rounded-[20px] bg-white transition-transform duration-500 group-hover:[transform:perspective(900px)_translateY(-3px)_rotateX(-2deg)] sm:h-62 lg:h-48"
-                  aria-label={`Open ${doc.name}`}
+                  aria-label={`Download ${doc.name}`}
                 >
                   {doc.previewUrl && (
                     <Image
@@ -336,9 +345,7 @@ export default function DocSection() {
                       <p className="mt-1 hidden truncate text-sm text-zinc-500 sm:block">{doc.category}</p>
                     </div>
                     <a
-                      href={doc.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={downloadUrl}
                       download
                       data-cursor-label="DOWNLOAD"
                       aria-label={`Download ${doc.name}`}
@@ -359,14 +366,13 @@ export default function DocSection() {
                   </div>
 
                   <a
-                    href={doc.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-cursor-label="VIEW"
+                    href={downloadUrl}
+                    download
+                    data-cursor-label="DOWNLOAD"
                     className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-blue-400/30 bg-blue-500/10 text-[9px] font-black uppercase tracking-[0.2em] text-blue-200 transition-all hover:border-blue-300 hover:bg-blue-500 hover:text-white"
                   >
                     <FaFilePdf size={13} />
-                    View Document
+                    Download Document
                   </a>
                 </div>
               </article>
