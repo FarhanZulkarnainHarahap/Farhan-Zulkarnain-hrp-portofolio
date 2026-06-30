@@ -2,6 +2,7 @@
 
 import { FaArrowRight, FaGithub, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { getOptimizedImageUrl } from "@/lib/image";
 import ShinyText from "./ShinyText";
 
@@ -29,6 +30,8 @@ const socialLinks = [
 ];
 
 export default function HeroCard() {
+  const router = useRouter();
+
   const scrollToSection = (id: string, path: string) => {
     const element = document.getElementById(id);
     window.history.pushState(null, "", path);
@@ -127,7 +130,7 @@ export default function HeroCard() {
           <div className="pt-4 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
             <button
               type="button"
-              onClick={() => scrollToSection("about", "/explore")}
+              onClick={() => router.push("/about")}
               data-cursor-label="EXPLORE"
               className="group relative flex items-center gap-4 overflow-hidden rounded-full border border-blue-400/45 bg-blue-500/8 px-8 py-3.5 text-white transition-all hover:border-blue-300 hover:bg-blue-500/16 md:px-10 md:py-4"
             >

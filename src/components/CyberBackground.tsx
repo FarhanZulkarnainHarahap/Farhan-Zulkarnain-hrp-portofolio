@@ -10,7 +10,7 @@ const FIELD_PARTICLE_COUNT = 720;
 const NETWORK_SEGMENT_COUNT = 190;
 const CYAN = new THREE.Color("#00f3ff");
 const MAGENTA = new THREE.Color("#ff0055");
-const SECTION_IDS = ["home", "about", "skills", "projects", "documents", "contact"];
+const SECTION_IDS = ["home", "about", "projects", "contact"];
 
 const createSeededRandom = (initialSeed: number) => {
   let seed = initialSeed;
@@ -30,8 +30,6 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
   const primaryRingRef = useRef<THREE.Mesh>(null);
   const secondaryRingRef = useRef<THREE.Mesh>(null);
   const satelliteRef = useRef<THREE.Mesh>(null);
-  const skillOrbitRef = useRef<THREE.Group>(null);
-  const documentGroupRef = useRef<THREE.Group>(null);
   const gridRef = useRef<THREE.GridHelper>(null);
   const coreWireMaterialRef = useRef<THREE.MeshBasicMaterial>(null);
   const fieldMaterialRef = useRef<THREE.PointsMaterial>(null);
@@ -327,26 +325,20 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     const sectionX = {
       home: 0,
       about: compact ? 0.45 : 1.85,
-      skills: compact ? -0.35 : 0.75,
       projects: compact ? -0.45 : -2.15,
-      documents: compact ? 0.4 : 2.05,
       contact: 0,
     }[activeSection] ?? 0;
     const sectionY = {
       home: 0,
       about: compact ? -0.4 : 0.25,
-      skills: compact ? 0.55 : -0.25,
       projects: compact ? -0.5 : 0,
-      documents: compact ? 0.5 : 0.1,
       contact: compact ? -0.4 : 0,
     }[activeSection] ?? 0;
     const sectionScale = activeSection === "about"
       ? 1.12
       : activeSection === "contact"
         ? 0.62
-        : activeSection === "skills"
-          ? 0.84
-          : 1;
+        : 1;
 
     if (cameraRigRef.current) {
       const rigTargetZ = activeSection === "about"
@@ -548,35 +540,6 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
         smoothing,
       );
     }
-    if (skillOrbitRef.current) {
-      const targetScale = activeSection === "skills" ? 1 : 0.001;
-      skillOrbitRef.current.scale.setScalar(
-        THREE.MathUtils.lerp(
-          skillOrbitRef.current.scale.x,
-          targetScale,
-          smoothing,
-        ),
-      );
-      skillOrbitRef.current.rotation.z = elapsed * 0.18 + phase * 0.08;
-      skillOrbitRef.current.rotation.y = elapsed * 0.12;
-    }
-    if (documentGroupRef.current) {
-      const targetScale = activeSection === "documents" ? 1 : 0.001;
-      documentGroupRef.current.scale.setScalar(
-        THREE.MathUtils.lerp(
-          documentGroupRef.current.scale.x,
-          targetScale,
-          smoothing,
-        ),
-      );
-      documentGroupRef.current.rotation.y = THREE.MathUtils.lerp(
-        documentGroupRef.current.rotation.y,
-        pointerRef.current.x * 0.18 + Math.sin(elapsed * 0.3) * 0.08,
-        smoothing,
-      );
-      documentGroupRef.current.position.y =
-        Math.sin(elapsed * 0.45) * 0.12;
-    }
   });
 
   return (
@@ -714,57 +677,6 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
             depthWrite={false}
           />
         </mesh>
-      </group>
-
-      <group ref={skillOrbitRef} scale={0.001} position={[0, 0, -0.8]}>
-        {Array.from({ length: 9 }, (_, index) => {
-          const angle = (index / 9) * Math.PI * 2;
-          const radius = index % 2 === 0 ? 2.8 : 3.45;
-
-          return (
-            <mesh
-              key={index}
-              position={[
-                Math.cos(angle) * radius,
-                Math.sin(angle) * radius * 0.58,
-                Math.sin(angle * 2) * 0.6,
-              ]}
-              rotation={[angle, angle * 0.7, 0]}
-            >
-              <octahedronGeometry args={[index % 3 === 0 ? 0.22 : 0.14, 0]} />
-              <meshBasicMaterial
-                color={index % 3 === 0 ? "#ff0055" : "#00f3ff"}
-                wireframe
-                transparent
-                opacity={0.64}
-                depthWrite={false}
-                blending={THREE.AdditiveBlending}
-                toneMapped={false}
-              />
-            </mesh>
-          );
-        })}
-      </group>
-
-      <group ref={documentGroupRef} scale={0.001} position={[0, 0, -1]}>
-        {[-1, 0, 1].map((offset, index) => (
-          <mesh
-            key={offset}
-            position={[offset * 0.78, Math.abs(offset) * -0.12, -Math.abs(offset) * 0.25]}
-            rotation={[0.08 * offset, -0.16 * offset, 0.05 * offset]}
-          >
-            <boxGeometry args={[1.05, 1.45, 0.06]} />
-            <meshBasicMaterial
-              color={index === 1 ? "#ff0055" : "#00f3ff"}
-              wireframe
-              transparent
-              opacity={index === 1 ? 0.58 : 0.42}
-              depthWrite={false}
-              blending={THREE.AdditiveBlending}
-              toneMapped={false}
-            />
-          </mesh>
-        ))}
       </group>
 
       <mesh ref={satelliteRef} position={[-4.8, 2.2, -2.8]}>

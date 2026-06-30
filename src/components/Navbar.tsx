@@ -21,9 +21,7 @@ const menuItems = [
 const observedSectionIds = [
   "home",
   "about",
-  "skills",
   "projects",
-  "documents",
   "contact",
 ];
 

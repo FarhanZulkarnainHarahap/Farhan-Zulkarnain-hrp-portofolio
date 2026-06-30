@@ -288,8 +288,6 @@ const PUBLIC_CURSOR_ROUTES = [
   "/explore",
   "/about",
   "/projects",
-  "/skills",
-  "/documents",
   "/contact",
   "/dashboard/user",
 ];

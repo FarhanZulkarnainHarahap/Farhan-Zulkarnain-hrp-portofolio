@@ -14,12 +14,6 @@ const AboutSection = dynamic(() => import("@/components/sections/about/AboutSect
 const ProjectSection = dynamic(() => import("@/components/sections/portfolio/project/ProjectSection"), {
   loading: () => <SectionBlockSkeleton label="Projects" />,
 });
-const SkillSection = dynamic(() => import("@/components/sections/skill/SkillSection"), {
-  loading: () => <SectionBlockSkeleton label="Skills" />,
-});
-const DocSection = dynamic(() => import("@/components/sections/document/DocSection"), {
-  loading: () => <SectionBlockSkeleton label="Documents" />,
-});
 const ContactSection = dynamic(() => import("@/components/sections/contact/ContactSection"), {
   loading: () => <SectionBlockSkeleton label="Contact" />,
 });
@@ -41,9 +35,7 @@ export default function Home() {
   useEffect(() => {
     const routeTargets: Record<string, string> = {
       "/explore": "about",
-      "/skills": "skills",
       "/projects": "projects",
-      "/documents": "documents",
       "/contact": "contact",
     };
     const targetId = routeTargets[pathname] ?? "home";
@@ -80,28 +72,7 @@ export default function Home() {
           <HeroCard />
         </section>
         <AboutSection />
-        <section
-          id="skills"
-          className="portfolio-section-bg relative flex min-h-screen scroll-mt-4 items-center px-5 pb-32 pt-24 sm:px-8 lg:px-12 lg:py-28"
-        >
-          <div className="mx-auto w-full max-w-6xl">
-            <div className="mb-10 max-w-3xl">
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400">
-                Developer Toolkit
-              </p>
-              <h2 className="mt-4 text-4xl font-black uppercase leading-none text-white sm:text-6xl">
-                Skills & <span className="text-blue-500">Expertise</span>
-              </h2>
-              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-zinc-400 sm:text-base">
-                A practical full-stack toolkit grouped by discipline—focused on
-                clean interfaces, dependable systems, and thoughtful product design.
-              </p>
-            </div>
-            <SkillSection />
-          </div>
-        </section>
         <ProjectSection />
-        <DocSection />
         <section id="contact" className="portfolio-section-bg relative flex min-h-screen scroll-mt-4 items-center px-0 pb-36 pt-24 md:pb-40 lg:py-28">
           <ContactSection />
         </section>

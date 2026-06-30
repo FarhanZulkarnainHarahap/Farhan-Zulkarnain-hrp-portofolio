@@ -36,7 +36,18 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    return [];
+    return [
+      {
+        source: "/skills",
+        destination: "/about",
+        permanent: false,
+      },
+      {
+        source: "/documents",
+        destination: "/about",
+        permanent: false,
+      },
+    ];
   },
   async rewrites() {
     return [
@@ -50,14 +61,6 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/projects',
-        destination: '/dashboard/user',
-      },
-      {
-        source: '/skills',
-        destination: '/dashboard/user',
-      },
-      {
-        source: '/documents',
         destination: '/dashboard/user',
       },
       {
