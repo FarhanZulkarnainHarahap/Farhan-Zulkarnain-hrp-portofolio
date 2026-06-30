@@ -14,6 +14,8 @@ interface SkillData {
   category: string;
 }
 
+const SKILL_SKELETON_COUNTS = [4, 5, 4, 5, 3];
+
 const getDisplayCategory = (skill: SkillData) => {
   const rawCategory = skill.category?.toUpperCase() || "TOOLS";
   const identity = `${skill.name} ${skill.iconName}`.toLowerCase();
@@ -41,20 +43,23 @@ const getDisplayCategory = (skill: SkillData) => {
 };
 
 const SkillSkeleton = () => (
-  <div className="w-full space-y-8 lg:col-span-2">
-    {Array.from({ length: 3 }, (_, sectionIndex) => (
-      <div key={sectionIndex} className="space-y-4 animate-pulse">
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-md border border-blue-500/10 bg-blue-500/10" />
-          <div className="h-3 w-28 rounded-full bg-white/10" />
+  <div className="contents" aria-label="Loading skills" aria-busy="true">
+    {SKILL_SKELETON_COUNTS.map((itemCount, sectionIndex) => (
+      <div key={sectionIndex} className="w-full animate-pulse">
+        <div className="mb-4 flex items-center gap-3 lg:mb-3">
+          <div className="h-8 w-8 rounded-lg border border-blue-500/15 bg-blue-500/10 lg:h-6 lg:w-6" />
+          <div className="h-2.5 w-22 rounded-full bg-white/10 lg:h-2 lg:w-18" />
           <div className="h-px flex-1 bg-linear-to-r from-zinc-800 to-transparent" />
         </div>
 
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:flex lg:flex-wrap lg:gap-x-10 lg:gap-y-6 lg:pl-2">
-          {Array.from({ length: 8 }, (_, itemIndex) => (
-            <div key={itemIndex} className="flex min-w-0 flex-col items-center gap-3 rounded-2xl border border-white/6 bg-white/[0.025] p-4 lg:min-w-15 lg:border-0 lg:bg-transparent lg:p-0">
-              <div className="h-13 w-13 rounded-2xl border border-white/5 bg-white/8 shadow-[0_0_24px_rgba(59,130,246,0.06)] lg:h-12 lg:w-12" />
-              <div className="h-2 w-14 rounded-full bg-white/8" />
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:flex lg:flex-wrap lg:gap-x-7 lg:gap-y-3 lg:pl-2">
+          {Array.from({ length: itemCount }, (_, itemIndex) => (
+            <div
+              key={itemIndex}
+              className="flex min-w-0 flex-col items-center justify-center rounded-2xl border border-white/7 bg-white/[0.035] px-2 py-4 shadow-[0_14px_34px_rgba(0,0,0,0.16)] lg:min-w-20 lg:px-3 lg:py-4"
+            >
+              <div className="h-8 w-8 rounded-xl border border-white/6 bg-white/8 shadow-[0_0_24px_rgba(59,130,246,0.06)] lg:h-[26px] lg:w-[26px]" />
+              <div className="mt-3 h-2 w-12 rounded-full bg-white/8 lg:mt-1.5 lg:h-1.5 lg:w-10" />
             </div>
           ))}
         </div>

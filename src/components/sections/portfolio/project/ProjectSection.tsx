@@ -42,7 +42,7 @@ interface Project {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const PROJECTS_PER_PAGE = 3;
+const PROJECT_SKELETON_COUNT = 3;
 const projectAccents = ["#3b82f6", "#10b981", "#facc15", "#a855f7"];
 
 const splitListValue = (value?: string[] | string | null) => {
@@ -316,46 +316,72 @@ const ProjectCaseStudyModal = ({
 };
 
 const ProjectSkeleton = () => (
-  <section className="relative isolate min-h-screen w-full overflow-hidden bg-transparent px-4 py-16 sm:px-5 md:px-8 md:py-20 lg:flex lg:h-screen lg:flex-col lg:justify-start lg:px-10 lg:pb-32 lg:pt-12">
-    <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.18),transparent_55%)]" />
+  <section
+    className="relative isolate min-h-screen w-full scroll-mt-4 bg-transparent"
+    aria-label="Loading projects"
+    aria-busy="true"
+  >
+    <div className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-4 pb-36 pt-20 sm:px-6 lg:justify-start lg:px-10 lg:pb-40 lg:pt-8">
+      <div className="absolute inset-0 -z-30 bg-[radial-gradient(circle_at_center,rgba(30,64,175,0.2),transparent_55%)]" />
+      <div className="absolute left-[45%] top-[42%] -z-20 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[80px]" />
 
-    <div className="relative z-10 mx-auto w-full max-w-7xl">
-      <div className="mb-10 animate-pulse text-center">
-        <div className="mx-auto mb-4 h-9 w-32 rounded-full border border-blue-500/20 bg-blue-500/10" />
-        <div className="mx-auto h-12 w-80 rounded-2xl bg-white/10 md:h-14 md:w-96" />
-        <div className="mx-auto mt-5 h-14 w-full max-w-md rounded-2xl bg-white/6" />
-      </div>
+      <div className="relative z-10 mx-auto w-full max-w-7xl animate-pulse">
+        <div className="mb-6 grid gap-5 lg:grid-cols-[1fr_440px] lg:items-end">
+          <div>
+            <div className="h-10 w-72 rounded-xl bg-white/10 md:h-12 md:w-92" />
+            <div className="mt-3 h-3 w-full max-w-150 rounded-full bg-white/7" />
+            <div className="mt-2 h-3 w-4/5 max-w-115 rounded-full bg-white/5" />
+          </div>
 
-      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: PROJECTS_PER_PAGE }, (_, index) => (
-          <div
-            key={index}
-            className="animate-pulse overflow-hidden rounded-[26px] border border-white/7 bg-[#101720]/92 p-2.5 shadow-[0_18px_60px_rgba(0,0,0,0.22)]"
-          >
-            <div className="h-52 rounded-[18px] bg-linear-to-br from-white/14 via-white/8 to-blue-500/8 sm:h-44 lg:h-53" />
-            <div className="px-3 pb-3 pt-5 text-center">
-              <div className="mx-auto h-3 w-32 rounded-full bg-blue-500/18" />
-              <div className="mx-auto mt-4 h-7 w-54 rounded-xl bg-white/10" />
-              <div className="mx-auto mt-4 h-16 w-full max-w-xs rounded-2xl bg-white/6" />
-              <div className="mt-4 flex justify-center gap-2">
-                <div className="h-6 w-24 rounded-full border border-white/8 bg-white/5" />
-                <div className="h-6 w-22 rounded-full border border-white/8 bg-white/5" />
-                <div className="h-6 w-20 rounded-full border border-white/8 bg-white/5" />
-              </div>
-              <div className="mt-5 flex justify-center gap-3">
-                <div className="h-11 w-22 rounded-full border border-blue-500/18 bg-blue-500/10" />
-                <div className="h-11 w-11 rounded-full bg-blue-500/14" />
-                <div className="h-11 w-11 rounded-full border border-white/10 bg-white/5" />
-              </div>
+          <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
+            <div className="h-11 w-full rounded-xl border border-blue-500/12 bg-[#07101d]/82">
+              <div className="ml-4 mt-4 h-3 w-31 rounded-full bg-white/7" />
+            </div>
+            <div className="h-11 w-full rounded-xl border border-blue-500/12 bg-[#07101d]/82">
+              <div className="ml-3 mt-4 h-3 w-24 rounded-full bg-white/7" />
             </div>
           </div>
-        ))}
-      </div>
+        </div>
 
-      <div className="mt-9 flex animate-pulse items-center justify-center gap-3">
-        <div className="h-10 w-10 rounded-lg border border-white/10 bg-white/3" />
-        <div className="h-10 w-10 rounded-lg border border-blue-400 bg-blue-500" />
-        <div className="h-10 w-10 rounded-lg border border-white/10 bg-white/3" />
+        <div className="w-full overflow-hidden pb-4">
+          <div className="flex w-max gap-5 pr-6 lg:gap-8 lg:pl-[8vw] lg:pr-[18vw]">
+            {Array.from({ length: PROJECT_SKELETON_COUNT }, (_, index) => (
+              <div key={index} className="shrink-0 pt-3">
+                <article className="relative w-[86vw] overflow-hidden rounded-[28px] border border-blue-400/18 bg-[#080b14]/95 p-3 shadow-[0_16px_42px_rgba(59,130,246,0.08)] sm:w-[76vw] sm:max-w-190 lg:grid lg:w-176 lg:grid-cols-[1.08fr_0.92fr] lg:gap-4">
+                  <div className="relative h-54 overflow-hidden rounded-[22px] bg-linear-to-br from-white/14 via-white/7 to-blue-500/8 sm:h-68 lg:h-full lg:min-h-80">
+                    <div className="absolute inset-0 bg-linear-to-t from-[#060812]/80 via-transparent to-transparent" />
+                  </div>
+
+                  <div className="absolute left-3 top-3 h-10 w-10 rounded-full border border-blue-400/20 bg-[#071020] sm:h-9 sm:w-9 lg:left-2.5 lg:top-2.5 lg:h-7 lg:w-7" />
+
+                  <div className="flex min-w-0 flex-col justify-center px-2 pb-3 pt-5 sm:px-4 lg:p-3">
+                    <div className="h-2.5 w-36 rounded-full bg-blue-400/16" />
+                    <div className="mt-3 h-7 w-3/4 rounded-lg bg-white/11 lg:mt-2 lg:h-5" />
+                    <div className="mt-3 h-3 w-full rounded-full bg-white/7 lg:mt-2" />
+                    <div className="mt-2 h-3 w-5/6 rounded-full bg-white/5" />
+
+                    <div className="mt-4 flex gap-2 lg:mt-3">
+                      <div className="h-6 w-24 rounded-full border border-white/7 bg-white/4" />
+                      <div className="h-6 w-20 rounded-full border border-white/7 bg-white/4" />
+                      <div className="hidden h-6 w-22 rounded-full border border-white/7 bg-white/4 sm:block" />
+                    </div>
+
+                    <div className="mt-5 flex items-center gap-3 lg:mt-3">
+                      <div className="h-11 w-24 rounded-full border border-blue-500/20 bg-blue-500/9 lg:h-8 lg:w-19" />
+                      <div className="h-11 w-11 rounded-full bg-blue-500/12 lg:h-8 lg:w-8" />
+                      <div className="h-11 w-11 rounded-full border border-white/9 bg-white/4 lg:h-8 lg:w-8" />
+                    </div>
+                  </div>
+                </article>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-3 h-2.5 w-28 rounded-full bg-white/7" />
+        <div className="mt-3 h-px overflow-hidden bg-white/8">
+          <span className="block h-full w-1/4 bg-linear-to-r from-blue-500 via-cyan-300 to-fuchsia-500 opacity-40" />
+        </div>
       </div>
     </div>
   </section>
