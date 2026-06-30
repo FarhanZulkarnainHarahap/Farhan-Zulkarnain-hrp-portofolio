@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
+  LuArrowLeft,
   LuCalendarDays,
   LuCodeXml,
   LuFileText,
@@ -16,15 +19,19 @@ import SkillSection from "@/components/sections/skill/SkillSection";
 import DocSection from "@/components/sections/document/DocSection";
 import { getOptimizedImageUrl } from "@/lib/image";
 
+const CyberBackground = dynamic(() => import("@/components/CyberBackground"), {
+  ssr: false,
+});
+
 const profileImage = getOptimizedImageUrl(
   "https://res.cloudinary.com/dpanr1qqp/image/upload/v1765874955/bake-bliss/b1v5qdy9whqszyqohdjb.jpg",
   1000,
 );
 
 const journeySections = [
-  { id: "about-overview", number: "01", label: "About Me", icon: LuUser },
-  { id: "about-skills", number: "02", label: "Skills", icon: LuCodeXml },
-  { id: "about-documents", number: "03", label: "Documents", icon: LuFileText },
+  { id: "about-overview", label: "About", icon: LuUser },
+  { id: "about-skills", label: "Skill", icon: LuCodeXml },
+  { id: "about-documents", label: "Document", icon: LuFileText },
 ];
 
 const socialLinks = [
@@ -51,6 +58,7 @@ const socialLinks = [
 ];
 
 export default function AboutPage() {
+  const router = useRouter();
   const [activeSection, setActiveSection] = useState("about-overview");
 
   useEffect(() => {
@@ -94,27 +102,23 @@ export default function AboutPage() {
   return (
     <>
       <Navbar />
-      <main className="portfolio-bg min-h-screen overflow-x-hidden text-white">
+      <main className="portfolio-bg relative min-h-screen overflow-x-hidden text-white">
+        <CyberBackground />
         <aside className="fixed inset-y-0 left-0 z-50 hidden w-42 border-r border-blue-500/25 bg-[#030711]/88 px-5 py-7 backdrop-blur-xl xl:flex xl:flex-col">
           <button
             type="button"
-            onClick={() => goToSection("about-overview")}
-            aria-label="Go to About Me"
-            className="mx-auto grid h-20 w-20 place-items-center overflow-hidden rounded-full border border-blue-400/60 bg-transparent shadow-[0_0_28px_rgba(37,99,235,0.35),inset_0_0_22px_rgba(37,99,235,0.12)]"
+            onClick={() => router.push("/home")}
+            aria-label="Back to home"
+            data-cursor-label="BACK"
+            className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-blue-400/50 bg-blue-500/8 text-blue-200 shadow-[0_0_28px_rgba(37,99,235,0.28),inset_0_0_22px_rgba(37,99,235,0.1)] transition-all hover:-translate-x-1 hover:border-cyan-300 hover:bg-blue-500/18 hover:text-white"
           >
-            <Image
-              src="/fz-logo.png"
-              alt="FZ Dev"
-              width={80}
-              height={80}
-              className="h-full w-full object-cover"
-            />
+            <LuArrowLeft size={24} />
           </button>
 
           <nav className="relative mt-12" aria-label="About page sections">
             <span className="absolute bottom-5 left-[10px] top-5 w-px bg-linear-to-b from-blue-400 via-blue-500/45 to-zinc-700" />
             <ul className="space-y-8">
-              {journeySections.map(({ id, number, label }) => {
+              {journeySections.map(({ id, label }) => {
                 const isActive = activeSection === id;
                 return (
                   <li key={id} className="relative">
@@ -132,11 +136,8 @@ export default function AboutPage() {
                             : "border-zinc-500 group-hover:border-blue-400"
                         }`}
                       />
-                      <span>
-                        <span className="block text-xs font-black">{number}</span>
-                        <span className="mt-1 block text-[9px] font-bold uppercase tracking-[0.09em]">
-                          {label}
-                        </span>
+                      <span className="text-[10px] font-black uppercase tracking-[0.12em]">
+                        {label}
                       </span>
                     </button>
                   </li>
@@ -161,12 +162,17 @@ export default function AboutPage() {
           </div>
         </aside>
 
-        <div className="relative xl:ml-42">
+        <div className="relative z-10 xl:ml-42">
           <div className="sticky top-0 z-40 border-b border-blue-500/20 bg-[#030711]/90 px-4 py-3 backdrop-blur-xl xl:hidden">
             <div className="mx-auto flex max-w-3xl items-center justify-between gap-2">
-              <span className="text-xs font-black uppercase tracking-[0.24em] text-white">
-                Nexxus <span className="text-blue-400">Journey</span>
-              </span>
+              <button
+                type="button"
+                onClick={() => router.push("/home")}
+                aria-label="Back to home"
+                className="grid h-9 w-9 place-items-center rounded-lg border border-blue-400/35 bg-blue-500/10 text-blue-200"
+              >
+                <LuArrowLeft size={17} />
+              </button>
               <div className="flex gap-1">
                 {journeySections.map(({ id, label, icon: Icon }) => (
                   <button
@@ -195,7 +201,7 @@ export default function AboutPage() {
             <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.35em] text-blue-400">
-                  01 <span className="ml-2">About Me</span>
+                  About Me
                 </p>
                 <h1 className="mt-8 text-5xl font-black uppercase leading-[0.92] tracking-tight sm:text-7xl">
                   About <span className="text-blue-500">Me</span>
@@ -263,7 +269,7 @@ export default function AboutPage() {
           >
             <div className="mx-auto w-full max-w-6xl">
               <p className="text-[10px] font-black uppercase tracking-[0.35em] text-blue-400">
-                02 <span className="ml-2">My Skills</span>
+                My Skills
               </p>
               <h2 className="mt-7 text-5xl font-black uppercase leading-[0.92] tracking-tight sm:text-7xl">
                 My Skills &amp; <span className="text-blue-500">Expertise</span>

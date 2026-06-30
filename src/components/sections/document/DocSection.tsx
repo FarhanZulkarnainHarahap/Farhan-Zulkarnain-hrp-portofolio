@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import {
   FaCalendarAlt,
@@ -13,7 +13,6 @@ import {
 } from "react-icons/fa";
 import { fetchCachedJson } from "@/lib/client-cache";
 import { getOptimizedImageUrl } from "@/lib/image";
-import { useHorizontalShowcase } from "@/hooks/useHorizontalShowcase";
 
 interface DocumentData {
   id: string;
@@ -71,6 +70,7 @@ const DocumentSkeleton = () => (
 );
 
 export default function DocSection() {
+  const viewportRef = useRef<HTMLDivElement>(null);
   const [docs, setDocs] = useState<DocumentData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -97,6 +97,29 @@ export default function DocSection() {
     fetchDocs();
   }, [API_URL]);
 
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    const handleWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+
+      const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+      const canScrollForward =
+        event.deltaY > 0 && viewport.scrollLeft < maxScroll - 1;
+      const canScrollBackward =
+        event.deltaY < 0 && viewport.scrollLeft > 1;
+
+      if (!canScrollForward && !canScrollBackward) return;
+
+      event.preventDefault();
+      viewport.scrollLeft += event.deltaY;
+    };
+
+    viewport.addEventListener("wheel", handleWheel, { passive: false });
+    return () => viewport.removeEventListener("wheel", handleWheel);
+  }, [docs.length]);
+
   const categories = useMemo(
     () => Array.from(new Set(docs.map((doc) => doc.category).filter(Boolean))),
     [docs],
@@ -111,15 +134,6 @@ export default function DocSection() {
       return matchesSearch && matchesCategory;
     });
   }, [categoryFilter, docs, searchTerm]);
-
-  const {
-    sectionRef,
-    viewportRef,
-    trackRef,
-    sectionStyle,
-  } = useHorizontalShowcase(
-    `${filteredDocs.length}:${searchTerm}:${categoryFilter}`,
-  );
 
   const formatSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
@@ -158,10 +172,12 @@ export default function DocSection() {
 
   const changeFilter = (nextCategory: string) => {
     setCategoryFilter(nextCategory);
+    viewportRef.current?.scrollTo({ left: 0, behavior: "smooth" });
   };
 
   const changeSearch = (value: string) => {
     setSearchTerm(value);
+    viewportRef.current?.scrollTo({ left: 0, behavior: "smooth" });
   };
 
   if (loading) {
@@ -170,20 +186,15 @@ export default function DocSection() {
 
   return (
     <section
-      ref={sectionRef}
       id="documents"
-      style={sectionStyle}
       className="relative min-h-screen w-full scroll-mt-4"
     >
-      <div className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-5 pb-36 pt-20 sm:px-8 lg:sticky lg:top-0 lg:justify-start lg:px-10 lg:pb-40 lg:pt-10">
+      <div className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-5 pb-36 pt-20 sm:px-8 lg:justify-start lg:px-10 lg:pb-40 lg:pt-10">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_50%,rgba(139,92,246,0.12),transparent_36%)]" />
 
         <div className="relative z-10 mx-auto w-full max-w-7xl">
           <div className="mb-6 grid gap-5 lg:grid-cols-[1fr_440px] lg:items-end">
             <div>
-              <p className="mb-3 text-[10px] font-black uppercase tracking-[0.35em] text-blue-400">
-                Horizontal Document Vault
-              </p>
               <h2 className="text-4xl font-black uppercase italic leading-none tracking-tight text-white md:text-5xl">
                 Credential <span className="text-zinc-500">&</span> Assets<span className="text-blue-500">.</span>
               </h2>
@@ -224,11 +235,13 @@ export default function DocSection() {
           {filteredDocs.length > 0 ? (
             <div
               ref={viewportRef}
-              className="scrollbar-none w-full overflow-x-auto overscroll-x-contain pb-4 lg:overflow-hidden"
+              role="region"
+              aria-label="Scrollable document cards"
+              tabIndex={0}
+              className="scrollbar-none w-full cursor-grab overflow-x-auto overscroll-x-contain pb-4 outline-none focus-visible:ring-1 focus-visible:ring-blue-400/60 active:cursor-grabbing"
             >
               <div
-                ref={trackRef}
-                className="flex w-max snap-x snap-mandatory gap-5 pr-6 will-change-transform lg:gap-7 lg:pl-[8vw] lg:pr-[20vw]"
+                className="flex w-max snap-x snap-mandatory gap-5 pr-6 lg:gap-7 lg:pr-10"
               >
                 {filteredDocs.map((doc) => {
             const previewType = getPreviewType(doc);
@@ -236,8 +249,7 @@ export default function DocSection() {
             return (
               <div
                 key={doc.id}
-                data-showcase-item
-                className="w-[82vw] max-w-100 shrink-0 snap-center pt-3 transition-[opacity,filter] duration-300"
+                className="w-[82vw] max-w-100 shrink-0 snap-center pt-3"
               >
               <article className="premium-static-tilt group relative overflow-hidden rounded-[26px] border border-cyan-300/12 bg-[linear-gradient(145deg,rgba(16,28,48,0.92),rgba(5,11,22,0.82))] p-2 shadow-[0_22px_70px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl hover:border-cyan-300/45 hover:shadow-[0_28px_80px_rgba(37,99,235,0.22),0_0_35px_rgba(34,211,238,0.1)]">
                 <span className="pointer-events-none absolute left-6 top-0 z-20 h-5 w-32 rounded-b-xl border-x border-b border-cyan-300/20 bg-cyan-300/8 shadow-[0_6px_24px_rgba(34,211,238,0.12)]" />
@@ -369,15 +381,8 @@ export default function DocSection() {
             </div>
           )}
 
-          <div className="mt-3 flex flex-col items-start justify-between gap-1 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 sm:flex-row sm:items-center sm:gap-4 sm:tracking-[0.24em]">
+          <div className="mt-3 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 sm:tracking-[0.24em]">
             <span>{filteredDocs.length} / {docs.length} verified files</span>
-            <span>Scroll down · Swipe on touch</span>
-          </div>
-          <div className="mt-3 h-px overflow-hidden bg-white/8">
-            <span
-              className="block h-full origin-left bg-linear-to-r from-fuchsia-500 via-blue-400 to-cyan-300 shadow-[0_0_16px_rgba(59,130,246,0.75)]"
-              style={{ transform: "scaleX(var(--showcase-progress, 0))" }}
-            />
           </div>
         </div>
       </div>

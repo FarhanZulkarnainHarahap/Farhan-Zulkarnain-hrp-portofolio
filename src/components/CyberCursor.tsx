@@ -364,7 +364,7 @@ export default function CyberCursor() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-[9999]"
+      className="pointer-events-none fixed inset-0 z-[10050]"
     >
       <Canvas
         orthographic

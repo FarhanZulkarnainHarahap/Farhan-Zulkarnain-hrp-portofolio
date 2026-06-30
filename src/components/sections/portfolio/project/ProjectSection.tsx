@@ -158,13 +158,22 @@ const ProjectCaseStudyModal = ({
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   if (!mounted) {
     return null;
   }
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-start justify-center overflow-y-auto overscroll-contain bg-black/88 px-4 pb-24 pt-20 backdrop-blur-xl md:pb-28 md:pt-24"
+      className="fixed inset-0 z-[9999] flex items-start justify-center overflow-y-auto overscroll-contain bg-[#010308]/92 px-3 pb-24 pt-10 backdrop-blur-2xl sm:px-5 md:pb-28 md:pt-16"
       role="dialog"
       aria-modal="true"
       aria-label={`${project.title} case study`}
@@ -172,21 +181,33 @@ const ProjectCaseStudyModal = ({
     >
       <div
         onClick={(event) => event.stopPropagation()}
-        className="relative w-full max-w-5xl overflow-hidden rounded-[28px] border bg-[#060a12]/98 p-4 shadow-[0_32px_120px_rgba(37,99,235,0.2)] md:p-5"
-        style={{ borderColor: `${accent}70` }}
+        className="relative w-full max-w-6xl overflow-hidden rounded-[30px] border bg-[linear-gradient(145deg,rgba(8,15,28,0.99),rgba(3,7,14,0.99))] p-3 shadow-[0_36px_140px_rgba(0,0,0,0.72)] sm:p-5 md:p-6"
+        style={{
+          borderColor: `${accent}70`,
+          boxShadow: `0 36px 140px rgba(0,0,0,0.72), 0 0 48px ${accent}20`,
+        }}
       >
+        <span
+          className="pointer-events-none absolute inset-x-14 top-0 h-px"
+          style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }}
+        />
+        <span
+          className="pointer-events-none absolute left-0 top-0 h-20 w-20 border-l-2 border-t-2 opacity-65"
+          style={{ borderColor: accent }}
+        />
         <button
           type="button"
           onClick={onClose}
           aria-label="Close case study"
-          className="absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-all hover:border-blue-400 hover:bg-blue-500/20"
+          data-cursor-label="CLOSE"
+          className="absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-black/55 text-white shadow-[0_10px_30px_rgba(0,0,0,0.4)] backdrop-blur-xl transition-all hover:rotate-90 hover:border-blue-400 hover:bg-blue-500/20"
         >
           <LuX size={18} />
         </button>
 
-        <div className="grid gap-5 lg:grid-cols-[1.02fr_0.98fr]">
+        <div className="grid gap-6 lg:grid-cols-[1.04fr_0.96fr]">
           <div>
-            <div className="relative h-52 overflow-hidden rounded-[22px] border border-white/10 bg-slate-950 md:h-64">
+            <div className="relative h-56 overflow-hidden rounded-[24px] border border-white/10 bg-slate-950 sm:h-64 md:h-72">
               <Image
                 src={getOptimizedImageUrl(project.imageUrl || "/placeholder-project.jpg", 1100)}
                 alt={project.title}
@@ -205,17 +226,22 @@ const ProjectCaseStudyModal = ({
               {cards.map(({ icon: Icon, title, text }) => (
                 <div
                   key={title}
-                  className="min-h-0 rounded-2xl border border-white/8 bg-white/4 p-4"
+                  className="group rounded-2xl border border-white/8 bg-white/[0.035] p-4 transition-all hover:-translate-y-1 hover:border-blue-400/35 hover:bg-blue-500/7"
                 >
-                  <Icon className="mb-3 text-blue-400" size={20} />
+                  <span className="mb-3 grid h-9 w-9 place-items-center rounded-xl border border-blue-400/20 bg-blue-500/10 text-blue-300">
+                    <Icon size={18} />
+                  </span>
                   <h4 className="text-xs font-black uppercase tracking-[0.18em] text-white">{title}</h4>
-                  <p className="mt-2 line-clamp-6 text-[11px] leading-relaxed text-zinc-400">{text}</p>
+                  <p className="mt-2 text-[11px] leading-relaxed text-zinc-400">{text}</p>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="flex min-h-0 flex-col">
+            <p className="mb-3 text-[9px] font-black uppercase tracking-[0.35em] text-blue-400">
+              Project Case Study
+            </p>
             <div className="mb-4 flex flex-wrap items-center gap-2">
               <span className="rounded-full border border-blue-500/30 bg-blue-500/12 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-blue-300">
                 {details.type}
@@ -228,7 +254,7 @@ const ProjectCaseStudyModal = ({
             <h3 className="text-4xl font-black uppercase leading-none text-white md:text-5xl">
               {project.title}
             </h3>
-            <p className="mt-4 line-clamp-4 text-sm leading-relaxed text-zinc-400">
+            <p className="mt-4 text-sm leading-relaxed text-zinc-400">
               {project.description || "A carefully crafted digital product with a clean and scalable interface."}
             </p>
 
@@ -429,15 +455,12 @@ export default function PortfolioSection() {
         <div className="relative z-10 mx-auto w-full max-w-7xl">
           <div className="mb-6 grid gap-5 lg:grid-cols-[1fr_440px] lg:items-end">
             <div>
-              <p className="mb-4 inline-flex h-9 items-center rounded-full border border-blue-500/45 bg-blue-500/8 px-5 text-[10px] font-bold uppercase tracking-[0.22em] text-blue-400">
-                Horizontal Project Showcase
-              </p>
               <h2 className="text-4xl font-black leading-tight tracking-tight text-white md:text-5xl">
                 Selected <span className="text-blue-500">Projects</span>
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400 md:text-base">
-                Scroll vertically to move through the work. Each case combines product thinking,
-                interface craft, and full-stack implementation.
+                A curated collection combining product thinking, interface craft,
+                and dependable full-stack implementation.
               </p>
             </div>
 
@@ -507,9 +530,8 @@ export default function PortfolioSection() {
             </div>
           )}
 
-          <div className="mt-3 flex flex-col items-start justify-between gap-1 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 sm:flex-row sm:items-center sm:gap-4 sm:tracking-[0.24em]">
+          <div className="mt-3 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 sm:tracking-[0.24em]">
             <span>{filteredProjects.length} / {projects.length} projects</span>
-            <span>Scroll down · Swipe on touch</span>
           </div>
           <div className="mt-3 h-px overflow-hidden bg-white/8">
             <span
