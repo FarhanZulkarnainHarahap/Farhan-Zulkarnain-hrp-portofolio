@@ -24,47 +24,79 @@ interface DocumentData {
   createdAt: string;
 }
 
-const DOCS_PER_PAGE = 5;
+const DOCUMENT_SKELETON_COUNT = 4;
 
 const DocumentSkeleton = () => (
-  <section className="relative mx-auto w-full max-w-7xl px-4 py-20 md:px-6 lg:flex lg:h-screen lg:flex-col lg:justify-start lg:pb-32 lg:pt-18">
-    <div className="relative z-10 mb-10 animate-pulse border-b border-white/10 pb-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <div className="mb-4 h-3 w-42 rounded-full bg-blue-500/18" />
-          <div className="h-12 w-80 rounded-2xl bg-white/10 md:h-16 md:w-135" />
-        </div>
-        <div className="h-3 w-36 rounded-full bg-white/8" />
-      </div>
-    </div>
+  <section
+    className="relative min-h-screen w-full scroll-mt-4"
+    aria-label="Loading documents"
+    aria-busy="true"
+  >
+    <div className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-5 pb-36 pt-20 sm:px-8 lg:justify-start lg:px-10 lg:pb-40 lg:pt-10">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_50%,rgba(139,92,246,0.12),transparent_36%)]" />
 
-    <div className="relative z-10 mb-7 flex animate-pulse flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div className="h-12 w-full rounded-lg border border-white/8 bg-[#111722]/80 md:max-w-sm" />
-      <div className="h-12 w-full rounded-lg border border-white/8 bg-[#111722]/80 md:w-56" />
-    </div>
+      <div className="relative z-10 mx-auto w-full max-w-7xl animate-pulse">
+        <div className="mb-6 grid gap-5 lg:grid-cols-[1fr_440px] lg:items-end">
+          <div>
+            <div className="h-10 w-72 rounded-xl bg-white/10 md:h-12 md:w-102" />
+            <div className="mt-3 h-3 w-full max-w-150 rounded-full bg-white/7" />
+            <div className="mt-2 h-3 w-4/5 max-w-115 rounded-full bg-white/5" />
+          </div>
 
-    <div className="relative z-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 xl:gap-4">
-      {Array.from({ length: DOCS_PER_PAGE }, (_, index) => (
-        <div
-          key={index}
-          className="animate-pulse overflow-hidden rounded-xl border border-white/7 bg-[#101720]/92 shadow-[0_18px_60px_rgba(0,0,0,0.22)]"
-        >
-          <div className="h-24 bg-linear-to-br from-white/14 via-white/8 to-blue-500/8 sm:h-34 md:h-50" />
-          <div className="p-2 sm:p-3 md:p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1 space-y-2">
-                <div className="h-4 w-4/5 rounded-full bg-white/12" />
-                <div className="h-3 w-2/5 rounded-full bg-white/8" />
-              </div>
-              <div className="h-7 w-7 rounded-lg border border-white/8 bg-white/6 sm:h-9 sm:w-9 md:h-10 md:w-10" />
+          <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
+            <div className="h-11 w-full rounded-xl border border-white/8 bg-[#111722]/80">
+              <div className="ml-4 mt-4 h-3 w-32 rounded-full bg-white/7" />
             </div>
-            <div className="mt-3 hidden items-center justify-between sm:flex md:mt-5">
-              <div className="h-3 w-28 rounded-full bg-white/8" />
-              <div className="h-7 w-24 rounded-md border border-blue-500/10 bg-blue-500/12" />
+            <div className="h-11 w-full rounded-xl border border-white/8 bg-[#111722]/80">
+              <div className="ml-3 mt-4 h-3 w-24 rounded-full bg-white/7" />
             </div>
           </div>
         </div>
-      ))}
+
+        <div className="w-full overflow-hidden pb-4">
+          <div className="flex w-max gap-5 pr-6 lg:gap-7 lg:pr-10">
+            {Array.from({ length: DOCUMENT_SKELETON_COUNT }, (_, index) => (
+              <div
+                key={index}
+                className="w-[82vw] max-w-100 shrink-0 pt-3"
+              >
+                <article className="relative overflow-hidden rounded-[26px] border border-cyan-300/10 bg-[linear-gradient(145deg,rgba(16,28,48,0.92),rgba(5,11,22,0.82))] p-2 shadow-[0_22px_70px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.05)]">
+                  <span className="absolute left-6 top-0 z-20 h-5 w-32 rounded-b-xl border-x border-b border-cyan-300/10 bg-cyan-300/5" />
+                  <span className="absolute inset-x-5 top-3 z-20 h-px bg-linear-to-r from-transparent via-cyan-300/25 to-transparent" />
+
+                  <div className="relative h-52 overflow-hidden rounded-[20px] bg-linear-to-br from-white/14 via-white/7 to-blue-500/8 sm:h-62 lg:h-48">
+                    <div className="absolute left-5 top-5 h-3 w-22 rounded-full bg-white/12" />
+                    <div className="absolute left-5 top-10 h-7 w-3/5 rounded-lg bg-white/10" />
+                    <div className="absolute bottom-5 left-5 h-2.5 w-4/5 rounded-full bg-white/8" />
+                    <div className="absolute right-5 top-5 h-11 w-11 rounded-full border-4 border-white/8 bg-white/7" />
+                  </div>
+
+                  <div className="relative p-3 sm:p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="h-4 w-4/5 rounded-full bg-white/12" />
+                        <div className="mt-2 hidden h-3 w-2/5 rounded-full bg-white/7 sm:block" />
+                      </div>
+                      <div className="h-7 w-7 shrink-0 rounded-lg border border-white/8 bg-white/5 sm:h-9 sm:w-9 md:h-10 md:w-10" />
+                    </div>
+
+                    <div className="mt-2 flex items-center justify-end sm:mt-3 sm:justify-between">
+                      <div className="hidden h-3 w-26 rounded-full bg-white/7 sm:block" />
+                      <div className="h-5 w-20 rounded-md border border-blue-500/10 bg-blue-500/8" />
+                    </div>
+
+                    <div className="mt-4 h-10 w-full rounded-xl border border-blue-400/12 bg-blue-500/6">
+                      <div className="mx-auto mt-4 h-2 w-32 rounded-full bg-blue-300/10" />
+                    </div>
+                  </div>
+                </article>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-3 h-2.5 w-32 rounded-full bg-white/7" />
+      </div>
     </div>
   </section>
 );
