@@ -21,6 +21,7 @@ import * as FaIcons from "react-icons/fa6";
 import * as SiIcons from "react-icons/si";
 import * as DiIcons from "react-icons/di";
 import type { IconType } from "react-icons";
+import { apiFetch } from "@/lib/api-client";
 
 export default function ManageSkillPage() {
   const router = useRouter();
@@ -68,9 +69,8 @@ export default function ManageSkillPage() {
     if (!skillName) return alert("Skill name is required!");
 
     setLoading(true);
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     try {
-      const response = await fetch(`${API_URL}/api/skills`, {
+      const response = await apiFetch("/api/skills", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

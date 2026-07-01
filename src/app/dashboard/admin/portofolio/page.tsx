@@ -14,6 +14,7 @@ import {
   LuX,
 } from "react-icons/lu";
 import Link from "next/link";
+import { apiFetch } from "@/lib/api-client";
 
 interface Project {
   id: string;
@@ -88,11 +89,9 @@ export default function PortfolioPage() {
   const [updating, setUpdating] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
   const fetchPortfolios = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/api/portofolios`, {
+      const response = await apiFetch("/api/portofolios", {
         cache: "no-store",
         credentials: "include",
       });
@@ -105,7 +104,7 @@ export default function PortfolioPage() {
     } finally {
       setLoading(false);
     }
-  }, [API_URL]);
+  }, []);
 
   const openEditModal = (project: Project) => {
     setEditingProject(project);
@@ -165,7 +164,7 @@ export default function PortfolioPage() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/api/portofolios/${editingProject.id}`, {
+      const response = await apiFetch(`/api/portofolios/${editingProject.id}`, {
         method: "PUT",
         body: data,
         credentials: "include",
@@ -197,7 +196,7 @@ export default function PortfolioPage() {
 
     setDeletingId(id);
     try {
-      const response = await fetch(`${API_URL}/api/portofolios/${id}`, {
+      const response = await apiFetch(`/api/portofolios/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

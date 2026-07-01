@@ -41,7 +41,6 @@ interface Project {
   features?: string[] | string | null;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const PROJECT_SKELETON_COUNT = 3;
 const projectAccents = ["#3b82f6", "#10b981", "#facc15", "#a855f7"];
 
@@ -398,8 +397,8 @@ export default function PortfolioSection() {
     const fetchProjects = async () => {
       try {
         const result = await fetchCachedJson<{ success: boolean; data: Project[] }>(
-          `${API_URL}/api/portofolios`,
-          `portfolio-projects:${API_URL}`,
+          "/api/portofolios",
+          "portfolio-projects",
         );
         if (result.success) setProjects(result.data);
       } catch (error) {

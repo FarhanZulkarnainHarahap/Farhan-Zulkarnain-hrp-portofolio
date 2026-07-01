@@ -107,14 +107,12 @@ export default function DocSection() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
   useEffect(() => {
     const fetchDocs = async () => {
       try {
         const result = await fetchCachedJson<{ success: boolean; data: DocumentData[] }>(
-          `${API_URL}/api/documents`,
-          `portfolio-documents:${API_URL}`,
+          "/api/documents",
+          "portfolio-documents",
         );
         if (result.success) {
           setDocs(result.data);
@@ -127,7 +125,7 @@ export default function DocSection() {
     };
 
     fetchDocs();
-  }, [API_URL]);
+  }, []);
 
   useEffect(() => {
     const viewport = viewportRef.current;

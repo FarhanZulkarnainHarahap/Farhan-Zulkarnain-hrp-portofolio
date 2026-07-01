@@ -4,6 +4,7 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import { LuArrowLeft, LuCloudUpload, LuCircleCheck, LuLink, LuCode, LuLoader } from "react-icons/lu";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api-client";
 
 export default function UploadPortoPage() {
   const router = useRouter();
@@ -36,7 +37,6 @@ export default function UploadPortoPage() {
       setPreview(URL.createObjectURL(selectedFile));
     }
   };
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!file) return alert("Please choose a project image first!");
@@ -56,7 +56,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     data.append("image", file);
 
     try {
-      const response = await fetch(`${API_URL}/api/portofolios`, {
+      const response = await apiFetch("/api/portofolios", {
         method: "POST",
         body: data,
         credentials: "include", 

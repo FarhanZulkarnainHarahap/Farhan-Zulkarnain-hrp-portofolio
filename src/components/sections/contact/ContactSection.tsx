@@ -4,6 +4,7 @@ import { useState } from "react";
 import { FaLinkedin, FaInstagram, FaGithub, FaEnvelope, FaPhoneAlt, FaWhatsapp } from "react-icons/fa";
 import { IoSendSharp } from "react-icons/io5";
 import { LuLoader } from "react-icons/lu";
+import { apiFetch } from "@/lib/api-client";
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
@@ -11,7 +12,6 @@ export default function ContactSection() {
     email: "",
     message: "",
   });
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL_DEVELOPMENT;
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{ type: "success" | "error" | null; msg: string }>({ type: null, msg: "" });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -24,7 +24,7 @@ export default function ContactSection() {
     setStatus({ type: null, msg: "" });
 
     try {
-      const response = await fetch(`${API_URL}/api/contact`, {
+      const response = await apiFetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

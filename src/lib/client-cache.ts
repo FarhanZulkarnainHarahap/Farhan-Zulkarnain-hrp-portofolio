@@ -1,3 +1,5 @@
+import { apiFetch } from "@/lib/api-client";
+
 interface CacheEntry<T> {
   expiresAt: number;
   value: T;
@@ -7,7 +9,7 @@ const memoryCache = new Map<string, CacheEntry<unknown>>();
 const DEFAULT_TTL = 5 * 60 * 1000;
 
 export async function fetchCachedJson<T>(
-  url: string,
+  path: string,
   cacheKey: string,
   ttl = DEFAULT_TTL,
 ): Promise<T> {
@@ -35,7 +37,7 @@ export async function fetchCachedJson<T>(
     }
   }
 
-  const response = await fetch(url, {
+  const response = await apiFetch(path, {
     headers: {
       Accept: "application/json",
     },

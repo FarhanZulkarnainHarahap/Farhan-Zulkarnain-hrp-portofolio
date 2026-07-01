@@ -18,6 +18,7 @@ import {
   LuLogOut,
   LuRefreshCw
 } from "react-icons/lu";
+import { apiFetch } from "@/lib/api-client";
 
 interface AdminUser {
   name: string;
@@ -36,7 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     const verifySession = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/profile`, {
+        const res = await apiFetch("/api/users/profile", {
           method: "GET",
           credentials: "include",
         });
@@ -64,7 +65,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     try {
       setIsLoggingOut(true);
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
+      const res = await apiFetch("/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });

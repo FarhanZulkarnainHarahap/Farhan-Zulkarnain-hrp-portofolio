@@ -79,7 +79,6 @@ const DynamicIcon = ({ name }: { name: string }) => {
   return <Icon className="h-7 w-7 sm:h-8 sm:w-8 lg:h-[26px] lg:w-[26px]" />;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 export default function SkillSection() {
   const [skills, setSkills] = useState<SkillData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,8 +87,8 @@ export default function SkillSection() {
     const fetchSkills = async () => {
       try {
         const data = await fetchCachedJson<SkillData[] | { data?: SkillData[] }>(
-          `${API_URL}/api/skills`,
-          `portfolio-skills:${API_URL}`,
+          "/api/skills",
+          "portfolio-skills",
         );
         setSkills(Array.isArray(data) ? data : data.data || []);
       } catch (error) {

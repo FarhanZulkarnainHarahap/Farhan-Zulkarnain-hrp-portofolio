@@ -10,6 +10,7 @@ import * as Lu from "react-icons/lu";
 import * as Fa from "react-icons/fa";
 import * as Si from "react-icons/si";
 import * as Di from "react-icons/di";
+import { apiFetch } from "@/lib/api-client";
 
 interface Skill {
   id: number;
@@ -48,7 +49,6 @@ const DynamicIcon = ({ name }: { name: string }) => {
 
   return <Lu.LuShieldCheck className="w-full h-full opacity-20" />;
 };
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 export default function SkillPage() {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,7 +57,7 @@ export default function SkillPage() {
 
   const fetchSkills = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/api/skills`, {
+      const response = await apiFetch("/api/skills", {
         cache: 'no-store',
         credentials: "include"
       });
@@ -84,7 +84,7 @@ export default function SkillPage() {
 
     setDeletingId(id);
     try {
-      const response = await fetch(`${API_URL}/api/skills/${id}`, {
+      const response = await apiFetch(`/api/skills/${id}`, {
         method: "DELETE",
         credentials: "include", 
       });

@@ -12,6 +12,7 @@ import {
   LuHardDrive
 } from "react-icons/lu";
 import Link from "next/link";
+import { apiFetch } from "@/lib/api-client";
 
 // Interface aligned with the Prisma database.
 interface Document {
@@ -22,8 +23,6 @@ interface Document {
   size: number; // Dalam satuan Bytes
   createdAt: string;
 }
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
 export default function DocumentsPage() {
   const [docs, setDocs] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +38,7 @@ export default function DocumentsPage() {
   // Fetch data from API.
   const fetchDocuments = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/api/documents`, {
+      const response = await apiFetch("/api/documents", {
         cache: 'no-store'
       });
       const result = await response.json();
@@ -66,7 +65,7 @@ export default function DocumentsPage() {
     if (!confirm("Delete this document permanently?")) return;
     
     try {
-      const res = await fetch(`${API_URL}/api/documents/${id}`, {
+      const res = await apiFetch(`/api/documents/${id}`, {
         method: "DELETE",
         credentials: "include"
       });

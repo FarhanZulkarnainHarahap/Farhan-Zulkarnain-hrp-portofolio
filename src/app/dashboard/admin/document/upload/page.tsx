@@ -4,6 +4,7 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import { LuArrowLeft, LuFileUp, LuShieldCheck, LuRefreshCw, LuFileText, LuX } from "react-icons/lu";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api-client";
 
 export default function UploadDocPage() {
   const router = useRouter();
@@ -38,7 +39,6 @@ export default function UploadDocPage() {
     }
   };
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
   // Submit to backend
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -50,7 +50,7 @@ export default function UploadDocPage() {
     data.append("category", category);
     data.append("file", file);
     try {
-      const response = await fetch(`${API_URL}/api/documents`, {
+      const response = await apiFetch("/api/documents", {
         method: "POST",
         body: data,
         credentials: "include",

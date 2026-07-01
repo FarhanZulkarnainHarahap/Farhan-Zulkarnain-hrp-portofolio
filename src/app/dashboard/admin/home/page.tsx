@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { LuZap, LuFolder, LuFileText, LuHistory, LuLoader, LuRefreshCw } from "react-icons/lu";
+import { apiFetch } from "@/lib/api-client";
 
 interface DashboardStats {
   skills: number;
@@ -19,8 +20,6 @@ export default function HomePage() {
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchDashboardData = useCallback(async () => {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-    
     const requestOptions: RequestInit = {
       method: "GET",
       credentials: "include",
@@ -33,9 +32,9 @@ export default function HomePage() {
       setRefreshing(true);
       
       const [resSkills, resPorto, resDocs] = await Promise.all([
-        fetch(`${API_URL}/api/skills`, requestOptions),
-        fetch(`${API_URL}/api/portofolios`, requestOptions),
-        fetch(`${API_URL}/api/documents/all`, requestOptions)
+        apiFetch("/api/skills", requestOptions),
+        apiFetch("/api/portofolios", requestOptions),
+        apiFetch("/api/documents/all", requestOptions)
       ]);
 
       const parseData = async (res: Response) => {
