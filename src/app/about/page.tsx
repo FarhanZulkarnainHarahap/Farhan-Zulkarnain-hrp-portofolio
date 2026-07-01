@@ -265,22 +265,22 @@ export default function AboutPage() {
 
           <section
             id="about-skills"
-            className="about-detail-section relative min-h-[100svh] scroll-mt-16 px-5 pb-36 pt-20 sm:px-8 lg:px-14 xl:scroll-mt-0 xl:px-18"
+            className="about-detail-section relative min-h-[100svh] scroll-mt-16 px-5 pb-36 pt-20 sm:px-8 lg:px-14 lg:pb-40 lg:pt-8 xl:scroll-mt-0 xl:px-18"
           >
             <div className="mx-auto w-full max-w-6xl">
               <p className="text-[10px] font-black uppercase tracking-[0.35em] text-blue-400">
                 My Skills
               </p>
-              <h2 className="mt-7 text-5xl font-black uppercase leading-[0.92] tracking-tight sm:text-7xl">
+              <h2 className="mt-7 text-5xl font-black uppercase leading-[0.92] tracking-tight sm:text-7xl lg:mt-4 lg:text-5xl xl:text-6xl">
                 My Skills &amp; <span className="text-blue-500">Expertise</span>
               </h2>
-              <p className="mt-7 max-w-5xl text-sm leading-7 text-zinc-400 sm:text-base">
+              <p className="mt-7 max-w-5xl text-sm leading-7 text-zinc-400 sm:text-base lg:mt-4 lg:max-w-4xl lg:text-sm lg:leading-6">
                 I build modern, scalable web applications from interface to API. My daily toolkit
                 spans TypeScript, React, Next.js, Node.js, Express.js, databases, version control,
                 deployment workflows, and the design tools needed to turn a concept into a clear
                 digital experience.
               </p>
-              <div className="mt-10 rounded-3xl border border-blue-500/18 bg-[#050b14]/58 p-5 shadow-[0_24px_90px_rgba(0,0,0,0.24)] sm:p-8 lg:mt-8 lg:p-6">
+              <div className="mt-10 rounded-3xl border border-blue-500/18 bg-[#050b14]/58 p-5 shadow-[0_24px_90px_rgba(0,0,0,0.24)] sm:p-8 lg:mt-5 lg:p-4">
                 <SkillSection />
               </div>
             </div>
