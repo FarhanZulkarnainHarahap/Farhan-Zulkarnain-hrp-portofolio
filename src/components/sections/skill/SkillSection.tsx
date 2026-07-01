@@ -7,6 +7,7 @@ import * as Fa from "react-icons/fa6";
 import * as Si from "react-icons/si";
 import * as Di from "react-icons/di";
 import { fetchCachedJson } from "@/lib/client-cache";
+import { resolveSkillIconKey } from "@/lib/skill-icon-resolver";
 interface SkillData {
   id: string;
   name: string;
@@ -71,10 +72,7 @@ const SkillSkeleton = () => (
 // --- HELPER: RENDER ICON ---
 const DynamicIcon = ({ name }: { name: string }) => {
   const allIcons: Record<string, IconType> = { ...Lu, ...Fa, ...Si, ...Di };
-  const normalized = name.toLowerCase().replace(/\.js/g, 'dotjs').replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
-  const foundKey = Object.keys(allIcons).find((key) => 
-    key.toLowerCase() === name.toLowerCase() || key.toLowerCase() === `si${normalized}`
-  );
+  const foundKey = resolveSkillIconKey(name, allIcons);
   const Icon = foundKey ? allIcons[foundKey] : Lu.LuShieldAlert;
   return <Icon className="h-7 w-7 sm:h-8 sm:w-8 lg:h-[26px] lg:w-[26px]" />;
 };

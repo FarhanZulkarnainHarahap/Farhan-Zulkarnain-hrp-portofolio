@@ -11,6 +11,7 @@ import * as Fa from "react-icons/fa";
 import * as Si from "react-icons/si";
 import * as Di from "react-icons/di";
 import { apiFetch } from "@/lib/api-client";
+import { resolveSkillIconKey } from "@/lib/skill-icon-resolver";
 
 interface Skill {
   id: number;
@@ -26,21 +27,7 @@ const DynamicIcon = ({ name }: { name: string }) => {
     return <Icon className="w-full h-full" />;
   }
 
-  const normalizedSearch = name.toLowerCase()
-    .replace(/\.js/g, 'dotjs')
-    .replace(/\s+/g, '')
-    .replace(/[^a-z0-9]/g, '');
-
-  const foundKey = Object.keys(allIcons).find((key) => {
-    const k = key.toLowerCase();
-    return (
-      k === `si${normalizedSearch}` || 
-      k === `fa${normalizedSearch}` || 
-      k === `lu${normalizedSearch}` || 
-      k === `di${normalizedSearch}` || 
-      k === normalizedSearch
-    );
-  });
+  const foundKey = resolveSkillIconKey(name, allIcons);
 
   if (foundKey) {
     const Icon = allIcons[foundKey];

@@ -22,6 +22,7 @@ import * as SiIcons from "react-icons/si";
 import * as DiIcons from "react-icons/di";
 import type { IconType } from "react-icons";
 import { apiFetch } from "@/lib/api-client";
+import { resolveSkillIconKey } from "@/lib/skill-icon-resolver";
 
 export default function ManageSkillPage() {
   const router = useRouter();
@@ -34,18 +35,7 @@ export default function ManageSkillPage() {
 
   const detectedIcon = useMemo(() => {
     if (!skillName) return "";
-
-    const normalized = skillName.toLowerCase()
-      .replace(/\.js/g, 'dotjs')
-      .replace(/\s+/g, '')
-      .replace(/[^a-z0-9]/g, '');
-
-    const foundKey = Object.keys(allIcons).find((key) => {
-      const k = key.toLowerCase();
-      return k === `si${normalized}` || k === `fa${normalized}` || k === `lu${normalized}` || k === normalized || k === `di${normalized}`;
-    });
-
-    return foundKey || "";
+    return resolveSkillIconKey(skillName, allIcons);
   }, [skillName, allIcons]);
 
   useEffect(() => {
