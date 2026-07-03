@@ -3,7 +3,8 @@
 /* Theme extensions */
 
 :root {
-  scroll-behavior: auto; 
+  --music-glow-opacity: 0;
+  scroll-behavior: auto;
 }
 
 html {
@@ -140,6 +141,25 @@ body::-webkit-scrollbar-thumb:hover {
   background-size: 72px 72px;
   opacity: 0.12;
   mask-image: linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
+}
+
+.portfolio-bg::after {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(168, 85, 247, 0.5), transparent 25%),
+    radial-gradient(circle at 74% 34%, rgba(34, 211, 238, 0.42), transparent 28%),
+    radial-gradient(circle at 56% 82%, rgba(37, 99, 235, 0.36), transparent 24%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 140ms linear;
+}
+
+html[data-music="playing"] .portfolio-bg::after {
+  opacity: var(--music-glow-opacity);
 }
 
 .portfolio-section-bg {

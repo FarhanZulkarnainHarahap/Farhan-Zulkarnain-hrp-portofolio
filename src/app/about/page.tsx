@@ -14,6 +14,7 @@ import {
   LuUser,
 } from "react-icons/lu";
 import { FaGithub, FaInstagram, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
+import MusicPlayer from "@/components/MusicPlayer";
 import Navbar from "@/components/Navbar";
 import SkillSection from "@/components/sections/skill/SkillSection";
 import DocSection from "@/components/sections/document/DocSection";
@@ -102,6 +103,7 @@ export default function AboutPage() {
   return (
     <>
       <Navbar />
+      <MusicPlayer />
       <main className="portfolio-bg relative min-h-screen overflow-x-hidden text-white">
         <CyberBackground />
         <aside className="fixed inset-y-0 left-0 z-50 hidden w-42 border-r border-blue-500/25 bg-[#030711]/88 px-5 py-7 backdrop-blur-xl xl:flex xl:flex-col">
