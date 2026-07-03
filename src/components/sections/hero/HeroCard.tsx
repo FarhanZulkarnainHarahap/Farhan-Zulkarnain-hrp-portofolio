@@ -43,6 +43,17 @@ export default function HeroCard() {
 
   return (
     <section className="relative isolate flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-transparent pb-40 pt-16 sm:pb-40 sm:pt-20 md:pb-44 lg:h-screen lg:py-0">
+      <Image
+        src="/images/portfolio-hero-neon.png"
+        alt=""
+        fill
+        priority
+        fetchPriority="high"
+        quality={72}
+        sizes="100vw"
+        className="pointer-events-none -z-20 object-cover object-[68%_center] opacity-20 mix-blend-screen lg:opacity-28"
+      />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(2,3,10,0.9)_0%,rgba(2,3,10,0.62)_48%,rgba(2,3,10,0.34)_100%)]" />
       <div className="absolute top-1/4 -left-20 hidden w-80 h-80 bg-blue-600/8 rounded-full blur-[90px] pointer-events-none md:block" />
       
       <div className="z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-6 md:px-12 lg:grid-cols-12 lg:gap-12">

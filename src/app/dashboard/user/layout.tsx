@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import { HoverSoundController } from "@/hooks/useHoverSound";
 
 export default function UserLayout({
   children,
@@ -8,6 +9,7 @@ export default function UserLayout({
   return (
     <>
       <Navbar />
+      <HoverSoundController />
       
       <div className="relative z-10 min-h-screen bg-transparent">
         {children}

@@ -76,7 +76,7 @@ export default function ProjectCard({
       style={cardStyle}
       onPointerMove={handlePointerMove}
       onPointerLeave={resetTilt}
-      className={`premium-tilt group relative overflow-hidden border bg-[#080b14]/95 backdrop-blur-xl ${
+      className={`interactive-card premium-tilt group relative overflow-hidden border bg-[#080b14]/95 backdrop-blur-xl ${
         variant === "featured"
           ? "w-92 rounded-[28px] p-3 xl:w-100"
         : variant === "showcase"
