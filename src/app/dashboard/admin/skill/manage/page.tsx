@@ -24,10 +24,22 @@ import type { IconType } from "react-icons";
 import { apiFetch } from "@/lib/api-client";
 import { resolveSkillIconKey } from "@/lib/skill-icon-resolver";
 
+type SkillCategory = "FRONTEND" | "BACKEND" | "TOOLS" | "OTHERS";
+
+const CATEGORY_OPTIONS: ReadonlyArray<{
+  value: SkillCategory;
+  label: string;
+}> = [
+  { value: "FRONTEND", label: "Frontend" },
+  { value: "BACKEND", label: "Backend" },
+  { value: "TOOLS", label: "Tools" },
+  { value: "OTHERS", label: "Other / Auto-detect" },
+];
+
 export default function ManageSkillPage() {
   const router = useRouter();
   const [skillName, setSkillName] = useState("");
-  const [category, setCategory] = useState("FRONTEND");
+  const [category, setCategory] = useState<SkillCategory>("FRONTEND");
   const [loading, setLoading] = useState(false);
   const [createdSkill, setCreatedSkill] = useState<{ name: string; category: string } | null>(null);
 
@@ -177,27 +189,40 @@ export default function ManageSkillPage() {
             />
           </div>
 
-          {/* Category Enum */}
+          {/* Category */}
           <div className="space-y-4">
-            <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">
-              <LuLayers size={14} className="text-indigo-500" /> Select Category
+            <label
+              htmlFor="skill-category"
+              className="ml-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400"
+            >
+              <LuLayers size={14} className="text-indigo-500" /> Category
             </label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {["FRONTEND", "BACKEND", "TOOLS", "OTHERS"].map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setCategory(cat)}
-                  className={`py-4 rounded-2xl text-[10px] font-black tracking-widest transition-all border ${
-                    category === cat 
-                    ? "bg-slate-900 text-white border-slate-900 shadow-xl" 
-                    : "bg-white text-slate-400 border-slate-200 hover:border-indigo-300"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+            <div className="relative">
+              <select
+                id="skill-category"
+                name="category"
+                value={category}
+                onChange={(event) =>
+                  setCategory(event.target.value as SkillCategory)
+                }
+                required
+                className="w-full appearance-none rounded-3xl border border-slate-200 bg-slate-50 px-8 py-5 text-base font-bold text-slate-700 shadow-sm outline-none transition-all focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+              >
+                {CATEGORY_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <LuLayers
+                aria-hidden="true"
+                className="pointer-events-none absolute right-7 top-1/2 -translate-y-1/2 text-indigo-500"
+                size={18}
+              />
             </div>
+            <p className="ml-2 text-xs leading-relaxed text-slate-400">
+              Database dan UI/UX dari data lama tetap dikenali otomatis berdasarkan nama skill.
+            </p>
           </div>
 
           {/* Button */}

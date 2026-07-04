@@ -20,6 +20,15 @@ const SKILL_SKELETON_COUNTS = [4, 5, 4, 5, 3];
 const getDisplayCategory = (skill: SkillData) => {
   const rawCategory = skill.category?.toUpperCase() || "TOOLS";
   const identity = `${skill.name} ${skill.iconName}`.toLowerCase();
+  const hasUiUxIdentity =
+    /(figma|adobe|canva|photoshop)/.test(identity) ||
+    /(?:^|[^a-z0-9])(design|ui|ux|uiux)(?:$|[^a-z0-9])/.test(identity);
+
+  // Kategori eksplisit harus menang dari inferensi nama. Contohnya, "redux"
+  // berakhiran "ux", tetapi data backend sudah menetapkannya sebagai FRONTEND.
+  if (rawCategory === "FRONTEND") {
+    return "FRONTEND";
+  }
 
   if (
     rawCategory === "DATABASE" ||
@@ -31,12 +40,12 @@ const getDisplayCategory = (skill: SkillData) => {
   if (
     rawCategory === "UIUX" ||
     rawCategory === "UI/UX" ||
-    /(figma|adobe|canva|design|ui|ux|photoshop)/.test(identity)
+    hasUiUxIdentity
   ) {
     return "UI/UX";
   }
 
-  if (["FRONTEND", "BACKEND", "TOOLS"].includes(rawCategory)) {
+  if (["BACKEND", "TOOLS"].includes(rawCategory)) {
     return rawCategory;
   }
 
