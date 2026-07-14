@@ -47,26 +47,20 @@ const nextConfig: NextConfig = {
         destination: "/about",
         permanent: false,
       },
+      {
+        source: "/home",
+        destination: "/",
+        permanent: false,
+      },
+      {
+        source: "/explore",
+        destination: "/",
+        permanent: false,
+      },
     ];
   },
   async rewrites() {
     return [
-      {
-        source: '/home',    // URL yang diketik di browser
-        destination: '/dashboard/user', // Folder asli di kodingan
-      },
-      {
-        source: '/explore',
-        destination: '/dashboard/user',
-      },
-      {
-        source: '/projects',
-        destination: '/dashboard/user',
-      },
-      {
-        source: '/contact',
-        destination: '/dashboard/user',
-      },
       {
         source: '/admin/home',    // URL yang diketik di browser
         destination: '/dashboard/admin/home', // Folder asli di kodingan
