@@ -37,29 +37,6 @@ export interface Document {
   updatedAt?: string;
 }
 
-export interface Skill {
-  id: string;
-  name: string;
-  iconName: string;
-  category: "FRONTEND" | "BACKEND" | "TOOLS" | "OTHERS" | string;
-  createdAt?: string;
-}
-
-export interface Experience {
-  id: string;
-  title: string;
-  company: string;
-  location: string | null;
-  startDate: string;
-  endDate: string | null;
-  current: boolean;
-  description: string | null;
-  technologies: string[];
-  sortOrder: number;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
 function isRecord(value: unknown): value is UnknownRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -181,68 +158,6 @@ function parseDocument(value: unknown, index: number): Document {
   };
 }
 
-function parseSkill(value: unknown, index: number): Skill {
-  const resourceName = `Skill[${index}]`;
-
-  if (!isRecord(value)) {
-    throw new TypeError(`${resourceName} harus berupa object.`);
-  }
-
-  return {
-    id: requiredString(value, "id", resourceName),
-    name: requiredString(value, "name", resourceName),
-    iconName: requiredString(value, "iconName", resourceName),
-    category: requiredString(value, "category", resourceName),
-    createdAt: optionalTimestamp(value, "createdAt", resourceName),
-  };
-}
-
-function parseExperience(value: unknown, index: number): Experience {
-  const resourceName = `Experience[${index}]`;
-
-  if (!isRecord(value)) {
-    throw new TypeError(`${resourceName} harus berupa object.`);
-  }
-
-  const current = value.current;
-  const sortOrder = value.sortOrder;
-
-  if (typeof current !== "boolean") {
-    throw new TypeError(`${resourceName}.current harus berupa boolean.`);
-  }
-
-  if (typeof sortOrder !== "number" || !Number.isFinite(sortOrder)) {
-    throw new TypeError(`${resourceName}.sortOrder harus berupa number.`);
-  }
-
-  return {
-    id: requiredString(value, "id", resourceName),
-    title: requiredString(value, "title", resourceName),
-    company: requiredString(value, "company", resourceName),
-    location: optionalString(value, "location", resourceName),
-    startDate: requiredString(value, "startDate", resourceName),
-    endDate: optionalString(value, "endDate", resourceName),
-    current,
-    description: optionalString(value, "description", resourceName),
-    technologies: optionalStringArray(value, "technologies", resourceName),
-    sortOrder,
-    createdAt: optionalTimestamp(value, "createdAt", resourceName),
-    updatedAt: optionalTimestamp(value, "updatedAt", resourceName),
-  };
-}
-
-function parseSingle<T>(
-  payload: unknown,
-  resourceName: string,
-  parseItem: ItemParser<T>,
-): T {
-  if (!isRecord(payload) || payload.success !== true) {
-    throw new TypeError(`Respons ${resourceName} dari backend tidak valid.`);
-  }
-
-  return parseItem(payload.data, 0);
-}
-
 function parseCollection<T>(
   payload: unknown,
   resourceName: string,
@@ -286,45 +201,10 @@ async function fetchCollection<T>(
   return parseCollection(payload, resourceName, parseItem);
 }
 
-async function fetchSingle<T>(
-  path: string,
-  resourceName: string,
-  parseItem: ItemParser<T>,
-): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-    },
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error(
-      `Gagal mengambil ${resourceName}: backend merespons HTTP ${response.status}.`,
-    );
-  }
-
-  const payload: unknown = await response.json();
-  return parseSingle(payload, resourceName, parseItem);
-}
-
 export function getProjects(): Promise<Project[]> {
   return fetchCollection("/api/portofolios", "projects", parseProject);
 }
 
-export function getProjectById(id: string): Promise<Project> {
-  return fetchSingle(`/api/portofolios/${encodeURIComponent(id)}`, "project", parseProject);
-}
-
 export function getDocuments(): Promise<Document[]> {
   return fetchCollection("/api/documents", "documents", parseDocument);
-}
-
-export function getSkills(): Promise<Skill[]> {
-  return fetchCollection("/api/skills", "skills", parseSkill);
-}
-
-export function getExperiences(): Promise<Experience[]> {
-  return fetchCollection("/api/experiences", "experiences", parseExperience);
 }

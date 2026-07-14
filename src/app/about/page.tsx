@@ -1,280 +1,301 @@
-import Link from "next/link";
-import type { Metadata } from "next";
-import type { IconType } from "react-icons";
+"use client";
+
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
-  LuArrowRight,
-  LuBriefcaseBusiness,
+  LuArrowLeft,
   LuCalendarDays,
-  LuCode,
-  LuDatabase,
+  LuCodeXml,
   LuFileText,
-  LuLayers3,
   LuMapPin,
+  LuPanelsTopLeft,
+  LuUser,
 } from "react-icons/lu";
-import CinematicScrollController from "@/components/motion/CinematicScrollController";
-import PublicDock from "@/components/navigation/PublicDock";
-import CinematicCanvas from "@/components/three/cinematic/CinematicCanvas";
-import {
-  getDocuments,
-  getExperiences,
-  getProjects,
-  getSkills,
-  type Document,
-  type Experience,
-  type Project,
-  type Skill,
-} from "@/services/api";
+import { FaGithub, FaInstagram, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
+import MusicPlayer from "@/components/MusicPlayer";
+import Navbar from "@/components/Navbar";
+import SkillSection from "@/components/sections/skill/SkillSection";
+import DocSection from "@/components/sections/document/DocSection";
+import { getOptimizedImageUrl } from "@/lib/image";
 
-export const dynamic = "force-dynamic";
+const CyberBackground = dynamic(() => import("@/components/CyberBackground"), {
+  ssr: false,
+});
 
-export const metadata: Metadata = {
-  title: "About",
-  description:
-    "About the Nexxus portfolio system, skills, experience, documents, and full-stack delivery approach.",
-  alternates: { canonical: "/about" },
-};
+const profileImage = getOptimizedImageUrl(
+  "https://res.cloudinary.com/dpanr1qqp/image/upload/v1765874955/bake-bliss/b1v5qdy9whqszyqohdjb.jpg",
+  1000,
+);
 
-async function safeLoad<T>(loader: () => Promise<T>, fallback: T) {
-  try {
-    return await loader();
-  } catch {
-    return fallback;
-  }
-}
+const journeySections = [
+  { id: "about-overview", label: "About", icon: LuUser },
+  { id: "about-skills", label: "Skill", icon: LuCodeXml },
+  { id: "about-documents", label: "Document", icon: LuFileText },
+];
 
-function groupSkills(skills: Skill[]) {
-  return skills.reduce<Record<string, Skill[]>>((groups, skill) => {
-    const key = skill.category || "TOOLS";
-    groups[key] = groups[key] ? [...groups[key], skill] : [skill];
-    return groups;
-  }, {});
-}
+const socialLinks = [
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/farhan-zulkarnain-71801a347",
+    icon: FaLinkedinIn,
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/farhan.nexxus",
+    icon: FaInstagram,
+  },
+  {
+    label: "GitHub",
+    href: "https://github.com/FarhanZulkarnainHarahap",
+    icon: FaGithub,
+  },
+  {
+    label: "WhatsApp",
+    href: "https://wa.me/6281958169283",
+    icon: FaWhatsapp,
+  },
+];
 
-function formatMonthYear(value?: string | null) {
-  if (!value) return "Present";
-  return new Intl.DateTimeFormat("en", { month: "short", year: "numeric" }).format(
-    new Date(value),
-  );
-}
+export default function AboutPage() {
+  const router = useRouter();
+  const [activeSection, setActiveSection] = useState("about-overview");
 
-export default async function AboutPage() {
-  const [projects, skills, experiences, documents] = await Promise.all([
-    safeLoad(getProjects, [] as Project[]),
-    safeLoad(getSkills, [] as Skill[]),
-    safeLoad(getExperiences, [] as Experience[]),
-    safeLoad(getDocuments, [] as Document[]),
-  ]);
-  const groupedSkills = groupSkills(skills);
-  const stats: Array<{ label: string; value: number; icon: IconType }> = [
-    { label: "Projects", value: projects.length, icon: LuBriefcaseBusiness },
-    { label: "Skills", value: skills.length, icon: LuCode },
-    { label: "Experience", value: experiences.length, icon: LuLayers3 },
-    { label: "Documents", value: documents.length, icon: LuFileText },
-  ];
+  useEffect(() => {
+    const sections = journeySections
+      .map(({ id }) => document.getElementById(id))
+      .filter((section): section is HTMLElement => Boolean(section));
+
+    window.history.replaceState(null, "", "/about");
+
+    const storedTarget = window.sessionStorage.getItem("about:target");
+    if (storedTarget && journeySections.some(({ id }) => id === storedTarget)) {
+      window.sessionStorage.removeItem("about:target");
+      window.requestAnimationFrame(() => {
+        document.getElementById(storedTarget)?.scrollIntoView({ block: "start" });
+        setActiveSection(storedTarget);
+      });
+    }
+
+    const updateActiveSection = () => {
+      const target = sections
+        .map((section) => ({
+          id: section.id,
+          distance: Math.abs(section.getBoundingClientRect().top - window.innerHeight * 0.28),
+        }))
+        .sort((a, b) => a.distance - b.distance)[0];
+
+      if (target) setActiveSection(target.id);
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    return () => window.removeEventListener("scroll", updateActiveSection);
+  }, []);
+
+  const goToSection = (id: string) => {
+    setActiveSection(id);
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.history.replaceState(null, "", "/about");
+  };
 
   return (
     <>
-      <PublicDock />
-      <CinematicScrollController>
-        <main className="min-h-screen overflow-x-clip bg-[#02040a] pb-36 text-slate-100">
-          <section className="relative isolate overflow-hidden px-5 pb-28 pt-28 sm:px-8 lg:px-12">
-            <CinematicCanvas />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,4,10,0.68),#02040a_82%)]" />
-            <div className="relative z-10 mx-auto max-w-7xl">
-              <p data-hero-reveal className="text-[11px] font-black uppercase tracking-[0.34em] text-cyan-200">
-                About
-              </p>
-              <h1 data-hero-reveal className="mt-7 max-w-5xl text-5xl font-black uppercase leading-[0.92] text-white sm:text-7xl lg:text-8xl">
-                A portfolio built as a living full-stack system.
-              </h1>
-              <p data-hero-reveal className="mt-7 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
-                The public experience is connected to the same Express API, Prisma models,
-                Cloudinary-backed documents, and protected admin flows used to manage the
-                portfolio.
-              </p>
-            </div>
-          </section>
+      <Navbar />
+      <MusicPlayer />
+      <main className="portfolio-bg relative min-h-screen overflow-x-hidden text-white">
+        <CyberBackground />
+        <aside className="fixed inset-y-0 left-0 z-50 hidden w-42 border-r border-blue-500/25 bg-[#030711]/88 px-5 py-7 backdrop-blur-xl xl:flex xl:flex-col">
+          <button
+            type="button"
+            onClick={() => router.push("/home")}
+            aria-label="Back to home"
+            data-cursor-label="BACK"
+            className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-blue-400/50 bg-blue-500/8 text-blue-200 shadow-[0_0_28px_rgba(37,99,235,0.28),inset_0_0_22px_rgba(37,99,235,0.1)] transition-all hover:-translate-x-1 hover:border-cyan-300 hover:bg-blue-500/18 hover:text-white"
+          >
+            <LuArrowLeft size={24} />
+          </button>
 
-          <section className="px-5 py-18 sm:px-8 lg:px-12">
-            <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-4">
-              {stats.map(({ label, value, icon: Icon }) => (
-                <article key={label} data-cinematic className="rounded-[28px] border border-white/10 bg-white/[0.035] p-6">
-                  <Icon className="h-6 w-6 text-cyan-200" />
-                  <p className="mt-8 text-4xl font-black text-white">{value}</p>
-                  <h2 className="mt-2 text-[11px] font-black uppercase tracking-[0.22em] text-slate-500">
-                    {label}
-                  </h2>
-                </article>
-              ))}
-            </div>
-          </section>
+          <nav className="relative mt-12" aria-label="About page sections">
+            <span className="absolute bottom-5 left-[10px] top-5 w-px bg-linear-to-b from-blue-400 via-blue-500/45 to-zinc-700" />
+            <ul className="space-y-8">
+              {journeySections.map(({ id, label }) => {
+                const isActive = activeSection === id;
+                return (
+                  <li key={id} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => goToSection(id)}
+                      className={`group flex w-full items-center gap-3 text-left transition-colors ${
+                        isActive ? "text-blue-400" : "text-zinc-500 hover:text-zinc-200"
+                      }`}
+                    >
+                      <span
+                        className={`relative z-10 h-5 w-5 shrink-0 rounded-full border-[3px] bg-[#030711] transition-all ${
+                          isActive
+                            ? "border-white shadow-[0_0_0_4px_#1677ff,0_0_20px_#1677ff]"
+                            : "border-zinc-500 group-hover:border-blue-400"
+                        }`}
+                      />
+                      <span className="text-[10px] font-black uppercase tracking-[0.12em]">
+                        {label}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
 
-          <section className="px-5 py-18 sm:px-8 lg:px-12">
-            <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-              <div data-cinematic>
-                <p className="text-[11px] font-black uppercase tracking-[0.34em] text-cyan-200">
-                  Professional Focus
-                </p>
-                <h2 className="mt-5 text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
-                  Interface, API, database, and deployment.
-                </h2>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                {[
-                  ["Frontend", "Readable interfaces, responsive states, and accessible user flows."],
-                  ["Backend", "Express endpoints, JWT cookies, validation paths, and role-protected actions."],
-                  ["Data", "Prisma models for portfolio, skill, experience, document, user, and contact data."],
-                  ["Delivery", "Vercel-ready frontend, API deployment config, and production environment boundaries."],
-                ].map(([title, text]) => (
-                  <article key={title} data-cinematic className="rounded-[26px] border border-white/10 bg-white/[0.035] p-6">
-                    <LuDatabase className="h-5 w-5 text-cyan-200" />
-                    <h3 className="mt-6 text-2xl font-black uppercase text-white">{title}</h3>
-                    <p className="mt-3 text-sm leading-6 text-slate-400">{text}</p>
-                  </article>
+          <div className="mt-auto grid gap-2">
+            {socialLinks.map(({ label, href, icon: Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="grid h-10 w-10 place-items-center rounded-lg border border-blue-500/25 bg-blue-500/5 text-zinc-300 transition-all hover:border-blue-400 hover:bg-blue-500/15 hover:text-white"
+              >
+                <Icon size={17} />
+              </a>
+            ))}
+          </div>
+        </aside>
+
+        <div className="relative z-10 xl:ml-42">
+          <div className="sticky top-0 z-40 border-b border-blue-500/20 bg-[#030711]/90 px-4 py-3 backdrop-blur-xl xl:hidden">
+            <div className="mx-auto flex max-w-3xl items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => router.push("/home")}
+                aria-label="Back to home"
+                className="grid h-9 w-9 place-items-center rounded-lg border border-blue-400/35 bg-blue-500/10 text-blue-200"
+              >
+                <LuArrowLeft size={17} />
+              </button>
+              <div className="flex gap-1">
+                {journeySections.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => goToSection(id)}
+                    aria-label={label}
+                    className={`grid h-9 w-9 place-items-center rounded-lg border transition-colors ${
+                      activeSection === id
+                        ? "border-blue-400 bg-blue-500/20 text-blue-300"
+                        : "border-white/8 bg-white/3 text-zinc-500"
+                    }`}
+                  >
+                    <Icon size={16} />
+                  </button>
                 ))}
               </div>
             </div>
-          </section>
+          </div>
 
-          <section className="px-5 py-18 sm:px-8 lg:px-12">
-            <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_0.9fr]">
-              <div data-cinematic>
-                <p className="text-[11px] font-black uppercase tracking-[0.34em] text-cyan-200">
-                  Skills
-                </p>
-                <h2 className="mt-5 text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
-                  Technology groups from the database.
-                </h2>
-              </div>
-              <div className="grid gap-4">
-                {Object.entries(groupedSkills).length ? (
-                  Object.entries(groupedSkills).map(([category, items]) => (
-                    <article key={category} data-cinematic className="rounded-[26px] border border-white/10 bg-white/[0.035] p-5">
-                      <h3 className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100">
-                        {category}
-                      </h3>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {items.map((skill) => (
-                          <span key={skill.id} className="rounded-full bg-white/[0.06] px-3 py-2 text-xs font-bold text-slate-200">
-                            {skill.name}
-                          </span>
-                        ))}
-                      </div>
-                    </article>
-                  ))
-                ) : (
-                  <div data-cinematic className="rounded-[26px] border border-white/10 bg-white/[0.035] p-6 text-slate-300">
-                    Skill data is not available from the API right now.
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
-
-          <section className="px-5 py-18 sm:px-8 lg:px-12">
-            <div className="mx-auto max-w-7xl">
-              <div data-cinematic className="max-w-4xl">
-                <p className="text-[11px] font-black uppercase tracking-[0.34em] text-cyan-200">
-                  Experience
-                </p>
-                <h2 className="mt-5 text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
-                  Timeline entries, ordered by backend sort order.
-                </h2>
-              </div>
-              <div className="mt-12 grid gap-5">
-                {experiences.length ? (
-                  experiences.map((item: Experience) => (
-                    <article key={item.id} data-cinematic className="rounded-[28px] border border-white/10 bg-white/[0.035] p-6">
-                      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                        <div>
-                          <h3 className="text-2xl font-black uppercase text-white">{item.title}</h3>
-                          <p className="mt-2 text-sm font-bold uppercase tracking-[0.2em] text-slate-500">
-                            {item.company}
-                          </p>
-                        </div>
-                        <p className="flex items-center gap-2 text-sm font-bold text-cyan-100">
-                          <LuCalendarDays className="h-4 w-4" />
-                          {formatMonthYear(item.startDate)} - {item.current ? "Present" : formatMonthYear(item.endDate)}
-                        </p>
-                      </div>
-                      {item.location ? (
-                        <p className="mt-4 flex items-center gap-2 text-sm text-slate-500">
-                          <LuMapPin className="h-4 w-4" /> {item.location}
-                        </p>
-                      ) : null}
-                      {item.description ? (
-                        <p className="mt-5 text-sm leading-7 text-slate-300">{item.description}</p>
-                      ) : null}
-                    </article>
-                  ))
-                ) : (
-                  <div data-cinematic className="rounded-[28px] border border-white/10 bg-white/[0.035] p-8 text-slate-300">
-                    Experience data is not available from the API right now.
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
-
-          <section className="px-5 py-18 sm:px-8 lg:px-12">
-            <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-              <div data-cinematic>
-                <p className="text-[11px] font-black uppercase tracking-[0.34em] text-cyan-200">
-                  Documents
-                </p>
-                <h2 className="mt-5 text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
-                  Downloadable files managed through Cloudinary.
-                </h2>
-              </div>
-              <div className="grid gap-4">
-                {documents.length ? (
-                  documents.slice(0, 5).map((doc: Document) => (
-                    <a
-                      key={doc.id}
-                      data-cinematic
-                      href={doc.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex items-center justify-between gap-5 rounded-[24px] border border-white/10 bg-white/[0.035] p-5 transition hover:border-cyan-200/35 hover:bg-cyan-200/8"
-                    >
-                      <span>
-                        <span className="block text-lg font-black uppercase text-white">{doc.name}</span>
-                        <span className="mt-1 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
-                          {doc.category}
-                        </span>
-                      </span>
-                      <LuArrowRight className="h-5 w-5 text-cyan-200 transition group-hover:translate-x-1" />
-                    </a>
-                  ))
-                ) : (
-                  <div data-cinematic className="rounded-[26px] border border-white/10 bg-white/[0.035] p-6 text-slate-300">
-                    Documents are not available from the API right now.
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
-
-          <section className="px-5 py-18 sm:px-8 lg:px-12">
-            <div data-cinematic className="mx-auto flex max-w-7xl flex-col gap-5 rounded-[32px] border border-cyan-200/18 bg-cyan-200/8 p-8 sm:p-10 lg:flex-row lg:items-center lg:justify-between">
+          <section
+            id="about-overview"
+            className="about-detail-section relative flex min-h-[100svh] scroll-mt-16 items-center px-5 pb-32 pt-18 sm:px-8 lg:px-14 lg:pb-52 xl:scroll-mt-0 xl:px-18 xl:pb-56"
+          >
+            <div className="pointer-events-none absolute right-[6%] top-[12%] h-48 w-48 bg-[radial-gradient(circle,#3b82f6_1px,transparent_1.5px)] bg-size-[14px_14px] opacity-20" />
+            <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
               <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-100">
-                  Next Chapter
+                <p className="text-[10px] font-black uppercase tracking-[0.35em] text-blue-400">
+                  About Me
                 </p>
-                <h2 className="mt-3 text-3xl font-black uppercase text-white">
-                  Explore the project archive.
+                <h1 className="mt-8 text-5xl font-black uppercase leading-[0.92] tracking-tight sm:text-7xl">
+                  About <span className="text-blue-500">Me</span>
+                </h1>
+                <div className="mt-7 h-px w-full max-w-lg bg-linear-to-r from-blue-500 via-blue-500/30 to-transparent" />
+
+                <h2 className="mt-8 text-2xl font-bold leading-tight text-white sm:text-3xl">
+                  Hi, I&apos;m <span className="text-blue-400">Farhan Zulkarnain.</span>
                 </h2>
+                <p className="mt-2 text-lg font-bold text-blue-500">Full-stack Developer</p>
+                <p className="mt-5 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
+                  I&apos;m a passionate Full-stack Developer based in Medan, Indonesia. I turn
+                  complex problems into simple, polished, and user-friendly digital products—built
+                  with thoughtful interfaces and dependable backend systems.
+                </p>
+
+                <div className="mt-8 grid max-w-2xl grid-cols-2 overflow-hidden rounded-2xl border border-blue-500/25 bg-[#07101c]/65 shadow-[inset_0_0_30px_rgba(37,99,235,0.05)] lg:mt-6">
+                  {[
+                    { icon: LuCalendarDays, label: "Experience", value: "1 Years" },
+                    { icon: LuCodeXml, label: "Technologies", value: "10+" },
+                    { icon: LuMapPin, label: "Location", value: "Medan, Indonesia" },
+                    { icon: LuPanelsTopLeft, label: "Focus", value: "Frontend & Backend" },
+                  ].map(({ icon: Icon, label, value }, index) => (
+                    <div
+                      key={label}
+                      className={`flex min-h-20 items-center gap-3 p-4 ${
+                        index % 2 === 0 ? "border-r border-blue-500/16" : ""
+                      } ${index < 2 ? "border-b border-blue-500/16" : ""}`}
+                    >
+                      <Icon className="shrink-0 text-blue-500" size={26} />
+                      <div className="min-w-0">
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-500">
+                          {label}
+                        </p>
+                        <p className="mt-1 text-xs font-semibold text-zinc-100 sm:text-sm">{value}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <Link
-                href="/projects"
-                className="inline-flex min-h-13 items-center justify-center gap-3 rounded-2xl bg-cyan-200 px-6 text-[11px] font-black uppercase tracking-[0.22em] text-slate-950 transition hover:bg-white"
-              >
-                Projects <LuArrowRight className="h-4 w-4" />
-              </Link>
+
+              <div className="mx-auto w-full max-w-md">
+                <div className="about-cyber-frame relative p-3">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-[#08101d]">
+                    <Image
+                      src={profileImage}
+                      alt="Farhan Zulkarnain"
+                      fill
+                      priority
+                      sizes="(max-width: 1024px) 88vw, 440px"
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-linear-to-t from-[#02050b]/45 via-transparent to-blue-500/6" />
+                  </div>
+                  <span className="absolute -left-1 top-1/3 h-20 w-1 bg-blue-500 shadow-[0_0_18px_#3b82f6]" />
+                  <span className="absolute -right-1 top-1/3 h-20 w-1 bg-blue-500 shadow-[0_0_18px_#3b82f6]" />
+                </div>
+              </div>
             </div>
           </section>
-        </main>
-      </CinematicScrollController>
+
+          <section
+            id="about-skills"
+            className="about-detail-section relative min-h-[100svh] scroll-mt-16 px-5 pb-36 pt-20 sm:px-8 lg:px-14 lg:pb-40 lg:pt-8 xl:scroll-mt-0 xl:px-18"
+          >
+            <div className="mx-auto w-full max-w-6xl">
+              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-blue-400">
+                My Skills
+              </p>
+              <h2 className="mt-7 text-5xl font-black uppercase leading-[0.92] tracking-tight sm:text-7xl lg:mt-4 lg:text-5xl xl:text-6xl">
+                My Skills &amp; <span className="text-blue-500">Expertise</span>
+              </h2>
+              <p className="mt-7 max-w-5xl text-sm leading-7 text-zinc-400 sm:text-base lg:mt-4 lg:max-w-4xl lg:text-sm lg:leading-6">
+                I build modern, scalable web applications from interface to API. My daily toolkit
+                spans TypeScript, React, Next.js, Node.js, Express.js, databases, version control,
+                deployment workflows, and the design tools needed to turn a concept into a clear
+                digital experience.
+              </p>
+              <div className="mt-10 rounded-3xl border border-blue-500/18 bg-[#050b14]/58 p-5 shadow-[0_24px_90px_rgba(0,0,0,0.24)] sm:p-8 lg:mt-5 lg:p-4">
+                <SkillSection />
+              </div>
+            </div>
+          </section>
+
+          <div
+            id="about-documents"
+            className="about-detail-section min-h-[100svh] scroll-mt-16 pb-8 xl:scroll-mt-0"
+          >
+            <DocSection />
+          </div>
+        </div>
+      </main>
     </>
   );
 }
