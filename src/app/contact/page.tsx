@@ -8,7 +8,7 @@ import PublicContactForm from "@/components/public/PublicContactForm";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Contact Farhan Zulkarnain Harahap for web development, UI work, and product collaboration.",
+    "Send a message through the portfolio contact form backed by the existing Express API and Prisma Contact model.",
   alternates: { canonical: "/contact" },
 };
 
@@ -34,13 +34,13 @@ export default function ContactPage() {
                 Let&apos;s build something meaningful.
               </h1>
               <p data-hero-reveal className="mt-7 text-base leading-8 text-slate-300">
-                Share your idea, project context, or collaboration request. I&apos;ll reply with a
-                practical next step.
+                This form submits to the existing Express contact endpoint, stores the message
+                through Prisma, and preserves the backend email flow.
               </p>
               <div data-hero-reveal className="mt-8 rounded-[28px] border border-white/10 bg-white/[0.035] p-6">
                 <p className="flex items-center gap-2 text-sm font-bold text-slate-300">
                   <LuBriefcaseBusiness className="h-4 w-4 text-cyan-200" />
-                  Open for thoughtful product builds and modern web experiences.
+                  No mock submission or local-only storage is used.
                 </p>
               </div>
             </div>

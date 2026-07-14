@@ -7,7 +7,7 @@ import {
   LuHouse,
   LuInfo,
   LuMail,
-  LuUserRound,
+  LuShieldCheck,
 } from "react-icons/lu";
 
 const items = [
@@ -15,7 +15,7 @@ const items = [
   { href: "/about", label: "About", icon: LuInfo },
   { href: "/projects", label: "Projects", icon: LuBriefcaseBusiness },
   { href: "/contact", label: "Contact", icon: LuMail },
-  { href: "/auth/login", label: "Login", icon: LuUserRound },
+  { href: "/admin/home", label: "Admin", icon: LuShieldCheck },
 ];
 
 export default function PublicDock() {

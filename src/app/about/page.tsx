@@ -6,14 +6,13 @@ import {
   LuBriefcaseBusiness,
   LuCalendarDays,
   LuCode,
+  LuDatabase,
   LuFileText,
   LuLayers3,
   LuMapPin,
-  LuPalette,
 } from "react-icons/lu";
 import CinematicScrollController from "@/components/motion/CinematicScrollController";
 import PublicDock from "@/components/navigation/PublicDock";
-import SkillIconGrid from "@/components/public/SkillIconGrid";
 import CinematicCanvas from "@/components/three/cinematic/CinematicCanvas";
 import {
   getDocuments,
@@ -31,7 +30,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "About Farhan Zulkarnain Harahap, his skills, selected work, and full-stack web development approach.",
+    "About the Nexxus portfolio system, skills, experience, documents, and full-stack delivery approach.",
   alternates: { canonical: "/about" },
 };
 
@@ -66,10 +65,6 @@ export default async function AboutPage() {
     safeLoad(getDocuments, [] as Document[]),
   ]);
   const groupedSkills = groupSkills(skills);
-  const skillGroups = Object.entries(groupedSkills).map(([category, items]) => ({
-    category,
-    items,
-  }));
   const stats: Array<{ label: string; value: number; icon: IconType }> = [
     { label: "Projects", value: projects.length, icon: LuBriefcaseBusiness },
     { label: "Skills", value: skills.length, icon: LuCode },
@@ -90,11 +85,12 @@ export default async function AboutPage() {
                 About
               </p>
               <h1 data-hero-reveal className="mt-7 max-w-5xl text-5xl font-black uppercase leading-[0.92] text-white sm:text-7xl lg:text-8xl">
-                Full-stack developer with a cinematic eye for digital products.
+                A portfolio built as a living full-stack system.
               </h1>
               <p data-hero-reveal className="mt-7 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
-                I combine interface craft, application engineering, product thinking, and motion
-                details to create web experiences that feel polished and useful.
+                The public experience is connected to the same Express API, Prisma models,
+                Cloudinary-backed documents, and protected admin flows used to manage the
+                portfolio.
               </p>
             </div>
           </section>
@@ -120,18 +116,18 @@ export default async function AboutPage() {
                   Professional Focus
                 </p>
                 <h2 className="mt-5 text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
-                  Design, development, motion, and launch.
+                  Interface, API, database, and deployment.
                 </h2>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 {[
-                  ["Interface", "Readable screens, responsive states, and accessible user flows."],
-                  ["Engineering", "Clean application structure for real product features."],
-                  ["Motion", "Subtle animation that supports storytelling without hurting usability."],
-                  ["Delivery", "Production-minded polish, performance checks, and responsive refinement."],
+                  ["Frontend", "Readable interfaces, responsive states, and accessible user flows."],
+                  ["Backend", "Express endpoints, JWT cookies, validation paths, and role-protected actions."],
+                  ["Data", "Prisma models for portfolio, skill, experience, document, user, and contact data."],
+                  ["Delivery", "Vercel-ready frontend, API deployment config, and production environment boundaries."],
                 ].map(([title, text]) => (
                   <article key={title} data-cinematic className="rounded-[26px] border border-white/10 bg-white/[0.035] p-6">
-                    <LuPalette className="h-5 w-5 text-cyan-200" />
+                    <LuDatabase className="h-5 w-5 text-cyan-200" />
                     <h3 className="mt-6 text-2xl font-black uppercase text-white">{title}</h3>
                     <p className="mt-3 text-sm leading-6 text-slate-400">{text}</p>
                   </article>
@@ -147,14 +143,34 @@ export default async function AboutPage() {
                   Skills
                 </p>
                 <h2 className="mt-5 text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
-                  Tools I use across modern web builds.
+                  Technology groups from the database.
                 </h2>
               </div>
-              <SkillIconGrid groups={skillGroups} />
+              <div className="grid gap-4">
+                {Object.entries(groupedSkills).length ? (
+                  Object.entries(groupedSkills).map(([category, items]) => (
+                    <article key={category} data-cinematic className="rounded-[26px] border border-white/10 bg-white/[0.035] p-5">
+                      <h3 className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100">
+                        {category}
+                      </h3>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {items.map((skill) => (
+                          <span key={skill.id} className="rounded-full bg-white/[0.06] px-3 py-2 text-xs font-bold text-slate-200">
+                            {skill.name}
+                          </span>
+                        ))}
+                      </div>
+                    </article>
+                  ))
+                ) : (
+                  <div data-cinematic className="rounded-[26px] border border-white/10 bg-white/[0.035] p-6 text-slate-300">
+                    Skill data is not available from the API right now.
+                  </div>
+                )}
+              </div>
             </div>
           </section>
 
-          {experiences.length ? (
           <section className="px-5 py-18 sm:px-8 lg:px-12">
             <div className="mx-auto max-w-7xl">
               <div data-cinematic className="max-w-4xl">
@@ -162,11 +178,12 @@ export default async function AboutPage() {
                   Experience
                 </p>
                 <h2 className="mt-5 text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
-                  Professional timeline.
+                  Timeline entries, ordered by backend sort order.
                 </h2>
               </div>
               <div className="mt-12 grid gap-5">
-                {experiences.map((item: Experience) => (
+                {experiences.length ? (
+                  experiences.map((item: Experience) => (
                     <article key={item.id} data-cinematic className="rounded-[28px] border border-white/10 bg-white/[0.035] p-6">
                       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                         <div>
@@ -189,13 +206,16 @@ export default async function AboutPage() {
                         <p className="mt-5 text-sm leading-7 text-slate-300">{item.description}</p>
                       ) : null}
                     </article>
-                  ))}
+                  ))
+                ) : (
+                  <div data-cinematic className="rounded-[28px] border border-white/10 bg-white/[0.035] p-8 text-slate-300">
+                    Experience data is not available from the API right now.
+                  </div>
+                )}
               </div>
             </div>
           </section>
-          ) : null}
 
-          {documents.length ? (
           <section className="px-5 py-18 sm:px-8 lg:px-12">
             <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr]">
               <div data-cinematic>
@@ -203,11 +223,12 @@ export default async function AboutPage() {
                   Documents
                 </p>
                 <h2 className="mt-5 text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
-                  Resume and supporting documents.
+                  Downloadable files managed through Cloudinary.
                 </h2>
               </div>
               <div className="grid gap-4">
-                {documents.slice(0, 5).map((doc: Document) => (
+                {documents.length ? (
+                  documents.slice(0, 5).map((doc: Document) => (
                     <a
                       key={doc.id}
                       data-cinematic
@@ -224,11 +245,15 @@ export default async function AboutPage() {
                       </span>
                       <LuArrowRight className="h-5 w-5 text-cyan-200 transition group-hover:translate-x-1" />
                     </a>
-                  ))}
+                  ))
+                ) : (
+                  <div data-cinematic className="rounded-[26px] border border-white/10 bg-white/[0.035] p-6 text-slate-300">
+                    Documents are not available from the API right now.
+                  </div>
+                )}
               </div>
             </div>
           </section>
-          ) : null}
 
           <section className="px-5 py-18 sm:px-8 lg:px-12">
             <div data-cinematic className="mx-auto flex max-w-7xl flex-col gap-5 rounded-[32px] border border-cyan-200/18 bg-cyan-200/8 p-8 sm:p-10 lg:flex-row lg:items-center lg:justify-between">
