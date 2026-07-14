@@ -283,12 +283,6 @@ function CyberCursorScene({
 }
 
 const PUBLIC_CURSOR_ROUTES = [
-  "/",
-  "/home",
-  "/explore",
-  "/about",
-  "/projects",
-  "/contact",
   "/dashboard/user",
 ];
 

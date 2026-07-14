@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Projects",
   description:
-    "Project archive from the Nexxus portfolio API, including case study fields, tags, demos, and repository links where available.",
+    "Selected web projects, case studies, demos, and repository links from Farhan Zulkarnain Harahap.",
   alternates: { canonical: "/projects" },
 };
 
@@ -50,11 +50,11 @@ export default async function ProjectsPage() {
                 Projects
               </p>
               <h1 data-hero-reveal className="mt-7 max-w-5xl text-5xl font-black uppercase leading-[0.92] text-white sm:text-7xl lg:text-8xl">
-                Project archive with API-backed case studies.
+                Project archive built for real product stories.
               </h1>
               <p data-hero-reveal className="mt-7 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
-                Every card below is rendered from the `Portfolio` model served by the Express API.
-                Links appear only when the project record includes them.
+                Explore selected work across polished interfaces, product flows, and modern web
+                experiences. Demo and repository links appear when they are available.
               </p>
               <div data-hero-reveal className="mt-8 flex flex-wrap gap-2">
                 {tags.length ? (
@@ -67,7 +67,7 @@ export default async function ProjectsPage() {
                 ) : (
                   <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-300">
                     <LuSearch className="h-3.5 w-3.5 text-cyan-200" />
-                    Tags will appear when project records include them.
+                    Project tags are being curated.
                   </span>
                 )}
               </div>
@@ -166,7 +166,7 @@ export default async function ProjectsPage() {
                 ))
               ) : (
                 <div data-cinematic className="rounded-[28px] border border-white/10 bg-white/[0.035] p-8 text-slate-300 md:col-span-2 xl:col-span-3">
-                  No projects are available from the API right now.
+                  Projects are being curated for the next portfolio update.
                 </div>
               )}
             </div>

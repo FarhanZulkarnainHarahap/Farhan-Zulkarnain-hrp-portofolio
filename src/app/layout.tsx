@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | Farhan Zulkarnain",
   },
   description:
-    "Explore Farhan Zulkarnain Harahap's portfolio: full-stack web apps, modern UI/UX design, Next.js projects, admin dashboards, API integration, certificates, and creative digital experiences.",
+    "Explore Farhan Zulkarnain Harahap's portfolio: modern web apps, polished UI/UX design, Next.js projects, creative interfaces, and selected digital experiences.",
   keywords: [
     "Farhan Zulkarnain Harahap",
     "Farhan Zulkarnain portfolio",
@@ -18,17 +18,14 @@ export const metadata: Metadata = {
     "Creative Web Developer",
     "UI/UX Designer",
     "Frontend Developer",
-    "Backend Developer",
+    "Full-Stack Developer",
     "Next.js Developer",
     "React Developer",
     "TypeScript Developer",
     "Tailwind CSS",
     "Node.js",
-    "Express.js",
     "PostgreSQL",
-    "Prisma",
     "Portfolio Website",
-    "Admin Dashboard",
     "Web Application",
   ],
   authors: [{ name: "Farhan Zulkarnain Harahap", url: "https://farhanzulkarnainhrp.com" }],
@@ -57,7 +54,7 @@ export const metadata: Metadata = {
     siteName: "Farhan Zulkarnain Portfolio",
     title: "Farhan Z. | Full-Stack Web Developer & UI/UX Designer",
     description:
-      "A dark-tech portfolio showcasing full-stack web applications, clean UI/UX design, API integrations, dashboards, skills, documents, and selected project work by Farhan Zulkarnain Harahap.",
+      "A cinematic dark-tech portfolio showcasing full-stack web applications, clean UI/UX design, creative interactions, skills, documents, and selected project work by Farhan Zulkarnain Harahap.",
   },
   twitter: {
     card: "summary",

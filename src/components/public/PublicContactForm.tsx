@@ -35,7 +35,7 @@ export default function PublicContactForm() {
       setForm({ name: "", email: "", message: "" });
       setStatus({ type: "success", message: payload.message || "Message sent successfully." });
     } catch {
-      setStatus({ type: "error", message: "API connection failed. Please retry in a moment." });
+      setStatus({ type: "error", message: "Message could not be sent. Please retry in a moment." });
     } finally {
       setLoading(false);
     }

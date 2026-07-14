@@ -1,6 +1,6 @@
 "use client";
 
-import { AdaptiveDpr, Html } from "@react-three/drei";
+import { AdaptiveDpr } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Bloom, EffectComposer, Noise, Vignette } from "@react-three/postprocessing";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -195,13 +195,6 @@ function DataNodes() {
               <sphereGeometry args={[0.085, 18, 18]} />
               <meshStandardMaterial color="#67e8f9" emissive="#22d3ee" emissiveIntensity={1.2} />
             </mesh>
-            <Html
-              center
-              distanceFactor={6.5}
-              className="pointer-events-none rounded-full border border-cyan-300/25 bg-slate-950/70 px-2 py-1 text-[9px] font-black uppercase tracking-[0.18em] text-cyan-100 backdrop-blur-md"
-            >
-              {label}
-            </Html>
           </group>
         );
       })}

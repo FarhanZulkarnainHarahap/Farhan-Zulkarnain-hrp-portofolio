@@ -6,16 +6,17 @@ import {
   LuBlocks,
   LuBriefcaseBusiness,
   LuCalendarDays,
-  LuDatabase,
   LuExternalLink,
   LuLayers3,
   LuMapPin,
+  LuPalette,
   LuServer,
   LuSparkles,
 } from "react-icons/lu";
 import CinematicScrollController from "@/components/motion/CinematicScrollController";
 import PublicDock from "@/components/navigation/PublicDock";
 import PublicContactForm from "@/components/public/PublicContactForm";
+import SkillIconGrid from "@/components/public/SkillIconGrid";
 import CinematicCanvas from "@/components/three/cinematic/CinematicCanvas";
 import {
   getDocuments,
@@ -30,6 +31,9 @@ import {
 
 export const dynamic = "force-dynamic";
 
+const PROFILE_IMAGE_URL =
+  "https://res.cloudinary.com/dpanr1qqp/image/upload/v1765874955/bake-bliss/b1v5qdy9whqszyqohdjb.jpg";
+
 async function safeLoad<T>(loader: () => Promise<T>, fallback: T) {
   try {
     return await loader();
@@ -39,20 +43,20 @@ async function safeLoad<T>(loader: () => Promise<T>, fallback: T) {
 }
 
 const systemChapters = [
-  { label: "Idea", text: "Translate product intent into a focused interface direction.", icon: LuSparkles },
-  { label: "Interface", text: "Shape readable UI systems with responsive interaction states.", icon: LuLayers3 },
-  { label: "API", text: "Connect the experience to durable Express endpoints.", icon: LuServer },
-  { label: "Database", text: "Keep portfolio content managed through Prisma-backed data.", icon: LuDatabase },
-  { label: "Deploy", text: "Ship the frontend and backend as production-ready services.", icon: LuBlocks },
+  { label: "Concept", text: "Turn raw ideas into a clear product direction.", icon: LuSparkles },
+  { label: "Interface", text: "Design responsive screens that feel polished and easy to use.", icon: LuLayers3 },
+  { label: "Motion", text: "Add subtle interaction so the experience feels alive.", icon: LuPalette },
+  { label: "Content", text: "Present projects with clean context, visuals, and outcomes.", icon: LuServer },
+  { label: "Launch", text: "Prepare the work for a confident production release.", icon: LuBlocks },
 ];
 
 const workProcess = [
-  ["01", "Discover", "Clarify the product context, audience, constraints, and available data."],
-  ["02", "Design", "Create a visual system that supports scanning, trust, and action."],
-  ["03", "Develop", "Build typed frontend and backend features with reusable boundaries."],
-  ["04", "Integrate", "Connect API, auth, upload, dashboard, and public experiences."],
-  ["05", "Test", "Verify routes, forms, responsive behavior, access control, and build output."],
-  ["06", "Deploy", "Prepare environment variables and production-safe configuration."],
+  ["01", "Discover", "Understand the goal, audience, and product direction."],
+  ["02", "Design", "Shape a visual language that feels premium and usable."],
+  ["03", "Develop", "Build responsive pages, interactions, and reliable product flows."],
+  ["04", "Refine", "Improve details, spacing, motion, and visual rhythm."],
+  ["05", "Test", "Check layout, forms, mobile behavior, and performance."],
+  ["06", "Launch", "Prepare the final experience for production."],
 ];
 
 function projectTags(project: Project) {
@@ -84,6 +88,10 @@ export default async function HomePage() {
 
   const featuredProjects = projects.slice(0, 4);
   const groupedSkills = groupSkills(skills);
+  const skillGroups = Object.entries(groupedSkills).map(([category, items]) => ({
+    category,
+    items,
+  }));
   const latestDocument = documents[0];
 
   return (
@@ -96,26 +104,26 @@ export default async function HomePage() {
             <div className="absolute inset-0 bg-[linear-gradient(90deg,#02040a_0%,rgba(2,4,10,0.82)_42%,rgba(2,4,10,0.18)_100%)]" />
             <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-[#02040a] to-transparent" />
 
-            <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-              <div className="max-w-3xl">
+            <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-[minmax(0,0.82fr)_minmax(390px,0.68fr)] xl:grid-cols-[minmax(0,0.95fr)_minmax(430px,0.65fr)]">
+              <div className="max-w-2xl">
                 <p
                   data-hero-reveal
                   className="text-[11px] font-black uppercase tracking-[0.34em] text-cyan-200"
                 >
-                  Nexxus Cinematic Digital Universe
+                  Farhan Zulkarnain Harahap
                 </p>
                 <h1
                   data-hero-reveal
-                  className="mt-7 max-w-4xl text-5xl font-black uppercase leading-[0.9] text-white sm:text-7xl lg:text-8xl"
+                  className="mt-7 max-w-3xl text-[clamp(3.25rem,7.2vw,6.6rem)] font-black uppercase leading-[0.88] text-white"
                 >
-                  Full-stack systems with cinematic clarity.
+                  Full-stack developer for modern web products.
                 </h1>
                 <p
                   data-hero-reveal
                   className="mt-7 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg"
                 >
-                  A portfolio interface for projects, skills, documents, and experience managed
-                  through the existing Express API and Prisma data model.
+                  I design and build premium digital experiences with clean interfaces,
+                  thoughtful motion, and reliable product flows.
                 </p>
                 <div data-hero-reveal className="mt-9 flex flex-col gap-3 sm:flex-row">
                   <Link
@@ -128,18 +136,53 @@ export default async function HomePage() {
                     href="/about"
                     className="inline-flex min-h-13 items-center justify-center gap-3 rounded-2xl border border-white/12 bg-white/[0.04] px-6 text-[11px] font-black uppercase tracking-[0.22em] text-white transition hover:border-cyan-200/50 hover:bg-cyan-200/10"
                   >
-                    About the System
+                    About Me
                   </Link>
+                </div>
+                <div
+                  data-hero-reveal
+                  className="mt-10 grid max-w-sm gap-4 rounded-[28px] border border-white/10 bg-slate-950/62 p-4 backdrop-blur-xl lg:hidden"
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-[22px] border border-cyan-200/18 bg-slate-900">
+                    <Image
+                      src={PROFILE_IMAGE_URL}
+                      alt="Farhan Zulkarnain Harahap"
+                      fill
+                      priority
+                      sizes="(max-width: 1024px) 90vw"
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-linear-to-t from-[#02040a]/75 via-transparent to-transparent" />
+                  </div>
+                  <p className="text-[11px] font-black uppercase tracking-[0.22em] text-cyan-100">
+                    Full-Stack Web Developer
+                  </p>
                 </div>
               </div>
 
               <div data-hero-reveal className="hidden justify-end lg:flex">
-                <div className="w-full max-w-md rounded-[30px] border border-white/10 bg-slate-950/42 p-5 shadow-[0_30px_120px_rgba(0,0,0,0.42)] backdrop-blur-xl">
+                <div className="w-full max-w-md rounded-[30px] border border-white/10 bg-slate-950/70 p-5 shadow-[0_30px_120px_rgba(0,0,0,0.42)] backdrop-blur-xl">
+                  <div className="relative mb-4 aspect-[4/5] overflow-hidden rounded-[26px] border border-cyan-200/18 bg-slate-900">
+                    <Image
+                      src={PROFILE_IMAGE_URL}
+                      alt="Farhan Zulkarnain Harahap"
+                      fill
+                      priority
+                      sizes="430px"
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-linear-to-t from-[#02040a]/75 via-transparent to-transparent" />
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100">
+                        Full-Stack Web Developer
+                      </p>
+                    </div>
+                  </div>
                   <div className="grid grid-cols-3 gap-3">
                     {[
                       ["Projects", projects.length],
                       ["Skills", skills.length],
-                      ["Experience", experiences.length],
+                      ["Docs", documents.length],
                     ].map(([label, value]) => (
                       <div key={label} className="rounded-3xl border border-white/8 bg-white/[0.04] p-4">
                         <p className="text-3xl font-black text-white">{value}</p>
@@ -151,10 +194,10 @@ export default async function HomePage() {
                   </div>
                   <div className="mt-4 rounded-3xl border border-cyan-300/15 bg-cyan-300/7 p-5">
                     <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em] text-cyan-100">
-                      <LuBadgeCheck className="h-4 w-4" /> Live Data
+                      <LuBadgeCheck className="h-4 w-4" /> Portfolio Snapshot
                     </p>
                     <p className="mt-3 text-sm leading-6 text-slate-300">
-                      Counts come from current API responses, not static portfolio arrays.
+                      Selected work, skills, and documents from my latest portfolio.
                     </p>
                   </div>
                 </div>
@@ -166,10 +209,10 @@ export default async function HomePage() {
             <div className="mx-auto max-w-7xl">
               <div data-cinematic className="max-w-3xl">
                 <p className="text-[11px] font-black uppercase tracking-[0.34em] text-cyan-200">
-                  System Philosophy
+                  Creative Direction
                 </p>
                 <h2 className="mt-5 text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
-                  From idea to integrated product.
+                  From concept to polished product.
                 </h2>
               </div>
               <div className="mt-12 grid gap-4 lg:grid-cols-5">
@@ -196,7 +239,7 @@ export default async function HomePage() {
                   Featured Projects
                 </p>
                 <h2 className="mt-5 text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
-                  Recent builds from the portfolio database.
+                  Selected production-ready work.
                 </h2>
                 <Link
                   href="/projects"
@@ -250,7 +293,7 @@ export default async function HomePage() {
                   ))
                 ) : (
                   <div data-cinematic className="rounded-[28px] border border-white/10 bg-white/[0.035] p-8 text-slate-300 md:col-span-2">
-                    No portfolio projects are available from the API right now.
+                    Projects are being curated for the next portfolio update.
                   </div>
                 )}
               </div>
@@ -264,37 +307,14 @@ export default async function HomePage() {
                   Tech Stack
                 </p>
                 <h2 className="mt-5 text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
-                  Skills grouped by Prisma category.
+                  Tools I use to build polished experiences.
                 </h2>
               </div>
-              <div className="grid gap-4">
-                {Object.entries(groupedSkills).length ? (
-                  Object.entries(groupedSkills).map(([category, items]) => (
-                    <article key={category} data-cinematic className="rounded-[26px] border border-white/10 bg-white/[0.035] p-5">
-                      <h3 className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100">
-                        {category}
-                      </h3>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {items.map((skill) => (
-                          <span
-                            key={skill.id}
-                            className="rounded-full bg-white/[0.06] px-3 py-2 text-xs font-bold text-slate-200"
-                          >
-                            {skill.name}
-                          </span>
-                        ))}
-                      </div>
-                    </article>
-                  ))
-                ) : (
-                  <div data-cinematic className="rounded-[26px] border border-white/10 bg-white/[0.035] p-6 text-slate-300">
-                    No skills are available from the API right now.
-                  </div>
-                )}
-              </div>
+              <SkillIconGrid groups={skillGroups} />
             </div>
           </section>
 
+          {experiences.length ? (
           <section className="px-5 py-24 sm:px-8 lg:px-12">
             <div className="mx-auto max-w-7xl">
               <div data-cinematic className="max-w-3xl">
@@ -302,12 +322,11 @@ export default async function HomePage() {
                   Experience
                 </p>
                 <h2 className="mt-5 text-4xl font-black uppercase leading-tight text-white sm:text-6xl">
-                  Timeline from the backend.
+                  Professional timeline.
                 </h2>
               </div>
               <div className="mt-12 grid gap-5">
-                {experiences.length ? (
-                  experiences.map((item) => (
+                {experiences.map((item) => (
                     <article key={item.id} data-cinematic className="grid gap-5 rounded-[28px] border border-white/10 bg-white/[0.035] p-6 lg:grid-cols-[0.28fr_1fr]">
                       <div>
                         <p className="flex items-center gap-2 text-sm font-bold text-cyan-100">
@@ -337,15 +356,11 @@ export default async function HomePage() {
                         </div>
                       </div>
                     </article>
-                  ))
-                ) : (
-                  <div data-cinematic className="rounded-[28px] border border-white/10 bg-white/[0.035] p-8 text-slate-300">
-                    No experience entries are available from the API right now.
-                  </div>
-                )}
+                  ))}
               </div>
             </div>
           </section>
+          ) : null}
 
           <section className="px-5 py-24 sm:px-8 lg:px-12">
             <div className="mx-auto max-w-7xl">
@@ -381,7 +396,7 @@ export default async function HomePage() {
                 <div className="mt-8 rounded-[28px] border border-white/10 bg-white/[0.035] p-6">
                   <p className="flex items-center gap-2 text-sm font-bold text-slate-300">
                     <LuBriefcaseBusiness className="h-4 w-4 text-cyan-200" />
-                    Contact messages are stored through the existing Express endpoint.
+                    Tell me what you want to build, and I&apos;ll respond with a clear next step.
                   </p>
                   {latestDocument ? (
                     <a
@@ -390,7 +405,7 @@ export default async function HomePage() {
                       rel="noopener noreferrer"
                       className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-cyan-100 hover:text-white"
                     >
-                      Latest document: {latestDocument.name} <LuExternalLink className="h-4 w-4" />
+                      View document: {latestDocument.name} <LuExternalLink className="h-4 w-4" />
                     </a>
                   ) : null}
                 </div>
