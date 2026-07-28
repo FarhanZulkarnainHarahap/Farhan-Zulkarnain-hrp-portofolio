@@ -12,28 +12,28 @@ export const metadata: Metadata = {
 export default function SkillsPage() {
   return (
     <AboutNestedShell>
-      <section className="relative mx-auto min-h-[100dvh] w-[min(calc(100%-2rem),80rem)] pb-32 pt-32">
+      <section className="relative mx-auto min-h-[100dvh] w-[min(calc(100%-2rem),80rem)] pb-32 pt-36">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(34,211,238,0.13),transparent_34%)]" />
         <div className="relative z-10">
           <p className="text-[10px] font-black uppercase tracking-[0.35em] text-blue-300">
             Skills
           </p>
-          <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div className="mt-7 grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div>
-              <h1 className="max-w-4xl text-[clamp(2.5rem,6vw,5.6rem)] font-black uppercase leading-[0.9] text-white">
+              <h1 className="max-w-4xl text-[clamp(2.35rem,5.2vw,4.9rem)] font-black uppercase leading-[0.96] text-white">
                 Technologies I Use to Build Digital Products
               </h1>
-              <p className="mt-5 max-w-2xl text-sm leading-7 text-slate-400 sm:text-base">
+              <p className="mt-6 max-w-2xl text-sm leading-8 text-slate-400 sm:text-base">
                 A recruiter-friendly map of the tools behind my frontend, backend,
                 database, deployment, and integration work.
               </p>
             </div>
-            <div className="rounded-2xl border border-white/9 bg-white/[0.035] px-5 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+            <div className="rounded-2xl border border-white/9 bg-[#07101d]/80 px-5 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
               Live from backend data
             </div>
           </div>
 
-          <div className="mt-10">
+          <div className="mt-14">
             <SkillSection />
           </div>
         </div>

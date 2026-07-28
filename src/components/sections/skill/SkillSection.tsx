@@ -163,7 +163,7 @@ export default function SkillSection() {
 
   return (
     <div className="relative w-full">
-      <div className="mb-6 flex flex-wrap gap-2" role="tablist" aria-label="Skill categories">
+      <div className="mb-10 flex flex-wrap gap-3" role="tablist" aria-label="Skill categories">
         {categories.map((category) => {
           const selected = activeCategory === category;
           return (
@@ -173,7 +173,7 @@ export default function SkillSection() {
               role="tab"
               aria-selected={selected}
               onClick={() => setActiveCategory(category)}
-              className={`relative min-h-11 rounded-full border px-4 text-[10px] font-black uppercase tracking-[0.18em] transition-colors ${
+              className={`relative min-h-12 rounded-full border px-5 text-[10px] font-black uppercase tracking-[0.18em] transition-colors ${
                 selected
                   ? "border-blue-300/70 bg-blue-500/18 text-white"
                   : "border-white/10 bg-white/4 text-slate-400 hover:border-blue-300/45 hover:text-white"
@@ -191,8 +191,8 @@ export default function SkillSection() {
         })}
       </div>
 
-      <div className="mb-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-        <div className="relative min-h-80 overflow-hidden rounded-[28px] border border-white/8 bg-[#050911]/58 p-4">
+      <div className="mb-12 grid gap-7 lg:grid-cols-[1.15fr_0.85fr] xl:gap-9">
+        <div className="relative min-h-96 overflow-hidden rounded-[28px] border border-white/8 bg-[#050911]/70 p-6">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(59,130,246,0.18),transparent_48%)]" />
           <svg className="absolute inset-0 h-full w-full" aria-hidden="true">
             {constellationSkills.slice(0, -1).map((skill, index) => {
@@ -225,7 +225,7 @@ export default function SkillSection() {
                 key={skill.id}
                 type="button"
                 onClick={() => setActiveSkillId(skill.id)}
-                className={`absolute z-10 flex max-w-40 items-center gap-2 rounded-full border px-3 py-2 text-left text-[10px] font-black text-white shadow-[0_14px_35px_rgba(0,0,0,0.22)] ${
+                className={`absolute z-10 flex max-w-44 items-center gap-2 rounded-full border px-4 py-2.5 text-left text-[10px] font-black text-white shadow-[0_14px_35px_rgba(0,0,0,0.22)] ${
                   selected ? "border-blue-200 bg-blue-500/28" : "border-white/10 bg-[#07101d]/86"
                 }`}
                 style={{
@@ -255,7 +255,7 @@ export default function SkillSection() {
           })}
         </div>
 
-        <aside className="rounded-[28px] border border-blue-300/14 bg-[#07101d]/76 p-5">
+        <aside className="rounded-[28px] border border-blue-300/14 bg-[#07101d]/86 p-7">
           {activeSkill ? (
             <>
               <p className="text-[10px] font-black uppercase tracking-[0.26em] text-blue-300">
@@ -299,8 +299,8 @@ export default function SkillSection() {
         </aside>
       </div>
 
-      <div className="hidden rounded-[28px] border border-white/8 bg-[#050911]/58 p-4 lg:block">
-        <div className="grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+      <div className="hidden rounded-[28px] border border-white/8 bg-[#050911]/70 p-6 lg:block">
+        <div className="grid gap-7 xl:grid-cols-2 2xl:grid-cols-3">
           {Object.entries(groupedSkills).map(([category, categorySkills]) => {
             const color = categoryConfig[category]?.color ?? "#60a5fa";
 
@@ -308,12 +308,12 @@ export default function SkillSection() {
               <motion.section
                 layout
                 key={category}
-                className="relative min-h-72 overflow-hidden rounded-3xl border border-white/8 bg-white/[0.035] p-4"
+                className="relative min-h-80 overflow-hidden rounded-3xl border border-white/8 bg-white/[0.045] p-6"
                 initial={{ opacity: 0, clipPath: "inset(0 0 18% 0)" }}
                 whileInView={{ opacity: 1, clipPath: "inset(0 0 0% 0)" }}
                 viewport={{ once: true }}
               >
-                <div className="mb-4 flex items-center gap-3">
+                <div className="mb-6 flex items-center gap-3">
                   <span
                     className="h-2.5 w-2.5 rounded-full"
                     style={{ backgroundColor: color, boxShadow: `0 0 18px ${color}` }}
@@ -325,7 +325,7 @@ export default function SkillSection() {
                   <span className="text-[10px] font-black text-slate-500">{categorySkills.length}</span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-5">
                   {categorySkills.map((skill, index) => (
                     <motion.button
                       layout
@@ -335,7 +335,7 @@ export default function SkillSection() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.025 }}
                       onClick={() => setActiveSkillId(skill.id)}
-                      className="group relative min-h-24 overflow-hidden rounded-2xl border border-white/8 bg-[#07101d]/72 p-3 text-left"
+                      className="group relative min-h-28 overflow-hidden rounded-2xl border border-white/8 bg-[#07101d]/78 p-4 text-left"
                     >
                       <span
                         className="absolute left-11 right-4 top-8 h-px opacity-35"
@@ -364,7 +364,7 @@ export default function SkillSection() {
         </div>
       </div>
 
-      <motion.div layout className="grid gap-3 sm:grid-cols-2 lg:hidden">
+      <motion.div layout className="grid gap-5 sm:grid-cols-2 lg:hidden">
         <AnimatePresence mode="popLayout">
           {visibleSkills.map((skill) => {
             const category = getDisplayCategory(skill);
@@ -379,7 +379,7 @@ export default function SkillSection() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
                 onClick={() => setActiveSkillId(skill.id)}
-                className="flex min-h-24 items-center gap-4 rounded-2xl border border-white/8 bg-white/[0.035] p-4 text-left"
+                className="flex min-h-28 items-center gap-5 rounded-2xl border border-white/8 bg-white/[0.045] p-5 text-left"
               >
                 <span
                   className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border"
