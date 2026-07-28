@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import type { IconType } from "react-icons";
-import * as Lu from "react-icons/lu";
-import * as Fa from "react-icons/fa6";
-import * as Si from "react-icons/si";
 import * as Di from "react-icons/di";
+import * as Fa from "react-icons/fa6";
+import * as Lu from "react-icons/lu";
+import * as Si from "react-icons/si";
 import { fetchCachedJson } from "@/lib/client-cache";
 import { resolveSkillIconKey } from "@/lib/skill-icon-resolver";
+
 interface SkillData {
   id: string;
   name: string;
@@ -15,166 +17,264 @@ interface SkillData {
   category: string;
 }
 
-const SKILL_SKELETON_COUNTS = [4, 5, 4, 5, 3];
+const CATEGORY_ORDER = ["All", "Frontend", "Backend", "Database", "Tools", "Deployment"];
+
+const categoryConfig: Record<string, { color: string; x: number; y: number }> = {
+  Frontend: { color: "#38bdf8", x: 22, y: 30 },
+  Backend: { color: "#60a5fa", x: 74, y: 32 },
+  Database: { color: "#34d399", x: 64, y: 72 },
+  Tools: { color: "#c084fc", x: 34, y: 72 },
+  Deployment: { color: "#fbbf24", x: 50, y: 50 },
+};
 
 const getDisplayCategory = (skill: SkillData) => {
   const rawCategory = skill.category?.toUpperCase() || "TOOLS";
   const identity = `${skill.name} ${skill.iconName}`.toLowerCase();
-  const hasUiUxIdentity =
-    /(figma|adobe|canva|photoshop)/.test(identity) ||
-    /(?:^|[^a-z0-9])(design|ui|ux|uiux)(?:$|[^a-z0-9])/.test(identity);
 
-  // Kategori eksplisit harus menang dari inferensi nama. Contohnya, "redux"
-  // berakhiran "ux", tetapi data backend sudah menetapkannya sebagai FRONTEND.
-  if (rawCategory === "FRONTEND") {
-    return "FRONTEND";
+  if (rawCategory === "FRONTEND" || /(react|next|tailwind|html|css|redux)/.test(identity)) {
+    return "Frontend";
   }
 
-  if (
-    rawCategory === "DATABASE" ||
-    /(postgres|mysql|mongo|redis|supabase|prisma|firebase|database|sql)/.test(identity)
-  ) {
-    return "DATABASE";
+  if (rawCategory === "BACKEND" || /(node|express|api|jwt|nest)/.test(identity)) {
+    return "Backend";
   }
 
-  if (
-    rawCategory === "UIUX" ||
-    rawCategory === "UI/UX" ||
-    hasUiUxIdentity
-  ) {
-    return "UI/UX";
+  if (rawCategory === "DATABASE" || /(postgres|mysql|mongo|redis|supabase|prisma|sql|firebase)/.test(identity)) {
+    return "Database";
   }
 
-  if (["BACKEND", "TOOLS"].includes(rawCategory)) {
-    return rawCategory;
+  if (/(vercel|netlify|docker|cloud|aws|railway|render)/.test(identity)) {
+    return "Deployment";
   }
 
-  return "TOOLS";
+  return "Tools";
 };
 
-const SkillSkeleton = () => (
-  <div className="contents" aria-label="Loading skills" aria-busy="true">
-    {SKILL_SKELETON_COUNTS.map((itemCount, sectionIndex) => (
-      <div key={sectionIndex} className="w-full animate-pulse">
-        <div className="mb-4 flex items-center gap-3 lg:mb-2">
-          <div className="h-8 w-8 rounded-lg border border-blue-500/15 bg-blue-500/10 lg:h-6 lg:w-6" />
-          <div className="h-2.5 w-22 rounded-full bg-white/10 lg:h-2 lg:w-18" />
-          <div className="h-px flex-1 bg-linear-to-r from-zinc-800 to-transparent" />
-        </div>
+const getSkillDescription = (skill: SkillData) => {
+  const category = getDisplayCategory(skill);
+  const descriptions: Record<string, string> = {
+    Frontend: "Interface, state, interaction, and responsive UI craft.",
+    Backend: "API design, authentication, server logic, and integrations.",
+    Database: "Data modeling, persistence, querying, and application state.",
+    Tools: "Workflow, design, version control, and product delivery tools.",
+    Deployment: "Hosting, release flow, and production delivery.",
+  };
 
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:flex lg:flex-wrap lg:gap-x-3 lg:gap-y-2 lg:pl-1">
-          {Array.from({ length: itemCount }, (_, itemIndex) => (
-            <div
-              key={itemIndex}
-              className="flex min-w-0 flex-col items-center justify-center rounded-2xl border border-white/7 bg-white/[0.035] px-2 py-4 shadow-[0_14px_34px_rgba(0,0,0,0.16)] lg:min-w-16 lg:rounded-xl lg:px-2 lg:py-2.5"
-            >
-              <div className="h-8 w-8 rounded-xl border border-white/6 bg-white/8 shadow-[0_0_24px_rgba(59,130,246,0.06)] lg:h-5 lg:w-5" />
-              <div className="mt-3 h-2 w-12 rounded-full bg-white/8 lg:mt-1 lg:h-1.5 lg:w-9" />
-            </div>
-          ))}
-        </div>
-      </div>
-    ))}
-  </div>
-);
+  return descriptions[category];
+};
 
-// --- HELPER: RENDER ICON ---
 const DynamicIcon = ({ name }: { name: string }) => {
   const allIcons: Record<string, IconType> = { ...Lu, ...Fa, ...Si, ...Di };
   const foundKey = resolveSkillIconKey(name, allIcons);
   const Icon = foundKey ? allIcons[foundKey] : Lu.LuShieldAlert;
-  return <Icon className="h-7 w-7 sm:h-8 sm:w-8 lg:h-5 lg:w-5" />;
+  return <Icon className="h-5 w-5 sm:h-6 sm:w-6" />;
 };
+
+const SkillSkeleton = () => (
+  <div className="grid animate-pulse gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    {Array.from({ length: 12 }, (_, index) => (
+      <div key={index} className="h-24 rounded-2xl border border-white/8 bg-white/[0.035]" />
+    ))}
+  </div>
+);
 
 export default function SkillSection() {
   const [skills, setSkills] = useState<SkillData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState("All");
 
   useEffect(() => {
+    let active = true;
+
     const fetchSkills = async () => {
       try {
         const data = await fetchCachedJson<SkillData[] | { data?: SkillData[] }>(
           "/api/skills",
           "portfolio-skills",
         );
-        setSkills(Array.isArray(data) ? data : data.data || []);
-      } catch (error) {
-        console.error("Failed to fetch skills:", error);
+        if (active) setSkills(Array.isArray(data) ? data : data.data || []);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
 
     fetchSkills();
+    return () => {
+      active = false;
+    };
   }, []);
 
-  // --- LOGIKA GROUPING ---
-  const groupedSkills = useMemo(() => {
-    return skills.reduce<Record<string, SkillData[]>>((acc, skill) => {
-      const cat = getDisplayCategory(skill);
-      if (!acc[cat]) acc[cat] = [];
-      acc[cat].push(skill);
-      return acc;
-    }, {});
+  const categories = useMemo(() => {
+    const available = new Set<string>(skills.map(getDisplayCategory));
+    return CATEGORY_ORDER.filter((category) => category === "All" || available.has(category));
   }, [skills]);
 
-  const categoryOrder = ["FRONTEND", "BACKEND", "DATABASE", "TOOLS", "UI/UX"];
+  const visibleSkills = useMemo(() => {
+    if (activeCategory === "All") return skills;
+    return skills.filter((skill) => getDisplayCategory(skill) === activeCategory);
+  }, [activeCategory, skills]);
+
+  const positionedSkills = useMemo(() => {
+    const groupedCounts = new Map<string, number>();
+
+    return visibleSkills.map((skill, index) => {
+      const category = getDisplayCategory(skill);
+      const config = categoryConfig[category] ?? categoryConfig.Tools;
+      const groupIndex = groupedCounts.get(category) ?? 0;
+      groupedCounts.set(category, groupIndex + 1);
+      const ring = 11 + (groupIndex % 3) * 8;
+      const angle = groupIndex * 1.42 + index * 0.18;
+
+      return {
+        skill,
+        category,
+        color: config.color,
+        x: Math.min(88, Math.max(10, config.x + Math.cos(angle) * ring)),
+        y: Math.min(88, Math.max(12, config.y + Math.sin(angle) * ring)),
+        size: 54 + (skill.name.length % 3) * 9,
+      };
+    });
+  }, [visibleSkills]);
+
+  if (loading) {
+    return <SkillSkeleton />;
+  }
 
   return (
-    <div className="relative flex w-full max-w-5xl flex-col gap-8 overflow-visible md:gap-8 lg:gap-2">
-      
-      {/* --- CONTENT LAYER --- */}
-      <div className="relative z-10 flex w-full flex-col gap-8 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-3">
-        {loading ? (
-          <SkillSkeleton />
-        ) : (
-          categoryOrder.map((catKey) => {
-            const skillsInCat = groupedSkills[catKey];
-            if (!skillsInCat || skillsInCat.length === 0) return null;
+    <div className="relative w-full">
+      <div className="mb-6 flex flex-wrap gap-2" role="tablist" aria-label="Skill categories">
+        {categories.map((category) => {
+          const selected = activeCategory === category;
+          return (
+            <button
+              key={category}
+              type="button"
+              role="tab"
+              aria-selected={selected}
+              onClick={() => setActiveCategory(category)}
+              className={`relative min-h-11 rounded-full border px-4 text-[10px] font-black uppercase tracking-[0.18em] transition-colors ${
+                selected
+                  ? "border-blue-300/70 bg-blue-500/18 text-white"
+                  : "border-white/10 bg-white/4 text-slate-400 hover:border-blue-300/45 hover:text-white"
+              }`}
+            >
+              {selected && (
+                <motion.span
+                  layoutId="skill-filter"
+                  className="absolute inset-0 -z-10 rounded-full bg-blue-500/12"
+                />
+              )}
+              {category}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="hidden min-h-[31rem] overflow-hidden rounded-[28px] border border-white/8 bg-[#050911]/58 p-4 lg:block">
+        <svg className="absolute inset-0 h-full w-full" aria-hidden="true">
+          {positionedSkills.map((node, index) => {
+            const next = positionedSkills[index + 1];
+            if (!next || next.category !== node.category) return null;
 
             return (
-              <div
-                key={catKey}
-                className="w-full"
-              >
-                {/* Category Header */}
-                <div className="mb-4 flex items-center gap-3 lg:mb-2">
-                  <div className="rounded-lg border border-blue-500/25 bg-blue-500/12 p-2 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.1)] lg:p-1">
-                    <Lu.LuCode className="h-4 w-4 lg:h-3.5 lg:w-3.5" />
-                  </div>
-                  <h4 className="text-[11px] font-bold uppercase italic tracking-[0.32em] text-zinc-100 sm:tracking-[0.45em] lg:text-[8px] lg:tracking-[0.5em]">
-                    {catKey}
-                  </h4>
-                  <div className="h-px flex-1 bg-linear-to-r from-zinc-800 to-transparent" />
-                </div>
-
-                {/* Grid Skill Ikon */}
-                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:flex lg:flex-wrap lg:gap-x-3 lg:gap-y-2 lg:pl-1">
-                  {skillsInCat.map((skill: SkillData) => (
-                    <div
-                      key={skill.id}
-                      className="premium-static-tilt group relative flex min-w-0 flex-col items-center justify-center rounded-2xl border border-white/7 bg-white/[0.035] px-2 py-4 shadow-[0_14px_34px_rgba(0,0,0,0.16)] hover:border-blue-400/45 hover:bg-blue-500/8 hover:shadow-[0_18px_45px_rgba(37,99,235,0.2)] lg:min-w-16 lg:rounded-xl lg:px-2 lg:py-2.5"
-                    >
-                      {/* Aura Glow saat Hover */}
-                      <div className="absolute inset-0 bg-blue-500/20 blur-[25px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                      
-                      {/* Icon */}
-                      <div className="relative z-10 text-zinc-500 transition-all duration-500 group-hover:text-blue-400 group-hover:drop-shadow-[0_0_12px_rgba(59,130,246,0.7)]">
-                        <DynamicIcon name={skill.iconName || skill.name} />
-                      </div>
-                      
-                      {/* Name Label */}
-                      <span className="relative z-10 mt-3 max-w-full truncate text-center text-[9px] font-black uppercase tracking-[0.14em] text-zinc-500 transition-colors group-hover:text-white lg:mt-1 lg:text-[6px] lg:tracking-[0.16em]">
-                        {skill.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <motion.line
+                key={`${node.skill.id}-${next.skill.id}`}
+                x1={`${node.x}%`}
+                y1={`${node.y}%`}
+                x2={`${next.x}%`}
+                y2={`${next.y}%`}
+                stroke={node.color}
+                strokeWidth="1"
+                strokeOpacity="0.24"
+                initial={{ pathLength: 0 }}
+                whileInView={{ pathLength: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: index * 0.02 }}
+              />
             );
-          })
-        )}
+          })}
+        </svg>
+
+        <AnimatePresence mode="popLayout">
+          {positionedSkills.map(({ skill, category, color, x, y, size }) => (
+            <motion.div
+              layout
+              key={skill.id}
+              initial={{ opacity: 0, scale: 0.82 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.82 }}
+              transition={{ type: "spring", stiffness: 180, damping: 22 }}
+              className="group absolute flex flex-col items-center"
+              style={{
+                left: `${x}%`,
+                top: `${y}%`,
+                width: size,
+                translateX: "-50%",
+                translateY: "-50%",
+              }}
+            >
+              <button
+                type="button"
+                className="relative grid place-items-center rounded-full border bg-[#07101d] text-slate-300 shadow-[0_14px_36px_rgba(0,0,0,0.3)] transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
+                style={{
+                  width: size,
+                  height: size,
+                  borderColor: `${color}70`,
+                  boxShadow: `0 14px 36px rgba(0,0,0,0.3), 0 0 24px ${color}20`,
+                }}
+                aria-label={`${skill.name}, ${category}. ${getSkillDescription(skill)}`}
+              >
+                <DynamicIcon name={skill.iconName || skill.name} />
+              </button>
+              <div className="pointer-events-none absolute top-[calc(100%+0.55rem)] z-20 w-56 rounded-xl border border-white/10 bg-[#050911]/95 p-3 text-center opacity-0 shadow-[0_18px_50px_rgba(0,0,0,0.4)] backdrop-blur-xl transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+                <p className="text-xs font-black text-white">{skill.name}</p>
+                <p className="mt-1 text-[9px] font-black uppercase tracking-[0.18em]" style={{ color }}>
+                  {category}
+                </p>
+                <p className="mt-2 text-[11px] leading-relaxed text-slate-400">
+                  {getSkillDescription(skill)}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
+
+      <motion.div layout className="grid gap-3 sm:grid-cols-2 lg:hidden">
+        <AnimatePresence mode="popLayout">
+          {visibleSkills.map((skill) => {
+            const category = getDisplayCategory(skill);
+            const color = categoryConfig[category]?.color ?? "#60a5fa";
+
+            return (
+              <motion.article
+                layout
+                key={skill.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                className="flex min-h-24 items-center gap-4 rounded-2xl border border-white/8 bg-white/[0.035] p-4"
+              >
+                <span
+                  className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border"
+                  style={{ borderColor: `${color}70`, color }}
+                >
+                  <DynamicIcon name={skill.iconName || skill.name} />
+                </span>
+                <span>
+                  <span className="block text-sm font-black text-white">{skill.name}</span>
+                  <span className="mt-1 block text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">
+                    {category}
+                  </span>
+                  <span className="mt-1 block text-xs text-slate-400">
+                    {getSkillDescription(skill)}
+                  </span>
+                </span>
+              </motion.article>
+            );
+          })}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/immutability */
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import {
@@ -103,10 +105,13 @@ const DocumentSkeleton = () => (
 
 export default function DocSection() {
   const viewportRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const lastPreviewTriggerRef = useRef<HTMLButtonElement | null>(null);
   const [docs, setDocs] = useState<DocumentData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [selectedDoc, setSelectedDoc] = useState<DocumentData | null>(null);
   useEffect(() => {
     const fetchDocs = async () => {
       try {
@@ -209,6 +214,16 @@ export default function DocSection() {
     return `/api/documents/download?${params.toString()}`;
   };
 
+  const openPreview = (doc: DocumentData, trigger: HTMLButtonElement) => {
+    lastPreviewTriggerRef.current = trigger;
+    setSelectedDoc(doc);
+  };
+
+  const closePreview = () => {
+    setSelectedDoc(null);
+    window.requestAnimationFrame(() => lastPreviewTriggerRef.current?.focus());
+  };
+
   const changeFilter = (nextCategory: string) => {
     setCategoryFilter(nextCategory);
     viewportRef.current?.scrollTo({ left: 0, behavior: "smooth" });
@@ -218,6 +233,24 @@ export default function DocSection() {
     setSearchTerm(value);
     viewportRef.current?.scrollTo({ left: 0, behavior: "smooth" });
   };
+
+  useEffect(() => {
+    if (!selectedDoc) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closePreview();
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+    window.requestAnimationFrame(() => closeButtonRef.current?.focus());
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedDoc]);
 
   if (loading) {
     return <DocumentSkeleton />;
@@ -294,13 +327,13 @@ export default function DocSection() {
               <article className="premium-static-tilt group relative overflow-hidden rounded-[26px] border border-cyan-300/12 bg-[linear-gradient(145deg,rgba(16,28,48,0.92),rgba(5,11,22,0.82))] p-2 shadow-[0_22px_70px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl hover:border-cyan-300/45 hover:shadow-[0_28px_80px_rgba(37,99,235,0.22),0_0_35px_rgba(34,211,238,0.1)]">
                 <span className="pointer-events-none absolute left-6 top-0 z-20 h-5 w-32 rounded-b-xl border-x border-b border-cyan-300/20 bg-cyan-300/8 shadow-[0_6px_24px_rgba(34,211,238,0.12)]" />
                 <span className="pointer-events-none absolute inset-x-5 top-3 z-20 h-px bg-linear-to-r from-transparent via-cyan-300/60 to-transparent" />
-                <a
+                <button
                   data-folder-cover
-                  href={downloadUrl}
-                  download
-                  data-cursor-label="DOWNLOAD"
+                  type="button"
+                  onClick={(event) => openPreview(doc, event.currentTarget)}
+                  data-cursor-label="PREVIEW"
                   className="relative block h-52 origin-bottom overflow-hidden rounded-[20px] bg-white transition-transform duration-500 group-hover:[transform:perspective(900px)_translateY(-3px)_rotateX(-2deg)] sm:h-62 lg:h-48"
-                  aria-label={`Download ${doc.name}`}
+                  aria-label={`Preview ${doc.name}`}
                 >
                   {doc.previewUrl && (
                     <Image
@@ -364,7 +397,7 @@ export default function DocSection() {
                       </div>
                     </div>
                   )}
-                </a>
+                </button>
 
                 <div className="relative p-3 sm:p-4">
                   <div className="flex items-start justify-between gap-1.5 sm:gap-3">
@@ -404,6 +437,14 @@ export default function DocSection() {
                     <FaFilePdf size={13} />
                     Download Document
                   </a>
+                  <button
+                    type="button"
+                    onClick={(event) => openPreview(doc, event.currentTarget)}
+                    data-cursor-label="PREVIEW"
+                    className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 text-[9px] font-black uppercase tracking-[0.2em] text-slate-300 transition-all hover:border-cyan-300/45 hover:bg-cyan-300/10 hover:text-white"
+                  >
+                    Preview Document
+                  </button>
                 </div>
               </article>
               </div>
@@ -422,6 +463,68 @@ export default function DocSection() {
           </div>
         </div>
       </div>
+
+      {selectedDoc && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="document-preview-title"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#010308]/88 px-4 py-8 backdrop-blur-2xl"
+          onClick={closePreview}
+        >
+          <div
+            className="relative max-h-[90dvh] w-full max-w-5xl overflow-hidden rounded-[28px] border border-blue-300/18 bg-[#050911] shadow-[0_34px_120px_rgba(0,0,0,0.65)]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between gap-4 border-b border-white/8 px-4 py-3 sm:px-5">
+              <div className="min-w-0">
+                <h3 id="document-preview-title" className="truncate text-sm font-black text-white sm:text-base">
+                  {selectedDoc.name}
+                </h3>
+                <p className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-blue-300">
+                  {selectedDoc.category || "Document"}
+                </p>
+              </div>
+              <button
+                ref={closeButtonRef}
+                type="button"
+                onClick={closePreview}
+                aria-label="Close document preview"
+                className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-blue-300/60 hover:bg-blue-500/15"
+              >
+                x
+              </button>
+            </div>
+
+            <div className="h-[70dvh] bg-white">
+              {getPreviewType(selectedDoc) === "pdf" ? (
+                <iframe
+                  src={selectedDoc.fileUrl}
+                  title={`${selectedDoc.name} preview`}
+                  className="h-full w-full"
+                />
+              ) : getPreviewType(selectedDoc) === "image" || selectedDoc.previewUrl ? (
+                <div className="relative h-full w-full bg-[#f8fafc]">
+                  <Image
+                    src={getOptimizedImageUrl(selectedDoc.previewUrl || selectedDoc.fileUrl, 1200)}
+                    alt={`${selectedDoc.name} preview`}
+                    fill
+                    sizes="100vw"
+                    className="object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="grid h-full place-items-center bg-[#f8fafc] text-center text-slate-500">
+                  <div>
+                    <FaFilePdf className="mx-auto mb-4" size={34} />
+                    <p className="text-sm font-bold">Preview is not available for this file type.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -2,118 +2,119 @@
 
 /* eslint-disable react-hooks/set-state-in-effect */
 
-import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import {
   LuBriefcase,
+  LuFileText,
   LuHouse,
   LuMail,
+  LuMap,
+  LuMenu,
+  LuSparkles,
   LuUser,
+  LuX,
 } from "react-icons/lu";
 
 const menuItems = [
-  { id: "home", href: "/home", label: "HOME", shortLabel: "HOME", icon: LuHouse },
-  { id: "about", href: "/explore", label: "ABOUT", shortLabel: "ABOUT", icon: LuUser },
-  { id: "projects", href: "/projects", label: "PROJECT", shortLabel: "PROJ", icon: LuBriefcase },
-  { id: "contact", href: "/contact", label: "CONTACT", shortLabel: "MAIL", icon: LuMail },
+  { id: "home", href: "/home", label: "Home", icon: LuHouse },
+  { id: "about", href: "/explore", label: "About", icon: LuUser },
+  { id: "skills", href: "/skills", label: "Skills", icon: LuSparkles },
+  { id: "projects", href: "/projects", label: "Projects", icon: LuBriefcase },
+  { id: "journey", href: "/journey", label: "Journey", icon: LuMap },
+  { id: "documents", href: "/documents", label: "Docs", icon: LuFileText },
+  { id: "contact", href: "/contact", label: "Contact", icon: LuMail },
 ];
-const observedSectionIds = [
-  "home",
-  "about",
-  "projects",
-  "contact",
-];
+
+const mobilePrimary = ["home", "projects", "contact"];
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [activeSection, setActiveSection] = useState("HOME");
+  const [activeSection, setActiveSection] = useState("home");
+  const [compact, setCompact] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const observedSectionIds = useMemo(() => menuItems.map((item) => item.id), []);
 
   useEffect(() => {
     let frame = 0;
+    let previousY = window.scrollY;
 
-    const getActiveSection = () => {
+    const updateNavigationState = () => {
       frame = 0;
       const sections = observedSectionIds
         .map((id) => document.getElementById(id))
         .filter((section): section is HTMLElement => Boolean(section));
 
-      if (!sections.length) {
-        return;
-      }
-
-      const viewportCenter = window.innerHeight / 2;
-      const containingSection = sections.find((section) => {
-        const rect = section.getBoundingClientRect();
-        return rect.top <= viewportCenter && rect.bottom >= viewportCenter;
-      });
-
-      const closest = containingSection
-        ? { id: containingSection.id }
-        : sections
-            .map((section) => {
-              const rect = section.getBoundingClientRect();
-              const sectionCenter = rect.top + Math.min(rect.height, window.innerHeight) / 2;
-              return { id: section.id, distance: Math.abs(sectionCenter - viewportCenter) };
-            })
-            .sort((a, b) => a.distance - b.distance)[0];
+      const viewportCenter = window.innerHeight * 0.42;
+      const closest = sections
+        .map((section) => {
+          const rect = section.getBoundingClientRect();
+          return {
+            id: section.id,
+            distance: Math.abs(rect.top + Math.min(rect.height, window.innerHeight) / 2 - viewportCenter),
+          };
+        })
+        .sort((a, b) => a.distance - b.distance)[0];
 
       if (closest?.id) {
-        const nextSection = menuItems.some((item) => item.id === closest.id)
-          ? closest.id.toUpperCase()
-          : "";
-        setActiveSection((current) =>
-          current === nextSection ? current : nextSection,
-        );
+        setActiveSection((current) => (current === closest.id ? current : closest.id));
       }
+
+      const currentY = window.scrollY;
+      setCompact(currentY > 90 && currentY >= previousY);
+      previousY = currentY;
     };
 
-    const requestSectionUpdate = () => {
-      if (!frame) frame = window.requestAnimationFrame(getActiveSection);
+    const requestUpdate = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateNavigationState);
     };
 
-    requestSectionUpdate();
-    window.addEventListener("scroll", requestSectionUpdate, { passive: true });
-    window.addEventListener("resize", requestSectionUpdate, { passive: true });
+    requestUpdate();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate, { passive: true });
 
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", requestSectionUpdate);
-      window.removeEventListener("resize", requestSectionUpdate);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
     };
-  }, []);
+  }, [observedSectionIds]);
 
   useEffect(() => {
-    if (pathname === "/about" || pathname === "/explore") {
-      setActiveSection("ABOUT");
-      return;
-    }
-
-    const pathSection = pathname.replace("/", "").toUpperCase() || "HOME";
-    if (menuItems.some((item) => item.label === pathSection || item.id.toUpperCase() === pathSection)) {
-      setActiveSection(pathSection);
-    }
+    const path = pathname === "/" ? "home" : pathname.replace("/", "");
+    const item = menuItems.find((entry) => entry.href.replace("/", "") === path || entry.id === path);
+    if (item) setActiveSection(item.id);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [menuOpen]);
+
   const handleNavigation = (item: (typeof menuItems)[number]) => {
-    if (item.id === "about" && pathname === "/about") {
-      setActiveSection("ABOUT");
-      window.history.replaceState(null, "", "/about");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    setMenuOpen(false);
+    setActiveSection(item.id);
+
+    if (pathname === "/about") {
+      if (item.id === "about") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      router.push(item.href);
       return;
     }
 
     const element = document.getElementById(item.id);
-
-    setActiveSection(item.id.toUpperCase());
-
     if (element) {
       window.history.pushState(null, "", item.href);
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
       return;
     }
 
@@ -122,83 +123,152 @@ export default function Navbar() {
 
   return (
     <>
-      <nav
-        className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 z-120 w-[calc(100vw-1rem)] max-w-[32rem] -translate-x-1/2 sm:bottom-4 sm:w-[calc(100vw-2rem)] sm:max-w-[36rem] lg:w-[calc(100%-2rem)] lg:max-w-[66rem]"
-        aria-label="Section navigation"
+      <a
+        href="#home"
+        className="fixed left-4 top-4 z-[130] -translate-y-24 rounded-full bg-blue-600 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-white transition focus:translate-y-0"
       >
-        <div className="relative rounded-2xl border border-blue-400/35 bg-[#030711]/94 p-1.5 shadow-[0_14px_45px_rgba(0,0,0,0.55),0_0_28px_rgba(37,99,235,0.16)] backdrop-blur-xl sm:p-2 lg:rounded-none lg:border-0 lg:bg-transparent lg:px-5 lg:py-3 lg:shadow-none lg:backdrop-blur-none">
-          <Image
-            src="/cyber-navbar-frame.svg"
-            alt=""
-            fill
-            priority
-            sizes="1056px"
-            className="pointer-events-none hidden select-none object-fill lg:block"
-          />
+        Skip to content
+      </a>
 
-          <div className="relative z-10 flex items-center justify-center lg:mx-auto lg:w-fit lg:gap-2">
-            <button
-              type="button"
-              onClick={() => handleNavigation(menuItems[0])}
-              data-cursor-label="HOME"
-              className="hidden h-15 min-w-48 items-center gap-3 border border-blue-500/35 bg-black/35 px-4 text-left shadow-[inset_0_0_34px_rgba(37,99,235,0.12)] [clip-path:polygon(7%_0,100%_0,100%_82%,93%_100%,0_100%,0_18%)] lg:flex"
-            >
-              <span className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-blue-400/55 bg-transparent shadow-[0_0_24px_rgba(59,130,246,0.45)]">
-                <Image
-                  src="/fz-logo.png"
-                  alt="FZ Dev"
-                  width={40}
-                  height={40}
-                  className="h-full w-full object-cover"
-                />
-              </span>
-              <span>
-                <span className="block text-sm font-black uppercase tracking-[0.28em] text-white">Nexxus</span>
-                <span className="mt-1 block text-[7px] font-bold uppercase tracking-[0.24em] text-blue-400">Developer Portfolio</span>
-              </span>
-            </button>
+      <nav
+        className={`fixed left-1/2 top-4 z-120 hidden -translate-x-1/2 transition-all duration-300 lg:block ${
+          compact ? "top-3 scale-[0.94] opacity-92" : "scale-100"
+        }`}
+        aria-label="Primary navigation"
+      >
+        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-[#030711]/82 p-2 shadow-[0_18px_70px_rgba(0,0,0,0.38)] backdrop-blur-2xl">
+          <button
+            type="button"
+            onClick={() => handleNavigation(menuItems[0])}
+            aria-label="Home"
+            className="group mr-2 flex h-12 items-center gap-3 rounded-full border border-blue-300/22 bg-blue-500/8 pl-2 pr-5 text-left"
+          >
+            <span className="grid h-8 w-8 place-items-center overflow-hidden rounded-full border border-blue-300/45">
+              <Image src="/fz-logo.png" alt="FZH" width={32} height={32} className="h-full w-full object-cover" />
+            </span>
+            <span className="font-mono text-xs font-black uppercase tracking-[0.22em] text-white transition-transform group-hover:scale-105">
+              FZH
+            </span>
+          </button>
 
-            <ul className="grid w-full grid-cols-4 items-stretch overflow-hidden rounded-xl bg-black/18 lg:flex lg:w-auto lg:rounded-none lg:border-0 lg:bg-transparent">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeSection === item.label || activeSection === item.id.toUpperCase();
-
-              return (
-                <li key={item.id} className="min-w-0">
-                  <button
-                    type="button"
-                    onClick={() => handleNavigation(item)}
-                    data-cursor-label={item.label}
-                    aria-current={isActive ? "page" : undefined}
-                    className={`group relative flex h-14 w-full min-w-0 flex-col items-center justify-center gap-1 border-r border-blue-500/18 px-1 text-center transition-all duration-300 last:border-r-0 sm:h-15 sm:px-2 lg:h-15 lg:min-w-18 lg:gap-1 lg:px-2 xl:min-w-20 ${
-                      isActive
-                        ? "bg-blue-500/22 shadow-[inset_0_0_30px_rgba(37,99,235,0.3),0_0_18px_rgba(34,211,238,0.08)] lg:[clip-path:polygon(0_0,100%_0,100%_82%,82%_100%,18%_100%,0_82%)]"
-                        : "bg-transparent opacity-72 hover:bg-blue-500/8 hover:opacity-100"
-                    }`}
-                    aria-label={item.label}
-                  >
-                    <span className={`${isActive ? "text-blue-300 drop-shadow-[0_0_10px_rgba(96,165,250,0.9)]" : "text-blue-300/80 group-hover:text-blue-200"}`}>
-                      <Icon className="h-5 w-5 sm:h-5.5 sm:w-5.5 lg:h-6 lg:w-6" />
-                    </span>
-                    <span className={`max-w-full truncate text-[8px] font-black uppercase tracking-[0.02em] transition-colors sm:text-[9px] lg:text-[10px] ${isActive ? "text-white" : "text-white/70 group-hover:text-white"}`}>
-                      <span className="sm:hidden">{item.shortLabel}</span>
-                      <span className="hidden sm:inline">{item.label}</span>
-                    </span>
-                    {isActive && (
-                      <>
-                        <span className="absolute inset-x-2 top-0 h-px bg-linear-to-r from-transparent via-cyan-200 to-transparent shadow-[0_0_12px_rgba(103,232,249,0.9)]" />
-                        <span className="absolute -top-0.5 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rotate-45 bg-cyan-200 shadow-[0_0_12px_#67e8f9]" />
-                        <span className="absolute bottom-0 h-0.5 w-8 rounded-full bg-blue-300 shadow-[0_0_12px_rgba(96,165,250,0.95)] lg:bottom-1" />
-                      </>
-                    )}
-                  </button>
-                </li>
-              );
-            })}
-            </ul>
-          </div>
+          {menuItems.slice(1).map((item) => {
+            const Icon = item.icon;
+            const selected = activeSection === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => handleNavigation(item)}
+                aria-current={selected ? "page" : undefined}
+                className={`relative flex h-11 items-center gap-2 rounded-full px-4 text-[10px] font-black uppercase tracking-[0.16em] transition-colors ${
+                  selected
+                    ? "bg-blue-500/20 text-white"
+                    : "text-slate-400 hover:bg-white/6 hover:text-white"
+                }`}
+              >
+                {selected && (
+                  <span className="absolute inset-x-4 -bottom-1 h-px bg-linear-to-r from-transparent via-blue-200 to-transparent" />
+                )}
+                <Icon size={15} />
+                {item.label}
+              </button>
+            );
+          })}
         </div>
       </nav>
+
+      <nav
+        className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 z-120 w-[calc(100vw-1rem)] max-w-[27rem] -translate-x-1/2 lg:hidden"
+        aria-label="Mobile navigation"
+      >
+        <div className="grid grid-cols-4 gap-1 rounded-2xl border border-blue-400/22 bg-[#030711]/94 p-1.5 shadow-[0_14px_45px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+          {menuItems
+            .filter((item) => mobilePrimary.includes(item.id))
+            .map((item) => {
+              const Icon = item.icon;
+              const selected = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleNavigation(item)}
+                  aria-current={selected ? "page" : undefined}
+                  className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-[8px] font-black uppercase tracking-[0.08em] ${
+                    selected ? "bg-blue-500/22 text-white" : "text-slate-400"
+                  }`}
+                >
+                  <Icon size={20} />
+                  {item.label}
+                </button>
+              );
+            })}
+          <button
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open navigation menu"
+            className="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-[8px] font-black uppercase tracking-[0.08em] text-slate-300"
+          >
+            <LuMenu size={20} />
+            Menu
+          </button>
+        </div>
+      </nav>
+
+      <div
+        className={`fixed inset-0 z-[125] bg-[#010308]/72 backdrop-blur-xl transition-opacity lg:hidden ${
+          menuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        onClick={() => setMenuOpen(false)}
+      >
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile section navigation"
+          className={`absolute inset-x-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] rounded-[28px] border border-blue-300/18 bg-[#050911]/96 p-4 shadow-[0_30px_90px_rgba(0,0,0,0.55)] transition-[clip-path,transform] duration-300 ${
+            menuOpen
+              ? "[clip-path:circle(140%_at_50%_100%)] translate-y-0"
+              : "[clip-path:circle(0%_at_50%_100%)] translate-y-8"
+          }`}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-[10px] font-black uppercase tracking-[0.28em] text-blue-300">
+              Navigate
+            </p>
+            <button
+              type="button"
+              onClick={() => setMenuOpen(false)}
+              aria-label="Close navigation menu"
+              className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-white"
+            >
+              <LuX size={18} />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const selected = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleNavigation(item)}
+                  aria-current={selected ? "page" : undefined}
+                  className={`flex min-h-14 items-center gap-3 rounded-2xl border px-4 text-left text-xs font-black uppercase tracking-[0.12em] ${
+                    selected
+                      ? "border-blue-300/55 bg-blue-500/18 text-white"
+                      : "border-white/8 bg-white/[0.035] text-slate-400"
+                  }`}
+                >
+                  <Icon size={18} />
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </>
   );
 }

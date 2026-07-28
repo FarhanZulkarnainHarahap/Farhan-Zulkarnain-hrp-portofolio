@@ -1,6 +1,44 @@
 import type { Metadata } from "next";
 import CyberCursor from "@/components/CyberCursor";
+import EntranceIntro from "@/components/layout/EntranceIntro";
+import PageTransition from "@/components/layout/PageTransition";
 import "./globals.css";
+
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Farhan Zulkarnain Harahap",
+    url: "https://farhanzulkarnainhrp.com",
+    jobTitle: "Full-Stack Web Developer",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Medan",
+      addressCountry: "ID",
+    },
+    sameAs: [
+      "https://github.com/FarhanZulkarnainHarahap",
+      "https://www.linkedin.com/in/farhan-zulkarnain-71801a347",
+    ],
+    knowsAbout: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Node.js",
+      "Express.js",
+      "UI Development",
+      "Full-Stack Web Development",
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Farhan Zulkarnain Portfolio",
+    url: "https://farhanzulkarnainhrp.com",
+    description:
+      "Interactive portfolio for Farhan Zulkarnain Harahap, a Full-Stack Web Developer and UI Developer based in Medan, Indonesia.",
+  },
+];
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://farhanzulkarnainhrp.com"),
@@ -78,7 +116,13 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://api2.farhanzulkarnainhrp.com" />
       </head>
       <body className="min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         {children}
+        <EntranceIntro />
+        <PageTransition />
         <CyberCursor />
       </body>
     </html>

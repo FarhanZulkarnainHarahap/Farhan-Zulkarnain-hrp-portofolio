@@ -14,6 +14,15 @@ const AboutSection = dynamic(() => import("@/components/sections/about/AboutSect
 const ProjectSection = dynamic(() => import("@/components/sections/portfolio/project/ProjectSection"), {
   loading: () => <SectionBlockSkeleton label="Projects" />,
 });
+const SkillSection = dynamic(() => import("@/components/sections/skill/SkillSection"), {
+  loading: () => <SectionBlockSkeleton label="Skills" />,
+});
+const JourneySection = dynamic(() => import("@/components/sections/journey/JourneySection"), {
+  loading: () => <SectionBlockSkeleton label="Journey" />,
+});
+const DocSection = dynamic(() => import("@/components/sections/document/DocSection"), {
+  loading: () => <SectionBlockSkeleton label="Documents" />,
+});
 const ContactSection = dynamic(() => import("@/components/sections/contact/ContactSection"), {
   loading: () => <SectionBlockSkeleton label="Contact" />,
 });
@@ -35,7 +44,9 @@ export default function Home() {
   useEffect(() => {
     const routeTargets: Record<string, string> = {
       "/explore": "about",
+      "/skills": "skills",
       "/projects": "projects",
+      "/documents": "documents",
       "/contact": "contact",
     };
     const targetId = routeTargets[pathname] ?? "home";
@@ -72,7 +83,26 @@ export default function Home() {
           <HeroCard />
         </section>
         <AboutSection />
+        <section id="skills" className="portfolio-section-bg relative scroll-mt-4 px-5 py-28 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-7xl">
+            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-blue-300">
+              Skill Map
+            </p>
+            <h2 className="mt-6 text-[clamp(2.8rem,7vw,6.2rem)] font-black uppercase leading-[0.9] tracking-normal text-white">
+              Interactive Skill Constellation.
+            </h2>
+            <p className="mt-5 max-w-3xl text-sm leading-7 text-slate-400 sm:text-base">
+              Filtered from the existing skills API and arranged as connected nodes on desktop,
+              with the same information preserved as accessible HTML cards on mobile.
+            </p>
+            <div className="mt-9">
+              <SkillSection />
+            </div>
+          </div>
+        </section>
         <ProjectSection />
+        <JourneySection />
+        <DocSection />
         <section id="contact" className="portfolio-section-bg relative flex min-h-screen scroll-mt-4 items-center px-0 pb-36 pt-24 md:pb-40 lg:py-28">
           <ContactSection />
         </section>

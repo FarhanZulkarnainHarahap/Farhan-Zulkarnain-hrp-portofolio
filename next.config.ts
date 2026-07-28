@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["react-icons"],
   },
+  turbopack: {
+    root: process.cwd(),
+  },
   async headers() {
     return [
       {
@@ -36,18 +39,7 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    return [
-      {
-        source: "/skills",
-        destination: "/about",
-        permanent: false,
-      },
-      {
-        source: "/documents",
-        destination: "/about",
-        permanent: false,
-      },
-    ];
+    return [];
   },
   async rewrites() {
     return [
@@ -61,6 +53,18 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/projects',
+        destination: '/dashboard/user',
+      },
+      {
+        source: '/skills',
+        destination: '/dashboard/user',
+      },
+      {
+        source: '/journey',
+        destination: '/dashboard/user',
+      },
+      {
+        source: '/documents',
         destination: '/dashboard/user',
       },
       {
