@@ -2,8 +2,10 @@
 
 import { useEffect, useMemo, useState, type PointerEvent } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import {
+  LuArrowRight,
   LuBriefcaseBusiness,
   LuCodeXml,
   LuFileBadge,
@@ -23,7 +25,7 @@ type ProjectResponse = { success: boolean; data: Array<{ id: string }> };
 type SkillResponse = Array<{ id: string; name: string }> | { data?: Array<{ id: string; name: string }> };
 type DocumentResponse = { success: boolean; data: Array<{ id: string }> };
 
-export default function AboutSection() {
+export default function AboutSection({ showExplore = true }: { showExplore?: boolean }) {
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
   const blobRadius = useTransform(
@@ -160,6 +162,18 @@ export default function AboutSection() {
             product flows end to end: interface, API, database, deployment, and the
             little details that make a recruiter or user understand the work quickly.
           </p>
+
+          {showExplore && (
+            <div className="mt-8 flex justify-center lg:justify-start">
+              <Link
+                href="/about/detail"
+                className="group flex min-h-12 items-center gap-3 rounded-full bg-blue-600 px-6 py-3 text-xs font-black uppercase tracking-[0.18em] text-white shadow-[0_18px_45px_rgba(37,99,235,0.28)] transition-colors hover:bg-blue-500"
+              >
+                Explore About Detail
+                <LuArrowRight className="transition-transform group-hover:translate-x-1" size={17} />
+              </Link>
+            </div>
+          )}
 
           <div className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
             {[

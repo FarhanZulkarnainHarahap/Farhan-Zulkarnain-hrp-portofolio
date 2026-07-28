@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { LuCodeXml, LuFileText, LuUser } from "react-icons/lu";
 
 const items = [
-  { href: "/about", label: "ABOUT ME", icon: LuUser },
+  { href: "/about/detail", label: "ABOUT ME", icon: LuUser },
   { href: "/about/skills", label: "SKILLS", icon: LuCodeXml },
   { href: "/about/docs", label: "DOCS", icon: LuFileText },
 ] as const;
