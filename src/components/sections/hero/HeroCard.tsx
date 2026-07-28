@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -13,6 +14,7 @@ import {
 } from "react-icons/lu";
 import { FaWhatsapp } from "react-icons/fa";
 import { fetchCachedJson } from "@/lib/client-cache";
+import { getOptimizedImageUrl } from "@/lib/image";
 import { MagneticButton } from "@/components/motion/MagneticButton";
 import { MaskReveal } from "@/components/motion/MaskReveal";
 
@@ -52,6 +54,11 @@ const socialLinks = [
     icon: FaWhatsapp,
   },
 ];
+
+const profileImage = getOptimizedImageUrl(
+  "https://res.cloudinary.com/dpanr1qqp/image/upload/v1765874955/bake-bliss/b1v5qdy9whqszyqohdjb.jpg",
+  820,
+);
 
 export default function HeroCard() {
   const router = useRouter();
@@ -194,11 +201,39 @@ export default function HeroCard() {
 
         <div className="relative">
           <div className="absolute -inset-4 rounded-[32px] border border-blue-400/8" />
-          <HeroCanvas energyBoost={energyBoost} />
-          <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[9px] font-black uppercase tracking-[0.18em] text-slate-500">
-            <span>Sphere</span>
-            <span>Code</span>
-            <span>FZH</span>
+          <div className="grid items-stretch gap-4 xl:grid-cols-[0.78fr_1fr]">
+            <div className="group relative mx-auto w-full max-w-86 overflow-hidden rounded-[28px] border border-blue-300/18 bg-[#080b13] p-2 shadow-[0_24px_90px_rgba(0,0,0,0.42),0_0_34px_rgba(37,99,235,0.14)] xl:max-w-none">
+              <div className="absolute left-[-18%] top-[30%] h-32 w-[136%] rotate-[-14deg] bg-linear-to-r from-violet-500 via-blue-500 to-cyan-300 opacity-45 blur-2xl" />
+              <div className="relative h-full rounded-[22px] border border-white/8 bg-[#050911] p-2">
+                <div className="relative h-[22rem] overflow-hidden rounded-[17px] bg-[#111827] xl:h-full xl:min-h-[27rem]">
+                  <Image
+                    src={profileImage}
+                    alt="Farhan Zulkarnain Harahap"
+                    fill
+                    priority
+                    fetchPriority="high"
+                    quality={72}
+                    sizes="(max-width: 768px) 270px, (max-width: 1280px) 320px, 360px"
+                    className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-[#080b13] via-transparent to-transparent opacity-55" />
+                </div>
+                <div className="relative z-10 pt-4">
+                  <p className="text-center text-[9px] font-black uppercase tracking-[0.38em] text-blue-300">
+                    Farhan Zulkarnain
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <HeroCanvas energyBoost={energyBoost} />
+              <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[9px] font-black uppercase tracking-[0.18em] text-slate-500">
+                <span>Sphere</span>
+                <span>Code</span>
+                <span>FZH</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

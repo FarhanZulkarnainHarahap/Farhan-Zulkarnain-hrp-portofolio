@@ -28,6 +28,19 @@ interface DocumentData {
 
 const DOCUMENT_SKELETON_COUNT = 4;
 
+const getDocumentIcon = (category: string) => {
+  switch (category?.toLowerCase()) {
+    case "certificate":
+      return <FaCertificate size={24} />;
+    case "education":
+      return <FaUserGraduate size={24} />;
+    case "resume":
+      return <FaFileSignature size={24} />;
+    default:
+      return <FaFilePdf size={24} />;
+  }
+};
+
 const DocumentSkeleton = () => (
   <section
     className="relative min-h-screen w-full scroll-mt-4"
@@ -102,6 +115,70 @@ const DocumentSkeleton = () => (
     </div>
   </section>
 );
+
+const DocumentCover = ({
+  doc,
+  previewType,
+}: {
+  doc: DocumentData;
+  previewType: "pdf" | "image" | "unsupported";
+}) => {
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageSource = !imageFailed
+    ? doc.previewUrl || (previewType === "image" ? doc.fileUrl : null)
+    : null;
+
+  if (imageSource) {
+    return (
+      <>
+        <Image
+          src={getOptimizedImageUrl(imageSource, 1000)}
+          alt={`${doc.name} preview`}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+          className="bg-white object-contain"
+          onError={() => setImageFailed(true)}
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-[#02050b]/18 via-transparent to-transparent" />
+      </>
+    );
+  }
+
+  return (
+    <div className="relative flex h-full overflow-hidden bg-[#f8fafc] text-slate-900">
+      <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-blue-100 to-transparent" />
+      <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-blue-100" />
+      <div className="absolute bottom-0 left-0 h-28 w-28 rounded-tr-full bg-slate-100" />
+
+      <div className="relative z-10 flex h-full w-full flex-col p-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-blue-700">
+              {doc.category || "Document"}
+            </p>
+            <h4 className="mt-2 max-w-72 text-2xl font-black uppercase leading-none tracking-tight">
+              {doc.category?.toLowerCase() === "resume"
+                ? "Curriculum Vitae"
+                : doc.category || "Portfolio File"}
+            </h4>
+          </div>
+          <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border-4 border-slate-200 bg-white text-blue-600 shadow-sm">
+            {getDocumentIcon(doc.category)}
+          </div>
+        </div>
+
+        <div className="mt-auto">
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">
+            Farhan Zulkarnain Harahap
+          </p>
+          <p className="mt-2 line-clamp-2 text-sm font-bold leading-snug text-slate-700">
+            {doc.name}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function DocSection() {
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -184,19 +261,6 @@ export default function DocSection() {
       day: "2-digit",
       year: "numeric",
     }).format(new Date(value));
-
-  const getIcon = (category: string) => {
-    switch (category?.toLowerCase()) {
-      case "certificate":
-        return <FaCertificate size={18} />;
-      case "education":
-        return <FaUserGraduate size={18} />;
-      case "resume":
-        return <FaFileSignature size={18} />;
-      default:
-        return <FaFilePdf size={18} />;
-    }
-  };
 
   const getPreviewType = (doc: DocumentData) => {
     const value = `${doc.name} ${doc.fileUrl}`.toLowerCase().split("?")[0];
@@ -335,68 +399,7 @@ export default function DocSection() {
                   className="relative block h-52 origin-bottom overflow-hidden rounded-[20px] bg-white transition-transform duration-500 group-hover:[transform:perspective(900px)_translateY(-3px)_rotateX(-2deg)] sm:h-62 lg:h-48"
                   aria-label={`Preview ${doc.name}`}
                 >
-                  {doc.previewUrl && (
-                    <Image
-                      src={getOptimizedImageUrl(doc.previewUrl, 1000)}
-                      alt={`${doc.name} preview`}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                      className="bg-white object-contain"
-                    />
-                  )}
-
-                  {!doc.previewUrl && previewType === "pdf" && (
-                    <div className="relative h-full overflow-hidden bg-[#f8fafc] p-2.5 text-slate-900 sm:p-4 md:p-5">
-                      <div className="absolute inset-y-0 right-0 w-12 bg-linear-to-l from-slate-200 to-transparent sm:w-20 md:w-23" />
-                      <div className="absolute -right-5 -top-5 h-20 w-20 rounded-full bg-blue-100 md:h-28 md:w-28" />
-                      <div className="relative z-10 flex h-full flex-col">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <p className="text-[8px] font-black uppercase tracking-tight text-blue-700 sm:text-[10px] md:text-xs">
-                              {doc.category || "certificate"}
-                            </p>
-                            <h4 className="mt-1 max-w-30 text-sm font-black uppercase leading-none tracking-tight sm:mt-2 sm:max-w-42 sm:text-lg md:mt-3 md:max-w-52 md:text-2xl">
-                              Certificate
-                            </h4>
-                          </div>
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-slate-300 bg-white text-blue-600 shadow-sm sm:h-10 sm:w-10 md:h-12 md:w-12 md:border-4">
-                            {getIcon(doc.category)}
-                          </div>
-                        </div>
-
-                        <div className="mt-auto">
-                          <p className="hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400 sm:block">
-                            Awarded to
-                          </p>
-                          <p className="hidden mt-1 text-sm font-bold text-slate-900 sm:block">Farhan Zulkarnain</p>
-                          <p className="mt-1 line-clamp-2 max-w-80 text-[9px] font-semibold leading-snug text-slate-600 sm:mt-2 sm:text-xs md:mt-3 md:text-sm">
-                            {doc.name}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {!doc.previewUrl && previewType === "image" && (
-                    <Image
-                      src={getOptimizedImageUrl(doc.fileUrl, 1000)}
-                      alt={doc.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                      className="object-cover"
-                    />
-                  )}
-
-                  {!doc.previewUrl && previewType === "unsupported" && (
-                    <div className="flex h-full items-center justify-center bg-[#f8fafc] text-slate-400">
-                      <div className="text-center">
-                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
-                          {getIcon(doc.category)}
-                        </div>
-                        <p className="mt-3 text-xs font-bold uppercase tracking-widest">No Preview</p>
-                      </div>
-                    </div>
-                  )}
+                  <DocumentCover doc={doc} previewType={previewType} />
                 </button>
 
                 <div className="relative p-3 sm:p-4">

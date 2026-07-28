@@ -92,8 +92,8 @@ export default function Home() {
               Interactive Skill Constellation.
             </h2>
             <p className="mt-5 max-w-3xl text-sm leading-7 text-slate-400 sm:text-base">
-              Filtered from the existing skills API and arranged as connected nodes on desktop,
-              with the same information preserved as accessible HTML cards on mobile.
+              Filtered from the existing skills API and arranged as a clean category map,
+              with every technology kept readable, clickable, and available in HTML.
             </p>
             <div className="mt-9">
               <SkillSection />

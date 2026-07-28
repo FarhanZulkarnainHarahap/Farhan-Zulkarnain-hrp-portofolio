@@ -114,26 +114,13 @@ export default function SkillSection() {
     return skills.filter((skill) => getDisplayCategory(skill) === activeCategory);
   }, [activeCategory, skills]);
 
-  const positionedSkills = useMemo(() => {
-    const groupedCounts = new Map<string, number>();
-
-    return visibleSkills.map((skill, index) => {
+  const groupedSkills = useMemo(() => {
+    return visibleSkills.reduce<Record<string, SkillData[]>>((acc, skill) => {
       const category = getDisplayCategory(skill);
-      const config = categoryConfig[category] ?? categoryConfig.Tools;
-      const groupIndex = groupedCounts.get(category) ?? 0;
-      groupedCounts.set(category, groupIndex + 1);
-      const ring = 11 + (groupIndex % 3) * 8;
-      const angle = groupIndex * 1.42 + index * 0.18;
-
-      return {
-        skill,
-        category,
-        color: config.color,
-        x: Math.min(88, Math.max(10, config.x + Math.cos(angle) * ring)),
-        y: Math.min(88, Math.max(12, config.y + Math.sin(angle) * ring)),
-        size: 54 + (skill.name.length % 3) * 9,
-      };
-    });
+      if (!acc[category]) acc[category] = [];
+      acc[category].push(skill);
+      return acc;
+    }, {});
   }, [visibleSkills]);
 
   if (loading) {
@@ -170,74 +157,67 @@ export default function SkillSection() {
         })}
       </div>
 
-      <div className="hidden min-h-[31rem] overflow-hidden rounded-[28px] border border-white/8 bg-[#050911]/58 p-4 lg:block">
-        <svg className="absolute inset-0 h-full w-full" aria-hidden="true">
-          {positionedSkills.map((node, index) => {
-            const next = positionedSkills[index + 1];
-            if (!next || next.category !== node.category) return null;
+      <div className="hidden rounded-[28px] border border-white/8 bg-[#050911]/58 p-4 lg:block">
+        <div className="grid gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+          {Object.entries(groupedSkills).map(([category, categorySkills]) => {
+            const color = categoryConfig[category]?.color ?? "#60a5fa";
 
             return (
-              <motion.line
-                key={`${node.skill.id}-${next.skill.id}`}
-                x1={`${node.x}%`}
-                y1={`${node.y}%`}
-                x2={`${next.x}%`}
-                y2={`${next.y}%`}
-                stroke={node.color}
-                strokeWidth="1"
-                strokeOpacity="0.24"
-                initial={{ pathLength: 0 }}
-                whileInView={{ pathLength: 1 }}
+              <motion.section
+                layout
+                key={category}
+                className="relative min-h-72 overflow-hidden rounded-3xl border border-white/8 bg-white/[0.035] p-4"
+                initial={{ opacity: 0, clipPath: "inset(0 0 18% 0)" }}
+                whileInView={{ opacity: 1, clipPath: "inset(0 0 0% 0)" }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.7, delay: index * 0.02 }}
-              />
+              >
+                <div className="mb-4 flex items-center gap-3">
+                  <span
+                    className="h-2.5 w-2.5 rounded-full"
+                    style={{ backgroundColor: color, boxShadow: `0 0 18px ${color}` }}
+                  />
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.24em] text-white">
+                    {category}
+                  </h3>
+                  <span className="h-px flex-1 bg-linear-to-r from-white/12 to-transparent" />
+                  <span className="text-[10px] font-black text-slate-500">{categorySkills.length}</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  {categorySkills.map((skill, index) => (
+                    <motion.article
+                      layout
+                      key={skill.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.025 }}
+                      className="group relative min-h-24 overflow-hidden rounded-2xl border border-white/8 bg-[#07101d]/72 p-3"
+                    >
+                      <span
+                        className="absolute left-11 right-4 top-8 h-px opacity-35"
+                        style={{ background: `linear-gradient(90deg, ${color}, transparent)` }}
+                      />
+                      <div className="relative flex items-start gap-3">
+                        <span
+                          className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border bg-black/20 text-slate-200"
+                          style={{ borderColor: `${color}70`, color }}
+                        >
+                          <DynamicIcon name={skill.iconName || skill.name} />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm font-black text-white">{skill.name}</span>
+                          <span className="mt-1 block text-[10px] leading-5 text-slate-500">
+                            {getSkillDescription(skill)}
+                          </span>
+                        </span>
+                      </div>
+                    </motion.article>
+                  ))}
+                </div>
+              </motion.section>
             );
           })}
-        </svg>
-
-        <AnimatePresence mode="popLayout">
-          {positionedSkills.map(({ skill, category, color, x, y, size }) => (
-            <motion.div
-              layout
-              key={skill.id}
-              initial={{ opacity: 0, scale: 0.82 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.82 }}
-              transition={{ type: "spring", stiffness: 180, damping: 22 }}
-              className="group absolute flex flex-col items-center"
-              style={{
-                left: `${x}%`,
-                top: `${y}%`,
-                width: size,
-                translateX: "-50%",
-                translateY: "-50%",
-              }}
-            >
-              <button
-                type="button"
-                className="relative grid place-items-center rounded-full border bg-[#07101d] text-slate-300 shadow-[0_14px_36px_rgba(0,0,0,0.3)] transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-                style={{
-                  width: size,
-                  height: size,
-                  borderColor: `${color}70`,
-                  boxShadow: `0 14px 36px rgba(0,0,0,0.3), 0 0 24px ${color}20`,
-                }}
-                aria-label={`${skill.name}, ${category}. ${getSkillDescription(skill)}`}
-              >
-                <DynamicIcon name={skill.iconName || skill.name} />
-              </button>
-              <div className="pointer-events-none absolute top-[calc(100%+0.55rem)] z-20 w-56 rounded-xl border border-white/10 bg-[#050911]/95 p-3 text-center opacity-0 shadow-[0_18px_50px_rgba(0,0,0,0.4)] backdrop-blur-xl transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
-                <p className="text-xs font-black text-white">{skill.name}</p>
-                <p className="mt-1 text-[9px] font-black uppercase tracking-[0.18em]" style={{ color }}>
-                  {category}
-                </p>
-                <p className="mt-2 text-[11px] leading-relaxed text-slate-400">
-                  {getSkillDescription(skill)}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+        </div>
       </div>
 
       <motion.div layout className="grid gap-3 sm:grid-cols-2 lg:hidden">
