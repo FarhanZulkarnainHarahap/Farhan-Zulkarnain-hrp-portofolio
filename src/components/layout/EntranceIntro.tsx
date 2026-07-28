@@ -7,7 +7,16 @@ import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-const publicRoutes = ["/", "/home", "/explore", "/skills", "/projects", "/journey", "/documents", "/contact", "/dashboard/user"];
+const publicRoutes = [
+  "/",
+  "/about",
+  "/about/skills",
+  "/about/docs",
+  "/projects",
+  "/journey",
+  "/contact",
+  "/dashboard/user",
+];
 
 export default function EntranceIntro() {
   const pathname = usePathname();

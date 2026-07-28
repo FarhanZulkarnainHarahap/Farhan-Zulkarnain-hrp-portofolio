@@ -2,6 +2,7 @@
 
 import { useRef, type CSSProperties, type PointerEvent } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { FaGithub, FaStar } from "react-icons/fa";
 import { FiArrowUpRight, FiBookOpen } from "react-icons/fi";
 import { getOptimizedImageUrl } from "@/lib/image";
@@ -19,6 +20,7 @@ interface CardProps {
   accent?: string;
   onSelect?: () => void;
   onDetails?: () => void;
+  caseHref?: string;
 }
 
 export default function ProjectCard({
@@ -34,6 +36,7 @@ export default function ProjectCard({
   accent = "#3b82f6",
   onSelect,
   onDetails,
+  caseHref,
 }: CardProps) {
   const cardRef = useRef<HTMLElement>(null);
   const isFeatured = variant !== "orbit";
@@ -112,7 +115,7 @@ export default function ProjectCard({
           : "h-full min-h-44 rounded-[20px] sm:min-h-48 sm:rounded-[18px] md:min-h-52 lg:h-30 lg:min-h-0"
       }`}>
         <Image
-          src={getOptimizedImageUrl(imageUrl || "/placeholder-project.jpg", 900)}
+          src={getOptimizedImageUrl(imageUrl || "/window.svg", 900)}
           alt={title}
           fill
           sizes={
@@ -175,7 +178,18 @@ export default function ProjectCard({
               ))}
             </div>
             <div className="mt-5 flex items-center gap-3 lg:mt-2 lg:justify-center">
-              {onDetails && (
+              {caseHref ? (
+                <Link
+                  href={caseHref}
+                  data-cursor-label="CASE"
+                  aria-label={`Open case study for ${title}`}
+                  className="group/case flex h-11 items-center gap-2 rounded-full border border-blue-500/35 bg-blue-500/12 px-4 text-[9px] font-black uppercase tracking-[0.16em] text-blue-200 transition-all hover:scale-105 hover:border-blue-300 hover:bg-blue-500 hover:text-white lg:h-8 lg:px-3"
+                >
+                  <FiBookOpen size={14} />
+                  <span className="hidden sm:inline lg:hidden">Case Study</span>
+                  <span className="sm:hidden lg:inline">Case</span>
+                </Link>
+              ) : onDetails ? (
                 <button
                   type="button"
                   onClick={onDetails}
@@ -187,7 +201,7 @@ export default function ProjectCard({
                   <span className="hidden sm:inline lg:hidden">Case Study</span>
                   <span className="sm:hidden lg:inline">Case</span>
                 </button>
-              )}
+              ) : null}
               {demoUrl && (
                 <a
                   href={demoUrl}

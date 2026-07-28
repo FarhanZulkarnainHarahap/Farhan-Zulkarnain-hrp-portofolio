@@ -10,13 +10,11 @@ type CursorState = "default" | "link" | "project" | "drag" | "view" | "disabled"
 
 const PUBLIC_CURSOR_ROUTES = [
   "/",
-  "/home",
-  "/explore",
   "/about",
-  "/skills",
+  "/about/skills",
+  "/about/docs",
   "/projects",
   "/journey",
-  "/documents",
   "/contact",
   "/dashboard/user",
 ];

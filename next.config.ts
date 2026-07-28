@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/:path(home|explore|about|skills|projects|documents|contact)",
+        source: "/:path(about|projects|journey|contact)",
         headers: [
           {
             key: "Cache-Control",
@@ -39,38 +39,31 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    return [];
+    return [
+      {
+        source: "/home",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/explore",
+        destination: "/about",
+        permanent: true,
+      },
+      {
+        source: "/skills",
+        destination: "/about/skills",
+        permanent: true,
+      },
+      {
+        source: "/documents",
+        destination: "/about/docs",
+        permanent: true,
+      },
+    ];
   },
   async rewrites() {
     return [
-      {
-        source: '/home',    // URL yang diketik di browser
-        destination: '/dashboard/user', // Folder asli di kodingan
-      },
-      {
-        source: '/explore',
-        destination: '/dashboard/user',
-      },
-      {
-        source: '/projects',
-        destination: '/dashboard/user',
-      },
-      {
-        source: '/skills',
-        destination: '/dashboard/user',
-      },
-      {
-        source: '/journey',
-        destination: '/dashboard/user',
-      },
-      {
-        source: '/documents',
-        destination: '/dashboard/user',
-      },
-      {
-        source: '/contact',
-        destination: '/dashboard/user',
-      },
       {
         source: '/admin/home',    // URL yang diketik di browser
         destination: '/dashboard/admin/home', // Folder asli di kodingan

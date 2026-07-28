@@ -2,6 +2,7 @@
 
 import { motion, type Variants } from "framer-motion";
 import { useFetchProjects } from "@/hooks/useFetchProjects";
+import { getProjectSlug } from "@/lib/portfolio/projects";
 import ProjectCard from "./ProjectCard";
 
 const cardAccents = ["#22d3ee", "#a855f7", "#60a5fa", "#c084fc"];
@@ -94,6 +95,7 @@ export default function ProjectList() {
             index={index}
             variant="mobile"
             accent={cardAccents[index % cardAccents.length]}
+            caseHref={`/projects/${getProjectSlug(project)}`}
           />
         </motion.div>
       ))}

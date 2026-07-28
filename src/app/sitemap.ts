@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const routes = ["", "/home", "/explore", "/skills", "/projects", "/journey", "/documents", "/contact", "/about"];
+const routes = ["", "/about", "/about/skills", "/about/docs", "/projects", "/journey", "/contact"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -8,7 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return routes.map((route) => ({
     url: `https://farhanzulkarnainhrp.com${route}`,
     lastModified: now,
-    changeFrequency: route === "" || route === "/home" ? "weekly" : "monthly",
-    priority: route === "" || route === "/home" ? 1 : 0.72,
+    changeFrequency: route === "" ? "weekly" : "monthly",
+    priority: route === "" ? 1 : 0.72,
   }));
 }

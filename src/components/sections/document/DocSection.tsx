@@ -5,7 +5,6 @@ import Image from "next/image";
 import {
   FaCalendarAlt,
   FaCertificate,
-  FaDownload,
   FaFilePdf,
   FaFileSignature,
   FaSearch,
@@ -13,6 +12,7 @@ import {
 } from "react-icons/fa";
 import { fetchCachedJson } from "@/lib/client-cache";
 import { getOptimizedImageUrl } from "@/lib/image";
+import { getDocumentSlug } from "@/lib/portfolio/documents";
 
 interface DocumentData {
   id: string;
@@ -194,8 +194,8 @@ export default function DocSection() {
         if (result.success) {
           setDocs(result.data);
         }
-      } catch (error) {
-        console.error("Error fetching documents:", error);
+      } catch {
+        setDocs([]);
       } finally {
         setLoading(false);
       }
@@ -265,12 +265,7 @@ export default function DocSection() {
   };
 
   const getDownloadUrl = (doc: DocumentData) => {
-    const params = new URLSearchParams({
-      url: doc.fileUrl,
-      name: doc.name,
-    });
-
-    return `/api/documents/download?${params.toString()}`;
+    return `/api/documents/${getDocumentSlug(doc)}/download`;
   };
 
   const changeFilter = (nextCategory: string) => {
@@ -358,20 +353,15 @@ export default function DocSection() {
               <article className="premium-static-tilt group relative overflow-hidden rounded-[26px] border border-cyan-300/12 bg-[linear-gradient(145deg,rgba(16,28,48,0.92),rgba(5,11,22,0.82))] p-2 shadow-[0_22px_70px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl hover:border-cyan-300/45 hover:shadow-[0_28px_80px_rgba(37,99,235,0.22),0_0_35px_rgba(34,211,238,0.1)]">
                 <span className="pointer-events-none absolute left-6 top-0 z-20 h-5 w-32 rounded-b-xl border-x border-b border-cyan-300/20 bg-cyan-300/8 shadow-[0_6px_24px_rgba(34,211,238,0.12)]" />
                 <span className="pointer-events-none absolute inset-x-5 top-3 z-20 h-px bg-linear-to-r from-transparent via-cyan-300/60 to-transparent" />
-                <a
+                <div
                   data-folder-cover
-                  href={downloadUrl}
-                  download
-                  data-cursor-label="DOWNLOAD"
                   className="relative block h-64 origin-bottom overflow-hidden rounded-[20px] bg-white transition-transform duration-500 group-hover:[transform:perspective(900px)_translateY(-3px)_rotateX(-2deg)] sm:h-76 lg:h-72"
-                  aria-label={`Download ${doc.name}`}
                 >
                   <DocumentCover doc={doc} previewType={previewType} />
                   <span className="absolute bottom-4 right-4 z-20 flex items-center gap-2 rounded-full border border-white/70 bg-white/88 px-3 py-2 text-[9px] font-black uppercase tracking-[0.16em] text-slate-900 shadow-[0_12px_28px_rgba(0,0,0,0.18)] backdrop-blur-md">
-                    <FaDownload size={11} />
-                    Download
+                    {formatSize(doc.size)}
                   </span>
-                </a>
+                </div>
 
                 <div className="relative p-3 sm:p-4">
                   <div className="flex items-start justify-between gap-1.5 sm:gap-3">
@@ -381,15 +371,9 @@ export default function DocSection() {
                       </h3>
                       <p className="mt-1 hidden truncate text-sm text-zinc-500 sm:block">{doc.category}</p>
                     </div>
-                    <a
-                      href={downloadUrl}
-                      download
-                      data-cursor-label="DOWNLOAD"
-                      aria-label={`Download ${doc.name}`}
-                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/4 text-zinc-400 transition-colors hover:border-blue-500/50 hover:text-blue-400 sm:h-9 sm:w-9 md:h-10 md:w-10"
-                    >
-                      <FaDownload size={11} />
-                    </a>
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/4 text-zinc-400 sm:h-9 sm:w-9 md:h-10 md:w-10">
+                      <FaFilePdf size={11} />
+                    </span>
                   </div>
 
                   <div className="mt-2 flex items-center justify-between gap-2 sm:mt-3 sm:gap-3">

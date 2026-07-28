@@ -20,6 +20,7 @@
 html {
   width: 100%;
   min-height: 100%;
+  overflow-x: clip;
   background-color: var(--background-primary);
   scrollbar-color: var(--accent-primary) var(--background-primary);
   scrollbar-width: thin;
@@ -28,6 +29,7 @@ html {
 body {
   width: 100%;
   min-height: 100%;
+  overflow-x: clip;
   background-color: var(--background-primary);
   color: var(--text-primary);
   font-family:

@@ -26,6 +26,7 @@ export default function ContactSection() {
     email: "",
     subject: "",
     message: "",
+    website: "",
   });
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{ type: "success" | "error" | null; msg: string }>({
@@ -34,7 +35,7 @@ export default function ContactSection() {
   });
 
   const activity = useMemo(() => {
-    const filled = Object.values(formData).filter((value) => value.trim()).length;
+    const filled = [formData.name, formData.email, formData.subject, formData.message].filter((value) => value.trim()).length;
     return Math.min(1, filled / 4);
   }, [formData]);
 
@@ -48,6 +49,12 @@ export default function ContactSection() {
 
     setLoading(true);
     setStatus({ type: null, msg: "" });
+
+    if (formData.website.trim()) {
+      setLoading(false);
+      setStatus({ type: "success", msg: "Message sent. I will get back to you soon." });
+      return;
+    }
 
     const messageWithSubject = formData.subject.trim()
       ? `Subject: ${formData.subject.trim()}\n\n${formData.message.trim()}`
@@ -68,7 +75,7 @@ export default function ContactSection() {
 
       if (response.ok && result.success) {
         setStatus({ type: "success", msg: "Message sent. I will get back to you soon." });
-        setFormData({ name: "", email: "", subject: "", message: "" });
+        setFormData({ name: "", email: "", subject: "", message: "", website: "" });
       } else {
         setStatus({ type: "error", msg: result.message || "Failed to send message." });
       }
@@ -148,6 +155,18 @@ export default function ContactSection() {
           className="rounded-[28px] border border-blue-300/14 bg-[#050911]/76 p-4 shadow-[0_28px_95px_rgba(0,0,0,0.32)] sm:p-6"
         >
           <div className="grid gap-4 sm:grid-cols-2">
+            <label className="sr-only" aria-hidden="true">
+              Website
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={formData.website}
+                onChange={handleChange}
+              />
+            </label>
+
             <label className="space-y-2">
               <span className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
                 Name

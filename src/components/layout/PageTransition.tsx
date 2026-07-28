@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 const getRouteLabel = (pathname: string) => {
-  if (pathname === "/" || pathname === "/home" || pathname === "/dashboard/user") return "Home";
+  if (pathname === "/" || pathname === "/dashboard/user") return "Home";
   return pathname.split("/").filter(Boolean).at(-1)?.replaceAll("-", " ") ?? "Portfolio";
 };
 

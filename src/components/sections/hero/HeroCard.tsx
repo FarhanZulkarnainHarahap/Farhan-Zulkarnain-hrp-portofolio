@@ -15,6 +15,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import { fetchCachedJson } from "@/lib/client-cache";
 import { getOptimizedImageUrl } from "@/lib/image";
+import { getDocumentSlug } from "@/lib/portfolio/documents";
 import { MagneticButton } from "@/components/motion/MagneticButton";
 import { MaskReveal } from "@/components/motion/MaskReveal";
 
@@ -79,11 +80,7 @@ export default function HeroCard() {
         );
 
         if (active && resume) {
-          const params = new URLSearchParams({
-            url: resume.fileUrl,
-            name: resume.name,
-          });
-          setCvHref(`/api/documents/download?${params.toString()}`);
+          setCvHref(`/api/documents/${getDocumentSlug(resume)}/download`);
         }
       } catch {
         if (active) setCvHref(null);
@@ -98,16 +95,20 @@ export default function HeroCard() {
 
   const scrollToSection = (id: string, path: string) => {
     const element = document.getElementById(id);
-    window.history.pushState(null, "", path);
-    element?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    if (element) {
+      window.history.pushState(null, "", path);
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+      return;
+    }
+
+    router.push(path);
   };
 
   const openDocuments = () => {
-    window.sessionStorage.setItem("about:target", "about-documents");
-    router.push("/about");
+    router.push("/about/docs");
   };
 
   return (
@@ -240,7 +241,7 @@ export default function HeroCard() {
 
       <button
         type="button"
-        onClick={() => scrollToSection("about", "/explore")}
+        onClick={() => scrollToSection("about", "/about")}
         aria-label="Scroll to about"
         className="absolute bottom-20 left-1/2 hidden -translate-x-1/2 items-center gap-2 text-[10px] font-black uppercase tracking-[0.26em] text-blue-200/72 transition-colors hover:text-blue-100 md:flex"
       >
