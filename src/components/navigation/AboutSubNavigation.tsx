@@ -16,7 +16,7 @@ export default function AboutSubNavigation() {
   return (
     <nav
       aria-label="About navigation"
-      className="sticky top-24 z-50 mx-auto w-full max-w-[42rem] lg:top-28"
+      className="relative z-30 mx-auto w-full max-w-[42rem]"
     >
       <div className="grid grid-cols-3 gap-1.5 rounded-2xl border border-white/10 bg-[#030711]/92 p-1.5 shadow-[0_16px_55px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
         {items.map(({ href, label, icon: Icon }) => {
