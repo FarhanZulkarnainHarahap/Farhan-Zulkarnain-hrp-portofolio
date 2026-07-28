@@ -814,7 +814,7 @@ export default function CyberBackground() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-[1] overflow-hidden"
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
     >
       <Canvas
         camera={{ position: [0, 0, 7.8], fov: 52, near: 0.1, far: 50 }}

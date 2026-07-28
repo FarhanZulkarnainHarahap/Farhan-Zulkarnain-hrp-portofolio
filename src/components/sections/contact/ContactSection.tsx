@@ -87,8 +87,8 @@ export default function ContactSection() {
   };
 
   return (
-    <section className="relative mx-auto w-full max-w-7xl px-5 py-12 sm:px-8 lg:px-12">
-      <div className="grid items-center gap-12 lg:grid-cols-[1fr_0.9fr]">
+    <section id="contact" className="relative mx-auto w-full max-w-7xl px-5 py-24 sm:px-8 lg:px-12">
+      <div className="relative z-10 grid items-center gap-12 lg:grid-cols-[1fr_0.9fr]">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.35em] text-blue-300">
             Contact
