@@ -108,14 +108,14 @@ export default function HeroCard() {
         <div className="absolute inset-x-0 top-1/2 h-px bg-linear-to-r from-transparent via-blue-400/18 to-transparent" />
       </div>
 
-      <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.72fr)] lg:gap-16">
-        <div className="max-w-3xl text-center lg:text-left">
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[minmax(0,0.96fr)_minmax(20rem,0.64fr)] lg:gap-16 xl:gap-18">
+        <div className="min-w-0 max-w-[54rem] text-center lg:text-left">
           <div className="mx-auto flex w-fit items-center gap-3 rounded-full border border-blue-400/18 bg-blue-500/8 px-4 py-2 text-[10px] font-black uppercase tracking-[0.28em] text-blue-200 lg:mx-0">
             <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.9)]" />
             Available for Projects
           </div>
 
-          <h1 className="mt-7 text-[clamp(3.2rem,10vw,8.5rem)] font-black uppercase leading-[0.84] tracking-normal text-white">
+          <h1 className="mt-7 max-w-full text-[clamp(3rem,7.6vw,6.85rem)] font-black uppercase leading-[0.88] tracking-normal text-white">
             <MaskReveal lines={["Farhan", "Zulkarnain"]} />
             <span className="mt-2 block text-[0.34em] tracking-[0.16em] text-blue-200/80">
               Harahap
