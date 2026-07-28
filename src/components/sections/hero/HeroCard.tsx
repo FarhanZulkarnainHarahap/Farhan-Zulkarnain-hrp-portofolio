@@ -22,7 +22,7 @@ import { MaskReveal } from "@/components/motion/MaskReveal";
 const HeroCanvas = dynamic(() => import("@/components/three/HeroCanvas"), {
   ssr: false,
   loading: () => (
-    <div className="grid h-[min(70vw,27rem)] min-h-80 w-full place-items-center rounded-[28px] border border-blue-400/12 bg-[#050911]/62">
+    <div className="grid h-[min(52vw,20rem)] min-h-56 w-full place-items-center rounded-[24px] border border-blue-400/12 bg-[#050911]/50">
       <div className="h-28 w-28 animate-pulse rounded-full border border-blue-300/25 bg-blue-500/10" />
     </div>
   ),

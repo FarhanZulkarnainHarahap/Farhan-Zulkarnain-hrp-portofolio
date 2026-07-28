@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-import CyberBackground from "@/components/CyberBackground";
-import MusicPlayer from "@/components/MusicPlayer";
-import Navbar from "@/components/Navbar";
-import JourneySection from "@/components/sections/journey/JourneySection";
+import LandingPage from "@/components/landing/LandingPage";
 
 export const metadata: Metadata = {
   title: "Journey",
@@ -12,14 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function JourneyPage() {
-  return (
-    <>
-      <Navbar />
-      <MusicPlayer />
-      <main id="main-content" className="portfolio-bg relative min-h-screen overflow-x-clip text-white">
-        <CyberBackground />
-        <JourneySection />
-      </main>
-    </>
-  );
+  return <LandingPage initialSection="journey" />;
 }

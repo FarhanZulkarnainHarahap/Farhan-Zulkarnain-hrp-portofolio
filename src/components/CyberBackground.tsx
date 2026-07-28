@@ -5,9 +5,9 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
-const CORE_PARTICLE_COUNT = 1350;
-const FIELD_PARTICLE_COUNT = 720;
-const NETWORK_SEGMENT_COUNT = 190;
+const CORE_PARTICLE_COUNT = 520;
+const FIELD_PARTICLE_COUNT = 260;
+const NETWORK_SEGMENT_COUNT = 76;
 const CYAN = new THREE.Color("#00f3ff");
 const MAGENTA = new THREE.Color("#ff0055");
 const SECTION_IDS = [
@@ -399,7 +399,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
         Math.cos(progress * Math.PI * 4) * (compact ? 0.16 : 0.25) +
         pointerRef.current.y * (compact ? 0.12 : 0.2);
     const coreScale =
-      ((compact ? 0.66 : 0.92) + warp * 0.12) * sectionScale;
+      ((compact ? 0.42 : 0.58) + warp * 0.08) * sectionScale;
 
     core.position.x = THREE.MathUtils.lerp(
       core.position.x,
@@ -814,7 +814,7 @@ export default function CyberBackground() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+      className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[100dvh] overflow-hidden"
     >
       <Canvas
         camera={{ position: [0, 0, 7.8], fov: 52, near: 0.1, far: 50 }}

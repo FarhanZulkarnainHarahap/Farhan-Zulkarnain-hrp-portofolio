@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-import CyberBackground from "@/components/CyberBackground";
-import MusicPlayer from "@/components/MusicPlayer";
-import Navbar from "@/components/Navbar";
-import ContactSection from "@/components/sections/contact/ContactSection";
+import LandingPage from "@/components/landing/LandingPage";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -12,14 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
-  return (
-    <>
-      <Navbar />
-      <MusicPlayer />
-      <main id="main-content" className="portfolio-bg relative min-h-screen overflow-x-clip pt-16 text-white lg:pt-24">
-        <CyberBackground />
-        <ContactSection />
-      </main>
-    </>
-  );
+  return <LandingPage initialSection="contact" />;
 }

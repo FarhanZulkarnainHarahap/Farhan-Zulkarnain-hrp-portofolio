@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import AboutNestedShell from "@/components/navigation/AboutNestedShell";
 import DocSection from "@/components/sections/document/DocSection";
 
 export const metadata: Metadata = {
@@ -9,5 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default function DocumentsPage() {
-  return <DocSection />;
+  return (
+    <AboutNestedShell>
+      <DocSection />
+    </AboutNestedShell>
+  );
 }

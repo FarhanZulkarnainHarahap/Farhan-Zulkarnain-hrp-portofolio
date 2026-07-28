@@ -42,7 +42,7 @@ export default function HeroCanvas({ energyBoost = 0 }: { energyBoost?: number }
   return (
     <div
       ref={containerRef}
-      className="relative h-[min(70vw,27rem)] min-h-80 w-full overflow-hidden rounded-[28px] border border-blue-400/12 bg-[#050911]/62"
+      className="relative h-[min(52vw,20rem)] min-h-56 w-full overflow-hidden rounded-[24px] border border-blue-400/12 bg-[#050911]/50"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,99,235,0.22),transparent_56%)]" />
       {visible && documentVisible && (
