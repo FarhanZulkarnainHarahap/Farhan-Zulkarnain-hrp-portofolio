@@ -45,7 +45,7 @@ const DocumentSkeleton = () => (
     aria-label="Loading documents"
     aria-busy="true"
   >
-    <div className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-5 pb-36 pt-20 sm:px-8 lg:justify-start lg:px-10 lg:pb-40 lg:pt-10">
+    <div className="relative w-full overflow-hidden pb-24">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_50%,rgba(139,92,246,0.12),transparent_36%)]" />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl animate-pulse">
@@ -287,22 +287,22 @@ export default function DocSection() {
       id="documents"
       className="relative min-h-screen w-full scroll-mt-4"
     >
-      <div className="relative flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-5 pb-36 pt-20 sm:px-8 lg:justify-start lg:px-10 lg:pb-40 lg:pt-10">
+      <div className="relative w-full overflow-hidden pb-24">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_50%,rgba(139,92,246,0.12),transparent_36%)]" />
 
         <div className="relative z-10 mx-auto w-full max-w-7xl">
-          <div className="mb-6 grid gap-5 lg:grid-cols-[1fr_440px] lg:items-end">
+          <div className="mb-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,28rem)] lg:items-end">
             <div>
-              <h2 className="text-4xl font-black uppercase italic leading-none tracking-tight text-white md:text-5xl">
+              <h2 className="text-[clamp(2.25rem,5vw,4.5rem)] font-black uppercase leading-[0.98] tracking-tight text-white">
                 Credential <span className="text-zinc-500">&</span> Assets<span className="text-blue-500">.</span>
               </h2>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-400">
+              <p className="mt-6 max-w-2xl text-sm leading-8 text-zinc-400 sm:text-base">
                 Verified certificates, résumé files, documentation, and professional assets
                 presented as a floating glass archive.
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
+            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_11rem]">
               <label className="relative">
                 <FaSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={13} />
                 <input
@@ -336,10 +336,10 @@ export default function DocSection() {
               role="region"
               aria-label="Scrollable document cards"
               tabIndex={0}
-              className="scrollbar-none w-full cursor-grab overflow-x-auto overscroll-x-contain pb-4 outline-none focus-visible:ring-1 focus-visible:ring-blue-400/60 active:cursor-grabbing"
+              className="w-full pb-4 outline-none focus-visible:ring-1 focus-visible:ring-blue-400/60"
             >
               <div
-                className="flex w-max snap-x snap-mandatory gap-5 pr-6 lg:gap-7 lg:pr-10"
+                className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
               >
                 {filteredDocs.map((doc) => {
             const previewType = getPreviewType(doc);
@@ -348,7 +348,7 @@ export default function DocSection() {
             return (
               <div
                 key={doc.id}
-                className="w-[82vw] max-w-100 shrink-0 snap-center pt-3"
+                className="min-w-0 pt-3"
               >
               <article className="premium-static-tilt group relative overflow-hidden rounded-[26px] border border-cyan-300/12 bg-[linear-gradient(145deg,rgba(16,28,48,0.92),rgba(5,11,22,0.82))] p-2 shadow-[0_22px_70px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-xl hover:border-cyan-300/45 hover:shadow-[0_28px_80px_rgba(37,99,235,0.22),0_0_35px_rgba(34,211,238,0.1)]">
                 <span className="pointer-events-none absolute left-6 top-0 z-20 h-5 w-32 rounded-b-xl border-x border-b border-cyan-300/20 bg-cyan-300/8 shadow-[0_6px_24px_rgba(34,211,238,0.12)]" />

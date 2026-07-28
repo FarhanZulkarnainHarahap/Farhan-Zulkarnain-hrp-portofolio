@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -18,15 +17,6 @@ import { getOptimizedImageUrl } from "@/lib/image";
 import { getDocumentSlug } from "@/lib/portfolio/documents";
 import { MagneticButton } from "@/components/motion/MagneticButton";
 import { MaskReveal } from "@/components/motion/MaskReveal";
-
-const HeroCanvas = dynamic(() => import("@/components/three/HeroCanvas"), {
-  ssr: false,
-  loading: () => (
-    <div className="grid h-[min(70vw,27rem)] min-h-80 w-full place-items-center rounded-[28px] border border-blue-400/12 bg-[#050911]/62">
-      <div className="h-28 w-28 animate-pulse rounded-full border border-blue-300/25 bg-blue-500/10" />
-    </div>
-  ),
-});
 
 type DocumentResponse = {
   success: boolean;
@@ -63,7 +53,6 @@ const profileImage = getOptimizedImageUrl(
 
 export default function HeroCard() {
   const router = useRouter();
-  const [energyBoost, setEnergyBoost] = useState(0);
   const [cvHref, setCvHref] = useState<string | null>(null);
 
   useEffect(() => {
@@ -119,7 +108,7 @@ export default function HeroCard() {
         <div className="absolute inset-x-0 top-1/2 h-px bg-linear-to-r from-transparent via-blue-400/18 to-transparent" />
       </div>
 
-      <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14">
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.72fr)] lg:gap-16">
         <div className="max-w-3xl text-center lg:text-left">
           <div className="mx-auto flex w-fit items-center gap-3 rounded-full border border-blue-400/18 bg-blue-500/8 px-4 py-2 text-[10px] font-black uppercase tracking-[0.28em] text-blue-200 lg:mx-0">
             <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.9)]" />
@@ -145,8 +134,6 @@ export default function HeroCard() {
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
             <MagneticButton
               onClick={() => scrollToSection("projects", "/projects")}
-              onPointerEnter={() => setEnergyBoost(1)}
-              onPointerLeave={() => setEnergyBoost(0)}
               data-cursor-label="PROJECTS"
               className="group flex min-h-12 items-center gap-3 rounded-full bg-blue-600 px-6 py-3 text-xs font-black uppercase tracking-[0.18em] text-white shadow-[0_18px_45px_rgba(37,99,235,0.32)] transition-colors hover:bg-blue-500"
             >
@@ -200,39 +187,23 @@ export default function HeroCard() {
           </div>
         </div>
 
-        <div className="relative">
-          <div className="absolute -inset-4 rounded-[32px] border border-blue-400/8" />
-          <div className="grid items-stretch gap-4 xl:grid-cols-[0.78fr_1fr]">
-            <div className="group relative mx-auto w-full max-w-86 overflow-hidden rounded-[28px] border border-blue-300/18 bg-[#080b13] p-2 shadow-[0_24px_90px_rgba(0,0,0,0.42),0_0_34px_rgba(37,99,235,0.14)] xl:max-w-none">
-              <div className="absolute left-[-18%] top-[30%] h-32 w-[136%] rotate-[-14deg] bg-linear-to-r from-violet-500 via-blue-500 to-cyan-300 opacity-45 blur-2xl" />
-              <div className="relative h-full rounded-[22px] border border-white/8 bg-[#050911] p-2">
-                <div className="relative h-[22rem] overflow-hidden rounded-[17px] bg-[#111827] xl:h-full xl:min-h-[27rem]">
-                  <Image
-                    src={profileImage}
-                    alt="Farhan Zulkarnain Harahap"
-                    fill
-                    priority
-                    fetchPriority="high"
-                    quality={72}
-                    sizes="(max-width: 768px) 270px, (max-width: 1280px) 320px, 360px"
-                    className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]"
-                  />
-                  <div className="absolute inset-0 bg-linear-to-t from-[#080b13] via-transparent to-transparent opacity-55" />
-                </div>
-                <div className="relative z-10 pt-4">
-                  <p className="text-center text-[9px] font-black uppercase tracking-[0.38em] text-blue-300">
-                    Farhan Zulkarnain
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <HeroCanvas energyBoost={energyBoost} />
-              <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[9px] font-black uppercase tracking-[0.18em] text-slate-500">
-                <span>Sphere</span>
-                <span>Code</span>
-                <span>FZH</span>
+        <div className="relative mx-auto w-full max-w-[28rem]">
+          <div className="pointer-events-none absolute -inset-4 rounded-[32px] border border-blue-400/8 bg-blue-500/5 blur-sm" />
+          <div className="group relative overflow-hidden rounded-[28px] border border-blue-300/18 bg-[#080b13] p-2 shadow-[0_24px_90px_rgba(0,0,0,0.42),0_0_34px_rgba(37,99,235,0.14)]">
+            <div className="pointer-events-none absolute left-[-16%] top-[34%] h-32 w-[132%] rotate-[-14deg] bg-linear-to-r from-blue-500 via-cyan-400 to-emerald-300 opacity-28 blur-2xl" />
+            <div className="relative rounded-[22px] border border-white/8 bg-[#050911] p-2">
+              <div className="relative h-[24rem] overflow-hidden rounded-[17px] bg-[#111827] sm:h-[29rem] lg:h-[34rem]">
+                <Image
+                  src={profileImage}
+                  alt="Farhan Zulkarnain Harahap"
+                  fill
+                  priority
+                  fetchPriority="high"
+                  quality={72}
+                  sizes="(max-width: 768px) 92vw, (max-width: 1280px) 420px, 460px"
+                  className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.02]"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-[#080b13]/60 via-transparent to-transparent opacity-55" />
               </div>
             </div>
           </div>
