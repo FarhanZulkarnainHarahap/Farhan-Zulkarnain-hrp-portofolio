@@ -5,15 +5,16 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
-const CORE_PARTICLE_COUNT = 520;
-const FIELD_PARTICLE_COUNT = 260;
-const NETWORK_SEGMENT_COUNT = 76;
+const CORE_PARTICLE_COUNT = 1350;
+const FIELD_PARTICLE_COUNT = 720;
+const NETWORK_SEGMENT_COUNT = 190;
 const CYAN = new THREE.Color("#00f3ff");
 const MAGENTA = new THREE.Color("#ff0055");
 const SECTION_IDS = [
   "home",
   "about",
   "projects",
+  "journey",
   "contact",
   "about-overview",
   "about-skills",
@@ -336,6 +337,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
       home: 0,
       about: compact ? 0.45 : 1.85,
       projects: compact ? -0.45 : -2.15,
+      journey: compact ? 0.25 : 1.45,
       contact: 0,
       "about-overview": compact ? 0.35 : 1.6,
       "about-skills": compact ? -0.35 : -1.35,
@@ -345,6 +347,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
       home: 0,
       about: compact ? -0.4 : 0.25,
       projects: compact ? -0.5 : 0,
+      journey: compact ? 0.35 : -0.12,
       contact: compact ? -0.4 : 0,
       "about-overview": compact ? -0.45 : 0.15,
       "about-skills": compact ? 0.5 : -0.2,
@@ -354,6 +357,8 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
       ? 1.12
       : activeSection === "contact"
         ? 0.62
+        : activeSection === "journey"
+          ? 0.78
         : activeSection === "about-skills"
           ? 0.82
           : 0.94;
@@ -399,7 +404,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
         Math.cos(progress * Math.PI * 4) * (compact ? 0.16 : 0.25) +
         pointerRef.current.y * (compact ? 0.12 : 0.2);
     const coreScale =
-      ((compact ? 0.42 : 0.58) + warp * 0.08) * sectionScale;
+      ((compact ? 0.66 : 0.92) + warp * 0.12) * sectionScale;
 
     core.position.x = THREE.MathUtils.lerp(
       core.position.x,
@@ -814,7 +819,7 @@ export default function CyberBackground() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[100dvh] overflow-hidden"
+      className="pointer-events-none fixed inset-0 z-[1] overflow-hidden"
     >
       <Canvas
         camera={{ position: [0, 0, 7.8], fov: 52, near: 0.1, far: 50 }}

@@ -74,7 +74,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
       <MusicPlayer />
       <main id="main-content" className="portfolio-bg relative min-h-screen overflow-x-clip text-white">
         <CyberBackground />
-        <section className="relative mx-auto w-[min(calc(100%-2rem),80rem)] pb-28 pt-28">
+        <section className="relative z-10 mx-auto w-[min(calc(100%-2rem),80rem)] pb-28 pt-28">
           <div className="mb-8 flex flex-wrap items-center gap-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
             <Link href="/projects" className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-blue-200 hover:border-blue-300/60">
               <LuArrowLeft size={14} />

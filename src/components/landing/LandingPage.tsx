@@ -39,11 +39,13 @@ export default function LandingPage({
       <MusicPlayer />
       <main id="main-content" className="portfolio-bg relative min-h-screen overflow-x-clip text-white">
         <CyberBackground />
-        <HeroCard />
-        <AboutSection />
-        <PortfolioSection />
-        <JourneySection />
-        <ContactSection />
+        <div className="relative z-10">
+          <HeroCard />
+          <AboutSection />
+          <PortfolioSection />
+          <JourneySection />
+          <ContactSection />
+        </div>
       </main>
     </>
   );
