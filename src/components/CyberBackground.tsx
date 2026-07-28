@@ -340,7 +340,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
       journey: compact ? 0.25 : 1.45,
       contact: 0,
       "about-overview": compact ? 0.35 : 1.6,
-      "about-skills": compact ? -0.35 : -1.35,
+      "about-skills": compact ? 0.2 : 1.9,
       "about-documents": compact ? 0.3 : 1.45,
     }[activeSection] ?? 0;
     const sectionY = {
@@ -350,7 +350,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
       journey: compact ? 0.35 : -0.12,
       contact: compact ? -0.4 : 0,
       "about-overview": compact ? -0.45 : 0.15,
-      "about-skills": compact ? 0.5 : -0.2,
+      "about-skills": compact ? 0.25 : 0.18,
       "about-documents": compact ? 0.45 : 0.15,
     }[activeSection] ?? 0;
     const sectionScale = activeSection === "about" || activeSection === "about-overview"
@@ -360,7 +360,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
         : activeSection === "journey"
           ? 0.78
         : activeSection === "about-skills"
-          ? 0.82
+          ? compact ? 0.58 : 0.72
           : 0.94;
 
     if (cameraRigRef.current) {
@@ -566,7 +566,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
       );
     }
     if (skillOrbitRef.current) {
-      const targetScale = activeSection === "about-skills" ? 1 : 0.001;
+      const targetScale = activeSection === "about-skills" ? (compact ? 0.45 : 0.72) : 0.001;
       skillOrbitRef.current.scale.setScalar(
         THREE.MathUtils.lerp(
           skillOrbitRef.current.scale.x,
