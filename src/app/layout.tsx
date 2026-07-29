@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import CyberCursor from "@/components/CyberCursor";
-import EntranceIntro from "@/components/layout/EntranceIntro";
-import PageTransition from "@/components/layout/PageTransition";
+import CyberCursorLoader from "@/components/CyberCursorLoader";
+import EntranceIntroLoader from "@/components/layout/EntranceIntroLoader";
+import PageTransitionLoader from "@/components/layout/PageTransitionLoader";
 import "./globals.css";
 
 const structuredData = [
@@ -121,9 +121,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
         {children}
-        <EntranceIntro />
-        <PageTransition />
-        <CyberCursor />
+        <EntranceIntroLoader />
+        <PageTransitionLoader />
+        <CyberCursorLoader />
       </body>
     </html>
   );

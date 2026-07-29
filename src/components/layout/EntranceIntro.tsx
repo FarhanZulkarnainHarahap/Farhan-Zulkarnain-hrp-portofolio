@@ -34,7 +34,7 @@ export default function EntranceIntro() {
 
     setVisible(true);
     window.sessionStorage.setItem("portfolio:intro-seen", "true");
-    const timeout = window.setTimeout(() => setVisible(false), 1700);
+    const timeout = window.setTimeout(() => setVisible(false), 1150);
     return () => window.clearTimeout(timeout);
   }, [pathname, reducedMotion]);
 
@@ -65,7 +65,7 @@ export default function EntranceIntro() {
                 y: Math.sin(angle) * 34,
                 opacity: [0, 1, 0],
               }}
-              transition={{ duration: 1.1, delay: index * 0.012, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.82, delay: index * 0.009, ease: [0.22, 1, 0.36, 1] }}
             />
           );
         })}
@@ -74,7 +74,7 @@ export default function EntranceIntro() {
           className="text-center"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: [0.9, 1, 1], opacity: [0, 1, 0] }}
-          transition={{ duration: 1.55, times: [0, 0.45, 1], ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.05, times: [0, 0.45, 1], ease: [0.22, 1, 0.36, 1] }}
         >
           <p className="font-mono text-5xl font-black tracking-[0.16em] text-white">FZH</p>
           <p className="mt-3 text-[10px] font-black uppercase tracking-[0.34em] text-blue-300">
@@ -86,7 +86,7 @@ export default function EntranceIntro() {
           className="absolute top-[calc(50%+4.8rem)] h-px w-64 bg-linear-to-r from-transparent via-blue-200 to-transparent"
           initial={{ scaleX: 0 }}
           animate={{ scaleX: [0, 1, 0] }}
-          transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.08, ease: [0.22, 1, 0.36, 1] }}
         />
       </div>
 

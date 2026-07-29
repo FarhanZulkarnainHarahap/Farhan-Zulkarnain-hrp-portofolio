@@ -16,33 +16,9 @@ export default function MusicPlayer() {
 
     audio.volume = DEFAULT_VOLUME;
 
-    const attemptPlayback = () => {
-      void audio.play().catch(() => {
-        // Audible autoplay is commonly blocked until the first user gesture.
-      });
-    };
-
-    const playAfterFirstGesture = (event: PointerEvent) => {
-      if (
-        event.target instanceof Node &&
-        buttonRef.current?.contains(event.target)
-      ) {
-        return;
-      }
-
-      void audio.play().then(
-        () => document.removeEventListener("pointerdown", playAfterFirstGesture),
-        () => undefined,
-      );
-    };
-
-    attemptPlayback();
-    document.addEventListener("pointerdown", playAfterFirstGesture, {
-      passive: true,
-    });
-
     return () => {
-      document.removeEventListener("pointerdown", playAfterFirstGesture);
+      audio.pause();
+      audio.removeAttribute("src");
       document.documentElement.removeAttribute("data-music");
       document.documentElement.style.removeProperty("--music-glow-opacity");
     };
@@ -67,6 +43,10 @@ export default function MusicPlayer() {
     if (!audio) return;
 
     if (audio.paused) {
+      if (!audio.getAttribute("src")) {
+        audio.src = "/Music.mp3";
+        audio.load();
+      }
       void audio.play().catch(() => undefined);
       return;
     }
@@ -100,8 +80,7 @@ export default function MusicPlayer() {
 
       <audio
         ref={audioRef}
-        src="/Music.mp3"
-        preload="auto"
+        preload="none"
         loop
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}

@@ -21,10 +21,10 @@ export default function PageTransition() {
         key={pathname}
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 z-[10040] grid place-items-center bg-[#030406]"
-        initial={{ clipPath: "inset(0 0 0 100%)" }}
-        animate={{ clipPath: "inset(0 0 0 100%)" }}
-        exit={{ clipPath: "inset(0 100% 0 0)" }}
-        transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ x: "100%" }}
+        animate={{ x: "100%" }}
+        exit={{ x: "-100%" }}
+        transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
       >
         <span className="text-[10px] font-black uppercase tracking-[0.35em] text-blue-200">
           {getRouteLabel(pathname)}

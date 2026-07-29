@@ -1,9 +1,7 @@
-"use client";
-
-import { useEffect } from "react";
-import CyberBackground from "@/components/CyberBackground";
-import MusicPlayer from "@/components/MusicPlayer";
+import MusicPlayerLoader from "@/components/MusicPlayerLoader";
 import Navbar from "@/components/Navbar";
+import LandingScrollManager from "@/components/landing/LandingScrollManager";
+import ThreeBackgroundLoader from "@/components/landing/ThreeBackgroundLoader";
 import AboutSection from "@/components/sections/about/AboutSection";
 import ContactSection from "@/components/sections/contact/ContactSection";
 import HeroCard from "@/components/sections/hero/HeroCard";
@@ -17,28 +15,13 @@ export default function LandingPage({
 }: {
   initialSection?: LandingSection;
 }) {
-  useEffect(() => {
-    if (initialSection === "home") {
-      window.scrollTo({ top: 0, behavior: "auto" });
-      return;
-    }
-
-    const frame = window.requestAnimationFrame(() => {
-      document.getElementById(initialSection)?.scrollIntoView({
-        block: "start",
-        behavior: "auto",
-      });
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, [initialSection]);
-
   return (
     <>
+      <LandingScrollManager initialSection={initialSection} />
       <Navbar />
-      <MusicPlayer />
+      <MusicPlayerLoader />
       <main id="main-content" className="portfolio-bg relative min-h-screen overflow-x-clip text-white">
-        <CyberBackground />
+        <ThreeBackgroundLoader />
         <div className="relative z-10">
           <HeroCard />
           <AboutSection />

@@ -21,6 +21,55 @@ const SECTION_IDS = [
   "about-documents",
 ];
 
+type RenderProfile = {
+  coreParticles: number;
+  fieldParticles: number;
+  networkSegments: number;
+  targetFps: number;
+};
+
+const getRenderProfile = (width: number): RenderProfile => {
+  if (width < 640) {
+    return {
+      coreParticles: 620,
+      fieldParticles: 320,
+      networkSegments: 82,
+      targetFps: 28,
+    };
+  }
+
+  if (width < 1024) {
+    return {
+      coreParticles: 900,
+      fieldParticles: 460,
+      networkSegments: 122,
+      targetFps: 36,
+    };
+  }
+
+  return {
+    coreParticles: CORE_PARTICLE_COUNT,
+    fieldParticles: FIELD_PARTICLE_COUNT,
+    networkSegments: NETWORK_SEGMENT_COUNT,
+    targetFps: 55,
+  };
+};
+
+const getMaxDpr = () => {
+  const width = window.innerWidth;
+  const nav = navigator as Navigator & {
+    connection?: { saveData?: boolean };
+    deviceMemory?: number;
+  };
+  const connection = nav.connection;
+  const memory = nav.deviceMemory ?? 4;
+  const saveData = connection?.saveData;
+
+  if (saveData || memory <= 2 || width < 640) return 1;
+  if (width < 1024) return 1.15;
+  return 1.5;
+};
+
 const createSeededRandom = (initialSeed: number) => {
   let seed = initialSeed;
 
@@ -30,12 +79,19 @@ const createSeededRandom = (initialSeed: number) => {
   };
 };
 
-function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
+function CyberWorld({
+  reduceMotion,
+  documentVisible,
+}: {
+  reduceMotion: boolean;
+  documentVisible: boolean;
+}) {
   const cameraRigRef = useRef<THREE.Group>(null);
   const coreRef = useRef<THREE.Group>(null);
   const fieldRef = useRef<THREE.Group>(null);
   const corePointsRef = useRef<THREE.Points>(null);
   const fieldPointsRef = useRef<THREE.Points>(null);
+  const networkLinesRef = useRef<THREE.LineSegments>(null);
   const primaryRingRef = useRef<THREE.Mesh>(null);
   const secondaryRingRef = useRef<THREE.Mesh>(null);
   const satelliteRef = useRef<THREE.Mesh>(null);
@@ -55,7 +111,17 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
   const motionAxisRef = useRef<"horizontal" | "vertical" | null>(null);
   const scrollVelocityRef = useRef(0);
   const scrollProgressRef = useRef(0);
+  const frameAccumulatorRef = useRef(0);
+  const sectionRatiosRef = useRef<Record<string, number>>({});
+  const motionMetricsRef = useRef({
+    useHorizontalMotion: false,
+    horizontalScroll: 0,
+    verticalScroll: 0,
+    motionOffset: 0,
+    maxMotionOffset: 1,
+  });
   const { size } = useThree();
+  const renderProfile = useMemo(() => getRenderProfile(size.width), [size.width]);
 
   const coreGeometry = useMemo(() => {
     const random = createSeededRandom(0x0f3ff055);
@@ -192,47 +258,101 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
   }, []);
 
   useEffect(() => {
+    const sections = SECTION_IDS.map((id) => document.getElementById(id))
+      .filter((section): section is HTMLElement => Boolean(section));
+
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          sectionRatiosRef.current[entry.target.id] = entry.intersectionRatio;
+        });
+
+        activeSectionRef.current = sections
+          .map((section) => ({
+            id: section.id,
+            ratio: sectionRatiosRef.current[section.id] ?? 0,
+          }))
+          .sort((a, b) => b.ratio - a.ratio)[0]?.id ?? "home";
+      },
+      {
+        root: null,
+        rootMargin: "-35% 0px -35% 0px",
+        threshold: [0, 0.12, 0.28, 0.5, 0.72, 1],
+      },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     let frame = 0;
 
-    const updateActiveSection = () => {
+    const updateMetrics = () => {
       frame = 0;
-      const sections = SECTION_IDS.map((id) => document.getElementById(id))
-        .filter((section): section is HTMLElement => Boolean(section));
-      const viewportCenter = window.innerHeight / 2;
-      const containingSection = sections.find((section) => {
-        const rect = section.getBoundingClientRect();
-        return rect.top <= viewportCenter && rect.bottom >= viewportCenter;
-      });
 
-      activeSectionRef.current = containingSection?.id ??
-        sections
-          .map((section) => {
-            const rect = section.getBoundingClientRect();
-            return {
-              id: section.id,
-              distance: Math.abs(
-                rect.top +
-                  Math.min(rect.height, window.innerHeight) / 2 -
-                  viewportCenter,
-              ),
-            };
-          })
-          .sort((a, b) => a.distance - b.distance)[0]?.id ??
-        "home";
+      if (
+        !stageLookupDoneRef.current ||
+        (stageRef.current && !stageRef.current.isConnected)
+      ) {
+        stageRef.current = document.querySelector<HTMLElement>(
+          "[data-horizontal-stage]",
+        );
+        stageLookupDoneRef.current = true;
+      }
+
+      const stage = stageRef.current;
+      const useHorizontalMotion = Boolean(
+        window.innerWidth >= 1024 &&
+        stage &&
+        stage.scrollWidth > stage.clientWidth + 8,
+      );
+      const scrollingElement =
+        document.scrollingElement ?? document.documentElement;
+      const horizontalScroll = window.scrollX + (stage?.scrollLeft ?? 0);
+      const maxHorizontalScroll = stage
+        ? Math.max(stage.scrollWidth - stage.clientWidth, 1)
+        : Math.max(document.documentElement.scrollWidth - window.innerWidth, 1);
+      const verticalScroll = window.scrollY || scrollingElement.scrollTop;
+      const maxVerticalScroll = Math.max(
+        scrollingElement.scrollHeight - window.innerHeight,
+        1,
+      );
+
+      motionMetricsRef.current = {
+        useHorizontalMotion,
+        horizontalScroll,
+        verticalScroll,
+        motionOffset: useHorizontalMotion ? horizontalScroll : verticalScroll,
+        maxMotionOffset: useHorizontalMotion
+          ? maxHorizontalScroll
+          : maxVerticalScroll,
+      };
     };
 
     const requestUpdate = () => {
-      if (!frame) frame = window.requestAnimationFrame(updateActiveSection);
+      if (!frame) frame = window.requestAnimationFrame(updateMetrics);
     };
 
     requestUpdate();
     window.addEventListener("scroll", requestUpdate, { passive: true });
     window.addEventListener("resize", requestUpdate, { passive: true });
 
+    const stage = document.querySelector<HTMLElement>("[data-horizontal-stage]");
+    stage?.addEventListener("scroll", requestUpdate, { passive: true });
+
+    const resizeObserver = new ResizeObserver(requestUpdate);
+    resizeObserver.observe(document.documentElement);
+    if (stage) resizeObserver.observe(stage);
+
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
       window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", requestUpdate);
+      stage?.removeEventListener("scroll", requestUpdate);
+      resizeObserver.disconnect();
     };
   }, []);
 
@@ -240,43 +360,23 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     const core = coreRef.current;
     const field = fieldRef.current;
     const grid = gridRef.current;
-    if (!core || !field || !grid) return;
+    if (!core || !field || !grid || !documentVisible) return;
 
-    if (
-      !stageLookupDoneRef.current ||
-      (stageRef.current && !stageRef.current.isConnected)
-    ) {
-      stageRef.current = document.querySelector<HTMLElement>(
-        "[data-horizontal-stage]",
-      );
-      stageLookupDoneRef.current = true;
-    }
+    frameAccumulatorRef.current += delta;
+    const targetFrameTime = 1 / renderProfile.targetFps;
+    if (frameAccumulatorRef.current < targetFrameTime) return;
 
-    const stage = stageRef.current;
-    const useHorizontalMotion = Boolean(
-      size.width >= 1024 &&
-      stage &&
-      stage.scrollWidth > stage.clientWidth + 8,
-    );
+    const effectiveDelta = Math.min(frameAccumulatorRef.current, 1 / 18);
+    frameAccumulatorRef.current = 0;
+
+    const {
+      useHorizontalMotion,
+      horizontalScroll,
+      verticalScroll,
+      motionOffset,
+      maxMotionOffset,
+    } = motionMetricsRef.current;
     const motionAxis = useHorizontalMotion ? "horizontal" : "vertical";
-    const horizontalScroll = window.scrollX + (stage?.scrollLeft ?? 0);
-    const maxHorizontalScroll = stage
-      ? Math.max(stage.scrollWidth - stage.clientWidth, 1)
-      : Math.max(
-          document.documentElement.scrollWidth - window.innerWidth,
-          1,
-        );
-    const scrollingElement =
-      document.scrollingElement ?? document.documentElement;
-    const verticalScroll = window.scrollY || scrollingElement.scrollTop;
-    const maxVerticalScroll = Math.max(
-      scrollingElement.scrollHeight - window.innerHeight,
-      1,
-    );
-    const motionOffset = useHorizontalMotion ? horizontalScroll : verticalScroll;
-    const maxMotionOffset = useHorizontalMotion
-      ? maxHorizontalScroll
-      : maxVerticalScroll;
 
     if (motionAxisRef.current !== motionAxis) {
       motionAxisRef.current = motionAxis;
@@ -292,7 +392,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     );
     const rawVelocity = hasScrollSampleRef.current
       ? (motionOffset - previousScrollRef.current) /
-        Math.max(delta, 1 / 240)
+        Math.max(effectiveDelta, 1 / 240)
       : 0;
     const boundedVelocity = THREE.MathUtils.clamp(
       rawVelocity,
@@ -305,16 +405,16 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     scrollVelocityRef.current = THREE.MathUtils.lerp(
       scrollVelocityRef.current,
       boundedVelocity,
-      1 - Math.exp(-delta * 8),
+      1 - Math.exp(-effectiveDelta * 8),
     );
     scrollProgressRef.current = THREE.MathUtils.lerp(
       scrollProgressRef.current,
       targetProgress,
-      1 - Math.exp(-delta * 5),
+      1 - Math.exp(-effectiveDelta * 5),
     );
     pointerRef.current.lerp(
       pointerTargetRef.current,
-      1 - Math.exp(-delta * 3.4),
+      1 - Math.exp(-effectiveDelta * 3.4),
     );
 
     const elapsed = reduceMotion ? 0 : state.clock.elapsedTime;
@@ -323,14 +423,18 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
     const velocity = scrollVelocityRef.current;
     const warp = Math.min(Math.abs(velocity) * 0.00032, 1);
     const compact = size.width < 1024;
-    const smoothing = 1 - Math.exp(-delta * 3.8);
+    const smoothing = 1 - Math.exp(-effectiveDelta * 3.8);
     corePointsRef.current?.geometry.setDrawRange(
       0,
-      compact ? 780 : CORE_PARTICLE_COUNT,
+      renderProfile.coreParticles,
     );
     fieldPointsRef.current?.geometry.setDrawRange(
       0,
-      compact ? 380 : FIELD_PARTICLE_COUNT,
+      renderProfile.fieldParticles,
+    );
+    networkLinesRef.current?.geometry.setDrawRange(
+      0,
+      renderProfile.networkSegments * 2,
     );
     const activeSection = activeSectionRef.current;
     const sectionX = {
@@ -376,19 +480,19 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
         cameraRigRef.current.position.x,
         -pointerRef.current.x * (compact ? 0.06 : 0.16),
         3.2,
-        delta,
+        effectiveDelta,
       );
       cameraRigRef.current.position.y = THREE.MathUtils.damp(
         cameraRigRef.current.position.y,
         -pointerRef.current.y * (compact ? 0.05 : 0.12),
         3.2,
-        delta,
+        effectiveDelta,
       );
       cameraRigRef.current.position.z = THREE.MathUtils.damp(
         cameraRigRef.current.position.z,
         rigTargetZ,
         2.6,
-        delta,
+        effectiveDelta,
       );
     }
     const coreTargetX = useHorizontalMotion
@@ -623,7 +727,7 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
           />
         </points>
 
-        <lineSegments>
+        <lineSegments ref={networkLinesRef}>
           <bufferGeometry>
             <bufferAttribute
               attach="attributes-position"
@@ -806,6 +910,8 @@ function CyberWorld({ reduceMotion }: { reduceMotion: boolean }) {
 
 export default function CyberBackground() {
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [documentVisible, setDocumentVisible] = useState(true);
+  const [maxDpr, setMaxDpr] = useState(1);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -816,6 +922,21 @@ export default function CyberBackground() {
     return () => media.removeEventListener("change", updatePreference);
   }, []);
 
+  useEffect(() => {
+    const updateVisibility = () => setDocumentVisible(!document.hidden);
+    const updateDpr = () => setMaxDpr(getMaxDpr());
+
+    updateVisibility();
+    updateDpr();
+    document.addEventListener("visibilitychange", updateVisibility);
+    window.addEventListener("resize", updateDpr, { passive: true });
+
+    return () => {
+      document.removeEventListener("visibilitychange", updateVisibility);
+      window.removeEventListener("resize", updateDpr);
+    };
+  }, []);
+
   return (
     <div
       aria-hidden="true"
@@ -823,7 +944,7 @@ export default function CyberBackground() {
     >
       <Canvas
         camera={{ position: [0, 0, 7.8], fov: 52, near: 0.1, far: 50 }}
-        dpr={[1, 1.5]}
+        dpr={[0.75, maxDpr]}
         gl={{
           alpha: true,
           antialias: false,
@@ -836,7 +957,10 @@ export default function CyberBackground() {
         style={{ background: "transparent" }}
       >
         <fog attach="fog" args={["#03050a", 7, 19]} />
-        <CyberWorld reduceMotion={reduceMotion} />
+        <CyberWorld
+          reduceMotion={reduceMotion}
+          documentVisible={documentVisible}
+        />
         <AdaptiveDpr pixelated />
       </Canvas>
 

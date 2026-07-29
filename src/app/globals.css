@@ -326,3 +326,15 @@ html[data-music="playing"] .portfolio-bg::after {
     transition-duration: 0.01ms !important;
   }
 }
+
+@supports (content-visibility: auto) {
+  #about,
+  #projects,
+  #journey,
+  #contact,
+  #documents,
+  #about-skills {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+}
