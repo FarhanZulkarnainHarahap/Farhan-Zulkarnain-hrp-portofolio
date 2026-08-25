@@ -338,3 +338,43 @@ html[data-music="playing"] .portfolio-bg::after {
     contain-intrinsic-size: auto 900px;
   }
 }
+
+/* The immersive landing uses deliberate viewport-length chapters. Keeping these
+   sections visible preserves sticky positioning and exact normalized scroll beats. */
+[data-immersive-root] {
+  --immersive-cyan: #82ecff;
+  background:
+    radial-gradient(circle at 8% 24%, rgba(25, 117, 148, 0.1), transparent 27%),
+    radial-gradient(circle at 92% 72%, rgba(91, 45, 159, 0.08), transparent 25%),
+    #020409;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+
+[data-immersive-root] #home,
+[data-immersive-root] #about,
+[data-immersive-root] #journey,
+[data-immersive-root] #projects,
+[data-immersive-root] #contact {
+  content-visibility: visible;
+  contain-intrinsic-size: none;
+}
+
+[data-immersive-root] h1,
+[data-immersive-root] h2,
+[data-immersive-root] h3 {
+  text-wrap: balance;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  [data-immersive-root] *,
+  [data-immersive-root] *::before,
+  [data-immersive-root] *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
