@@ -113,7 +113,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <head>
-        <link rel="dns-prefetch" href="https://api.farhanzulkarnainhrp.com" />
+        <link rel="dns-prefetch" href="https://api2.farhanzulkarnainhrp.com" />
       </head>
       <body className="min-h-full flex flex-col">
         <script
