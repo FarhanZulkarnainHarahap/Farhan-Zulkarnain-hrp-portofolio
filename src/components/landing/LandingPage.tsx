@@ -1,35 +1,51 @@
-import MusicPlayerLoader from "@/components/MusicPlayerLoader";
-import Navbar from "@/components/Navbar";
-import LandingScrollManager from "@/components/landing/LandingScrollManager";
-import ThreeBackgroundLoader from "@/components/landing/ThreeBackgroundLoader";
-import AboutSection from "@/components/sections/about/AboutSection";
-import ContactSection from "@/components/sections/contact/ContactSection";
-import HeroCard from "@/components/sections/hero/HeroCard";
-import JourneySection from "@/components/sections/journey/JourneySection";
-import PortfolioSection from "@/components/sections/portfolio/project/ProjectSection";
-
+import Shell from "@/components/kinetic/Shell";
+import Hero from "@/components/kinetic/Hero";
+import Profile, { Principles } from "@/components/kinetic/Profile";
+import Capabilities from "@/components/kinetic/Capabilities";
+import Trajectory from "@/components/kinetic/Trajectory";
+import Projects from "@/components/kinetic/Projects";
+import Contact from "@/components/kinetic/Contact";
 type LandingSection = "home" | "about" | "projects" | "journey" | "contact";
-
 export default function LandingPage({
   initialSection = "home",
 }: {
   initialSection?: LandingSection;
 }) {
+  const home = initialSection === "home";
   return (
-    <>
-      <LandingScrollManager initialSection={initialSection} />
-      <Navbar />
-      <MusicPlayerLoader />
-      <main id="main-content" className="portfolio-bg relative min-h-screen overflow-x-clip text-white">
-        <ThreeBackgroundLoader />
-        <div className="relative z-10">
-          <HeroCard />
-          <AboutSection />
-          <PortfolioSection />
-          <JourneySection />
-          <ContactSection />
+    <Shell>
+      {home ? (
+        <Hero />
+      ) : (
+        <div className="route-intro">
+          <p className="eyebrow">
+            FARHAN — KINETIC SYSTEMS / {initialSection.toUpperCase()}
+          </p>
+          <h1>
+            {
+              {
+                about: "Inside the system.",
+                projects: "Built with intent.",
+                journey: "A path in progress.",
+                contact: "Start a connection.",
+                home: "",
+              }[initialSection]
+            }
+          </h1>
         </div>
-      </main>
-    </>
+      )}
+      {(home || initialSection === "about") && (
+        <>
+          <Profile />
+          <Capabilities />
+        </>
+      )}
+      {(home || initialSection === "journey") && <Trajectory />}
+      {(home || initialSection === "projects") && (
+        <Projects selectedOnly={home} />
+      )}
+      {(home || initialSection === "about") && <Principles />}
+      {(home || initialSection === "contact") && <Contact />}
+    </Shell>
   );
 }

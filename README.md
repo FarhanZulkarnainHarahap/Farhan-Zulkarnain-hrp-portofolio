@@ -1,108 +1,48 @@
-<p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&height=220&color=0:030406,45:2563eb,100:93c5fd&text=Farhan%20Z.%20Portfolio&fontColor=ffffff&fontAlignY=38&fontSize=42&desc=Creative%20Web%20Developer%20Experience&descAlignY=58&animation=fadeIn" alt="Farhan Z Portfolio banner" />
-</p>
+# Farhan — Kinetic Systems
 
-<p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=800&size=18&duration=2600&pause=900&color=3B82F6&center=true&vCenter=true&width=760&lines=Next.js+Portfolio+Website;Animated+Hero+%2B+Interactive+Cursor;Projects+Carousel+%2B+Document+Preview;Built+with+the+Farhan+Z.+blue+palette" alt="Animated typing headline" />
-</p>
+Next.js portfolio for Farhan Zulkarnain Harahap. Public pages and the admin workspace share the palette and typography in `src/app/globals.css`.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Next.js-16.2.4-030406?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" />
-  <img src="https://img.shields.io/badge/React-19.2.4-2563EB?style=for-the-badge&logo=react&logoColor=white" alt="React" />
-  <img src="https://img.shields.io/badge/Tailwind-4-3B82F6?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/Framer_Motion-12-93C5FD?style=for-the-badge&logo=framer&logoColor=030406" alt="Framer Motion" />
-</p>
+## Run
 
-## Desktop Preview
-
-<p align="center">
-  <a href="https://farhanzulkarnainhrp.com/home">
-    <img src="./docs/screenshots/desktop-home.png" alt="Farhan Zulkarnain portfolio desktop preview" width="100%" />
-  </a>
-</p>
-
-## Overview
-
-`web` adalah frontend portofolio Farhan Zulkarnain. Website ini menampilkan hero animated, interactive cursor particle, project showcase carousel, skills, document preview, dan contact section.
-
-## Color Palette
-
-| Token | Hex | Preview | Usage |
-| --- | --- | --- | --- |
-| Void Black | `#030406` | ![#030406](https://placehold.co/80x18/030406/030406.png) | Base background |
-| Card Navy | `#080b13` | ![#080b13](https://placehold.co/80x18/080b13/080b13.png) | Cards and panels |
-| Signature Blue | `#2563eb` | ![#2563eb](https://placehold.co/80x18/2563eb/2563eb.png) | Brand accents |
-| Electric Blue | `#3b82f6` | ![#3b82f6](https://placehold.co/80x18/3b82f6/3b82f6.png) | CTA and active states |
-| Soft Sky | `#93c5fd` | ![#93c5fd](https://placehold.co/80x18/93c5fd/93c5fd.png) | Glow and highlights |
-
-## Features
-
-- Animated entrance screen with Farhan Z. identity.
-- Hero section with `ShinyText`, Framer Motion, and optimized profile image.
-- Interactive particle cursor for desktop pointer devices.
-- Project carousel with featured card and orbit cards.
-- Document section with in-page preview modal for PDF and image files.
-- Skeleton loading for dynamic sections.
-- Admin dashboard routes for portfolio, skill, and document management.
-
-## Tech Stack
-
-```txt
-Next.js 16      React 19        TypeScript
-Tailwind CSS 4  Framer Motion   React Icons
-Three.js        Cloudinary      JWT/Auth flow
-```
-
-## Getting Started
-
-```bash
-npm install
+```sh
+npm ci
 npm run dev
+npm run lint
+npm run build
+npm run start
 ```
 
-Open:
+Copy `.env.example` to `.env` and configure the API origin and server-only JWT signing secret. The signing secret must match the backend. Never prefix it with `NEXT_PUBLIC_`.
 
-```txt
-http://localhost:3000
+## Architecture
+
+- Public routes: `/`, `/about`, `/about/detail`, `/about/skills`, `/about/docs`, `/journey`, `/projects`, `/projects/[slug]`, `/contact`.
+- Shared UI, data hooks, motion, command palette, and spatial components: `src/components/kinetic` and `src/components/Navbar.tsx`.
+- API origin: `src/lib/api-config.ts`. The browser API client uses same-origin `/api/public/[resource]` for the four public collections. The server forwards only whitelisted GET requests to the configured primary backend, without credentials.
+- Authenticated calls and mutations go directly to the primary API, with credentials. The backend must allow the frontend origin and issue cookies for the frontend domain. Production domain cookies cannot authenticate an unrelated localhost domain; use a local backend configured for localhost for real local login.
+- Every data request has a timeout. Public collections expose loading, empty, error, and retry states. Project detail failures use the route error boundary.
+- `src/proxy.ts` verifies JWTs and enforces ADMIN for both `/admin/*` aliases and `/dashboard/admin/*` routes. Admin layouts also verify the profile with the backend.
+- Project details render only stored fields. Journey uses existing profile milestones when no dated experiences are published; it does not invent dates.
+- Cloudinary image previews use responsive `srcset` widths and automatic formats through a Next Image loader. Invalid or failed images show a local fallback.
+- Three.js is loaded on demand for visible desktop scenes. It pauses when hidden and uses SVG on mobile, reduced motion, or WebGL failure. Context connects capability/project selection and trajectory state to the architecture scene.
+
+## Supported admin operations
+
+| Resource | API methods | UI |
+| --- | --- | --- |
+| Projects | GET, POST, PUT, DELETE | List, upload, edit, delete |
+| Skills | GET, POST, DELETE | List, add, delete |
+| Experiences | GET, POST, PUT, DELETE | List, add, edit, delete |
+| Documents | GET, POST, DELETE | List, upload, delete |
+
+Skill editing and in-place document updates are not exposed by the current Express backend. The UI does not pretend to support them. Subject is serialized into the contact message because the API accepts `name`, `email`, and `message`.
+
+## Browser QA
+
+```sh
+npx playwright install --with-deps chromium
+npm run build
+npm run test:e2e
 ```
 
-## Environment
-
-Create `.env` in `web/`:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
-
-## Scripts
-
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start development server |
-| `npm run build` | Build production app |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-
-## Main Sections
-
-| Route / Section | Purpose |
-| --- | --- |
-| `/home` | Portfolio landing page |
-| `/projects` | Project showcase section |
-| `/documents` | Public credential and asset preview |
-| `/contact` | Contact form |
-| `/admin/*` | Admin management pages |
-
-## Visual Direction
-
-The UI leans into a dark, futuristic, blue-accented portfolio style:
-
-- deep black backgrounds,
-- electric blue highlights,
-- soft particle glow,
-- motion-led transitions,
-- clean cards with strong hierarchy.
-
-<p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=rect&height=2&color=0:030406,40:2563eb,100:93c5fd" alt="Blue divider" />
-</p>
+Playwright starts the production app on localhost:3101 with an isolated test signing key. The regression tests intercept all mutations; test credentials never reach the production API. A separate live test only reads public collections, a project detail, and a CV download. Screenshot artifacts and the HTML report are in `.qa/` and are ignored by Git. The live integration test requires access to the configured backend.

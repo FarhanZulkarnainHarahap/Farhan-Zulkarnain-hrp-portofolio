@@ -55,7 +55,9 @@ export function resolveSkillIconKey(
 
   return (
     Object.keys(icons).find((key) =>
-      candidates.some((candidate) => key.toLowerCase() === candidate.toLowerCase()),
+      candidates.some(
+        (candidate) => key.toLowerCase() === candidate.toLowerCase(),
+      ),
     ) || ""
   );
 }

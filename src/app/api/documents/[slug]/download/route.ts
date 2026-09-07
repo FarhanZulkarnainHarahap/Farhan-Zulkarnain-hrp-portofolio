@@ -31,11 +31,16 @@ const sanitizeFileName = (value: string) =>
     .slice(0, 100) || "document";
 
 const getSourceExtension = (sourceUrl: URL, contentType: string) => {
-  const sourceFile = decodeURIComponent(sourceUrl.pathname.split("/").pop() || "");
+  const sourceFile = decodeURIComponent(
+    sourceUrl.pathname.split("/").pop() || "",
+  );
   const match = sourceFile.match(/(\.[a-zA-Z0-9]{1,8})$/);
 
   if (match) return match[1].toLowerCase();
-  return extensionByContentType[contentType.split(";")[0].trim().toLowerCase()] || ".pdf";
+  return (
+    extensionByContentType[contentType.split(";")[0].trim().toLowerCase()] ||
+    ".pdf"
+  );
 };
 
 type DownloadProps = {
@@ -56,7 +61,10 @@ export async function GET(_request: Request, { params }: DownloadProps) {
   try {
     sourceUrl = new URL(document.fileUrl);
   } catch {
-    return NextResponse.json({ error: "Invalid document URL." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid document URL." },
+      { status: 400 },
+    );
   }
 
   const isTrustedCloudinaryFile =
@@ -65,12 +73,16 @@ export async function GET(_request: Request, { params }: DownloadProps) {
     sourceUrl.pathname.startsWith(`/${CLOUDINARY_CLOUD_NAME}/`);
 
   if (!isTrustedCloudinaryFile) {
-    return NextResponse.json({ error: "Document source is not allowed." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Document source is not allowed." },
+      { status: 403 },
+    );
   }
 
   try {
     const upstream = await fetch(sourceUrl, {
       cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
       headers: {
         Accept: "application/pdf,image/*,application/octet-stream",
       },
@@ -83,7 +95,8 @@ export async function GET(_request: Request, { params }: DownloadProps) {
       );
     }
 
-    const contentType = upstream.headers.get("content-type") || "application/pdf";
+    const contentType =
+      upstream.headers.get("content-type") || "application/pdf";
     const extension = getSourceExtension(sourceUrl, contentType);
     const fileName = `${sanitizeFileName(formatDocumentFileName(document))}${extension}`;
     const headers = new Headers({

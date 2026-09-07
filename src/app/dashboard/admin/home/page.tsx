@@ -1,169 +1,154 @@
 "use client";
-
-import { useCallback, useEffect, useState } from "react";
-import { LuZap, LuFolder, LuFileText, LuHistory, LuLoader, LuRefreshCw } from "react-icons/lu";
-import { apiFetch } from "@/lib/api-client";
-
-interface DashboardStats {
-  skills: number;
-  portfolios: number;
-  documents: number;
-}
-
-export default function HomePage() {
-  const [stats, setStats] = useState<DashboardStats>({ 
-    skills: 0, 
-    portfolios: 0, 
-    documents: 0 
-  });
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const fetchDashboardData = useCallback(async () => {
-    const requestOptions: RequestInit = {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    try {
-      setRefreshing(true);
-      
-      const [resSkills, resPorto, resDocs] = await Promise.all([
-        apiFetch("/api/skills", requestOptions),
-        apiFetch("/api/portofolios", requestOptions),
-        apiFetch("/api/documents/all", requestOptions)
-      ]);
-
-      const parseData = async (res: Response) => {
-        if (!res.ok) throw new Error("Server Error");
-        const json = await res.json();
-        return Array.isArray(json) ? json.length : (json.data?.length || 0);
-      };
-
-      setStats({
-        skills: await parseData(resSkills),
-        portfolios: await parseData(resPorto),
-        documents: await parseData(resDocs),
-      });
-
-    } catch (error) {
-      console.error("Failed to synchronize database:", error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      void fetchDashboardData();
-    }, 0);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [fetchDashboardData]);
-
-  const statsCards = [
-    { 
-      name: "Total Skills", 
-      count: stats.skills, 
-      icon: <LuZap size={24} />, 
-      color: "bg-amber-50 text-amber-600 border-amber-100" 
+import Link from "next/link";
+import {
+  Folder,
+  Layers,
+  FileText,
+  Route,
+  ArrowUpRight,
+  RefreshCw,
+} from "lucide-react";
+import {
+  useCollection,
+  type Skill,
+  type Experience,
+} from "@/components/kinetic/data";
+import type { Project, Document } from "@/services/api";
+export default function Overview() {
+  const projects = useCollection<Project>("/api/portofolios");
+  const skills = useCollection<Skill>("/api/skills");
+  const documents = useCollection<Document>("/api/documents");
+  const experiences = useCollection<Experience>("/api/experiences");
+  const collections = [
+    {
+      name: "Projects",
+      icon: Folder,
+      state: projects,
+      href: "/admin/portofolio",
     },
-    { 
-      name: "Portfolios", 
-      count: stats.portfolios, 
-      icon: <LuFolder size={24} />, 
-      color: "bg-blue-50 text-blue-600 border-blue-100" 
+    { name: "Capabilities", icon: Layers, state: skills, href: "/admin/skill" },
+    {
+      name: "Experience",
+      icon: Route,
+      state: experiences,
+      href: "/dashboard/admin/experience",
     },
-    { 
-      name: "Documents", 
-      count: stats.documents, 
-      icon: <LuFileText size={24} />, 
-      color: "bg-emerald-50 text-emerald-600 border-emerald-100" 
+    {
+      name: "Documents",
+      icon: FileText,
+      state: documents,
+      href: "/admin/document",
     },
   ];
-
+  const loading = collections.some((item) => item.state.loading);
+  const failed = collections.filter((item) => item.state.error);
   return (
-    <div className="p-6 lg:p-8 min-h-screen bg-slate-50/50">
-      {/* Header */}
-      <header className="mb-10 flex justify-between items-start">
+    <div>
+      <div className="admin-page-heading">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tighter uppercase italic">
-            Admin <span className="text-indigo-600">Console.</span>
-          </h1>
-          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.3em] mt-1">
-            Real-time Cloud Database Synchronized
-          </p>
+          <p className="eyebrow">CONTENT OVERVIEW</p>
+          <h1>Your work, connected.</h1>
+          <p>Manage what visitors see across your portfolio.</p>
         </div>
-        {refreshing && <LuLoader className="animate-spin text-indigo-600" size={20} />}
-      </header>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        {statsCards.map((item) => (
-          <div 
-            key={item.name} 
-            className="bg-white p-6 rounded-[2.5rem] border border-slate-200 shadow-sm flex items-center gap-5 group hover:shadow-xl transition-all duration-300"
-          >
-            <div className={`w-14 h-14 rounded-2xl border flex items-center justify-center transition-transform group-hover:scale-110 ${item.color}`}>
-              {loading ? <LuLoader className="animate-spin" size={20} /> : item.icon}
-            </div>
+        <button
+          className="button secondary"
+          disabled={loading}
+          onClick={() => collections.forEach((item) => item.state.retry())}
+        >
+          <RefreshCw size={15} />
+          {loading ? "Refreshing…" : "Refresh data"}
+        </button>
+      </div>
+      {failed.length > 0 && (
+        <p className="admin-alert" role="alert">
+          Unable to load{" "}
+          {failed.map((item) => item.name.toLowerCase()).join(", ")}. Refresh to
+          try again.
+        </p>
+      )}
+      <div className="admin-metrics">
+        {collections.map(({ name, icon: Icon, state, href }) => (
+          <Link href={href} key={name}>
             <div>
-              <p className="text-[10px] uppercase tracking-widest font-black text-slate-400 mb-1">{item.name}</p>
-              <p className="text-3xl font-black text-slate-800 tracking-tighter">
-                {loading ? "---" : item.count}
-              </p>
+              <Icon size={19} />
+              <ArrowUpRight size={15} />
             </div>
-          </div>
+            <strong>
+              {state.loading ? "…" : state.error ? "—" : state.data.length}
+            </strong>
+            <span>{name}</span>
+          </Link>
         ))}
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Dynamic Log Area */}
-        <div className="bg-white p-8 rounded-[3rem] border border-slate-200 shadow-sm">
-          <h2 className="text-sm font-black text-slate-800 uppercase tracking-[0.2em] mb-8 flex items-center gap-2">
-            <LuHistory className="text-indigo-500" /> Database Integrity
-          </h2>
-          <div className="space-y-6">
-            <div className="flex items-center gap-4">
-              <div className={`w-2 h-2 rounded-full ${stats.documents > 0 ? 'bg-emerald-500' : 'bg-slate-300'} animate-pulse`} />
-              <p className="text-xs text-slate-500 font-bold tracking-tight">
-                Successfully indexed <span className="text-slate-800">{stats.documents} certified documents</span> from server.
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className={`w-2 h-2 rounded-full ${stats.portfolios > 0 ? 'bg-indigo-500' : 'bg-slate-300'} animate-pulse`} />
-              <p className="text-xs text-slate-500 font-bold tracking-tight">
-                Live monitoring: <span className="text-slate-800">{stats.portfolios} project assets</span> are online.
-              </p>
-            </div>
+      <div className="admin-overview-grid">
+        <section className="admin-panel">
+          <div className="admin-panel-heading">
+            <h2>Recent projects</h2>
+            <Link className="text-link" href="/admin/portofolio">
+              View all ↗
+            </Link>
           </div>
-        </div>
-
-        {/* Purple Accent Card */}
-        <div className="bg-indigo-600 p-10 rounded-[3rem] text-white relative overflow-hidden shadow-2xl shadow-indigo-200 flex flex-col justify-between">
-           <div className="relative z-10">
-              <h3 className="text-2xl font-black italic tracking-tighter mb-4 leading-none">Security Verified.</h3>
-              <p className="text-indigo-100 text-sm opacity-70 leading-relaxed font-medium">
-                The data you manage is securely published to the main portfolio through an encrypted SSL connection.
-              </p>
-           </div>
-           
-           <button 
-            onClick={fetchDashboardData}
-            disabled={refreshing}
-            className="relative z-10 w-fit bg-white text-indigo-600 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest mt-8 hover:bg-indigo-50 transition-colors flex items-center gap-2 disabled:opacity-50"
-           >
-              {refreshing ? <LuLoader className="animate-spin" /> : <LuRefreshCw />}
-              Refresh System
-           </button>
-
-           {/* Decorative Background Circle */}
-           <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
-        </div>
+          {projects.loading ? (
+            <p role="status">Loading projects…</p>
+          ) : projects.error ? (
+            <p>Project data unavailable.</p>
+          ) : !projects.data.length ? (
+            <p>No projects published yet.</p>
+          ) : (
+            projects.data.slice(0, 5).map((project, index) => (
+              <Link
+                className="admin-project-row"
+                href="/admin/portofolio"
+                key={project.id}
+              >
+                <span className="eyebrow">0{index + 1}</span>
+                <div>
+                  <h3>{project.title}</h3>
+                  <p>{project.caseType || "Web application"}</p>
+                </div>
+                <ArrowUpRight size={17} />
+              </Link>
+            ))
+          )}
+        </section>
+        <section className="admin-panel">
+          <div className="admin-panel-heading">
+            <h2>Keep your story current.</h2>
+          </div>
+          <p>Add a new project, share a milestone, or upload your latest CV.</p>
+          <div className="admin-shortcuts">
+            {[
+              [
+                "New project",
+                "Screenshots, links & case study",
+                "/admin/portofolio/upload",
+              ],
+              [
+                "Add a capability",
+                "Technology & category",
+                "/admin/skill/manage",
+              ],
+              [
+                "Update your journey",
+                "Roles, dates & experience",
+                "/dashboard/admin/experience",
+              ],
+              [
+                "Upload a document",
+                "CV, certificates & education",
+                "/admin/document/upload",
+              ],
+            ].map(([title, description, href]) => (
+              <Link key={href} href={href}>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{description}</p>
+                </div>
+                <span>+</span>
+              </Link>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   );

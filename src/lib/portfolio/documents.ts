@@ -5,7 +5,9 @@ export function getDocumentSlug(document: Pick<Document, "id" | "name">) {
   return slugifyProject(document.name) || document.id;
 }
 
-export function formatDocumentFileName(document: Pick<Document, "name" | "category">) {
+export function formatDocumentFileName(
+  document: Pick<Document, "name" | "category">,
+) {
   const base = `${document.name || document.category || "document"}`;
   const safe = slugifyProject(base)
     .split("-")
@@ -17,5 +19,7 @@ export function formatDocumentFileName(document: Pick<Document, "name" | "catego
 }
 
 export function findDocumentBySlug(documents: Document[], slug: string) {
-  return documents.find((document) => document.id === slug || getDocumentSlug(document) === slug);
+  return documents.find(
+    (document) => document.id === slug || getDocumentSlug(document) === slug,
+  );
 }

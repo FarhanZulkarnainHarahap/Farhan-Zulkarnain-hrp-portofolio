@@ -1,10 +1,10 @@
 import "server-only";
+import { PUBLIC_API_ORIGIN, API_TIMEOUT_MS } from "@/lib/api-config";
 
-const API_BASE_URL = (
-  process.env.API_URL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:8000"
-).replace(/\/+$/, "");
+const API_BASE_URL = (process.env.API_URL ?? PUBLIC_API_ORIGIN).replace(
+  /\/+$/,
+  "",
+);
 
 type UnknownRecord = Record<string, unknown>;
 type ItemParser<T> = (value: unknown, index: number) => T;
@@ -67,7 +67,9 @@ function optionalString(
   }
 
   if (typeof value !== "string") {
-    throw new TypeError(`${resourceName}.${key} harus berupa string atau null.`);
+    throw new TypeError(
+      `${resourceName}.${key} harus berupa string atau null.`,
+    );
   }
 
   return value;
@@ -163,7 +165,11 @@ function parseCollection<T>(
   resourceName: string,
   parseItem: ItemParser<T>,
 ): T[] {
-  if (!isRecord(payload) || payload.success !== true || !Array.isArray(payload.data)) {
+  if (
+    !isRecord(payload) ||
+    payload.success !== true ||
+    !Array.isArray(payload.data)
+  ) {
     throw new TypeError(`Respons ${resourceName} dari backend tidak valid.`);
   }
 
@@ -175,30 +181,27 @@ async function fetchCollection<T>(
   resourceName: string,
   parseItem: ItemParser<T>,
 ): Promise<T[]> {
-  /*
-   * Next.js memoizes GET dengan URL dan options yang identik selama satu
-   * server render pass. Jangan menambahkan AbortSignal di sini karena signal
-   * membuat fetch keluar dari request memoization.
-   *
-   * `no-store` hanya mematikan cache lintas request. Dua Server Component
-   * dalam render yang sama tetap berbagi satu request backend.
-   */
+  return parseCollection(await getPublicPayload(path), resourceName, parseItem);
+}
+
+export async function getPublicPayload(path: string): Promise<unknown> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "GET",
-    headers: {
-      Accept: "application/json",
-    },
+    headers: { Accept: "application/json" },
     cache: "no-store",
+    signal: AbortSignal.timeout(API_TIMEOUT_MS),
   });
-
-  if (!response.ok) {
-    throw new Error(
-      `Gagal mengambil ${resourceName}: backend merespons HTTP ${response.status}.`,
-    );
-  }
-
+  if (!response.ok)
+    throw new Error(`Data service returned HTTP ${response.status}.`);
   const payload: unknown = await response.json();
-  return parseCollection(payload, resourceName, parseItem);
+  if (Array.isArray(payload)) return payload;
+  if (
+    !isRecord(payload) ||
+    payload.success !== true ||
+    !Array.isArray(payload.data)
+  )
+    throw new TypeError("Invalid collection response.");
+  return payload;
 }
 
 export function getProjects(): Promise<Project[]> {

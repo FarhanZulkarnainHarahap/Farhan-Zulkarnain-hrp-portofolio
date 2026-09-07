@@ -1,245 +1,186 @@
 "use client";
-
-import { useState, useEffect } from "react";
-import Image from "next/image";
+import { ConfirmationProvider } from "@/components/kinetic/Confirmation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { 
-  LuMenu, 
-  LuChevronRight, 
-  LuSettings, 
-  LuLayoutDashboard, 
-  LuZap, 
-  LuFolder, 
-  LuFileText, 
-  LuPlus, 
-  LuSettings2,
-  LuCircleUser,
-  LuLogOut,
-  LuRefreshCw
-} from "react-icons/lu";
+import {
+  Menu,
+  X,
+  LogOut,
+  ArrowUpRight,
+  LayoutDashboard,
+  Layers,
+  Folder,
+  FileText,
+  Route,
+} from "lucide-react";
 import { apiFetch } from "@/lib/api-client";
-
-interface AdminUser {
-  name: string;
-  role: string;
-}
-
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [isOpen, setIsOpen] = useState(true);
-  const [loading, setLoading] = useState(true);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [user, setUser] = useState<AdminUser | null>(null);
-  const pathname = usePathname();
+const navigation = [
+  { name: "Overview", href: "/admin/home", icon: LayoutDashboard },
+  { name: "Projects", href: "/admin/portofolio", icon: Folder },
+  { name: "Capabilities", href: "/admin/skill", icon: Layers },
+  { name: "Experience", href: "/dashboard/admin/experience", icon: Route },
+  { name: "Documents", href: "/admin/document", icon: FileText },
+];
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string; role: string } | null>(null);
+  const [error, setError] = useState("");
+  const [retry, setRetry] = useState(0);
+  const [loggingOut, setLoggingOut] = useState(false);
   const router = useRouter();
-
-  // Session verification on refresh.
+  const pathname = usePathname();
   useEffect(() => {
-    const verifySession = async () => {
+    const controller = new AbortController();
+    async function verify() {
       try {
         const res = await apiFetch("/api/users/profile", {
-          method: "GET",
-          credentials: "include",
+          signal: controller.signal,
         });
-
-        const data = await res.json();
-
-        if (res.ok && data.success) {
-          setUser(data.data);
-        } else {
-          router.push("/auth/login");
+        if (res.status === 401 || res.status === 403) {
+          router.replace("/auth/login");
+          return;
         }
-      } catch (err) {
-        console.error("Session Check Error:", err);
-        router.push("/auth/login");
-      } finally {
-        setLoading(false);
+        const result = await res.json();
+        if (!res.ok || !result.success)
+          throw new Error("Session could not be verified. Please retry.");
+        if (result.data.role !== "ADMIN") {
+          router.replace("/dashboard/user");
+          return;
+        }
+        setUser(result.data);
+      } catch {
+        if (!controller.signal.aborted)
+          setError("Session service is unavailable. Please retry.");
       }
+    }
+    void verify();
+    return () => controller.abort();
+  }, [router, retry]);
+  useEffect(() => {
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
     };
-
-    verifySession();
-  }, [router]);
-
-  // Logout flow.
-  const handleLogout = async () => {
+    document.addEventListener("keydown", close);
+    return () => document.removeEventListener("keydown", close);
+  }, []);
+  async function logout() {
+    setLoggingOut(true);
+    setError("");
     try {
-      setIsLoggingOut(true);
-
-      const res = await apiFetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!res.ok) {
-        throw new Error("Logout failed");
-      }
-
-      setUser(null);
+      const response = await apiFetch("/api/auth/logout", { method: "POST" });
+      if (!response.ok) throw new Error();
       router.replace("/auth/login");
       router.refresh();
-    } catch (err) {
-      console.error("Logout Error:", err);
-      alert("Logout failed. Please try again.");
+    } catch {
+      setError("Logout failed. Please try again.");
     } finally {
-      setIsLoggingOut(false);
+      setLoggingOut(false);
     }
-  };
-
-  const menuItems = [
-    { name: "Home", href: "/admin/home", icon: <LuLayoutDashboard size={20} /> },
-    { 
-      name: "Skill", 
-      href: "/admin/skill", 
-      icon: <LuZap size={20} />,
-      subName: "Manage Skill",
-      subHref: "/admin/skill/manage",
-      subIcon: <LuSettings2 size={16} />
-    },
-    { 
-      name: "Portfolio", 
-      href: "/admin/portofolio", 
-      icon: <LuFolder size={20} />,
-      subName: "Upload Project",
-      subHref: "/admin/portofolio/upload",
-      subIcon: <LuPlus size={16} />
-    },
-    { 
-      name: "Document", 
-      href: "/admin/document", 
-      icon: <LuFileText size={20} />,
-      subName: "Upload Doc",
-      subHref: "/admin/document/upload",
-      subIcon: <LuPlus size={16} />
-    },
-  ];
-
-  const getActiveLabel = () => {
-    const activeMenu = menuItems.find(item => pathname.includes(item.href));
-    if (!activeMenu) return "Dashboard";
-    if (pathname === activeMenu.subHref) return activeMenu.subName;
-    return activeMenu.name;
-  };
-
-  // Show spinner while checking the session.
-  if (loading) {
+  }
+  if (!user)
     return (
-      <div className="min-h-screen bg-[#09090b] flex flex-col items-center justify-center gap-4">
-        <LuRefreshCw className="text-indigo-500 animate-spin" size={40} />
-        <p className="text-white text-[10px] font-black uppercase tracking-widest">Verifying Session...</p>
+      <div className="admin-gate">
+        <p className="eyebrow">KINETIC SYSTEMS / ADMIN</p>
+        <h1>{error ? "Connection interrupted." : "Verifying your session…"}</h1>
+        {error && (
+          <>
+            <p role="alert">{error}</p>
+            <button
+              className="button"
+              onClick={() => {
+                setError("");
+                setRetry((value) => value + 1);
+              }}
+            >
+              Retry
+            </button>
+          </>
+        )}
+        <Link className="text-link" href="/">
+          ← Return to portfolio
+        </Link>
       </div>
     );
-  }
-
+  const normalized = pathname.replace("/dashboard/admin/", "/admin/");
+  const current = navigation.find((item) =>
+    normalized.startsWith(item.href.replace("/dashboard/admin/", "/admin/")),
+  );
   return (
-    <div className="flex min-h-screen bg-[#f4f7fe]">
-      {/* SIDEBAR */}
-      <aside 
-        className={`bg-[#343a40] text-gray-300 transition-all duration-300 flex flex-col fixed h-full z-30 shadow-2xl 
-        ${isOpen ? "w-64" : "w-0 -left-64 md:left-0 md:w-20"}`}
-      >
-        <div className="h-16 flex items-center px-6 border-b border-gray-700 whitespace-nowrap overflow-hidden">
-          <div className="mr-3 h-8 min-w-8 overflow-hidden rounded-lg border border-blue-400/30 bg-transparent">
-            <Image
-              src="/fz-logo.png"
-              alt="FZ Dev"
-              width={32}
-              height={32}
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <span className={`text-xl font-semibold text-white transition-opacity duration-300 ${!isOpen && "opacity-0"}`}>
-            Nexxuswebdev
+    <div className="admin-shell">
+      {open && (
+        <button
+          className="admin-backdrop"
+          aria-label="Close navigation"
+          onClick={() => setOpen(false)}
+        />
+      )}
+      <aside className={`admin-sidebar ${open ? "open" : ""}`}>
+        <Link href="/admin/home" className="brand">
+          <span className="brand-mark">
+            FZ<span>↗</span>
           </span>
-        </div>
-
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto overflow-x-hidden">
-          <p className={`text-[10px] uppercase font-bold text-gray-400 px-2 mb-4 tracking-widest ${!isOpen && "hidden"}`}>
-            Menu Utama
-          </p>
-          
-          {menuItems.map((item) => {
-            const isActive = pathname.includes(item.href);
-            return (
-              <div key={item.name} className="space-y-1">
-                <Link 
-                  href={item.href} 
-                  className={`flex items-center gap-4 px-3 py-3 rounded-xl transition-all group
-                  ${isActive ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/20" : "hover:bg-white/5 text-gray-400 hover:text-white"}`}
-                >
-                  <div className="shrink-0">{item.icon}</div>
-                  <span className={`text-sm font-medium transition-opacity duration-300 ${!isOpen && "hidden"}`}>
-                    {item.name}
-                  </span>
-                </Link>
-
-                {item.subHref && isActive && isOpen && (
-                  <div className="ml-7 mt-1 border-l-2 border-gray-700/50">
-                    <Link 
-                      href={item.subHref}
-                      className={`flex items-center gap-3 ml-4 py-2.5 px-3 rounded-xl text-[13px] transition-all group/sub
-                      ${pathname === item.subHref ? "text-white bg-white/5 font-bold" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
-                    >
-                      <span className={`transition-colors ${pathname === item.subHref ? "text-indigo-400" : "text-gray-600 group-hover/sub:text-gray-400"}`}>
-                        {item.subIcon}
-                      </span>
-                      {item.subName}
-                    </Link>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          <span className="brand-name">
+            KINETIC SYSTEMS<span>CONTENT WORKSPACE</span>
+          </span>
+        </Link>
+        <p className="eyebrow">MANAGE YOUR PORTFOLIO</p>
+        <nav aria-label="Admin navigation">
+          {navigation.map(({ name, href, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              aria-current={current?.href === href ? "page" : undefined}
+              onClick={() => setOpen(false)}
+            >
+              <Icon size={17} />
+              {name}
+            </Link>
+          ))}
         </nav>
-
-        <div className="p-4 border-t border-gray-700">
-          <button 
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-            className="flex items-center gap-4 px-3 py-3 w-full text-gray-500 hover:text-red-400 transition-colors group disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isLoggingOut ? (
-              <LuRefreshCw size={20} className="animate-spin" />
-            ) : (
-              <LuLogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
-            )}
-            <span className={`text-sm font-medium ${!isOpen && "hidden"}`}>
-              {isLoggingOut ? "Logging Out..." : "Log Out"}
-            </span>
+        <div className="admin-sidebar-bottom">
+          <Link href="/">
+            View portfolio <ArrowUpRight size={16} />
+          </Link>
+          <button onClick={logout} disabled={loggingOut}>
+            <LogOut size={16} />
+            {loggingOut ? "Signing out…" : "Sign out"}
           </button>
         </div>
       </aside>
-
-      {/* MAIN AREA */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${isOpen ? "md:ml-64" : "md:ml-20"}`}>
-        <header className="h-16 bg-[#6f42c1] flex items-center justify-between px-6 shadow-lg sticky top-0 z-20">
-          <div className="flex items-center gap-4">
-            <button onClick={() => setIsOpen(!isOpen)} className="text-white p-2 rounded-lg hover:bg-white/20 transition-colors">
-              <LuMenu size={24} />
-            </button>
-            <div className="flex items-center gap-2 text-white/70 text-sm font-medium select-none">
-               <Link href="/admin/home" className="hover:text-white transition-colors">Management Admin</Link>
-               <LuChevronRight size={14} className="text-white/40" />
-               <span className="text-white font-bold tracking-tight">{getActiveLabel()}</span>
-            </div>
+      <div className="admin-workspace">
+        <header className="admin-topbar">
+          <button
+            className="admin-menu-button"
+            onClick={() => setOpen((value) => !value)}
+            aria-label={open ? "Close navigation" : "Open navigation"}
+            aria-expanded={open}
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
+          <div>
+            <p className="eyebrow">WORKSPACE / {current?.name || "ADMIN"}</p>
+            <span>Portfolio control room</span>
           </div>
-          
-          <div className="flex items-center gap-5 text-white font-sans">
-            <LuSettings size={20} className="cursor-pointer opacity-70 hover:opacity-100" />
-            <div className="flex items-center gap-3 pl-5 border-l border-white/20">
-               <div className="text-right hidden sm:block">
-                  {/* Display user name from database */}
-                  <p className="text-[11px] font-bold leading-none uppercase">{user?.name || "Admin Account"}</p>
-                  <p className="text-[10px] text-white/60 mt-1 uppercase italic">{user?.role || "Developer"}</p>
-               </div>
-               <LuCircleUser size={32} className="opacity-90 cursor-pointer hover:scale-110 transition-transform" />
-            </div>
+          <div className="admin-user">
+            <span className="status-dot" />
+            <span>
+              {user.name}
+              <small>{user.role}</small>
+            </span>
           </div>
         </header>
-
-        <main className="p-6 lg:p-10">
-          <div className="bg-white border border-gray-200 rounded-3xl shadow-sm min-h-[calc(100vh-140px)] overflow-hidden p-8">
-            {children}
-          </div>
+        {error && (
+          <p className="admin-alert" role="alert">
+            {error}
+          </p>
+        )}
+        <main id="main-content" className="admin-content">
+          <ConfirmationProvider>{children}</ConfirmationProvider>
         </main>
       </div>
     </div>

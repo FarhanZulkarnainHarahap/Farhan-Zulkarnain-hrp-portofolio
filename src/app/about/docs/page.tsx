@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
 import AboutNestedShell from "@/components/navigation/AboutNestedShell";
-import DocSection from "@/components/sections/document/DocSection";
-
+import Documents from "@/components/kinetic/Documents";
 export const metadata: Metadata = {
   title: "Documents",
-  description:
-    "Professional documents, CV, resume, certificates, and downloadable assets for Farhan Zulkarnain Harahap.",
   alternates: { canonical: "/about/docs" },
 };
-
-export default function DocumentsPage() {
+export default function Page() {
   return (
     <AboutNestedShell>
-      <DocSection />
+      <h1 className="nested-title">CV & credentials</h1>
+      <Documents />
     </AboutNestedShell>
   );
 }

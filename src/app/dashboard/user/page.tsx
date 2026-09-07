@@ -1,112 +1,21 @@
-"use client";
-
-import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
-import { useEffect } from "react";
-import HeroCard from "@/components/sections/hero/HeroCard";
-
-const CyberBackground = dynamic(() => import("@/components/CyberBackground"), {
-  ssr: false,
-});
-const AboutSection = dynamic(() => import("@/components/sections/about/AboutSection"), {
-  loading: () => <SectionBlockSkeleton label="About" />,
-});
-const ProjectSection = dynamic(() => import("@/components/sections/portfolio/project/ProjectSection"), {
-  loading: () => <SectionBlockSkeleton label="Projects" />,
-});
-const SkillSection = dynamic(() => import("@/components/sections/skill/SkillSection"), {
-  loading: () => <SectionBlockSkeleton label="Skills" />,
-});
-const JourneySection = dynamic(() => import("@/components/sections/journey/JourneySection"), {
-  loading: () => <SectionBlockSkeleton label="Journey" />,
-});
-const DocSection = dynamic(() => import("@/components/sections/document/DocSection"), {
-  loading: () => <SectionBlockSkeleton label="Documents" />,
-});
-const ContactSection = dynamic(() => import("@/components/sections/contact/ContactSection"), {
-  loading: () => <SectionBlockSkeleton label="Contact" />,
-});
-
-const SectionBlockSkeleton = ({ label }: { label: string }) => (
-  <div className="portfolio-section-bg flex min-h-[70svh] w-full items-center justify-center px-6 py-20">
-    <div className="w-full max-w-3xl animate-pulse rounded-[28px] border border-blue-500/10 bg-[#07101d]/55 p-8 text-center shadow-[0_24px_80px_rgba(37,99,235,0.08)]">
-      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400/70">{label}</p>
-      <div className="mx-auto mt-5 h-9 w-64 rounded-2xl bg-white/8" />
-      <div className="mx-auto mt-5 h-4 w-full max-w-md rounded-full bg-white/5" />
-      <div className="mx-auto mt-3 h-4 w-3/4 max-w-sm rounded-full bg-white/5" />
-    </div>
-  </div>
-);
-
-export default function Home() {
-  const pathname = usePathname();
-
-  useEffect(() => {
-    const routeTargets: Record<string, string> = {
-      "/explore": "about",
-      "/skills": "skills",
-      "/projects": "projects",
-      "/documents": "documents",
-      "/contact": "contact",
-    };
-    const targetId = routeTargets[pathname] ?? "home";
-    let animationFrame = 0;
-    let attempts = 0;
-
-    const scrollToRoute = () => {
-      const target = document.getElementById(targetId);
-
-      if (!target) {
-        attempts += 1;
-        if (attempts < 30) animationFrame = window.requestAnimationFrame(scrollToRoute);
-        return;
-      }
-
-      target.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    };
-
-    animationFrame = window.requestAnimationFrame(scrollToRoute);
-    return () => window.cancelAnimationFrame(animationFrame);
-  }, [pathname]);
-
+import Link from "next/link";
+import Shell from "@/components/kinetic/Shell";
+export default function UserPage() {
   return (
-    <main
-      data-portfolio-root
-      className="portfolio-bg relative overflow-x-clip text-white"
-    >
-      <CyberBackground />
-      <div className="relative z-10">
-        <section id="home" className="scroll-mt-4">
-          <HeroCard />
-        </section>
-        <AboutSection />
-        <section id="skills" className="portfolio-section-bg relative scroll-mt-4 px-5 py-28 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-7xl">
-            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-blue-300">
-              Skill Map
-            </p>
-            <h2 className="mt-6 text-[clamp(2.8rem,7vw,6.2rem)] font-black uppercase leading-[0.9] tracking-normal text-white">
-              Interactive Skill Constellation.
-            </h2>
-            <p className="mt-5 max-w-3xl text-sm leading-7 text-slate-400 sm:text-base">
-              Filtered from the existing skills API and arranged as a clean category map,
-              with every technology kept readable, clickable, and available in HTML.
-            </p>
-            <div className="mt-9">
-              <SkillSection />
-            </div>
-          </div>
-        </section>
-        <ProjectSection />
-        <JourneySection />
-        <DocSection />
-        <section id="contact" className="portfolio-section-bg relative flex min-h-screen scroll-mt-4 items-center px-0 pb-36 pt-24 md:pb-40 lg:py-28">
-          <ContactSection />
-        </section>
+    <Shell>
+      <div className="route-intro">
+        <p className="eyebrow">KINETIC SYSTEMS / MEMBER</p>
+        <h1>Welcome back.</h1>
+        <p>Explore Farhan’s projects, capabilities, and latest work.</p>
+        <div className="button-row">
+          <Link className="button" href="/projects">
+            Explore projects ↗
+          </Link>
+          <Link className="text-link" href="/contact">
+            Contact Farhan ↗
+          </Link>
+        </div>
       </div>
-    </main>
+    </Shell>
   );
 }

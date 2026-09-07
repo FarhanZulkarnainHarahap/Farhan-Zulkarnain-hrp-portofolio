@@ -1,7 +1,4 @@
 import type { Metadata } from "next";
-import CyberCursorLoader from "@/components/CyberCursorLoader";
-import EntranceIntroLoader from "@/components/layout/EntranceIntroLoader";
-import PageTransitionLoader from "@/components/layout/PageTransitionLoader";
 import "./globals.css";
 
 const structuredData = [
@@ -10,7 +7,7 @@ const structuredData = [
     "@type": "Person",
     name: "Farhan Zulkarnain Harahap",
     url: "https://farhanzulkarnainhrp.com",
-    jobTitle: "Full-Stack Web Developer",
+    jobTitle: "Full-Stack Engineer / Software Engineer",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Medan",
@@ -43,7 +40,8 @@ const structuredData = [
 export const metadata: Metadata = {
   metadataBase: new URL("https://farhanzulkarnainhrp.com"),
   title: {
-    default: "Farhan Z. | Full-Stack Web Developer & UI/UX Designer",
+    default:
+      "Farhan Zulkarnain Harahap — Full-Stack Engineer | Kinetic Systems",
     template: "%s | Farhan Zulkarnain",
   },
   description:
@@ -52,7 +50,7 @@ export const metadata: Metadata = {
     "Farhan Zulkarnain Harahap",
     "Farhan Zulkarnain portfolio",
     "Farhan Z portfolio",
-    "Full-stack Developer Jakarta",
+    "Full-Stack Engineer Medan",
     "Creative Web Developer",
     "UI/UX Designer",
     "Frontend Developer",
@@ -69,7 +67,12 @@ export const metadata: Metadata = {
     "Admin Dashboard",
     "Web Application",
   ],
-  authors: [{ name: "Farhan Zulkarnain Harahap", url: "https://farhanzulkarnainhrp.com" }],
+  authors: [
+    {
+      name: "Farhan Zulkarnain Harahap",
+      url: "https://farhanzulkarnainhrp.com",
+    },
+  ],
   creator: "Farhan Zulkarnain Harahap",
   publisher: "Farhan Zulkarnain Harahap",
   applicationName: "Farhan Zulkarnain Portfolio",
@@ -90,16 +93,17 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
+    images: [{ url: "/fz-logo.png", alt: "Farhan — Kinetic Systems" }],
     locale: "en_US",
     url: "https://farhanzulkarnainhrp.com",
     siteName: "Farhan Zulkarnain Portfolio",
-    title: "Farhan Z. | Full-Stack Web Developer & UI/UX Designer",
+    title: "Farhan Zulkarnain Harahap — Full-Stack Engineer | Kinetic Systems",
     description:
-      "A dark-tech portfolio showcasing full-stack web applications, clean UI/UX design, API integrations, dashboards, skills, documents, and selected project work by Farhan Zulkarnain Harahap.",
+      "Kinetic Systems: full-stack applications, system architecture, and interactive digital experiences by Farhan Zulkarnain Harahap.",
   },
   twitter: {
     card: "summary",
-    title: "Farhan Z. | Full-Stack Web Developer & UI/UX Designer",
+    title: "Farhan Zulkarnain Harahap — Full-Stack Engineer | Kinetic Systems",
     description:
       "Full-stack web portfolio featuring Next.js projects, UI/UX design, dashboards, certificates, and creative digital experiences.",
   },
@@ -113,7 +117,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <head>
-        <link rel="dns-prefetch" href="https://api2.farhanzulkarnainhrp.com" />
+        <link rel="dns-prefetch" href="https://api.farhanzulkarnainhrp.com" />
       </head>
       <body className="min-h-full flex flex-col">
         <script
@@ -121,9 +125,6 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
         {children}
-        <EntranceIntroLoader />
-        <PageTransitionLoader />
-        <CyberCursorLoader />
       </body>
     </html>
   );

@@ -26,11 +26,15 @@ const sanitizeFileName = (value: string) =>
     .slice(0, 100) || "document";
 
 const getSourceExtension = (sourceUrl: URL, contentType: string) => {
-  const sourceFile = decodeURIComponent(sourceUrl.pathname.split("/").pop() || "");
+  const sourceFile = decodeURIComponent(
+    sourceUrl.pathname.split("/").pop() || "",
+  );
   const match = sourceFile.match(/(\.[a-zA-Z0-9]{1,8})$/);
 
   if (match) return match[1].toLowerCase();
-  return extensionByContentType[contentType.split(";")[0].trim().toLowerCase()] || "";
+  return (
+    extensionByContentType[contentType.split(";")[0].trim().toLowerCase()] || ""
+  );
 };
 
 export async function GET(request: NextRequest) {
@@ -38,7 +42,10 @@ export async function GET(request: NextRequest) {
   const requestedName = request.nextUrl.searchParams.get("name") || "document";
 
   if (!source) {
-    return NextResponse.json({ error: "Document URL is required." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Document URL is required." },
+      { status: 400 },
+    );
   }
 
   let sourceUrl: URL;
@@ -46,7 +53,10 @@ export async function GET(request: NextRequest) {
   try {
     sourceUrl = new URL(source);
   } catch {
-    return NextResponse.json({ error: "Invalid document URL." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid document URL." },
+      { status: 400 },
+    );
   }
 
   const isTrustedCloudinaryFile =
@@ -55,12 +65,16 @@ export async function GET(request: NextRequest) {
     sourceUrl.pathname.startsWith(`/${CLOUDINARY_CLOUD_NAME}/`);
 
   if (!isTrustedCloudinaryFile) {
-    return NextResponse.json({ error: "Document source is not allowed." }, { status: 403 });
+    return NextResponse.json(
+      { error: "Document source is not allowed." },
+      { status: 403 },
+    );
   }
 
   try {
     const upstream = await fetch(sourceUrl, {
       cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
       headers: {
         Accept: "application/pdf,image/*,application/octet-stream",
       },
@@ -73,7 +87,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const contentType = upstream.headers.get("content-type") || "application/octet-stream";
+    const contentType =
+      upstream.headers.get("content-type") || "application/octet-stream";
     const extension = getSourceExtension(sourceUrl, contentType);
     const fileName = `${sanitizeFileName(requestedName)}${extension}`;
     const asciiFallback = `document${extension}`;
