@@ -613,13 +613,10 @@ test("desktop spatial scene renders and responds to capability selection", async
   await expect(page.locator(".graph-spatial .tag-top")).toHaveText("Node.js");
   await page.screenshot({ path: info.outputPath("capability-webgl-1440.png") });
   await expect(canvas).toHaveAttribute("data-persistence-test", "original");
-  await page.locator(".project-spatial").scrollIntoViewIfNeeded();
-  await expect(page.locator(".kinetic-scene-host")).toHaveAttribute(
-    "data-mode",
-    "project",
-  );
+  await page.locator("#work").scrollIntoViewIfNeeded();
+  await expect(page.locator(".project-spatial")).toHaveCount(0);
   await expect(canvas).toHaveAttribute("data-persistence-test", "original");
-  await page.screenshot({ path: info.outputPath("project-webgl-1440.png") });
+  await page.screenshot({ path: info.outputPath("project-browser-1440.png") });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator("canvas")).toHaveCount(0);
   expect(errors).toEqual([]);
@@ -666,7 +663,7 @@ test("failed Blender asset retains usable static artwork", async ({
   await expect(page.locator(".hero [data-rendered=true]")).toHaveCount(0);
 });
 
-test("Blender project carrier opens the project selected in the DOM", async ({
+test("project browser preview opens the project selected in the DOM", async ({
   page,
   context,
 }) => {
@@ -676,19 +673,17 @@ test("Blender project carrier opens the project selected in the DOM", async ({
   await page.locator(".project-list button").nth(1).click();
   await page.mouse.move(0,0);
   const href = await page.locator(".project-summary a").getAttribute("href");
-  await page.locator(".project-spatial").scrollIntoViewIfNeeded();
-  await expect(
-    page.locator(".project-spatial [data-rendered=true]"),
-  ).toHaveCount(1);
-  const canvas = page.locator(".kinetic-scene-host canvas");
-  const box = await canvas.boundingBox();
-  await page.mouse.move(box!.x + box!.width * 0.5, box!.y + box!.height * 0.56);
-  await expect(page.locator(".project-spatial .tag-top")).toContainText(
-    await page.locator(".project-summary h3").innerText(),
+  await expect(page.locator(".project-spatial")).toHaveCount(0);
+  await expect(page.locator(".project-list button").nth(1)).toHaveClass(
+    /selected/,
   );
-  await page.mouse.click(
-    box!.x + box!.width * 0.5,
-    box!.y + box!.height * 0.56,
-  );
+  const selectedTitle = await page
+    .locator(".project-list button")
+    .nth(1)
+    .locator("span")
+    .nth(1)
+    .innerText();
+  await expect(page.locator(".project-summary h3")).toHaveText(selectedTitle);
+  await page.locator(".project-stage .browser-window").click();
   await expect(page).toHaveURL(new RegExp(href! + "$"));
 });

@@ -9,7 +9,6 @@ import {
 } from "./materials/SystemMaterials";
 import SystemCore from "./core/SystemCore";
 import CapabilityNode from "./nodes/CapabilityNode";
-import ProjectNode from "./nodes/ProjectNode";
 import TechStackNode from "./nodes/TechStackNode";
 import DataPaths from "./environment/DataPaths";
 import CodeArchitecture from "./environment/CodeArchitecture";
@@ -43,7 +42,6 @@ function Contents({
         <CapabilityNode key={kind} kind={kind} index={index} />
       ))}
       <TechStackNode />
-      <ProjectNode />
       <PortraitRig />
       <ScrollRunner quality={quality} />
       <DataPaths quality={quality} />

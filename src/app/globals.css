@@ -2293,20 +2293,6 @@ svg {
   position: relative;
   z-index: 2;
 }
-.project-spatial {
-  height: 170px;
-  margin-top: 20px;
-  overflow: hidden;
-}
-.project-spatial .spatial-system {
-  width: 180%;
-  height: 100%;
-  margin-left: -40%;
-}
-.project-spatial .spatial-tag,
-.project-spatial .spatial-caption {
-  display: none;
-}
 @media (max-width: 767px) {
   .graph-spatial {
     display: none;
@@ -2484,13 +2470,8 @@ svg {
 .spatial-system[data-rendered="true"] .spatial-fallback { opacity: 0; }
 .story-spatial { height: 300px; margin: 24px 0; }
 .story-spatial .spatial-system { width: 100%; height: 100%; margin: 0; }
-.project-spatial { height: 290px; }
-.project-spatial .spatial-system { width: 100%; height: 100%; margin: 0; }
 @media (max-width: 767px) { .story-spatial { height: 240px; } }
 .kinetic-scene-host[data-mode="capability"] {
   opacity: .82;
   pointer-events: none;
 }
-
-.project-stage .project-spatial { height: 380px; margin: 0 0 24px; border: 1px solid var(--border); border-radius: 8px; }
-@media(max-width:767px) { .project-stage .project-spatial { height: 280px; } }
