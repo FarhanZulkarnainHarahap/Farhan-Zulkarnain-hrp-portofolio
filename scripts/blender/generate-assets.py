@@ -138,6 +138,26 @@ for i in range(4):
 bar('Status_indicator',.81,-.65,.18,.04,-.08,'SignalMaterial')
 export('project-module')
 
+frame('Portrait_rig',2.3,2.72,.05,.11)
+plate('Portrait_plate',contour(2.04,2.38,.1),.06,(0,.03,0),'PanelMaterial')
+for x,z,w,h,mat in [
+    (-.9,1.03,.24,.05,'SignalMaterial'),(-.58,1.03,.22,.05,'CoreMaterial'),
+    (.74,1.03,.38,.05,'AccentMaterial'),(-.76,-1.02,.5,.06,'LabelMaterial'),
+    (.73,-1.02,.42,.06,'SignalMaterial')]:
+    bar(f'Portrait_marker_{x}_{z}',x,z,w,h,-.09,mat)
+for side in [-1,1]:
+    plate(f'Portrait_fin_{side}',[(side*x,z) for x,z in [(1.02,-1.04),(1.2,-.83),(1.18,.92),(1.03,1.12)]],.08,(0,.02,0),'CoreMaterial')
+export('portrait-card')
+
+plate('Runner_keel',[(-.16,-.72),(.16,-.72),(.33,-.16),(.2,.7),(-.2,.7),(-.33,-.16)],.18,(0,0,0),'CoreMaterial')
+plate('Runner_cabin',[(-.23,-.08),(.23,-.08),(.16,.34),(-.16,.34)],.16,(0,-.08,.05),'SystemMaterial')
+for side in [-1,1]:
+    plate(f'Runner_wing_{side}',[(side*x,z) for x,z in [(.14,-.14),(.88,.08),(.9,.33),(.18,.22)]],.08,(0,.02,-.02),'PanelMaterial')
+    bar(f'Runner_signal_{side}',side*.5,.18,.32,.035,-.08,'SignalMaterial')
+for z in [-.52,.55]:
+    bar(f'Runner_thruster_{z}',0,z,.34,.06,.11,'AccentMaterial')
+export('scroll-runner')
+
 # Twelve related symbols: the requested ten plus infrastructure and creative.
 for kind in ['frontend','backend','database','infrastructure','creative','api','cloud','deployment','architecture','ui','code','performance']:
     if kind in ('frontend','ui'):

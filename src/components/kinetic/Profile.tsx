@@ -1,9 +1,27 @@
 "use client";
 import SpatialSystem from "./SpatialSystem";
 import Link from "next/link";
+import type { PointerEvent } from "react";
 import { Media, Reveal, SectionHeading, SystemIcon } from "./Primitives";
 import { profile } from "./data";
 export default function Profile({ detail = false }: { detail?: boolean }) {
+  const tiltPhoto = (event: PointerEvent<HTMLDivElement>) => {
+    const frame = event.currentTarget;
+    const rect = frame.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    frame.style.setProperty("--tilt-x", `${(-y * 13).toFixed(2)}deg`);
+    frame.style.setProperty("--tilt-y", `${(x * 15).toFixed(2)}deg`);
+    frame.style.setProperty("--tilt-glow-x", `${((x + 0.5) * 100).toFixed(1)}%`);
+    frame.style.setProperty("--tilt-glow-y", `${((y + 0.5) * 100).toFixed(1)}%`);
+  };
+  const resetPhoto = (event: PointerEvent<HTMLDivElement>) => {
+    const frame = event.currentTarget;
+    frame.style.setProperty("--tilt-x", "0deg");
+    frame.style.setProperty("--tilt-y", "0deg");
+    frame.style.setProperty("--tilt-glow-x", "50%");
+    frame.style.setProperty("--tilt-glow-y", "50%");
+  };
   return (
     <section className="section profile-section" id="identity">
       <Reveal>
@@ -19,7 +37,11 @@ export default function Profile({ detail = false }: { detail?: boolean }) {
       <div className="profile-system">
         <div className="profile-record">
           <p className="eyebrow">PROFILE / FZH—001</p>
-          <div className="profile-frame">
+          <div
+            className="profile-frame"
+            onPointerMove={tiltPhoto}
+            onPointerLeave={resetPhoto}
+          >
             <Media src={profile.image} alt="Farhan Zulkarnain Harahap" />
             <span className="photo-marker">MEDAN / INDONESIA</span>
           </div>

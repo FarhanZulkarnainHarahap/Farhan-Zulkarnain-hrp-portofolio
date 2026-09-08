@@ -3,7 +3,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { createHash } from "node:crypto";
 const folder = new URL("../../public/models/", import.meta.url);
 const files = readdirSync(folder).filter((name) => name.endsWith(".glb"));
-assert.equal(files.length, 14);
+assert.equal(files.length, 16);
 const signatures = new Set();
 let total = 0;
 for (const name of files) {
@@ -47,9 +47,15 @@ for (const name of files) {
   if (name === "project-module.glb")
     for (const side of ["left", "right"])
       assert.ok(json.nodes.some((n) => n.name === `Shutter_${side}`));
+  if (name === "portrait-card.glb")
+    for (const mat of ["PanelMaterial", "SignalMaterial", "LabelMaterial"])
+      assert.ok(json.nodes.some((n) => n.name === `portrait-card_${mat}`));
+  if (name === "scroll-runner.glb")
+    for (const mat of ["CoreMaterial", "SignalMaterial", "AccentMaterial"])
+      assert.ok(json.nodes.some((n) => n.name === `scroll-runner_${mat}`));
   signatures.add(createHash("sha256").update(data).digest("hex"));
   console.log(`${name}: ${json.meshes.length} meshes, ${data.length} bytes`);
 }
-assert.equal(signatures.size, 14);
-assert.ok(total < 650000);
+assert.equal(signatures.size, 16);
+assert.ok(total < 760000);
 console.log(`PASS: ${files.length} original assets, ${total} bytes`);

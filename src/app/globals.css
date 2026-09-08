@@ -524,8 +524,13 @@ svg {
 .profile-record {
   padding: 30px;
   border-right: 1px solid var(--border);
+  perspective: 1100px;
 }
 .profile-frame {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --tilt-glow-x: 50%;
+  --tilt-glow-y: 50%;
   margin: 25px 0 20px;
   position: relative;
   padding: 10px;
@@ -537,10 +542,53 @@ svg {
     var(--border) 9px,
     transparent 10px
   );
+  transform-style: preserve-3d;
+  transition:
+    transform 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  will-change: transform;
+}
+.profile-frame:before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--tilt-glow-x) var(--tilt-glow-y),
+    color-mix(in srgb, var(--secondary) 28%, transparent),
+    transparent 45%
+  );
+  mix-blend-mode: screen;
+  transition: opacity 0.28s ease;
+}
+.profile-frame:hover,
+.profile-frame:focus-within {
+  border-color: var(--secondary);
+  box-shadow:
+    0 25px 55px color-mix(in srgb, var(--primary) 18%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--secondary) 40%, transparent);
+}
+.profile-frame:hover:before,
+.profile-frame:focus-within:before {
+  opacity: 1;
 }
 .profile-frame .media {
   aspect-ratio: 1.05;
   filter: saturate(0.6);
+  overflow: hidden;
+  transform: translateZ(34px);
+  transition:
+    transform 0.28s ease,
+    filter 0.28s ease;
+}
+.profile-frame:hover .media,
+.profile-frame:focus-within .media {
+  filter: saturate(0.78) contrast(1.05);
+  transform: translateZ(48px) scale(1.015);
 }
 .profile-frame .media img {
   object-position: center 28%;
@@ -555,6 +603,9 @@ svg {
   letter-spacing: 0.12em;
   background: var(--background);
   padding: 8px 12px;
+  z-index: 3;
+  transform: translateZ(64px);
+  box-shadow: 0 10px 24px color-mix(in srgb, black 35%, transparent);
 }
 .profile-signature {
   color: var(--text);

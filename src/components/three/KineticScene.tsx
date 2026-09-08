@@ -12,6 +12,8 @@ import CapabilityNode from "./nodes/CapabilityNode";
 import ProjectNode from "./nodes/ProjectNode";
 import DataPaths from "./environment/DataPaths";
 import CodeArchitecture from "./environment/CodeArchitecture";
+import PortraitRig from "./environment/PortraitRig";
+import ScrollRunner from "./environment/ScrollRunner";
 import CameraRig from "./camera/CameraRig";
 import { CAPABILITIES } from "./controllers/layouts";
 import { useScene } from "@/components/kinetic/SceneState";
@@ -40,6 +42,8 @@ function Contents({
         <CapabilityNode key={kind} kind={kind} index={index} />
       ))}
       <ProjectNode />
+      <PortraitRig />
+      <ScrollRunner quality={quality} />
       <DataPaths quality={quality} />
       <CodeArchitecture quality={quality} />
     </>
