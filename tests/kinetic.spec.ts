@@ -213,6 +213,7 @@ test("public routes, project preview, and all requested responsive widths", asyn
   }
   await page.goto("/projects");
   await page.locator(".project-list button").nth(1).click();
+  await page.mouse.move(0,0);
   await expect(page.locator(".project-summary h3")).toHaveText(
     projectsFixture.data[1].title,
   );
@@ -433,7 +434,7 @@ test("reduced motion and unavailable WebGL retain the system graphic", async ({
   });
   await page.goto("/");
   await expect(page.locator(".hero .spatial-fallback img")).toBeVisible();
-  await expect(page.locator(".hero canvas")).toHaveCount(0);
+  await expect(page.locator(".kinetic-scene-host canvas")).toHaveCount(0);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   const response = await page.goto("/missing-kinetic-node");
   expect(response?.status()).toBe(404);
@@ -588,8 +589,12 @@ test("desktop spatial scene renders and responds to capability selection", async
   page.on("pageerror", (error) => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
-  await expect(page.locator(".hero canvas")).toBeVisible();
-  const canvas = page.locator(".hero canvas");
+  await expect(page.locator(".kinetic-scene-host canvas")).toBeVisible();
+  const canvas = page.locator(".kinetic-scene-host canvas");
+  await expect(page.locator(".hero [data-rendered=true]")).toHaveCount(1);
+  await canvas.evaluate((el) =>
+    el.setAttribute("data-persistence-test", "original"),
+  );
   const box = await canvas.boundingBox();
   await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
   await page.mouse.down();
@@ -601,11 +606,89 @@ test("desktop spatial scene renders and responds to capability selection", async
   await page.mouse.up();
   await page.screenshot({ path: info.outputPath("hero-webgl-1440.png") });
   await page.getByRole("tab", { name: /Backend/ }).click();
-  await expect(page.locator(".capability-graph canvas")).toBeVisible();
+  await expect(
+    page.locator(".kinetic-scene-host[data-mode=capability] canvas"),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Node.js", exact: true }).hover();
   await expect(page.locator(".graph-spatial .tag-top")).toHaveText("Node.js");
   await page.screenshot({ path: info.outputPath("capability-webgl-1440.png") });
+  await expect(canvas).toHaveAttribute("data-persistence-test", "original");
+  await page.locator(".project-spatial").scrollIntoViewIfNeeded();
+  await expect(page.locator(".kinetic-scene-host")).toHaveAttribute(
+    "data-mode",
+    "project",
+  );
+  await expect(canvas).toHaveAttribute("data-persistence-test", "original");
+  await page.screenshot({ path: info.outputPath("project-webgl-1440.png") });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator("canvas")).toHaveCount(0);
   expect(errors).toEqual([]);
+});
+
+test("mobile low quality keeps one canvas and recovers with artwork after context loss", async ({
+  page,
+  context,
+}, info) => {
+  await mockApi(context);
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "hardwareConcurrency", { get: () => 4 });
+    Object.defineProperty(navigator, "deviceMemory", { get: () => 4 });
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  const host = page.locator(".kinetic-scene-host"),
+    canvas = host.locator("canvas");
+  await expect(host).toHaveAttribute("data-quality", "low");
+  await expect(page.locator(".hero [data-rendered=true]")).toHaveCount(1);
+  await expect(canvas).toHaveCount(1);
+  await page.screenshot({ path: info.outputPath("blender-mobile-low.png") });
+  await canvas.evaluate((el) =>
+    el.dispatchEvent(new Event("webglcontextlost")),
+  );
+  await expect(canvas).toHaveCount(0);
+  await expect(page.locator(".hero [data-rendered=true]")).toHaveCount(0);
+  await expect(page.locator(".hero .spatial-fallback img")).toBeVisible();
+});
+
+test("failed Blender asset retains usable static artwork", async ({
+  page,
+  context,
+}) => {
+  await mockApi(context);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.route("**/models/system-core.glb", (route) =>
+    route.fulfill({ status: 503, body: "Unavailable" }),
+  );
+  await page.goto("/");
+  await expect(page.locator(".hero .spatial-fallback img")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.locator(".hero [data-rendered=true]")).toHaveCount(0);
+});
+
+test("Blender project carrier opens the project selected in the DOM", async ({
+  page,
+  context,
+}) => {
+  await mockApi(context);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/projects");
+  await page.locator(".project-list button").nth(1).click();
+  await page.mouse.move(0,0);
+  const href = await page.locator(".project-summary a").getAttribute("href");
+  await page.locator(".project-spatial").scrollIntoViewIfNeeded();
+  await expect(
+    page.locator(".project-spatial [data-rendered=true]"),
+  ).toHaveCount(1);
+  const canvas = page.locator(".kinetic-scene-host canvas");
+  const box = await canvas.boundingBox();
+  await page.mouse.move(box!.x + box!.width * 0.5, box!.y + box!.height * 0.56);
+  await expect(page.locator(".project-spatial .tag-top")).toContainText(
+    await page.locator(".project-summary h3").innerText(),
+  );
+  await page.mouse.click(
+    box!.x + box!.width * 0.5,
+    box!.y + box!.height * 0.56,
+  );
+  await expect(page).toHaveURL(new RegExp(href! + "$"));
 });

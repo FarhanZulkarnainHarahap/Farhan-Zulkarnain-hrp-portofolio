@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
+import SceneHost from "../three/controllers/SceneHost";
 import Navbar from "@/components/Navbar";
 import { SceneProvider } from "./SceneState";
 import { profile } from "./data";
@@ -104,6 +105,7 @@ export default function Shell({ children }: { children: ReactNode }) {
           {children}
         </motion.div>
       </main>
+      <SceneHost />
       <Footer />
       <Cursor />
     </SceneProvider>

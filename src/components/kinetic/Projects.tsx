@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect } from "react";
 import SpatialSystem from "./SpatialSystem";
 import type { Project } from "@/services/api";
 import { getProjectSlug } from "@/lib/portfolio/projects";
@@ -13,8 +13,10 @@ export default function Projects({
   selectedOnly?: boolean;
 }) {
   const state = useCollection<Project>("/api/portofolios");
-  const [selected, setSelected] = useState(0);
-  const { setMode, setActive } = useScene();
+  const { selected, setSelected, setProjects, setMode, setActive } = useScene();
+  useEffect(() => {
+    setProjects(selectedOnly ? state.data.slice(0, 4) : state.data);
+  }, [state.data, selectedOnly, setProjects]);
   const projects = selectedOnly ? state.data.slice(0, 4) : state.data;
   const current = projects[Math.min(selected, projects.length - 1)];
   return (
@@ -55,6 +57,9 @@ export default function Projects({
             ))}
           </div>
           <div className="project-stage">
+            <div className="project-spatial">
+              <SpatialSystem mode="project" />
+            </div>
             <Link
               className="browser-window"
               href={`/projects/${getProjectSlug(current)}`}
@@ -130,9 +135,6 @@ export default function Projects({
                   Source code ↗
                 </a>
               )}
-            </div>
-            <div className="project-spatial">
-              <SpatialSystem />
             </div>
           </aside>
         </div>

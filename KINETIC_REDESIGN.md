@@ -36,7 +36,7 @@ Existing user edits in `web/LICENSE` and `api/src/app.ts` were preserved.
 - Public GET requests use a server-side whitelist of four resources and the configured primary API. This avoids browser CORS failures during local public-page development. Auth and mutations continue to use backend credentials directly.
 - Requests have timeouts; failures expose retry or a clear form/route error. Failed contact requests never display success.
 - Case studies only display stored content. The empty experience collection falls back to milestones already present in the original profile, without invented dates.
-- Three.js is dynamically loaded only for visible desktop scenes. Hidden scenes unmount/pause, DPR is capped, and mobile/reduced-motion/failed-WebGL use SVG. Capability/project state affects connections; the hero supports drag.
+- Three.js uses one persistent Canvas and 14 original Blender assets (587,512 bytes combined). Hidden scenes pause. Camera, node transforms, and spline geometry interpolate with section/selection state. Mobile uses reduced geometry and simple signal materials; reduced-motion, low-end hardware, failed assets, and lost WebGL use the FZ SVG. Project modules unfold on hover and navigate to the selected real project. Editable `.blend` files and the generator are documented in `assets/blender/README.md`.
 - Cloudinary images use responsive widths and automatic formats. Invalid/failed sources have a fallback. Admin icons use an explicit catalog instead of importing entire libraries.
 
 ## Verification
@@ -45,7 +45,9 @@ Existing user edits in `web/LICENSE` and `api/src/app.ts` were preserved.
 - `npm run build`: production frontend build passed.
 - Backend build: Prisma generation, TypeScript, and runtime asset packaging passed.
 - `npm run test:guards`: two backend authorization regressions passed without invoking database mutations.
-- `npm run test:e2e`: all 10 browser tests passed in the final run.
+- Browser verification: 12 of 13 scenarios passed in the full run. After correcting the project navigation test’s pointer position and capturing the destination at click time, both affected scenarios (project navigation and persistent desktop scene) passed on the final build. All 13 scenarios are covered across these runs.
+- `node scripts/qa/check-models.mjs`: all 14 GLB files passed structure, vertex, material, uniqueness, animation-target, and size checks.
+- Blender-specific browser checks cover mobile low quality, lost WebGL, failed model loading, persistent Canvas identity, and navigation from the selected project carrier.
 - Browser suite covers public/auth/admin routes, widths 360/390/430/768/1024/1280/1440/1920, keyboard navigation, API failure/retry, contact success/failure, JWT protection, supported CRUD contracts, WebGL/fallback/reduced motion, and live public API/project/CV reads.
 - Local browser reports and screenshots: `.qa/report/` and `.qa/results/`. Per-file change manifest: `.qa/change-manifest.json`.
 

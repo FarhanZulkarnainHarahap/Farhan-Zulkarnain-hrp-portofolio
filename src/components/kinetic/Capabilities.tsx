@@ -101,7 +101,7 @@ export default function Capabilities() {
             aria-labelledby={`tab-${selected}`}
           >
             <div className="graph-spatial">
-              <SpatialSystem />
+              <SpatialSystem mode="capability" />
             </div>
             <div className="graph-core">
               <SystemIcon kind="capability" />

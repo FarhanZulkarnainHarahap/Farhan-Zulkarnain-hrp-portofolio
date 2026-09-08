@@ -1,4 +1,5 @@
 "use client";
+import SpatialSystem from "./SpatialSystem";
 import Link from "next/link";
 import { Media, Reveal, SectionHeading, SystemIcon } from "./Primitives";
 import { profile } from "./data";
@@ -12,6 +13,9 @@ export default function Profile({ detail = false }: { detail?: boolean }) {
           title="The person behind the system."
         />
       </Reveal>
+      <div className="story-spatial">
+        <SpatialSystem mode="identity" />
+      </div>
       <div className="profile-system">
         <div className="profile-record">
           <p className="eyebrow">PROFILE / FZH—001</p>

@@ -43,3 +43,7 @@ next-env.d.ts
 
 # Local browser QA artifacts
 .qa/
+
+# Blender Python build cache
+__pycache__/
+*.blend1

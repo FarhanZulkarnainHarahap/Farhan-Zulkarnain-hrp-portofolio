@@ -1,4 +1,5 @@
 "use client";
+import SpatialSystem from "./SpatialSystem";
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CollectionState, SectionHeading, SystemIcon } from "./Primitives";
@@ -59,6 +60,9 @@ export default function Trajectory() {
     : milestones;
   return (
     <section className="section trajectory" id="trajectory">
+      <div className="story-spatial">
+        <SpatialSystem mode="trajectory" />
+      </div>
       <SectionHeading
         number="03"
         label="TRAJECTORY MAP"

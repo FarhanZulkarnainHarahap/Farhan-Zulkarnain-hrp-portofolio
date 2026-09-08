@@ -24,7 +24,7 @@ Copy `.env.example` to `.env` and configure the API origin and server-only JWT s
 - `src/proxy.ts` verifies JWTs and enforces ADMIN for both `/admin/*` aliases and `/dashboard/admin/*` routes. Admin layouts also verify the profile with the backend.
 - Project details render only stored fields. Journey uses existing profile milestones when no dated experiences are published; it does not invent dates.
 - Cloudinary image previews use responsive `srcset` widths and automatic formats through a Next Image loader. Invalid or failed images show a local fallback.
-- Three.js is loaded on demand for visible desktop scenes. It pauses when hidden and uses SVG on mobile, reduced motion, or WebGL failure. Context connects capability/project selection and trajectory state to the architecture scene.
+- Three.js renders original Blender assets through one persistent Canvas shared by the six scroll states. Desktop, tablet, and mobile have separate quality levels; reduced motion, low-end hardware, failed models, or lost WebGL use authored SVG. DOM capability/project selection drives the models and camera. See [Blender asset pipeline](assets/blender/README.md) for editable sources and regeneration commands.
 
 ## Supported admin operations
 

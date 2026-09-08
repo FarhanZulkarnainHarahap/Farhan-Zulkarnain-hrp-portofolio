@@ -2426,3 +2426,17 @@ svg {
     display: none;
   }
 }
+
+/* One persistent renderer follows the visible architecture illustration. */
+.kinetic-scene-host { position: fixed; z-index: 12; visibility: hidden; touch-action: pan-y; }
+.kinetic-scene-host canvas { touch-action: pan-y; }
+.spatial-system[data-rendered="true"] .spatial-fallback { opacity: 0; }
+.story-spatial { height: 300px; margin: 24px 0; }
+.story-spatial .spatial-system { width: 100%; height: 100%; margin: 0; }
+.project-spatial { height: 290px; }
+.project-spatial .spatial-system { width: 100%; height: 100%; margin: 0; }
+@media (max-width: 767px) { .story-spatial { height: 240px; } }
+.kinetic-scene-host[data-mode="capability"] { opacity: .24; }
+
+.project-stage .project-spatial { height: 380px; margin: 0 0 24px; border: 1px solid var(--border); border-radius: 8px; }
+@media(max-width:767px) { .project-stage .project-spatial { height: 280px; } }

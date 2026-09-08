@@ -1,4 +1,5 @@
 "use client";
+import SpatialSystem from "./SpatialSystem";
 import { useState, type FormEvent } from "react";
 import { apiFetch } from "@/lib/api-client";
 import { profile } from "./data";
@@ -77,11 +78,8 @@ export default function Contact() {
           <a className="contact-email" href={`mailto:${profile.email}`}>
             {profile.email} ↗
           </a>
-          <div className="transmission-graphic" aria-hidden="true">
-            <div />
-            <div />
-            <div />
-            <SystemIcon kind="signal" />
+          <div className="story-spatial">
+            <SpatialSystem mode="signal" />
           </div>
           <span className="eyebrow">
             <span className="status-dot" /> OPEN CHANNEL / MEDAN, INDONESIA
