@@ -10,6 +10,7 @@ import {
 import SystemCore from "./core/SystemCore";
 import CapabilityNode from "./nodes/CapabilityNode";
 import ProjectNode from "./nodes/ProjectNode";
+import TechStackNode from "./nodes/TechStackNode";
 import DataPaths from "./environment/DataPaths";
 import CodeArchitecture from "./environment/CodeArchitecture";
 import PortraitRig from "./environment/PortraitRig";
@@ -41,6 +42,7 @@ function Contents({
       {CAPABILITIES.slice(0, quality === "low" ? 3 : 5).map((kind, index) => (
         <CapabilityNode key={kind} kind={kind} index={index} />
       ))}
+      <TechStackNode />
       <ProjectNode />
       <PortraitRig />
       <ScrollRunner quality={quality} />

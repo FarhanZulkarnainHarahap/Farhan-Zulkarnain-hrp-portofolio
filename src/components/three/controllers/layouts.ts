@@ -48,3 +48,33 @@ export function activeCapability(label: string): SymbolKind | undefined {
   if (/backend|node|express|nest|bun|api/.test(name)) return "backend";
   return undefined;
 }
+
+const techAssets: Record<string, string> = {
+  aws: "tech-aws",
+  bun: "tech-bun",
+  css: "tech-css",
+  docker: "tech-docker",
+  express: "tech-express",
+  figma: "tech-figma",
+  github: "tech-github",
+  javascript: "tech-javascript",
+  mongodb: "tech-mongodb",
+  nestjs: "tech-nestjs",
+  "next.js": "tech-nextjs",
+  nextjs: "tech-nextjs",
+  "node.js": "tech-nodejs",
+  nodejs: "tech-nodejs",
+  postgresql: "tech-postgresql",
+  prisma: "tech-prisma",
+  react: "tech-react",
+  redux: "tech-redux",
+  supabase: "tech-supabase",
+  tailwindcss: "tech-tailwindcss",
+  typescript: "tech-typescript",
+  vercel: "tech-vercel",
+  visualstudio: "tech-visualstudio",
+};
+
+export function techAssetName(label: string) {
+  return techAssets[label.toLowerCase().replace(/\s+/g, "")] || null;
+}

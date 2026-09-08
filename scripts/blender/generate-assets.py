@@ -90,6 +90,101 @@ def frame(name, w, h, y=0, rim=.09):
         plate(f'{name}_{i}', [outer[i],outer[j],inner[j],inner[i]], .12, (0,y,0))
 
 
+def ring(name, radius=.38, width=.055, segments=24, y=0, mat='SignalMaterial'):
+    for i in range(segments):
+        a,b = i*math.tau/segments,(i+1)*math.tau/segments-.02
+        points=[(r*math.cos(t),r*math.sin(t)) for r,t in [(radius,a),(radius,b),(radius-width,b),(radius-width,a)]]
+        plate(f'{name}_{i}',points,.08,(0,y,0),mat)
+
+
+def diamond(name, scale=.52, y=0, mat='CoreMaterial'):
+    plate(name,[(0,scale),(scale*.78,0),(0,-scale),(-scale*.78,0)],.12,(0,y,0),mat)
+
+
+def tech_base(name):
+    frame(f'{name}_frame',1.18,.86,.04,.08)
+    bar(f'{name}_rail_top',0,.48,.75,.035,-.11,'SignalMaterial')
+    bar(f'{name}_rail_bottom',0,-.48,.75,.035,-.11,'AccentMaterial')
+
+
+def tech_badge(name, style):
+    tech_base(name)
+    if style == 'atom':
+        for i,rot in enumerate([0,math.pi/3,-math.pi/3]):
+            ring(f'{name}_orbit_{i}',.34,.025,10,-.08,'SignalMaterial')
+            for obj in bpy.context.scene.objects:
+                if obj.name.startswith(f'{name}_orbit_{i}_'): obj.rotation_euler.y = rot
+        diamond(f'{name}_core',.14,-.17,'LabelMaterial')
+    elif style == 'redux':
+        for i,(x,z) in enumerate([(-.28,-.2),(.3,-.08),(-.02,.24)]):
+            diamond(f'{name}_state_{i}',.16,-.1,'AccentMaterial')
+            bpy.context.object.location.x += x; bpy.context.object.location.z += z
+        for i,z in enumerate([-.27,.02,.31]): bar(f'{name}_flow_{i}',0,z,.72,.025,-.16,'SignalMaterial')
+    elif style == 'css':
+        plate(f'{name}_shield',[(-.34,.32),(.34,.32),(.27,-.28),(0,-.46),(-.27,-.28)],.14,(0,-.1,0),'CoreMaterial')
+        for z in [.14,-.04,-.22]: bar(f'{name}_rule_{z}',0,z,.38,.045,-.2,'LabelMaterial')
+    elif style == 'tailwind':
+        for i,z in enumerate([.18,0,-.18]):
+            plate(f'{name}_wave_{i}',[(-.42,z),(-.1,z+.12),(.12,z-.02),(.42,z+.08),(.42,z-.02),(.1,z-.12),(-.12,z+.02),(-.42,z-.08)],.1,(0,-.1,0),'SignalMaterial')
+    elif style == 'next':
+        plate(f'{name}_n',[(-.36,-.36),(-.18,-.36),(.24,.12),(.24,-.36),(.42,-.36),(.42,.36),(.22,.36),(-.18,-.12),(-.18,.36),(-.36,.36)],.14,(0,-.1,0),'LabelMaterial')
+    elif style == 'node':
+        for i in range(6):
+            a=i*math.tau/6
+            diamond(f'{name}_hex_{i}',.13,-.1,'CoreMaterial')
+            bpy.context.object.location.x += math.cos(a)*.33; bpy.context.object.location.z += math.sin(a)*.25
+        diamond(f'{name}_hub',.16,-.18,'SignalMaterial')
+    elif style == 'server':
+        for i,z in enumerate([.22,0,-.22]):
+            bar(f'{name}_rack_{i}',0,z,.72,.13,-.1,'SystemMaterial')
+            bar(f'{name}_port_{i}',-.3,z,.07,.035,-.18,'SignalMaterial')
+    elif style == 'nest':
+        ring(f'{name}_ring',.36,.06,12,-.1,'AccentMaterial')
+        diamond(f'{name}_module_a',.19,-.17,'CoreMaterial')
+        bar(f'{name}_module_b',.2,-.08,.2,.2,-.16,'SignalMaterial')
+    elif style == 'bun':
+        ring(f'{name}_bun',.34,.1,12,-.1,'LabelMaterial')
+        for x,z in [(-.12,.06),(.12,.06),(0,-.1)]: diamond(f'{name}_seed_{x}_{z}',.07,-.19,'AccentMaterial'); bpy.context.object.location.x += x; bpy.context.object.location.z += z
+    elif style == 'database':
+        for layer,z in enumerate([.24,0,-.24]):
+            ring(f'{name}_disk_{layer}',.36,.08,12,-.1,'SignalMaterial' if layer == 0 else 'CoreMaterial')
+            for obj in bpy.context.scene.objects:
+                if obj.name.startswith(f'{name}_disk_{layer}_'): obj.scale.z = .35; obj.location.z += z
+    elif style == 'prisma':
+        plate(f'{name}_prism',[(-.13,-.4),(.34,-.18),(.12,.42),(-.34,.18)],.16,(0,-.1,0),'CoreMaterial')
+        plate(f'{name}_prism_cut',[(-.03,-.19),(.16,-.1),(.08,.16),(-.17,.08)],.08,(0,-.2,0),'SignalMaterial')
+    elif style == 'supabase':
+        plate(f'{name}_bolt_a',[(-.05,.42),(.32,.04),(.08,.04),(.2,-.42),(-.32,-.02),(-.08,-.02)],.16,(0,-.1,0),'SignalMaterial')
+    elif style == 'cloud':
+        frame(f'{name}_cloud_frame',.82,.38,-.08,.07)
+        for x,z,w,h in [(-.24,.14,.28,.2),(.08,.22,.34,.27),(.27,.08,.22,.18)]:
+            bar(f'{name}_cloud_{x}_{z}',x,z,w,h,-.16,'CoreMaterial')
+    elif style == 'vercel':
+        plate(f'{name}_triangle',[(0,.43),(.44,-.34),(-.44,-.34)],.14,(0,-.1,0),'LabelMaterial')
+    elif style == 'docker':
+        for row,z,count in [(0,-.16,4),(1,.02,3),(2,.2,2)]:
+            for i in range(count): bar(f'{name}_container_{row}_{i}',(i-(count-1)/2)*.19,z,.15,.12,-.12,'CoreMaterial')
+        plate(f'{name}_bow',[(-.45,-.25),(.42,-.25),(.27,-.38),(-.3,-.38)],.1,(0,-.1,0),'SignalMaterial')
+    elif style == 'github':
+        ring(f'{name}_repo',.34,.08,12,-.1,'LabelMaterial')
+        for x in [-.18,.18]: diamond(f'{name}_branch_{x}',.08,-.19,'SignalMaterial'); bpy.context.object.location.x += x; bpy.context.object.location.z += .04
+        bar(f'{name}_merge',0,-.12,.42,.035,-.18,'SignalMaterial')
+    elif style == 'typescript':
+        bar(f'{name}_t',-.12,.18,.44,.07,-.15,'LabelMaterial')
+        bar(f'{name}_stem',-.12,-.04,.08,.44,-.15,'LabelMaterial')
+        for z in [.18,-.02,-.22]: bar(f'{name}_s',.22,z,.28,.055,-.15,'SignalMaterial')
+    elif style == 'javascript':
+        bar(f'{name}_j',-.15,0,.09,.5,-.15,'LabelMaterial')
+        bar(f'{name}_j_base',-.25,-.27,.22,.07,-.15,'LabelMaterial')
+        for z in [.18,-.02,-.22]: bar(f'{name}_script_{z}',.2,z,.32,.05,-.15,'SignalMaterial')
+    elif style == 'figma':
+        for i,(x,z,mat) in enumerate([(-.13,.22,'AccentMaterial'),(.13,.22,'SignalMaterial'),(-.13,0,'CoreMaterial'),(.13,0,'LabelMaterial'),(-.13,-.22,'AccentMaterial')]):
+            plate(f'{name}_petal_{i}',contour(.2,.2,.07),.12,(x,-.12,z),mat)
+    elif style == 'editor':
+        plate(f'{name}_editor',[(-.42,.3),(-.12,.44),(.36,.14),(.36,-.28),(-.24,-.42),(-.42,-.2)],.13,(0,-.1,0),'CoreMaterial')
+        for z in [.14,-.02,-.18]: bar(f'{name}_line_{z}',.06,z,.44,.035,-.18,'SignalMaterial')
+
+
 def export(name):
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
@@ -203,4 +298,14 @@ for kind in ['frontend','backend','database','infrastructure','creative','api','
         for i in range(3): bar(f'Throughput_{i}',(i-1)*.28,-.2+i*.12,.16,.3+i*.24)
         bar('Throughput_bus',0,-.4,.88,.04,mat='SignalMaterial')
     export(f'symbol-{kind}')
+
+for tech, style in [
+    ('react','atom'),('redux','redux'),('css','css'),('tailwindcss','tailwind'),
+    ('nextjs','next'),('nodejs','node'),('express','server'),('nestjs','nest'),
+    ('bun','bun'),('postgresql','database'),('mongodb','database'),('prisma','prisma'),
+    ('supabase','supabase'),('aws','cloud'),('vercel','vercel'),('docker','docker'),
+    ('github','github'),('typescript','typescript'),('javascript','javascript'),
+    ('figma','figma'),('visualstudio','editor')]:
+    tech_badge(f'tech_{tech}', style)
+    export(f'tech-{tech}')
 print('FARHAN_ASSETS_READY', str(out))

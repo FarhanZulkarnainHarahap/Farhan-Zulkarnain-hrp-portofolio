@@ -4,15 +4,20 @@ import { useFrame } from "@react-three/fiber";
 import { Group, MathUtils } from "three";
 import BlenderAsset from "../BlenderAsset";
 import { useScene } from "@/components/kinetic/SceneState";
+import { techAssetName } from "../controllers/layouts";
 export default function SystemCore() {
   const root = useRef<Group>(null);
-  const { mode } = useScene();
+  const { mode, active } = useScene();
   useFrame(({ clock, pointer }, dt) => {
     if (!root.current) return;
     const delta = Math.min(dt, 0.05);
     const target =
       mode === "project"
         ? 0.35
+        : mode === "capability"
+          ? techAssetName(active)
+            ? 0.06
+            : 0.42
         : mode === "trajectory"
           ? 0.62
           : mode === "signal"
@@ -25,6 +30,8 @@ export default function SystemCore() {
       root.current.position.y,
       mode === "project"
         ? 1.7
+        : mode === "capability"
+          ? 0.62
         : mode === "system"
           ? pointer.y * 0.22
           : 0,

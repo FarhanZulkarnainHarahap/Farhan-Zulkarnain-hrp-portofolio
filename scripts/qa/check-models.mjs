@@ -3,7 +3,46 @@ import { readFileSync, readdirSync } from "node:fs";
 import { createHash } from "node:crypto";
 const folder = new URL("../../public/models/", import.meta.url);
 const files = readdirSync(folder).filter((name) => name.endsWith(".glb"));
-assert.equal(files.length, 16);
+const required = [
+  "portrait-card.glb",
+  "project-module.glb",
+  "scroll-runner.glb",
+  "system-core.glb",
+  "symbol-api.glb",
+  "symbol-architecture.glb",
+  "symbol-backend.glb",
+  "symbol-cloud.glb",
+  "symbol-code.glb",
+  "symbol-creative.glb",
+  "symbol-database.glb",
+  "symbol-deployment.glb",
+  "symbol-frontend.glb",
+  "symbol-infrastructure.glb",
+  "symbol-performance.glb",
+  "symbol-ui.glb",
+  "tech-aws.glb",
+  "tech-bun.glb",
+  "tech-css.glb",
+  "tech-docker.glb",
+  "tech-express.glb",
+  "tech-figma.glb",
+  "tech-github.glb",
+  "tech-javascript.glb",
+  "tech-mongodb.glb",
+  "tech-nestjs.glb",
+  "tech-nextjs.glb",
+  "tech-nodejs.glb",
+  "tech-postgresql.glb",
+  "tech-prisma.glb",
+  "tech-react.glb",
+  "tech-redux.glb",
+  "tech-supabase.glb",
+  "tech-tailwindcss.glb",
+  "tech-typescript.glb",
+  "tech-vercel.glb",
+  "tech-visualstudio.glb",
+];
+assert.deepEqual(files.toSorted(), required.toSorted());
 const signatures = new Set();
 let total = 0;
 for (const name of files) {
@@ -56,6 +95,6 @@ for (const name of files) {
   signatures.add(createHash("sha256").update(data).digest("hex"));
   console.log(`${name}: ${json.meshes.length} meshes, ${data.length} bytes`);
 }
-assert.equal(signatures.size, 16);
-assert.ok(total < 760000);
+assert.equal(signatures.size, required.length);
+assert.ok(total < 2300000);
 console.log(`PASS: ${files.length} original assets, ${total} bytes`);

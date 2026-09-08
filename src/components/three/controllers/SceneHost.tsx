@@ -84,7 +84,15 @@ export default function SceneHost() {
           0,
           Math.min(r.bottom, innerHeight) - Math.max(r.top, 0),
         );
-        const value = visible / Math.max(r.height, 1);
+        const center = r.top + r.height / 2;
+        const proximity =
+          1 -
+          Math.min(
+            Math.abs(center - innerHeight / 2) / Math.max(innerHeight / 2, 1),
+            1,
+          );
+        const value =
+          (visible / Math.max(r.height, 1)) * 0.55 + proximity * 0.45;
         if (r.width > 0 && value > score) {
           score = value;
           best = slot;
