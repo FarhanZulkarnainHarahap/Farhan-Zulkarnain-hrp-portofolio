@@ -1,0 +1,24 @@
+{
+  "blender": "4.5.3 LTS",
+  "desktop": {
+    "triangles": 52076,
+    "mesh_objects": 31,
+    "nodes": 43,
+    "materials": 6,
+    "bytes": 3226232,
+    "file": "public/models/fzh-kinetic-core/FZH_Hero_Kinetic_Core.glb"
+  },
+  "mobile": {
+    "triangles": 20844,
+    "mesh_objects": 31,
+    "nodes": 43,
+    "materials": 6,
+    "bytes": 1208460,
+    "file": "public/models/fzh-kinetic-core/FZH_Hero_Kinetic_Core_LOD.glb"
+  },
+  "animations": {
+    "idle": 10,
+    "core_pulse": 3,
+    "boot": 3
+  }
+}

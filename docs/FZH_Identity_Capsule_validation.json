@@ -1,0 +1,38 @@
+[
+  {
+    "file": "public/models/fzh-identity-capsule/FZH_About_Identity_Capsule.glb",
+    "bytes": 1526876,
+    "triangles": 22594,
+    "mesh_objects": 33,
+    "nodes": 48,
+    "materials": 7,
+    "dimensions": [
+      1.7545910228073587,
+      2.7100000381469727,
+      0.8381550855938733
+    ],
+    "animations": {
+      "idle": 10,
+      "identity_scan": 3
+    },
+    "result": "PASS: Three.js GLTFLoader, AnimationMixer, geometry, materials, hierarchy, loop endpoints, budgets, portrait UV/orientation, alpha glass, exact shared materials"
+  },
+  {
+    "file": "public/models/fzh-identity-capsule/FZH_About_Identity_Capsule_LOD.glb",
+    "bytes": 564568,
+    "triangles": 9026,
+    "mesh_objects": 33,
+    "nodes": 48,
+    "materials": 7,
+    "dimensions": [
+      1.7545910228073587,
+      2.7100000381469727,
+      0.8381550855938733
+    ],
+    "animations": {
+      "idle": 10,
+      "identity_scan": 3
+    },
+    "result": "PASS: Three.js GLTFLoader, AnimationMixer, geometry, materials, hierarchy, loop endpoints, budgets, portrait UV/orientation, alpha glass, exact shared materials"
+  }
+]

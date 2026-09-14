@@ -1,0 +1,40 @@
+[
+  {
+    "file": "public/models/fzh-kinetic-core/FZH_Hero_Kinetic_Core.glb",
+    "bytes": 3226232,
+    "triangles": 52076,
+    "mesh_objects": 31,
+    "nodes": 43,
+    "materials": 6,
+    "dimensions": [
+      3.568168878555298,
+      3.568168878555298,
+      2.0768163953495353
+    ],
+    "animations": {
+      "idle": 10,
+      "core_pulse": 3,
+      "boot": 3
+    },
+    "result": "PASS: Three.js GLTFLoader, AnimationMixer, geometry, materials, hierarchy, loop endpoints, budgets"
+  },
+  {
+    "file": "public/models/fzh-kinetic-core/FZH_Hero_Kinetic_Core_LOD.glb",
+    "bytes": 1208460,
+    "triangles": 20844,
+    "mesh_objects": 31,
+    "nodes": 43,
+    "materials": 6,
+    "dimensions": [
+      3.567943572998047,
+      3.567943572998047,
+      2.0768163953495353
+    ],
+    "animations": {
+      "idle": 10,
+      "core_pulse": 3,
+      "boot": 3
+    },
+    "result": "PASS: Three.js GLTFLoader, AnimationMixer, geometry, materials, hierarchy, loop endpoints, budgets"
+  }
+]

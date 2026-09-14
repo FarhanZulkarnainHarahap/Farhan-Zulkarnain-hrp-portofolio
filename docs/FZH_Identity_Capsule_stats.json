@@ -1,0 +1,32 @@
+{
+  "blender": "4.5.3 LTS",
+  "desktop": {
+    "triangles": 22594,
+    "mesh_objects": 33,
+    "nodes": 48,
+    "materials": 7,
+    "file": "public/models/fzh-identity-capsule/FZH_About_Identity_Capsule.glb",
+    "bytes": 1526876
+  },
+  "mobile": {
+    "triangles": 9026,
+    "mesh_objects": 33,
+    "nodes": 48,
+    "materials": 7,
+    "file": "public/models/fzh-identity-capsule/FZH_About_Identity_Capsule_LOD.glb",
+    "bytes": 564568
+  },
+  "animations": {
+    "idle": 10,
+    "identity_scan": 3
+  },
+  "portrait": {
+    "mesh": "Portrait_Plane",
+    "ratio": "4:5",
+    "pixels": [
+      1024,
+      1280
+    ]
+  },
+  "asset01_blend_sha256": "49be45126cb77d69878c58a957ea6e759052acc447628c8c5178cb9dee38fe61"
+}

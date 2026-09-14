@@ -1,0 +1,29 @@
+{
+  "renderer": "Chromium SwiftShader (software WebGL)",
+  "results": [
+    {
+      "variant": "desktop",
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 10
+        },
+        {
+          "name": "identity_scan",
+          "duration": 3
+        }
+      ],
+      "drawCalls": 34,
+      "triangles": 22814,
+      "portraitMapped": true
+    },
+    {
+      "variant": "mobile",
+      "drawCalls": 34,
+      "triangles": 9118,
+      "portraitMapped": true
+    }
+  ],
+  "reducedMotion": "PASS: static on load",
+  "pageErrors": []
+}

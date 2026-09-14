@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FZH / Core 01 asset review</title>
+<style>body{margin:0;background:#10171e;color:#aebfca;font:14px system-ui}canvas{display:block;width:100%;height:100%}main{height:85vh}header{padding:20px;display:flex;gap:20px;align-items:center}button,select{background:#1c2933;border:1px solid #445363;color:inherit;padding:8px}#status{font-size:12px}</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script></head>
+<body><header><strong>FZH / KINETIC SYSTEM / CORE-01</strong><select id="quality"><option value="">Desktop</option><option value="_LOD">Mobile LOD</option></select><button id="motion">Pause</button><span id="status">Loading</span></header><main id="viewer"></main>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+const viewer=document.querySelector('#viewer'),status=document.querySelector('#status');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.toneMapping=THREE.AgXToneMapping;
+viewer.append(renderer.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color('#10171e');
+const pmrem=new THREE.PMREMGenerator(renderer),room=new RoomEnvironment();
+const env=pmrem.fromScene(room);scene.environment=env.texture;room.dispose();pmrem.dispose();
+const camera=new THREE.PerspectiveCamera(40,1,.1,100);camera.position.set(0,.15,6);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.enablePan=false;
+scene.add(new THREE.AmbientLight(0xffffff,.6));
+const key=new THREE.DirectionalLight(0xffffff,3);key.position.set(3,4,5);scene.add(key);
+let model,mixer,paused=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const motion=document.querySelector('#motion');motion.textContent=paused?'Play':'Pause';
+motion.onclick=()=>{paused=!paused;motion.textContent=paused?'Play':'Pause';};
+async function load(suffix=''){
+ status.textContent='Loading';
+ const gltf=await new GLTFLoader().loadAsync(`/public/models/fzh-kinetic-core/FZH_Hero_Kinetic_Core${suffix}.glb`);
+ if(model){scene.remove(model);mixer.stopAllAction();model.traverse(o=>{if(o.isMesh){o.geometry.dispose();o.material.dispose();}});}
+ model=gltf.scene;scene.add(model);mixer=new THREE.AnimationMixer(model);mixer.clipAction(gltf.animations.find(c=>c.name==='idle')).play();
+ window.fzh={scene,renderer,model,mixer,animations:gltf.animations.map(c=>({name:c.name,duration:c.duration}))};
+ status.textContent=`${suffix?'Mobile':'Desktop'} · ${gltf.animations.map(c=>`${c.name} ${c.duration}s`).join(' · ')}`;
+}
+document.querySelector('#quality').onchange=e=>load(e.target.value);
+const resize=()=>{renderer.setSize(viewer.clientWidth,viewer.clientHeight);camera.aspect=viewer.clientWidth/viewer.clientHeight;camera.updateProjectionMatrix();};
+new ResizeObserver(resize).observe(viewer);resize();
+const clock=new THREE.Clock();renderer.setAnimationLoop(()=>{const dt=Math.min(clock.getDelta(),.1);if(!paused)mixer?.update(dt);controls.update();renderer.render(scene,camera);});
+load().catch(e=>{status.textContent=e.message;console.error(e);});
+</script></body></html>
