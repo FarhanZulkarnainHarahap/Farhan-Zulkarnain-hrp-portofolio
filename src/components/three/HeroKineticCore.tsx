@@ -1,5 +1,7 @@
 "use client";
 
+import { getAssetMotion } from "./assetMotion";
+
 import { useAssetViewport, type AssetInteraction } from "./useAssetViewport";
 
 import { Component, Suspense, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, type RefObject } from "react";
@@ -33,14 +35,15 @@ export function HeroKineticCoreModel({ mobile = false, reducedMotion = false, ta
   const scene = useMemo(() => gltf.scene.clone(true), [gltf.scene]);
   const { actions } = useAnimations(gltf.animations, scene);
   const wrapper = useRef<Group>(null);
+  const motionTime = useRef(0);
   useEffect(() => { onReady?.(); }, [onReady]);
   useEffect(() => {
     const idle = actions.idle;
     if (!idle || reducedMotion) return;
-    idle.reset().setEffectiveTimeScale(mobile ? 0.55 : tablet ? 0.8 : 1).play();
+    idle.reset().setEffectiveTimeScale(mobile ? 0.9 : tablet ? 0.95 : 1).play();
     return () => { idle.stop(); };
   }, [actions, mobile, tablet, reducedMotion]);
-  useFrame(({ pointer, clock }, delta) => {
+  useFrame(({ pointer }, delta) => {
     if (!wrapper.current) return;
     const group = wrapper.current;
     if (reducedMotion) {
@@ -49,17 +52,22 @@ export function HeroKineticCoreModel({ mobile = false, reducedMotion = false, ta
       group.scale.setScalar(1);
       return;
     }
-    const hover = interaction?.current.hovered ? 1 : 0;
-    const scroll = interaction?.current.scroll ?? 0;
-    const intensity = mobile ? 0.035 : tablet ? 0.065 : 0.10;
-    const baseSpeed = mobile ? 0.55 : tablet ? 0.8 : 1;
-    if (actions.idle) actions.idle.setEffectiveTimeScale(MathUtils.damp(actions.idle.getEffectiveTimeScale(), baseSpeed * (1 + hover * 0.65), 3, delta));
-    group.rotation.y = MathUtils.damp(group.rotation.y,
-      pointer.x * intensity * hover + scroll * intensity * 1.8 + Math.sin(clock.elapsedTime * 0.3) * intensity * (0.5 + hover * 0.5), 3, delta);
-    group.rotation.x = MathUtils.damp(group.rotation.x, -pointer.y * intensity * 0.6 * hover + scroll * intensity, 3, delta);
-    group.rotation.z = MathUtils.damp(group.rotation.z, scroll * intensity * 0.5, 3, delta);
-    group.position.y = MathUtils.damp(group.position.y, scroll * intensity * 1.2, 3, delta);
-    group.scale.setScalar(MathUtils.damp(group.scale.x, 1 + hover * 0.025, 3, delta));
+    // Advance only on rendered frames; resuming a hidden tab cannot jump the pose.
+    const step = Math.min(delta, 0.1);
+    motionTime.current += step;
+    const target = getAssetMotion({
+      kind: "core", time: motionTime.current, mobile, tablet,
+      active: interaction?.current.hovered ?? false,
+      pointerX: interaction?.current.pointerX ?? pointer.x,
+      pointerY: interaction?.current.pointerY ?? pointer.y,
+      scroll: interaction?.current.scroll ?? 0,
+    });
+    if (actions.idle) actions.idle.setEffectiveTimeScale(MathUtils.damp(actions.idle.getEffectiveTimeScale(), target.speed, 4, step));
+    group.rotation.x = MathUtils.damp(group.rotation.x, target.rotationX, 4, step);
+    group.rotation.y = MathUtils.damp(group.rotation.y, target.rotationY, 4, step);
+    group.rotation.z = MathUtils.damp(group.rotation.z, target.rotationZ, 4, step);
+    group.position.y = MathUtils.damp(group.position.y, target.positionY, 4, step);
+    group.scale.setScalar(MathUtils.damp(group.scale.x, target.scale, 4, step));
   });
   return <group ref={wrapper}><primitive object={scene} dispose={null} /></group>;
 }
@@ -72,14 +80,14 @@ class AssetBoundary extends Component<{ children: ReactNode }, { failed: boolean
 
 /** Decorative, isolated viewer. Parent retains normal scrolling and accessible content. */
 export default function HeroKineticCore({ className }: { className?: string }) {
-  const { ref: viewportRef, interaction, onPointerEnter, onPointerLeave, entered, running, failed, onFailure } = useAssetViewport();
+  const { ref: viewportRef, interaction, onPointerEnter, onPointerLeave, onPointerMove, onPointerDown, onPointerUp, entered, running, failed, onFailure } = useAssetViewport();
   const mobile = useMedia("(max-width: 767px)");
   const tablet = useMedia("(min-width: 768px) and (max-width: 1023px)");
   const [ready, setReady] = useState(false);
   const hydrated = useSyncExternalStore(() => () => {}, () => true, () => false);
   const reducedMotion = useMedia("(prefers-reduced-motion: reduce)");
   return (
-    <div ref={viewportRef} onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave} data-fzh-asset="core" data-ready={ready && !failed} data-running={running && !reducedMotion && !failed} className={className} aria-hidden="true" style={{ position: "relative", width: "100%", aspectRatio: "1", touchAction: "pan-y" }}>
+    <div ref={viewportRef} onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave} onPointerMove={onPointerMove} onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={onPointerLeave} data-fzh-asset="core" data-ready={ready && !failed} data-running={running && !reducedMotion && !failed} className={className} aria-hidden="true" style={{ position: "relative", width: "100%", aspectRatio: "1", touchAction: "pan-y" }}>
       {/* Visible before hydration, during loading, and when WebGL is unavailable. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={`${BASE}_poster.webp`} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }} />

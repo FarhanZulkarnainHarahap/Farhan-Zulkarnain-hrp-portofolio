@@ -1,4 +1,5 @@
 import { test, expect, type BrowserContext, type Page } from "@playwright/test";
+import { getAssetMotion } from "../src/components/three/assetMotion";
 import { createHmac } from "node:crypto";
 import projectsFixture from "./fixtures/projects.json";
 import skillsFixture from "./fixtures/skills.json";
@@ -718,3 +719,59 @@ test("identity capsule is mounted on About and respects responsive layout and re
   await page.screenshot({ path: info.outputPath("about-capsule-mobile.png") });
   expect(errors).toEqual([]);
 });
+
+
+test("standby and interaction motion remain visible at every device size", () => {
+  for (const kind of ["core", "identity"] as const) {
+    for (const device of [{ mobile: true, tablet: false }, { mobile: false, tablet: true }, { mobile: false, tablet: false }]) {
+      const input = { kind, ...device, time: 0, active: false, pointerX: 0, pointerY: 0, scroll: 0 };
+      const rest = getAssetMotion(input);
+      const idle = getAssetMotion({ ...input, time: 2 });
+      expect(Math.abs(idle.positionY - rest.positionY)).toBeGreaterThan(0.02);
+      expect(Math.abs(idle.rotationY - rest.rotationY)).toBeGreaterThan(0.04);
+      const active = getAssetMotion({ ...input, time: 2, active: true, pointerX: 0.8, pointerY: 0.4 });
+      expect(active.speed).toBeGreaterThan(idle.speed);
+      expect(active.scale).toBeGreaterThan(idle.scale);
+      expect(active.rotationY).toBeGreaterThan(idle.rotationY);
+      const scrolled = getAssetMotion({ ...input, time: 2, scroll: 0.6 });
+      expect(scrolled.rotationY - idle.rotationY).toBeGreaterThan(0.05);
+      expect(scrolled.positionY - idle.positionY).toBeGreaterThan(0.04);
+    }
+  }
+});
+
+for (const width of [390, 1024, 1440]) {
+  test(`standby renders continuously without input at ${width}px`, async ({ page, context }) => {
+    test.setTimeout(150_000);
+    await mockApi(context);
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.goto("/");
+    for (const kind of ["core", "identity"]) {
+      const asset = page.locator(`[data-fzh-asset="${kind}"]`);
+      await asset.scrollIntoViewIfNeeded();
+      await page.mouse.move(0, 0);
+      await expect(asset).toHaveAttribute("data-ready", "true");
+      await expect(asset).toHaveAttribute("data-running", "true");
+      const canvas = asset.locator("canvas");
+      const first = await canvas.screenshot();
+      // The input remains untouched for the entire interval: this checks standby.
+      await page.waitForTimeout(1200);
+      const second = await canvas.screenshot();
+      expect(first.equals(second)).toBe(false);
+      if (width === 390) {
+        await asset.dispatchEvent("pointerdown", { pointerType: "touch", clientX: 210, clientY: 500 });
+        await asset.dispatchEvent("pointerup", { pointerType: "touch", clientX: 210, clientY: 500 });
+        expect(await asset.evaluate(el => getComputedStyle(el).touchAction)).toBe("pan-y");
+      }
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await expect(asset).toHaveAttribute("data-running", "false");
+      await page.waitForTimeout(300);
+      const staticFirst = await canvas.screenshot();
+      await page.waitForTimeout(400);
+      expect(staticFirst.equals(await canvas.screenshot())).toBe(true);
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      await expect(asset).toHaveAttribute("data-running", "true");
+    }
+  });
+}

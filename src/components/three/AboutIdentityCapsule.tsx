@@ -1,5 +1,7 @@
 "use client";
 
+import { getAssetMotion } from "./assetMotion";
+
 import { useAssetViewport, type AssetInteraction } from "./useAssetViewport";
 
 import { Component, Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, type RefObject } from "react";
@@ -79,6 +81,7 @@ export function AboutIdentityCapsuleModel({ portraitUrl, mobile = false, tablet 
   }, [scene]);
   const { actions } = useAnimations(gltf.animations, scene);
   const wrapper = useRef<Group>(null);
+  const motionTime = useRef(0);
   const invalidate = useThree((state) => state.invalidate);
   useEffect(() => {
     onPortraitReady?.(portrait);
@@ -92,10 +95,10 @@ export function AboutIdentityCapsuleModel({ portraitUrl, mobile = false, tablet 
       invalidate();
       return;
     }
-    action.reset().setEffectiveTimeScale(mobile ? 0.55 : tablet ? 0.8 : 1).play();
+    action.reset().setEffectiveTimeScale(mobile ? 0.9 : tablet ? 0.95 : 1).play();
     return () => { action.stop(); invalidate(); };
   }, [actions, reducedMotion, mobile, tablet, invalidate]);
-  useFrame(({ pointer, clock }, delta) => {
+  useFrame(({ pointer }, delta) => {
     if (!wrapper.current) return;
     const group = wrapper.current;
     if (reducedMotion) {
@@ -104,15 +107,22 @@ export function AboutIdentityCapsuleModel({ portraitUrl, mobile = false, tablet 
       group.scale.setScalar(1);
       return;
     }
-    const hover = interaction?.current.hovered ? 1 : 0;
-    const scroll = interaction?.current.scroll ?? 0;
-    const amount = mobile ? 0.025 : tablet ? 0.045 : 0.075;
-    const baseSpeed = mobile ? 0.55 : tablet ? 0.8 : 1;
-    if (actions.idle) actions.idle.setEffectiveTimeScale(MathUtils.damp(actions.idle.getEffectiveTimeScale(), baseSpeed * (1 + hover * 0.5), 3, delta));
-    group.rotation.y = MathUtils.damp(group.rotation.y, pointer.x * amount * hover + scroll * amount * 1.5 + Math.sin(clock.elapsedTime * 0.4) * hover * amount * 0.4, 3, delta);
-    group.rotation.x = MathUtils.damp(group.rotation.x, -pointer.y * amount * 0.55 * hover + scroll * amount, 3, delta);
-    group.position.y = MathUtils.damp(group.position.y, scroll * amount * 1.2, 3, delta);
-    group.scale.setScalar(MathUtils.damp(group.scale.x, 1 + hover * 0.02, 3, delta));
+    // Advance only on rendered frames; resuming a hidden tab cannot jump the pose.
+    const step = Math.min(delta, 0.1);
+    motionTime.current += step;
+    const target = getAssetMotion({
+      kind: "identity", time: motionTime.current, mobile, tablet,
+      active: interaction?.current.hovered ?? false,
+      pointerX: interaction?.current.pointerX ?? pointer.x,
+      pointerY: interaction?.current.pointerY ?? pointer.y,
+      scroll: interaction?.current.scroll ?? 0,
+    });
+    if (actions.idle) actions.idle.setEffectiveTimeScale(MathUtils.damp(actions.idle.getEffectiveTimeScale(), target.speed, 4, step));
+    group.rotation.x = MathUtils.damp(group.rotation.x, target.rotationX, 4, step);
+    group.rotation.y = MathUtils.damp(group.rotation.y, target.rotationY, 4, step);
+    group.rotation.z = MathUtils.damp(group.rotation.z, target.rotationZ, 4, step);
+    group.position.y = MathUtils.damp(group.position.y, target.positionY, 4, step);
+    group.scale.setScalar(MathUtils.damp(group.scale.x, target.scale, 4, step));
   });
   return <group ref={wrapper}>
     <primitive object={scene} dispose={null} />
@@ -133,14 +143,14 @@ export default function AboutIdentityCapsule({ portraitUrl, className }: {
   portraitUrl?: string;
   className?: string;
 }) {
-  const { ref: viewportRef, interaction, onPointerEnter, onPointerLeave, entered, running, failed, onFailure } = useAssetViewport();
+  const { ref: viewportRef, interaction, onPointerEnter, onPointerLeave, onPointerMove, onPointerDown, onPointerUp, entered, running, failed, onFailure } = useAssetViewport();
   const mobile = useMedia("(max-width: 767px)");
   const tablet = useMedia("(min-width: 768px) and (max-width: 1023px)");
   const reducedMotion = useMedia("(prefers-reduced-motion: reduce)");
   const hydrated = useSyncExternalStore(() => () => {}, () => true, () => false);
   const [ready, setReady] = useState(false);
   const onReady = useCallback(() => setReady(true), []);
-  return <div ref={viewportRef} onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave} data-fzh-asset="identity" data-ready={ready && !failed} data-running={running && !reducedMotion && !failed} className={className} aria-hidden="true" style={{ position: "relative", width: "100%", aspectRatio: "10 / 13", touchAction: "pan-y" }}>
+  return <div ref={viewportRef} onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave} onPointerMove={onPointerMove} onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={onPointerLeave} data-fzh-asset="identity" data-ready={ready && !failed} data-running={running && !reducedMotion && !failed} className={className} aria-hidden="true" style={{ position: "relative", width: "100%", aspectRatio: "10 / 13", touchAction: "pan-y" }}>
     {/* A real portrait remains visible without WebGL; otherwise use the capsule poster. */}
     {/* eslint-disable-next-line @next/next/no-img-element */}
     <img src={portraitUrl || `${MODEL}_poster.webp`} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }} />

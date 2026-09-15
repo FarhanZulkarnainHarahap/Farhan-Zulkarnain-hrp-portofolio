@@ -107,7 +107,7 @@ Omit `portraitUrl` to show the neutral placeholder. No real portrait is required
 
 The standalone component:
 
-- Chooses LOD below 768 px, caps DPR at 1 on mobile and 1.5 elsewhere, and slows idle to 55% on mobile and 80% on tablet.
+- Chooses LOD below 768 px, caps DPR at 1 on mobile and 1.5 elsewhere, and slows idle to 90% on mobile and 95% on tablet.
 - Uses small damped pointer parallax and no orbit controls or scroll interception. `touchAction: pan-y` preserves normal page scrolling.
 - Stops float/orbit and pointer motion with prefers-reduced-motion and uses demand rendering.
 - Uses a static capsule poster before loading or if the GLB/WebGL fails; when portraitUrl is supplied, the fallback displays that real image.
@@ -160,6 +160,10 @@ Actual mobile/desktop hardware frame rates are not measured; SwiftShader verifie
 
 `src/components/kinetic/Profile.tsx` now mounts AboutIdentityCapsule with the real `profile.image`. The former separate identity scene and tilting photo are replaced by the capsule, retaining biography, profile labels and links. `useAssetViewport.ts` loads near the viewport, pauses rendering offscreen/in hidden tabs, and restores the image fallback after WebGL context loss.
 
-Hover smoothly increases idle speed and adds a small scale lift; pointer position tilts the object while hovered. Scrolling tilts and vertically offsets the object based on its viewport position. The core also rolls slightly. Effects ease back on pointer leave, use lower amplitudes on mobile, ignore touch hover, and stop with prefers-reduced-motion. Scroll listeners are passive and sampled once per animation frame, without React state updates on each scroll.
+Hover smoothly increases idle speed and adds a small scale lift; pointer position tilts the object while hovered. Scrolling tilts and vertically offsets the object based on its viewport position. The core also rolls slightly. Effects ease back on pointer leave, use lower amplitudes on mobile, use touch contact as the hover equivalent, and stop with prefers-reduced-motion. Scroll listeners are passive and sampled once per animation frame, without React state updates on each scroll.
 
 Integration validation (2026-09-15): production build and TypeScript passed; affected components pass ESLint; five targeted Playwright route tests passed, covering desktop rendering/capability navigation, mobile LOD/context loss, unavailable WebGL, failed GLB fallback, and About responsive/reduced-motion behavior.
+
+Standby update: both objects now float, sway on multiple axes and breathe subtly at all viewport sizes, independent of hover and scroll. Mobile retains 75% motion amplitude and 90% clip speed, rather than nearly imperceptible movement. Mouse hover and touch/pen contact activate the same lift, tilt and speed response. Pointer-up/cancel/leave ends touch interaction; no pointer capture or preventDefault is used. Reduced motion still provides a static presentation, and offscreen/hidden-tab rendering is paused.
+
+Standby verification: production build, TypeScript and affected-file lint passed. Six targeted tests passed, including actual canvas image changes with no pointer/scroll input at 390, 1024 and 1440px, stable frames with reduced motion, mobile contact handling, and responsive About/LOD checks. Shared motion calculations also verify hover and scroll responses at mobile, tablet and desktop strengths.
