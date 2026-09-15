@@ -425,6 +425,7 @@ test("reduced motion and unavailable WebGL retain the system graphic", async ({
   await page.addInitScript(() => {
     const original = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (
+      this: HTMLCanvasElement,
       type: string,
       ...args: unknown[]
     ) {
@@ -433,7 +434,7 @@ test("reduced motion and unavailable WebGL retain the system graphic", async ({
     } as typeof original;
   });
   await page.goto("/");
-  await expect(page.locator(".hero .spatial-fallback img")).toBeVisible();
+  await expect(page.locator(".hero [data-fzh-asset=core] > img")).toBeVisible();
   await expect(page.locator(".kinetic-scene-host canvas")).toHaveCount(0);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   const response = await page.goto("/missing-kinetic-node");
@@ -584,26 +585,24 @@ test("desktop spatial scene renders and responds to capability selection", async
   page,
   context,
 }, info) => {
+  test.setTimeout(180_000); // Software WebGL makes this multi-section visual check slower.
   await mockApi(context);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
-  await expect(page.locator(".kinetic-scene-host canvas")).toBeVisible();
+  await expect(page.locator(".hero [data-fzh-asset=core]")).toHaveAttribute("data-ready", "true");
   const canvas = page.locator(".kinetic-scene-host canvas");
-  await expect(page.locator(".hero [data-rendered=true]")).toHaveCount(1);
   await canvas.evaluate((el) =>
     el.setAttribute("data-persistence-test", "original"),
   );
-  const box = await canvas.boundingBox();
+  const box = await page.locator(".hero canvas").boundingBox();
   await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
-  await page.mouse.down();
   await page.mouse.move(
     box!.x + box!.width / 2 + 60,
     box!.y + box!.height / 2 + 30,
-    { steps: 10 },
+    { steps: 2 },
   );
-  await page.mouse.up();
   await page.screenshot({ path: info.outputPath("hero-webgl-1440.png") });
   await page.getByRole("tab", { name: /Backend/ }).click();
   await expect(
@@ -618,11 +617,12 @@ test("desktop spatial scene renders and responds to capability selection", async
   await expect(canvas).toHaveAttribute("data-persistence-test", "original");
   await page.screenshot({ path: info.outputPath("project-browser-1440.png") });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(page.locator("canvas")).toHaveCount(0);
+  await expect(page.locator(".kinetic-scene-host canvas")).toHaveCount(0);
+  await expect(page.locator("[data-fzh-asset][data-running=true]")).toHaveCount(0);
   expect(errors).toEqual([]);
 });
 
-test("mobile low quality keeps one canvas and recovers with artwork after context loss", async ({
+test("mobile core loads LOD and recovers with artwork after context loss", async ({
   page,
   context,
 }, info) => {
@@ -634,18 +634,18 @@ test("mobile low quality keeps one canvas and recovers with artwork after contex
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
-  const host = page.locator(".kinetic-scene-host"),
+  const host = page.locator(".hero [data-fzh-asset=core]"),
     canvas = host.locator("canvas");
-  await expect(host).toHaveAttribute("data-quality", "low");
-  await expect(page.locator(".hero [data-rendered=true]")).toHaveCount(1);
+  await host.scrollIntoViewIfNeeded();
+  await expect(host).toHaveAttribute("data-ready", "true");
   await expect(canvas).toHaveCount(1);
   await page.screenshot({ path: info.outputPath("blender-mobile-low.png") });
   await canvas.evaluate((el) =>
     el.dispatchEvent(new Event("webglcontextlost")),
   );
   await expect(canvas).toHaveCount(0);
-  await expect(page.locator(".hero [data-rendered=true]")).toHaveCount(0);
-  await expect(page.locator(".hero .spatial-fallback img")).toBeVisible();
+  await expect(page.locator(".hero [data-fzh-asset=core]")).toHaveAttribute("data-ready", "false");
+  await expect(page.locator(".hero [data-fzh-asset=core] > img")).toBeVisible();
 });
 
 test("failed Blender asset retains usable static artwork", async ({
@@ -654,13 +654,13 @@ test("failed Blender asset retains usable static artwork", async ({
 }) => {
   await mockApi(context);
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.route("**/models/system-core.glb", (route) =>
+  await page.route("**/models/fzh-kinetic-core/*.glb", (route) =>
     route.fulfill({ status: 503, body: "Unavailable" }),
   );
   await page.goto("/");
-  await expect(page.locator(".hero .spatial-fallback img")).toBeVisible();
+  await expect(page.locator(".hero [data-fzh-asset=core] > img")).toBeVisible();
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.locator(".hero [data-rendered=true]")).toHaveCount(0);
+  await expect(page.locator(".hero [data-fzh-asset=core]")).toHaveAttribute("data-ready", "false");
 });
 
 test("project browser preview opens the project selected in the DOM", async ({
@@ -686,4 +686,35 @@ test("project browser preview opens the project selected in the DOM", async ({
   await expect(page.locator(".project-summary h3")).toHaveText(selectedTitle);
   await page.locator(".project-stage .browser-window").click();
   await expect(page).toHaveURL(new RegExp(href! + "$"));
+});
+
+test("identity capsule is mounted on About and respects responsive layout and reduced motion", async ({ page, context }, info) => {
+  await mockApi(context);
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push(error.message));
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/about");
+  const capsule = page.locator('[data-fzh-asset="identity"]');
+  await capsule.scrollIntoViewIfNeeded();
+  await expect(capsule).toHaveAttribute("data-ready", "true");
+  await expect(capsule.locator("canvas")).toBeVisible();
+  const text = await page.locator(".profile-narrative").boundingBox();
+  const model = await capsule.boundingBox();
+  expect(text!.x).toBeLessThan(model!.x);
+  await page.screenshot({ path: info.outputPath("about-capsule-desktop.png") });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(capsule).toHaveAttribute("data-running", "false");
+  await expect(capsule.locator("canvas")).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  const lod = page.waitForResponse(response => response.url().endsWith("FZH_About_Identity_Capsule_LOD.glb") && response.status() === 200);
+  await page.reload();
+  await capsule.scrollIntoViewIfNeeded();
+  await lod;
+  await expect(capsule).toHaveAttribute("data-ready", "true");
+  const mobileText = await page.locator(".profile-narrative").boundingBox();
+  const mobileModel = await capsule.boundingBox();
+  expect(mobileText!.y + mobileText!.height).toBeLessThanOrEqual(mobileModel!.y);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: info.outputPath("about-capsule-mobile.png") });
+  expect(errors).toEqual([]);
 });

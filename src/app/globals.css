@@ -2475,3 +2475,46 @@ svg {
   opacity: .82;
   pointer-events: none;
 }
+
+/* FZH Asset 01 / 02: isolated viewers leave the shared capability scene intact. */
+.hero-core {
+  width: 100%;
+  min-width: 0;
+  max-width: 740px;
+  margin-inline: auto;
+  overflow: hidden;
+}
+.hero-core > img { width: 100%; height: auto; }
+.profile-system-capsule {
+  grid-template-columns: 1.15fr 1fr;
+  align-items: center;
+}
+.profile-system-capsule .profile-narrative { grid-column: 1; grid-row: 1; }
+.profile-system-capsule .profile-record {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  border-right: 0;
+  border-left: 1px solid var(--border);
+  text-align: center;
+  padding: clamp(16px, 2vw, 30px);
+}
+.profile-capsule {
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 10 / 13;
+  margin: 16px auto;
+}
+@media (max-width: 767px) {
+  .hero-core { max-width: 540px; margin-block: 20px; }
+  .profile-system-capsule { grid-template-columns: 1fr; }
+  .profile-system-capsule .profile-narrative { grid-column: 1; grid-row: 1; }
+  .profile-system-capsule .profile-record {
+    grid-column: 1;
+    grid-row: 2;
+    border-left: 0;
+    border-bottom: 0;
+    border-top: 1px solid var(--border);
+    padding: 18px;
+  }
+}

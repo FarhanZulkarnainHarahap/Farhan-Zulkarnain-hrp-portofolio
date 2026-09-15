@@ -1,6 +1,8 @@
 "use client";
 
-import { Component, Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useAssetViewport, type AssetInteraction } from "./useAssetViewport";
+
+import { Component, Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, type RefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, useAnimations, useGLTF, useTexture } from "@react-three/drei";
 import { Group, MathUtils, Mesh, MeshBasicMaterial, SRGBColorSpace } from "three";
@@ -56,6 +58,7 @@ function PortraitSurface({ plane, url }: { plane: Mesh; url: string }) {
 }
 
 export type IdentityCapsuleModelProps = {
+  interaction?: RefObject<AssetInteraction>;
   portraitUrl?: string;
   mobile?: boolean;
   tablet?: boolean;
@@ -66,7 +69,7 @@ export type IdentityCapsuleModelProps = {
 
 /** Canvas child. Exposes the per-instance Portrait_Plane, with independent transforms. */
 export function AboutIdentityCapsuleModel({ portraitUrl, mobile = false, tablet = false,
-  reducedMotion = false, onPortraitReady, onReady }: IdentityCapsuleModelProps) {
+  reducedMotion = false, onPortraitReady, onReady, interaction }: IdentityCapsuleModelProps) {
   const gltf = useGLTF(`${MODEL}${mobile ? "_LOD" : ""}.glb`);
   const scene = useMemo(() => gltf.scene.clone(true), [gltf.scene]);
   const portrait = useMemo(() => {
@@ -92,11 +95,24 @@ export function AboutIdentityCapsuleModel({ portraitUrl, mobile = false, tablet 
     action.reset().setEffectiveTimeScale(mobile ? 0.55 : tablet ? 0.8 : 1).play();
     return () => { action.stop(); invalidate(); };
   }, [actions, reducedMotion, mobile, tablet, invalidate]);
-  useFrame(({ pointer }, delta) => {
-    if (!wrapper.current || reducedMotion) return;
+  useFrame(({ pointer, clock }, delta) => {
+    if (!wrapper.current) return;
+    const group = wrapper.current;
+    if (reducedMotion) {
+      group.rotation.set(0, 0, 0);
+      group.position.y = 0;
+      group.scale.setScalar(1);
+      return;
+    }
+    const hover = interaction?.current.hovered ? 1 : 0;
+    const scroll = interaction?.current.scroll ?? 0;
     const amount = mobile ? 0.025 : tablet ? 0.045 : 0.075;
-    wrapper.current.rotation.y = MathUtils.damp(wrapper.current.rotation.y, pointer.x * amount, 3, delta);
-    wrapper.current.rotation.x = MathUtils.damp(wrapper.current.rotation.x, -pointer.y * amount * 0.55, 3, delta);
+    const baseSpeed = mobile ? 0.55 : tablet ? 0.8 : 1;
+    if (actions.idle) actions.idle.setEffectiveTimeScale(MathUtils.damp(actions.idle.getEffectiveTimeScale(), baseSpeed * (1 + hover * 0.5), 3, delta));
+    group.rotation.y = MathUtils.damp(group.rotation.y, pointer.x * amount * hover + scroll * amount * 1.5 + Math.sin(clock.elapsedTime * 0.4) * hover * amount * 0.4, 3, delta);
+    group.rotation.x = MathUtils.damp(group.rotation.x, -pointer.y * amount * 0.55 * hover + scroll * amount, 3, delta);
+    group.position.y = MathUtils.damp(group.position.y, scroll * amount * 1.2, 3, delta);
+    group.scale.setScalar(MathUtils.damp(group.scale.x, 1 + hover * 0.02, 3, delta));
   });
   return <group ref={wrapper}>
     <primitive object={scene} dispose={null} />
@@ -117,26 +133,30 @@ export default function AboutIdentityCapsule({ portraitUrl, className }: {
   portraitUrl?: string;
   className?: string;
 }) {
+  const { ref: viewportRef, interaction, onPointerEnter, onPointerLeave, entered, running, failed, onFailure } = useAssetViewport();
   const mobile = useMedia("(max-width: 767px)");
   const tablet = useMedia("(min-width: 768px) and (max-width: 1023px)");
   const reducedMotion = useMedia("(prefers-reduced-motion: reduce)");
   const hydrated = useSyncExternalStore(() => () => {}, () => true, () => false);
   const [ready, setReady] = useState(false);
   const onReady = useCallback(() => setReady(true), []);
-  return <div className={className} aria-hidden="true" style={{ position: "relative", width: "100%", aspectRatio: "10 / 13", touchAction: "pan-y" }}>
+  return <div ref={viewportRef} onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave} data-fzh-asset="identity" data-ready={ready && !failed} data-running={running && !reducedMotion && !failed} className={className} aria-hidden="true" style={{ position: "relative", width: "100%", aspectRatio: "10 / 13", touchAction: "pan-y" }}>
     {/* A real portrait remains visible without WebGL; otherwise use the capsule poster. */}
     {/* eslint-disable-next-line @next/next/no-img-element */}
     <img src={portraitUrl || `${MODEL}_poster.webp`} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }} />
-    {hydrated && <IdentityBoundary>
+    {hydrated && entered && !failed && <IdentityBoundary>
       <Canvas
         style={{ position: "absolute", inset: 0, opacity: ready ? 1 : 0, touchAction: "pan-y" }}
         camera={{ position: [0, 0, 5], fov: 38 }}
         dpr={mobile ? 1 : [1, 1.5]}
-        frameloop={reducedMotion ? "demand" : "always"}
+        frameloop={!running ? "never" : reducedMotion ? "demand" : "always"}
         gl={{ alpha: false, antialias: !mobile, powerPreference: "low-power" }}
         fallback={<span />}
+          onCreated={({ gl }) => {
+            gl.domElement.addEventListener("webglcontextlost", onFailure, { once: true });
+          }}
       >
-        <color attach="background" args={["#10171e"]} />
+        <color attach="background" args={["#0d1117"]} />
         <ambientLight intensity={0.6} />
         <directionalLight position={[3, 4, 5]} intensity={3} />
         <directionalLight position={[-3, -2, 3]} intensity={1.5} color="#a4dfff" />
@@ -145,7 +165,7 @@ export default function AboutIdentityCapsule({ portraitUrl, className }: {
             <Lightformer position={[0, 3, 2]} intensity={3} scale={[6, 3, 1]} />
             <Lightformer position={[-3, 0, 1]} rotation={[0, Math.PI / 2, 0]} intensity={2} scale={[3, 6, 1]} color="#a4dfff" />
           </Environment>
-          <AboutIdentityCapsuleModel portraitUrl={portraitUrl} mobile={mobile} tablet={tablet} reducedMotion={reducedMotion} onReady={onReady} />
+          <AboutIdentityCapsuleModel interaction={interaction} portraitUrl={portraitUrl} mobile={mobile} tablet={tablet} reducedMotion={reducedMotion} onReady={onReady} />
         </Suspense>
       </Canvas>
     </IdentityBoundary>}

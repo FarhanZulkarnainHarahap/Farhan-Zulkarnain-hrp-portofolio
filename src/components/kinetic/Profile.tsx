@@ -1,27 +1,13 @@
 "use client";
-import SpatialSystem from "./SpatialSystem";
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import type { PointerEvent } from "react";
+
 import { Media, Reveal, SectionHeading, SystemIcon } from "./Primitives";
 import { profile } from "./data";
+const AboutIdentityCapsule = dynamic(() => import("../three/AboutIdentityCapsule"), {
+  loading: () => <Media src={profile.image} alt="" />,
+});
 export default function Profile({ detail = false }: { detail?: boolean }) {
-  const tiltPhoto = (event: PointerEvent<HTMLDivElement>) => {
-    const frame = event.currentTarget;
-    const rect = frame.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width - 0.5;
-    const y = (event.clientY - rect.top) / rect.height - 0.5;
-    frame.style.setProperty("--tilt-x", `${(-y * 13).toFixed(2)}deg`);
-    frame.style.setProperty("--tilt-y", `${(x * 15).toFixed(2)}deg`);
-    frame.style.setProperty("--tilt-glow-x", `${((x + 0.5) * 100).toFixed(1)}%`);
-    frame.style.setProperty("--tilt-glow-y", `${((y + 0.5) * 100).toFixed(1)}%`);
-  };
-  const resetPhoto = (event: PointerEvent<HTMLDivElement>) => {
-    const frame = event.currentTarget;
-    frame.style.setProperty("--tilt-x", "0deg");
-    frame.style.setProperty("--tilt-y", "0deg");
-    frame.style.setProperty("--tilt-glow-x", "50%");
-    frame.style.setProperty("--tilt-glow-y", "50%");
-  };
   return (
     <section className="section profile-section" id="identity">
       <Reveal>
@@ -31,25 +17,7 @@ export default function Profile({ detail = false }: { detail?: boolean }) {
           title="The person behind the system."
         />
       </Reveal>
-      <div className="story-spatial">
-        <SpatialSystem mode="identity" />
-      </div>
-      <div className="profile-system">
-        <div className="profile-record">
-          <p className="eyebrow">PROFILE / FZH—001</p>
-          <div
-            className="profile-frame"
-            onPointerMove={tiltPhoto}
-            onPointerLeave={resetPhoto}
-          >
-            <Media src={profile.image} alt="Farhan Zulkarnain Harahap" />
-            <span className="photo-marker">MEDAN / INDONESIA</span>
-          </div>
-          <p className="profile-signature">Farhan Zulkarnain Harahap</p>
-          <span className="eyebrow">
-            <span className="status-dot" /> OPEN TO WORK & COLLABORATION
-          </span>
-        </div>
+      <div className="profile-system profile-system-capsule">
         <div className="profile-narrative">
           <h3>
             I connect design
@@ -100,6 +68,16 @@ export default function Profile({ detail = false }: { detail?: boolean }) {
               Capability graph ↗
             </Link>
           </div>
+        </div>
+        <div className="profile-record">
+          <p className="eyebrow">PROFILE / FZH—001</p>
+          <div className="profile-capsule">
+            <AboutIdentityCapsule portraitUrl={profile.image} />
+          </div>
+          <p className="profile-signature">Farhan Zulkarnain Harahap</p>
+          <span className="eyebrow">
+            <span className="status-dot" /> OPEN TO WORK & COLLABORATION
+          </span>
         </div>
       </div>
     </section>

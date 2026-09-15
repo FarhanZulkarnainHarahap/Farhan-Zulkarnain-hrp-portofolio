@@ -3,7 +3,11 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useScene } from "./SceneState";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
-import SpatialSystem from "./SpatialSystem";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+const HeroKineticCore = dynamic(() => import("../three/HeroKineticCore"), {
+  loading: () => <Image src="/models/fzh-kinetic-core/FZH_Hero_Kinetic_Core_poster.webp" alt="" width={1200} height={1200} />,
+});
 import { profile } from "./data";
 export default function Hero() {
   const { setMode, setActive } = useScene();
@@ -52,7 +56,7 @@ export default function Hero() {
             </Link>
           </div>
         </div>
-        <SpatialSystem />
+        <div className="hero-core"><HeroKineticCore /></div>
       </div>
       <div className="hero-bottom">
         <a className="scroll-cue" href="#identity">

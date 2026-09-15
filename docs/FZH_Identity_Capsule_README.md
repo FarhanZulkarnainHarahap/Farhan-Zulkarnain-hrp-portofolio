@@ -1,6 +1,6 @@
 # FZH About Identity Capsule — Asset 02
 
-Created in Blender 4.5.3 LTS as a continuation of Asset 01. The saved Hero Kinetic Core materials are appended read-only, and its geometry helpers and preview studio are reused. Asset 01 and existing website routes/layouts are unchanged. No project dependencies were added.
+Created in Blender 4.5.3 LTS as a continuation of Asset 01. The saved Hero Kinetic Core materials are appended read-only, and its geometry helpers and preview studio are reused. Asset 01 geometry remains unchanged. The capsule is now mounted in the shared Profile section on the homepage, About, and profile detail routes. No project dependencies were added.
 
 ## Files
 
@@ -114,7 +114,7 @@ The standalone component:
 - Handles portrait-load failure separately so a broken image URL leaves the capsule's neutral placeholder available.
 - Builds a small local environment reflection map; no remote HDR, real-time shadows, bloom or transmission pass is required.
 
-The wrapper is decorative and aria-hidden. Keep the developer name, role, biography and links as normal HTML so About remains accessible without WebGL. The component is provided but not mounted into or used to redesign the current About page. Scroll-triggered activation and hover speed changes remain integration choices, supported by the hierarchy.
+The wrapper is decorative and aria-hidden. Keep the developer name, role, biography and links as normal HTML so About remains accessible without WebGL. The component is mounted in the shared Profile section using the existing profile.image URL. Desktop places the narrative left and capsule right; mobile places the narrative before the capsule. Viewport loading, scroll movement, and hover speed changes are enabled in the mounted component.
 
 ## Regenerate and preview
 
@@ -152,6 +152,14 @@ Both final GLBs pass Three.js GLTFLoader and AnimationMixer checks: finite posit
 
 Both 1000 × 1300 Blender studio renders were visually reviewed. Chromium SwiftShader successfully rendered both variants with a dynamically assigned diagnostic image: labels appear upright and unmirrored, with the center unobstructed. Browser console page errors: zero. The local viewer's reduced-motion mode was verified static. Render calls were 34; browser triangle submissions slightly exceed asset triangle counts because the double-sided alpha glass is rendered in two passes.
 
-The new R3F component passes ESLint. The repository-wide TypeScript check reports the pre-existing implicit-any `this` in `tests/kinetic.spec.ts:432`; no unrelated test was modified. The R3F component has not been mounted into an application route or browser-tested as a React component; the browser check covers the GLBs and the standalone Three.js review viewer.
+The new R3F component passes ESLint. The existing test context annotation was fixed while updating integration tests; repository-wide TypeScript now passes. The original asset browser report covers the standalone Three.js review viewer. Route integration is covered separately by tests/kinetic.spec.ts.
 
 Actual mobile/desktop hardware frame rates are not measured; SwiftShader verifies functionality, not GPU performance. A production portrait and hosting/CORS configuration still need to be supplied. The geometry is a visual display asset with intentional disconnected pieces and an open portrait plane, not a watertight manufacturing model. No fake portrait is embedded, and no Asset 03 was created.
+
+## Website integration
+
+`src/components/kinetic/Profile.tsx` now mounts AboutIdentityCapsule with the real `profile.image`. The former separate identity scene and tilting photo are replaced by the capsule, retaining biography, profile labels and links. `useAssetViewport.ts` loads near the viewport, pauses rendering offscreen/in hidden tabs, and restores the image fallback after WebGL context loss.
+
+Hover smoothly increases idle speed and adds a small scale lift; pointer position tilts the object while hovered. Scrolling tilts and vertically offsets the object based on its viewport position. The core also rolls slightly. Effects ease back on pointer leave, use lower amplitudes on mobile, ignore touch hover, and stop with prefers-reduced-motion. Scroll listeners are passive and sampled once per animation frame, without React state updates on each scroll.
+
+Integration validation (2026-09-15): production build and TypeScript passed; affected components pass ESLint; five targeted Playwright route tests passed, covering desktop rendering/capability navigation, mobile LOD/context loss, unavailable WebGL, failed GLB fallback, and About responsive/reduced-motion behavior.

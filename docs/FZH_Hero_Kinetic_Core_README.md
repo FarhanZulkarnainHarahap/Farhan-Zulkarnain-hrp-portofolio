@@ -1,6 +1,6 @@
 # FZH Hero Kinetic Core — Asset 01
 
-Original geometry generated in Blender 4.5.3 LTS. A standalone asset and optional React Three Fiber viewer; existing portfolio routes and hero layout are unchanged. No dependencies were added.
+Original geometry generated in Blender 4.5.3 LTS. The asset is mounted in the homepage Hero through its React Three Fiber viewer; the existing Hero copy and links are preserved. No dependencies were added.
 
 ## Deliverables
 
@@ -118,7 +118,15 @@ The standalone viewer selects mobile LOD below 768 px, slows idle to 55% on mobi
 
 - Both PNGs visually reviewed: distinct rings, readable silhouette, restrained cyan, faceted core, subtle FZH marking.
 - Both final GLBs pass the recorded Three.js validation, including exact 10 / 3 / 3-second clip timings and loop endpoints.
-- Component-specific ESLint passes. Repository-wide TypeScript is blocked by an existing implicit-any `this` at `tests/kinetic.spec.ts:432`; no unrelated test was changed.
-- Browser GPU rendering and measured desktop/mobile frame rates remain unverified: Chromium could not start due to missing libnspr4.so, including outside the sandbox. The R3F component has not been mounted in an existing route. Benchmark on actual target devices before assigning a performance SLA.
+- Component-specific ESLint passes. The existing test context annotation was fixed while updating integration tests; repository-wide TypeScript now passes.
+- The original standalone browser check lacked libnspr4.so. Temporary browser libraries now allow route-level Chromium checks, and the R3F component is mounted in the homepage Hero. Hardware frame-rate benchmarks remain unverified.
 - Cycles transmission and reflections differ from browser PBR; the web environment must provide suitable reflections. Glass adds a transmission pass even though its geometry is small. For very weak devices, use the static poster or replace glass with opaque graphite in a separately owned material instance.
 - No Draco/Meshopt compression, actual anisotropic brushed texture, emissive-material keyframes, or physics/collision guarantees. The model is a visual portfolio asset with intentionally disconnected mechanical parts.
+
+## Website integration
+
+`src/components/kinetic/Hero.tsx` now mounts HeroKineticCore in the existing hero grid. `useAssetViewport.ts` delays model loading until near the viewport and pauses rendering offscreen or in hidden tabs. WebGL context loss reveals the static poster. The capability graph retains its original shared scene. Desktop and mobile choose their matching GLBs automatically.
+
+Hover smoothly increases idle speed and adds a small scale lift; pointer position tilts the object while hovered. Scrolling tilts and vertically offsets the object based on its viewport position. The core also rolls slightly. Effects ease back on pointer leave, use lower amplitudes on mobile, ignore touch hover, and stop with prefers-reduced-motion. Scroll listeners are passive and sampled once per animation frame, without React state updates on each scroll.
+
+Integration validation (2026-09-15): production build and TypeScript passed; affected components pass ESLint; five targeted Playwright route tests passed, covering desktop rendering/capability navigation, mobile LOD/context loss, unavailable WebGL, failed GLB fallback, and About responsive/reduced-motion behavior.
