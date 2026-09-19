@@ -1,32 +1,17 @@
 "use client";
-import { useState } from "react";
-import SpatialSystem from "./SpatialSystem";
-import { CollectionState, SectionHeading, SystemIcon } from "./Primitives";
+import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
+import { capabilityCategories as categories, skillCategory as category, capabilitySkill } from "@/data/techStack";
+const CapabilityMatrix = dynamic(() => import("../three/CapabilityMatrix"), { loading: () => <p>Loading capability matrix…</p> });
+import { CollectionState, SectionHeading } from "./Primitives";
 import { type Skill, useCollection } from "./data";
 import { useScene } from "./SceneState";
-const categories = [
-  "Frontend",
-  "Backend",
-  "Database",
-  "Infrastructure",
-  "Creative",
-  "Tools",
-];
-function category(skill: Skill) {
-  if (/postgres|mongo|mysql|prisma|supabase|redis/i.test(skill.name))
-    return "Database";
-  if (/docker|vercel|aws|cloud|railway/i.test(skill.name))
-    return "Infrastructure";
-  if (/figma|three|blender|design/i.test(skill.name)) return "Creative";
-  if (skill.category === "FRONTEND") return "Frontend";
-  if (skill.category === "BACKEND") return "Backend";
-  return "Tools";
-}
 export default function Capabilities() {
   const state = useCollection<Skill>("/api/skills");
-  const [selected, setSelected] = useState("Frontend");
+  const [selected, setSelected] = useState<string>("Frontend");
+  const [selectedSkillId, setSelectedSkillId] = useState<string|null>(null);
   const { setActive, setMode } = useScene();
-  const skills = state.data.filter((skill) => category(skill) === selected);
+  const skills = useMemo(() => state.data.filter((skill) => category(skill) === selected).map(capabilitySkill), [state.data,selected]);
   return (
     <section
       className="section capabilities"
@@ -57,6 +42,7 @@ export default function Capabilities() {
                 tabIndex={selected === name ? 0 : -1}
                 onClick={() => {
                   setSelected(name);
+                  setSelectedSkillId(null);
                   setActive(name);
                 }}
                 onKeyDown={(event) => {
@@ -78,6 +64,7 @@ export default function Capabilities() {
                           6
                       ];
                     setSelected(next);
+                    setSelectedSkillId(null);
                     setActive(next);
                     document.getElementById(`tab-${next}`)?.focus();
                   }
@@ -95,36 +82,12 @@ export default function Capabilities() {
             ))}
           </div>
           <div
-            className="capability-graph"
+            className="capability-graph capability-graph-matrix"
             role="tabpanel"
             id="skill-nodes"
             aria-labelledby={`tab-${selected}`}
           >
-            <div className="graph-spatial">
-              <SpatialSystem mode="capability" />
-            </div>
-            <div className="graph-core">
-              <SystemIcon kind="capability" />
-              <span>{selected.toUpperCase()}</span>
-            </div>
-            <div className="graph-nodes">
-              {skills.map((skill) => (
-                <button
-                  className="skill-node"
-                  key={skill.id}
-                  onFocus={() => setActive(skill.name)}
-                  onPointerEnter={() => setActive(skill.name)}
-                  onPointerLeave={() => setActive(selected)}
-                  onClick={() => setActive(skill.name)}
-                >
-                  <SystemIcon kind="node" />
-                  <span>{skill.name}</span>
-                </button>
-              ))}
-            </div>
-            <p className="graph-caption eyebrow">
-              {skills.length} CONNECTED NODES / {selected.toUpperCase()} LAYER
-            </p>
+            <CapabilityMatrix category={selected} skills={skills} selectedSkillId={selectedSkillId} onSelect={setSelectedSkillId} />
           </div>
         </div>
       )}

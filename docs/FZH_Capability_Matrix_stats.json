@@ -1,0 +1,35 @@
+{
+  "core": {
+    "triangles": 10836,
+    "mesh_objects": 6,
+    "nodes": 16,
+    "materials": 5,
+    "bytes": 646228,
+    "file": "public/models/capability/FZH_Capability_Core.glb"
+  },
+  "node": {
+    "triangles": 2954,
+    "mesh_objects": 7,
+    "nodes": 9,
+    "materials": 5,
+    "bytes": 192700,
+    "file": "public/models/capability/FZH_Skill_Node.glb"
+  },
+  "support": {
+    "triangles": 7992,
+    "mesh_objects": 4,
+    "nodes": 5,
+    "materials": 2,
+    "bytes": 483340,
+    "file": "public/models/capability/FZH_Capability_Support.glb"
+  },
+  "rail": {
+    "triangles": 216,
+    "mesh_objects": 2,
+    "nodes": 3,
+    "materials": 2,
+    "bytes": 16344,
+    "file": "public/models/capability/FZH_Energy_Rail.glb"
+  },
+  "asset01_sha256": "49be45126cb77d69878c58a957ea6e759052acc447628c8c5178cb9dee38fe61"
+}

@@ -1,4 +1,5 @@
 import { test, expect, type BrowserContext, type Page } from "@playwright/test";
+import { capabilityLayout } from "../src/components/three/capabilityLayout";
 import { getAssetMotion } from "../src/components/three/assetMotion";
 import { createHmac } from "node:crypto";
 import projectsFixture from "./fixtures/projects.json";
@@ -607,10 +608,11 @@ test("desktop spatial scene renders and responds to capability selection", async
   await page.screenshot({ path: info.outputPath("hero-webgl-1440.png") });
   await page.getByRole("tab", { name: /Backend/ }).click();
   await expect(
-    page.locator(".kinetic-scene-host[data-mode=capability] canvas"),
+    page.locator(".matrix-stage canvas"),
   ).toBeVisible();
   await page.getByRole("button", { name: "Node.js", exact: true }).hover();
-  await expect(page.locator(".graph-spatial .tag-top")).toHaveText("Node.js");
+  await page.getByRole("button", { name: "Node.js", exact: true }).click();
+  await expect(page.locator(".matrix-detail strong")).toHaveText("Node.js");
   await page.screenshot({ path: info.outputPath("capability-webgl-1440.png") });
   await expect(canvas).toHaveAttribute("data-persistence-test", "original");
   await page.locator("#work").scrollIntoViewIfNeeded();
@@ -775,3 +777,71 @@ for (const width of [390, 1024, 1440]) {
     }
   });
 }
+
+test("capability matrix reuses GLBs, selects nodes, and retains accessible fallback", async ({ page, context }, info) => {
+  test.setTimeout(180_000);
+  await mockApi(context);
+  const requests: string[] = [];
+  page.on('request', request => { if(request.url().includes('/models/capability/')) requests.push(request.url()); });
+  await page.goto('/');
+  await page.getByRole('tab', { name: /Frontend/ }).click();
+  const stage = page.locator('.matrix-stage');
+  await stage.scrollIntoViewIfNeeded();
+  await expect(stage).toHaveAttribute('data-ready', 'true');
+  const canvas = stage.locator('canvas');
+  await canvas.evaluate(el => el.setAttribute('data-stable', 'yes'));
+  await page.getByRole('button', { name: 'React', exact: true }).click();
+  await expect(page.locator('.matrix-detail strong')).toHaveText('React');
+  await page.screenshot({path:info.outputPath('matrix-desktop-selected.png')});
+  await page.getByRole('tab', { name: /Backend/ }).click();
+  await expect(page.locator('.matrix-core-label')).toHaveText('BACKEND');
+  await expect(canvas).toHaveAttribute('data-stable', 'yes');
+  await page.getByRole('button', { name: 'Node.js', exact: true }).click();
+  await expect(page.locator('.matrix-detail strong')).toHaveText('Node.js');
+  await page.getByRole('tab', { name: /Backend/ }).click();
+  await expect(page.locator('.matrix-detail strong')).toHaveCount(0);
+  expect(requests.length).toBe(3);
+  expect(new Set(requests).size).toBe(3);
+  await canvas.evaluate(el => el.dispatchEvent(new Event('webglcontextlost')));
+  await expect(stage).toHaveAttribute('data-ready', 'false');
+  await page.getByRole('button', { name: 'Node.js', exact: true }).click();
+  await expect(page.locator('.matrix-detail strong')).toHaveText('Node.js');
+});
+
+test.describe("capability touch device", () => {
+  test.use({ hasTouch: true });
+test("mobile capability matrix paginates, supports touch and reduced motion", async ({ page, context }, info) => {
+  test.setTimeout(180_000);
+  await mockApi(context);
+  await page.setViewportSize({width:390,height:844});
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.goto('/');
+  await page.getByRole('tab', {name:/Frontend/}).click();
+  const stage=page.locator('.matrix-stage');
+  await stage.scrollIntoViewIfNeeded();
+  await expect(stage).toHaveAttribute('data-ready','true');
+  await expect(stage).toHaveAttribute('data-running','true');
+  await expect(page.locator('.matrix-node-label')).toHaveCount(3);
+  await expect(stage).toHaveCSS('touch-action','pan-y');
+  await page.getByRole('button',{name:'Next skill nodes'}).click();
+  await expect(page.locator('.matrix-node-label')).toHaveCount(2);
+  await page.getByRole('button',{name:'Next.js',exact:true}).tap();
+  await expect(page.locator('.matrix-detail strong')).toHaveText('Next.js');
+  await stage.scrollIntoViewIfNeeded();
+  await page.screenshot({path:info.outputPath('matrix-mobile.png')});
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await expect(stage).toHaveAttribute('data-running','false');
+  await page.getByRole('button',{name:'Clear selection'}).click();
+  await expect(page.locator('.matrix-detail strong')).toHaveCount(0);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+});
+
+test('capability layouts keep variable counts separated', async () => {
+  for(let count=0;count<=16;count++) {
+    const positions=capabilityLayout(count);
+    expect(positions).toHaveLength(count);
+    for(let i=0;i<count;i++)for(let j=i+1;j<count;j++) expect(Math.hypot(positions[i][0]-positions[j][0],positions[i][1]-positions[j][1])).toBeGreaterThan(.9);
+  }
+});

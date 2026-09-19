@@ -2518,3 +2518,21 @@ svg {
     padding: 18px;
   }
 }
+
+.capability-graph-matrix { padding: 0; gap: 0; min-width: 0; align-items: stretch; justify-content: start; }
+.capability-matrix { width: 100%; min-width: 0; }
+.matrix-stage { position: relative; height: clamp(380px, 42vw, 570px); touch-action: pan-y; overflow: hidden; }
+.matrix-stage canvas { touch-action: pan-y; }
+.matrix-placeholder { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 12px; }
+.matrix-node-label { color: #bfdbe7; background: #0d1117dc; padding: 4px 8px; border: 1px solid #273142; border-radius: 3px; font: 11px ui-monospace, monospace; }
+.matrix-node-label.is-selected { color: #72eeff; border-color: #22d3ee; }
+.matrix-core-label { color: #94c8da; font: 8px ui-monospace, monospace; letter-spacing: .08em; }
+.matrix-skills { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 20px; justify-content: center; }
+.matrix-skills button, .matrix-pager button, .matrix-detail button { font-size: 11px; padding: 8px 12px; border: 1px solid var(--border); background: var(--section); border-radius: 3px; }
+.matrix-skills button[aria-pressed="true"], .matrix-skills button:focus-visible { border-color: var(--secondary); color: var(--secondary); }
+.matrix-pager { display: flex; align-items: center; justify-content: center; gap: 20px; font: 11px ui-monospace,monospace; }
+.matrix-pager button:disabled { opacity: .35; }
+.matrix-detail { border-top: 1px solid var(--border); padding: 20px 24px; margin-top: 12px; min-height: 130px; }
+.matrix-detail strong { display: block; font-size: 20px; margin: 8px 0; }
+.matrix-detail p { font-size: 12px; margin: 8px 0; }
+@media(max-width:767px) { .matrix-stage { height: 340px; } .matrix-skills { padding: 10px; } .matrix-detail { padding: 18px; } .matrix-core-label { font-size: 7px; } }

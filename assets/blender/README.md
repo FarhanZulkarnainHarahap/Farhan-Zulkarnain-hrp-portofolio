@@ -1,5 +1,7 @@
 # Farhan — Kinetic Systems assets
 
+The current Hero, About and Capability sections use dedicated Asset 01–03 renderers. Asset 03 replaces the earlier flat capability graph and shared-scene badges with a modular processor and cartridge system. See [Asset 03 source, exports, measurements and integration](../../docs/FZH_Capability_Matrix_README.md). The original pipeline below remains available for the other scene assets.
+
 Original models authored by `scripts/blender/generate-assets.py` using Blender 5.2. No stock models or external textures. The `.blend` files retain the editable, named parts; optimized GLB files in `public/models` batch static meshes by material and preserve the project shutters as animation targets.
 
 Regenerate from the web directory (native Blender):

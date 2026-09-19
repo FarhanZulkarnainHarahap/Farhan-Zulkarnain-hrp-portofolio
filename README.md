@@ -46,3 +46,7 @@ npm run test:e2e
 ```
 
 Playwright starts the production app on localhost:3101 with an isolated test signing key. The regression tests intercept all mutations; test credentials never reach the production API. A separate live test only reads public collections, a project detail, and a CV download. Screenshot artifacts and the HTML report are in `.qa/` and are ignored by Git. The live integration test requires access to the configured backend.
+
+## FZH Capability Matrix (Asset 03)
+
+The capability section now uses a dedicated persistent canvas with modular Blender core and skill cartridges, runtime logos, idle/hover/scroll/selection motion, reusable category transitions, and compact touch pagination. Its DOM category controls and details remain usable without WebGL. See [Asset 03 documentation](docs/FZH_Capability_Matrix_README.md) for sources, measurements, hierarchy, responsive behavior and validation.
