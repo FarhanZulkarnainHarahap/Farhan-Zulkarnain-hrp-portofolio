@@ -19,7 +19,7 @@ export default function Projects({selectedOnly=false}:{selectedOnly?:boolean}) {
   const select=(i:number)=>{setSelected(i);setInspection(true);};
   return <section className="section project-section" id="work"><SectionHeading number="04" label={selectedOnly?'SELECTED WORK':'PROJECT EXPLORER'} title="Ideas, engineered into reality." description="A closer look at the interfaces, systems, and decisions behind my work."/>
     <CollectionState {...state} empty={!projects.length}/>
-    {current&&!state.error&&<div className="project-explorer project-vault-layout"><div className="vault-project-index"><ProjectNavigation projects={projects} active={active} onSelect={select}/></div><div className="project-stage"><ProjectVault projects={projects} active={active} inspection={inspection} onSelect={select} onDeselect={()=>setInspection(false)}/><ProjectDetails project={current} inspection={inspection}/></div></div>}
+    {current&&!state.error&&<div className="project-explorer project-vault-layout"><div className="vault-project-index"><ProjectNavigation projects={projects} active={active} onSelect={select}/></div><div className="project-stage"><ProjectVault projects={projects} active={active} inspection={inspection} onSelect={select} onDeselect={()=>setInspection(false)}/><ProjectDetails project={current}/></div></div>}
     {selectedOnly&&<Link className="text-link all-projects" href="/projects">View all projects <span>↗</span></Link>}
   </section>;
 }

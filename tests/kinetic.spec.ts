@@ -891,6 +891,8 @@ test.describe('project vault touch',()=>{
   await expect(stage).toHaveCSS('touch-action','pan-y');
   await page.getByRole('button',{name:'Next project',exact:true}).tap();
   await expect(page.locator('.project-summary h3')).toHaveText(projectsFixture.data[1].title);
+  await expect(page.locator('.project-stage .project-description, .project-stage .tags, .vault-case-details, .project-stage .project-links')).toHaveCount(0);
+  await expect(page.locator('.project-summary a')).toHaveText('Explore project ↗');
   await page.getByRole('button',{name:'Exit inspection',exact:true}).tap();
   await expect(page.locator('.project-vault')).toHaveAttribute('data-inspection','false');
   await page.emulateMedia({reducedMotion:'no-preference'});await stage.scrollIntoViewIfNeeded();
