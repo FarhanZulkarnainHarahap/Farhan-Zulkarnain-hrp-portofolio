@@ -50,3 +50,5 @@ Playwright starts the production app on localhost:3101 with an isolated test sig
 ## FZH Capability Matrix (Asset 03)
 
 The capability section now uses a dedicated persistent canvas with modular Blender core and skill cartridges, runtime logos, idle/hover/scroll/selection motion, reusable category transitions, and compact touch pagination. Its DOM category controls and details remain usable without WebGL. See [Asset 03 documentation](docs/FZH_Capability_Matrix_README.md) for sources, measurements, hierarchy, responsive behavior and validation.
+
+See [Project Vault / Asset 04](docs/FZH_Project_Artifact_README.md) for the new reusable project capsule, screenshot pipeline, interaction states, source files and measurements.

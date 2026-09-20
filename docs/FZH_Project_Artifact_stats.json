@@ -1,0 +1,16 @@
+{
+  "artifact": {
+    "triangles": 12876,
+    "mesh_objects": 19,
+    "nodes": 25,
+    "materials": 6,
+    "bytes": 851164
+  },
+  "rail": {
+    "triangles": 3612,
+    "mesh_objects": 5,
+    "nodes": 6,
+    "materials": 3,
+    "bytes": 255964
+  }
+}

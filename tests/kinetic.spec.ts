@@ -666,7 +666,7 @@ test("failed Blender asset retains usable static artwork", async ({
   await expect(page.locator(".hero [data-fzh-asset=core]")).toHaveAttribute("data-ready", "false");
 });
 
-test("project browser preview opens the project selected in the DOM", async ({
+test("project vault details open the project selected in the DOM", async ({
   page,
   context,
 }) => {
@@ -687,7 +687,7 @@ test("project browser preview opens the project selected in the DOM", async ({
     .nth(1)
     .innerText();
   await expect(page.locator(".project-summary h3")).toHaveText(selectedTitle);
-  await page.locator(".project-stage .browser-window").click();
+  await page.locator(".project-summary a").click();
   await expect(page).toHaveURL(new RegExp(href! + "$"));
 });
 
@@ -844,4 +844,70 @@ test('capability layouts keep variable counts separated', async () => {
     expect(positions).toHaveLength(count);
     for(let i=0;i<count;i++)for(let j=i+1;j<count;j++) expect(Math.hypot(positions[i][0]-positions[j][0],positions[i][1]-positions[j][1])).toBeGreaterThan(.9);
   }
+});
+
+
+test("project vault keeps scene, selects artifacts and survives context loss", async ({page,context},info)=>{
+  test.setTimeout(180_000);
+  await mockApi(context);
+  await context.route('**/image/upload/f_webp,**',route=>route.fulfill({path:'tests/fixtures/project-preview.webp',contentType:'image/webp',headers:{'access-control-allow-origin':'*'}}));
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+  const models:string[]=[];page.on('request',r=>{if(r.url().includes('/models/projects/'))models.push(r.url());});
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.goto('/projects');
+  const stage=page.locator('.vault-canvas');await stage.scrollIntoViewIfNeeded();
+  await expect(stage).toHaveAttribute('data-ready','true');
+  await expect(page.locator('.vault-title-label')).toHaveCount(3);
+  await expect(page.locator('[data-screenshot=ready]')).toHaveCount(3);
+  const canvas=stage.locator('canvas');await canvas.evaluate(el=>el.setAttribute('data-stable','yes'));
+  const box=await stage.boundingBox();
+  await page.mouse.move(box!.x+box!.width/2,box!.y+box!.height/2);
+  await expect(page.locator('.project-vault')).toHaveAttribute('data-hovered',projectsFixture.data[0].id);
+  await page.mouse.click(box!.x+box!.width/2,box!.y+box!.height/2);
+  await expect(page.locator('.project-vault')).toHaveAttribute('data-inspection','true');
+  await page.getByRole('button',{name:'Next project',exact:true}).click();
+  await expect(page.locator('.project-summary h3')).toHaveText(projectsFixture.data[1].title);
+  await expect(canvas).toHaveAttribute('data-stable','yes');
+  await stage.scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath('project-vault-desktop.png')});
+  expect(models).toHaveLength(2);
+  await canvas.evaluate(el=>el.dispatchEvent(new Event('webglcontextlost')));
+  await expect(stage).toHaveAttribute('data-ready','false');
+  await expect(page.locator('.vault-fallback')).toBeVisible();
+  await page.getByRole('button',{name:'Next project',exact:true}).click();
+  await expect(page.locator('.project-summary h3')).toHaveText(projectsFixture.data[2].title);
+  expect(errors).toEqual([]);
+});
+test.describe('project vault touch',()=>{
+ test.use({hasTouch:true,viewport:{width:390,height:844}});
+ test('mobile project vault supports tap and reduced motion',async({page,context},info)=>{
+  await mockApi(context);
+  await context.route('**/image/upload/f_webp,**',route=>route.fulfill({path:'tests/fixtures/project-preview.webp',contentType:'image/webp',headers:{'access-control-allow-origin':'*'}}));
+  await page.goto('/projects');
+  const stage=page.locator('.vault-canvas');await stage.scrollIntoViewIfNeeded();
+  await expect(stage).toHaveAttribute('data-ready','true');
+  await expect(stage).toHaveAttribute('data-running','false');
+  await expect(page.locator('.vault-title-label')).toHaveCount(1);
+  await expect(page.locator('[data-screenshot=ready]')).toHaveCount(1);
+  await expect(stage).toHaveCSS('touch-action','pan-y');
+  await page.getByRole('button',{name:'Next project',exact:true}).tap();
+  await expect(page.locator('.project-summary h3')).toHaveText(projectsFixture.data[1].title);
+  await page.getByRole('button',{name:'Exit inspection',exact:true}).tap();
+  await expect(page.locator('.project-vault')).toHaveAttribute('data-inspection','false');
+  await page.emulateMedia({reducedMotion:'no-preference'});await stage.scrollIntoViewIfNeeded();
+  await expect(stage).toHaveAttribute('data-running','true');
+  await page.screenshot({path:info.outputPath('project-vault-mobile.png')});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ });
+});
+
+test('project vault tablet preserves access after screenshot failure',async({page,context})=>{
+ await mockApi(context);await page.setViewportSize({width:900,height:1100});
+ await context.route('**/image/upload/f_webp,**',route=>route.abort());
+ await page.goto('/projects');const stage=page.locator('.vault-canvas');await stage.scrollIntoViewIfNeeded();
+ await expect(stage).toHaveAttribute('data-ready','true');
+ await expect(page.locator('[data-screenshot=failed]')).toHaveCount(3);
+ await page.getByRole('button',{name:'Next project',exact:true}).click();
+ await expect(page.locator('.project-summary h3')).toHaveText(projectsFixture.data[1].title);
+ await expect(page.locator('.project-summary a')).toHaveAttribute('href',/projects\//);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
