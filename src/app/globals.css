@@ -2539,7 +2539,7 @@ svg {
 
 /* Asset 04 — calm mechanical project inspection, native scrolling. */
 .project-explorer.project-vault-layout{grid-template-columns:minmax(180px,.24fr) minmax(0,1fr);align-items:start}
-.vault-project-index{min-width:0}.vault-navigation{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 4px;font:11px var(--font-mono)}
+.vault-project-index{min-width:0}.vault-project-index .project-list button{flex-shrink:0}.vault-project-index .project-list button > span:nth-child(2){min-width:0;overflow-wrap:anywhere}.vault-navigation{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 4px;font:11px var(--font-mono)}
 .vault-navigation button,.vault-inspect{border:1px solid var(--border);background:var(--card);color:var(--text);padding:10px 12px;cursor:pointer}.vault-navigation button:disabled{opacity:.4;cursor:default}
 .vault-navigation button:hover,.vault-inspect:hover{border-color:var(--primary)}
 .project-vault{position:relative;border:1px solid var(--border);background:radial-gradient(circle at center,rgba(27,49,62,.2),transparent 70%);overflow:hidden}
@@ -2552,3 +2552,12 @@ svg {
 @media(max-width:767px){.vault-canvas{height:300px}.vault-title-label{font-size:9px;max-width:240px}.vault-index-label{font-size:6px}.vault-details .project-summary{flex-wrap:wrap;gap:16px}}
 
 .vault-texture-status{font:11px var(--font-mono);color:var(--muted);white-space:nowrap}.vault-texture-status[data-screenshot="ready"]{display:none}
+
+/* Responsive device showcase. Renderer resizes its buffer; canvas is never CSS-scaled. */
+.vault-webgl,.vault-webgl canvas{width:100%;height:100%}
+.vault-device-selector{display:flex;justify-content:center;gap:6px;margin:0 12px 16px}
+.vault-device-selector button{padding:9px 16px;border:1px solid var(--border);background:var(--background);color:var(--muted);font:11px var(--font-mono);cursor:pointer}
+.vault-device-selector button[aria-pressed="true"]{color:var(--text);border-color:var(--secondary);background:var(--card)}
+.vault-device-selector button:focus-visible{outline:2px solid var(--secondary);outline-offset:3px}
+.vault-preview-note{text-align:center;font-size:11px;color:var(--muted);margin:-4px 12px 14px}
+@media(max-width:767px){.project-vault-layout .vault-project-index{order:2}.project-vault-layout .project-stage{order:1;display:flex;flex-direction:column}.project-vault-layout .vault-details{order:-1;padding:0 0 12px}.vault-details .project-summary{margin-top:0}.vault-device-selector button{flex:1;max-width:105px}.vault-canvas{min-height:260px}}

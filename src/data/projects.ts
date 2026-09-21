@@ -1,14 +1,14 @@
-import type { Project } from '@/services/api';
-import { isCloudinaryImage, validImageSource } from '@/lib/image-loader';
-export type VaultProject = Project;
-export function projectScreenshot(src: string, mobile: boolean) {
-  if (!validImageSource(src)) return '';
-  return isCloudinaryImage(src) ? src.replace('/image/upload/', `/image/upload/f_webp,q_82,c_pad,w_${mobile?640:1280},h_${mobile?360:720},b_rgb:101820/`) : src;
-}
-/** Three visible instances at most, with identity preserved when positions swap. */
-export function projectWindow(count: number, active: number, mobile: boolean) {
-  if (!count) return [];
-  if (mobile || count===1) return [{index:active,slot:0}];
-  const previous=(active+count-1)%count, next=(active+1)%count;
-  return [{index:active,slot:0},{index:previous,slot:-1},...(next===previous?[]:[{index:next,slot:1}])];
+import type {Project} from '@/services/api';
+import {isCloudinaryImage,validImageSource} from '@/lib/image-loader';
+export type DeviceMode='desktop'|'laptop'|'mobile';
+export const deviceModes:DeviceMode[]=['desktop','laptop','mobile'];
+export type VaultProject=Project & {screenshots?:Partial<Record<DeviceMode,string>>};
+/** Optional real device screenshots; keep empty until an authored capture exists. */
+export const projectScreenshotOverrides:Record<string,Partial<Record<DeviceMode,string>>>={};
+export function projectScreenshot(project:VaultProject,device:DeviceMode,compact:boolean,secondary=false,inspection=false){
+ const sources={...project.screenshots,...projectScreenshotOverrides[project.id]};
+ const native=sources[device]||(device==='laptop'?sources.desktop:undefined);
+ const source=native||sources.desktop||project.imageUrl;
+ const width=secondary?960:device==='mobile'?(native?1080:1920):compact?1280:inspection?2560:1920;
+ return {url:validImageSource(source)?isCloudinaryImage(source)?source.replace('/image/upload/',`/image/upload/f_webp,q_${inspection?92:90},c_limit,w_${width}/`):source:'',width,fit:device==='mobile'?'cover':'contain',portraitFallback:device==='mobile'&&!native};
 }

@@ -1,0 +1,23 @@
+{
+  "FZH_Kinetic_Monitor": {
+    "triangles": 4264,
+    "mesh_objects": 10,
+    "nodes": 13,
+    "materials": 6,
+    "bytes": 294472
+  },
+  "FZH_Kinetic_Laptop": {
+    "triangles": 10208,
+    "mesh_objects": 16,
+    "nodes": 20,
+    "materials": 6,
+    "bytes": 689720
+  },
+  "FZH_Kinetic_Mobile": {
+    "triangles": 4484,
+    "mesh_objects": 11,
+    "nodes": 14,
+    "materials": 6,
+    "bytes": 309696
+  }
+}

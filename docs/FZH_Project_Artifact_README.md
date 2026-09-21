@@ -98,3 +98,5 @@ Requires Blender 4.5 and the existing Asset 01–03 helper scripts/material sour
 ## Limits
 
 Validation covers geometry and Chromium browser behavior, including an emulated touch viewport. Screenshot regression tests use a local WebP fixture derived from the genuine Kasirku image; the production Cloudinary URL was separately checked for a successful image response and CORS. Physical iOS/Android and hardware FPS/battery measurements remain untested. The source model has no baked idle clip. Status strings are not displayed because the current API does not provide verified deployment state. Runtime external screenshots depend on their host/CORS. Arbitrary jumps in a long project list mount the newly visible neighbors; the canvas and base GLB assets are retained.
+
+The original artifact pipeline below is retained for reference. The current Project section is upgraded to the [Kinetic Device Showcase](FZH_Kinetic_Device_Showcase_README.md).

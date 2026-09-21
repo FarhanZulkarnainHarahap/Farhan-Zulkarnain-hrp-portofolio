@@ -857,19 +857,19 @@ test("project vault keeps scene, selects artifacts and survives context loss", a
   await page.goto('/projects');
   const stage=page.locator('.vault-canvas');await stage.scrollIntoViewIfNeeded();
   await expect(stage).toHaveAttribute('data-ready','true');
-  await expect(page.locator('.vault-title-label')).toHaveCount(3);
+
   await expect(page.locator('[data-screenshot=ready]')).toHaveCount(3);
   const canvas=stage.locator('canvas');await canvas.evaluate(el=>el.setAttribute('data-stable','yes'));
   const box=await stage.boundingBox();
   await page.mouse.move(box!.x+box!.width/2,box!.y+box!.height/2);
-  await expect(page.locator('.project-vault')).toHaveAttribute('data-hovered',projectsFixture.data[0].id);
+  await expect(page.locator('.project-vault')).toHaveAttribute('data-hovered','laptop');
   await page.mouse.click(box!.x+box!.width/2,box!.y+box!.height/2);
   await expect(page.locator('.project-vault')).toHaveAttribute('data-inspection','true');
   await page.getByRole('button',{name:'Next project',exact:true}).click();
   await expect(page.locator('.project-summary h3')).toHaveText(projectsFixture.data[1].title);
   await expect(canvas).toHaveAttribute('data-stable','yes');
   await stage.scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath('project-vault-desktop.png')});
-  expect(models).toHaveLength(2);
+  expect(models).toHaveLength(4);
   await canvas.evaluate(el=>el.dispatchEvent(new Event('webglcontextlost')));
   await expect(stage).toHaveAttribute('data-ready','false');
   await expect(page.locator('.vault-fallback')).toBeVisible();
@@ -886,7 +886,7 @@ test.describe('project vault touch',()=>{
   const stage=page.locator('.vault-canvas');await stage.scrollIntoViewIfNeeded();
   await expect(stage).toHaveAttribute('data-ready','true');
   await expect(stage).toHaveAttribute('data-running','false');
-  await expect(page.locator('.vault-title-label')).toHaveCount(1);
+
   await expect(page.locator('[data-screenshot=ready]')).toHaveCount(1);
   await expect(stage).toHaveCSS('touch-action','pan-y');
   await page.getByRole('button',{name:'Next project',exact:true}).tap();
@@ -907,7 +907,7 @@ test('project vault tablet preserves access after screenshot failure',async({pag
  await context.route('**/image/upload/f_webp,**',route=>route.abort());
  await page.goto('/projects');const stage=page.locator('.vault-canvas');await stage.scrollIntoViewIfNeeded();
  await expect(stage).toHaveAttribute('data-ready','true');
- await expect(page.locator('[data-screenshot=failed]')).toHaveCount(3);
+ await expect(page.locator('[data-screenshot=failed]')).toHaveCount(1);
  await page.getByRole('button',{name:'Next project',exact:true}).click();
  await expect(page.locator('.project-summary h3')).toHaveText(projectsFixture.data[1].title);
  await expect(page.locator('.project-summary a')).toHaveAttribute('href',/projects\//);
