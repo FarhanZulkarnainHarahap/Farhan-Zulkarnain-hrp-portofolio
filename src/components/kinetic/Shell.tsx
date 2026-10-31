@@ -1,4 +1,5 @@
 "use client";
+import {MotionPreference} from "../three/motionPreference";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -106,6 +107,7 @@ export default function Shell({ children }: { children: ReactNode }) {
         </motion.div>
       </main>
       <SceneHost />
+      <MotionPreference />
       <Footer />
       <Cursor />
     </SceneProvider>

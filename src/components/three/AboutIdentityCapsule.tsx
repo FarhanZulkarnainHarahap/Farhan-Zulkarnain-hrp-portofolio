@@ -1,4 +1,6 @@
 "use client";
+import {useReduced3DMotion} from "./motionPreference";
+import { RenderQuality } from "./RenderQuality";
 
 import { getAssetMotion } from "./assetMotion";
 
@@ -27,8 +29,10 @@ function useMedia(query: string) {
 function PortraitSurface({ plane, url }: { plane: Mesh; url: string }) {
   const source = useTexture(url);
   const invalidate = useThree((state) => state.invalidate);
+  const gl = useThree((state) => state.gl);
   useEffect(() => {
     const map = source.clone();
+    map.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
     map.flipY = false; // glTF UV convention, including exporter V conversion.
     map.colorSpace = SRGBColorSpace;
     const image = source.image as { width: number; height: number };
@@ -55,7 +59,7 @@ function PortraitSurface({ plane, url }: { plane: Mesh; url: string }) {
       invalidate();
     };
     /* eslint-enable react-hooks/immutability */
-  }, [plane, source, invalidate]);
+  }, [plane, source, invalidate, gl]);
   return null;
 }
 
@@ -146,21 +150,21 @@ export default function AboutIdentityCapsule({ portraitUrl, className }: {
   const { ref: viewportRef, interaction, onPointerEnter, onPointerLeave, onPointerMove, onPointerDown, onPointerUp, entered, running, failed, onFailure } = useAssetViewport();
   const mobile = useMedia("(max-width: 767px)");
   const tablet = useMedia("(min-width: 768px) and (max-width: 1023px)");
-  const reducedMotion = useMedia("(prefers-reduced-motion: reduce)");
+  const reducedMotion = useReduced3DMotion();
   const hydrated = useSyncExternalStore(() => () => {}, () => true, () => false);
   const [ready, setReady] = useState(false);
   const onReady = useCallback(() => setReady(true), []);
   return <div ref={viewportRef} onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave} onPointerMove={onPointerMove} onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={onPointerLeave} data-fzh-asset="identity" data-ready={ready && !failed} data-running={running && !reducedMotion && !failed} className={className} aria-hidden="true" style={{ position: "relative", width: "100%", aspectRatio: "10 / 13", touchAction: "pan-y" }}>
     {/* A real portrait remains visible without WebGL; otherwise use the capsule poster. */}
     {/* eslint-disable-next-line @next/next/no-img-element */}
-    <img src={portraitUrl || `${MODEL}_poster.webp`} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }} />
+    <img className={!ready && !failed ? "asset-poster-pending" : undefined} src={portraitUrl || `${MODEL}_poster.webp`} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }} />
     {hydrated && entered && !failed && <IdentityBoundary>
       <Canvas
         style={{ position: "absolute", inset: 0, opacity: ready ? 1 : 0, touchAction: "pan-y" }}
         camera={{ position: [0, 0, 5], fov: 38 }}
-        dpr={mobile ? 1 : [1, 1.5]}
+        dpr={[1.5,2]}
         frameloop={!running ? "never" : reducedMotion ? "demand" : "always"}
-        gl={{ alpha: false, antialias: !mobile, powerPreference: "low-power" }}
+        gl={{ alpha: false, antialias: true, powerPreference: "high-performance" }}
         fallback={<span />}
           onCreated={({ gl }) => {
             gl.domElement.addEventListener("webglcontextlost", onFailure, { once: true });
@@ -170,7 +174,8 @@ export default function AboutIdentityCapsule({ portraitUrl, className }: {
         <ambientLight intensity={0.6} />
         <directionalLight position={[3, 4, 5]} intensity={3} />
         <directionalLight position={[-3, -2, 3]} intensity={1.5} color="#a4dfff" />
-        <Suspense fallback={null}>
+        <RenderQuality />
+          <Suspense fallback={null}>
           <Environment resolution={128} frames={1}>
             <Lightformer position={[0, 3, 2]} intensity={3} scale={[6, 3, 1]} />
             <Lightformer position={[-3, 0, 1]} rotation={[0, Math.PI / 2, 0]} intensity={2} scale={[3, 6, 1]} color="#a4dfff" />

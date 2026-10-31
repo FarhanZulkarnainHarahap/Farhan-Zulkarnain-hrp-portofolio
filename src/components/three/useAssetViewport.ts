@@ -4,10 +4,10 @@ import { useCallback, useEffect, useRef, useState, type PointerEvent } from "rea
 export type AssetInteraction = { hovered: boolean; scroll: number; pointerX: number; pointerY: number };
 
 /** Load near the viewport; sample scroll without rerendering React on every tick. */
-export function useAssetViewport() {
+export function useAssetViewport(eager = false) {
   const ref = useRef<HTMLDivElement>(null);
   const interaction = useRef<AssetInteraction>({ hovered: false, scroll: 0, pointerX: 0, pointerY: 0 });
-  const [entered, setEntered] = useState(false);
+  const [entered, setEntered] = useState(eager);
   const [visible, setVisible] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -45,6 +45,11 @@ export function useAssetViewport() {
         (innerHeight / 2 - rect.top - rect.height / 2) / (innerHeight / 2 + rect.height / 2)));
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(sample); };
+    // Start downloads ahead of scroll, independently of the render loop.
+    const preload = new IntersectionObserver(([entry]) => {
+      if(entry.isIntersecting){setEntered(true);preload.disconnect();}
+    }, {rootMargin: "1000px"});
+    if(ref.current)preload.observe(ref.current);
     const observer = new IntersectionObserver(([entry]) => {
       inView = entry.isIntersecting;
       setVisible(inView);
@@ -60,6 +65,7 @@ export function useAssetViewport() {
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
+      preload.disconnect();
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
       document.removeEventListener("visibilitychange", visibility);

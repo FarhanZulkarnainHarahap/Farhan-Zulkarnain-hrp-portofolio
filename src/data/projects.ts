@@ -12,3 +12,11 @@ export function projectScreenshot(project:VaultProject,device:DeviceMode,compact
  const width=secondary?960:device==='mobile'?(native?1080:1920):compact?1280:inspection?2560:1920;
  return {url:validImageSource(source)?isCloudinaryImage(source)?source.replace('/image/upload/',`/image/upload/f_webp,q_${inspection?92:90},c_limit,w_${width}/`):source:'',width,fit:device==='mobile'?'cover':'contain',portraitFallback:device==='mobile'&&!native};
 }
+
+/** Three visible instances at most, with identity preserved when positions swap. */
+export function projectWindow(count: number, active: number, mobile: boolean) {
+  if (!count) return [];
+  if (mobile || count===1) return [{index:active,slot:0}];
+  const previous=(active+count-1)%count, next=(active+1)%count;
+  return [{index:active,slot:0},{index:previous,slot:-1},...(next===previous?[]:[{index:next,slot:1}])];
+}

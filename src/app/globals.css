@@ -2561,3 +2561,9 @@ svg {
 .vault-device-selector button:focus-visible{outline:2px solid var(--secondary);outline-offset:3px}
 .vault-preview-note{text-align:center;font-size:11px;color:var(--muted);margin:-4px 12px 14px}
 @media(max-width:767px){.project-vault-layout .vault-project-index{order:2}.project-vault-layout .project-stage{order:1;display:flex;flex-direction:column}.project-vault-layout .vault-details{order:-1;padding:0 0 12px}.vault-details .project-summary{margin-top:0}.vault-device-selector button{flex:1;max-width:105px}.vault-canvas{min-height:260px}}
+
+/* Gentle placeholder motion begins before the GLB and WebGL runtime are ready. */
+@keyframes asset-poster-standby {from{transform:translateY(-3px) rotate(-.6deg)}to{transform:translateY(3px) rotate(.6deg)}}
+@media(prefers-reduced-motion:no-preference){.asset-poster-pending{animation:asset-poster-standby 2.8s ease-in-out infinite alternate;transform-origin:center}}
+
+.motion-preference{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;padding:16px;color:var(--muted);font-size:12px}.motion-preference button{border:1px solid var(--border);padding:10px 14px;color:var(--text);background:var(--surface);cursor:pointer}

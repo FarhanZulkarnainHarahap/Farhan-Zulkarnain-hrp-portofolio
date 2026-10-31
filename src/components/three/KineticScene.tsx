@@ -1,4 +1,5 @@
 "use client";
+import { RenderQuality } from "./RenderQuality";
 import { Suspense, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
@@ -63,12 +64,12 @@ export default function KineticScene({
   return (
     <Canvas
       camera={{ position: [0, 0.35, 9], fov: 42 }}
-      dpr={quality === "high" ? [1, 1.5] : 1}
+      dpr={[1.5,2]}
       frameloop={running ? "always" : "never"}
       gl={{
         alpha: true,
-        antialias: quality !== "low",
-        powerPreference: "low-power",
+        antialias: true,
+        powerPreference: "high-performance",
       }}
       onCreated={({ gl }) => {
         gl.domElement.addEventListener("webglcontextlost", onFailure, {
@@ -76,7 +77,8 @@ export default function KineticScene({
         });
       }}
     >
-      <Suspense fallback={null}>
+      <RenderQuality />
+          <Suspense fallback={null}>
         <MaterialProvider>
           <Contents quality={quality} onReady={onReady} />
         </MaterialProvider>

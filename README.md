@@ -54,3 +54,5 @@ The capability section now uses a dedicated persistent canvas with modular Blend
 See [Project Vault / Asset 04](docs/FZH_Project_Artifact_README.md) for the new reusable project capsule, screenshot pipeline, interaction states, source files and measurements.
 
 The Project section now uses the [FZH Kinetic Device Showcase](docs/FZH_Kinetic_Device_Showcase_README.md): distinct monitor/laptop/mobile chassis with measured rendering and texture improvements.
+
+Responsive rendering and standby across all scenes: [FZH Responsive Assets Fix](docs/FZH_Responsive_Assets_Fix.md).

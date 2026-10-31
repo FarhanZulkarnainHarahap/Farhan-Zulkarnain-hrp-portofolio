@@ -1,4 +1,5 @@
 "use client";
+import {useReduced3DMotion} from "../motionPreference";
 import dynamic from "next/dynamic";
 import {
   Component,
@@ -27,6 +28,7 @@ class Boundary extends Component<
   }
 }
 export default function SceneHost() {
+  const reduced = useReduced3DMotion();
   const host = useRef<HTMLDivElement>(null),
     activeSlot = useRef<HTMLElement | null>(null);
   const [quality, setQuality] = useState<Quality | null>(null),
@@ -49,7 +51,7 @@ export default function SceneHost() {
     const update = () =>
       setQuality(
         !supported ||
-          motion.matches ||
+          reduced ||
           (nav.hardwareConcurrency && nav.hardwareConcurrency <= 2) ||
           (nav.deviceMemory && nav.deviceMemory <= 2) ||
           nav.connection?.saveData
@@ -67,7 +69,7 @@ export default function SceneHost() {
       motion.removeEventListener("change", update);
       window.removeEventListener("resize", update);
     };
-  }, []);
+  }, [reduced]);
   useEffect(() => {
     let frame = 0;
     const update = () => {

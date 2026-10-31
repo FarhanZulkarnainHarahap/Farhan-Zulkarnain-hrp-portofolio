@@ -1,4 +1,6 @@
-# FZH Kinetic Device Showcase — Project Vault upgrade
+# FZH Kinetic Device Showcase — archived implementation
+
+Superseded by [the responsive assets correction](FZH_Responsive_Assets_Fix.md). The live Project scene uses FZH Project Artifacts again; device GLBs below are archived, not loaded by the website.
 
 This upgrades only the Project / Selected Work visualization. Hero, Identity Capsule, Capability Matrix, project data and detail routes are preserved. As requested in the preceding revision, the showcase displays the title, device visualization and Explore project link; long explanations remain on the project detail page.
 

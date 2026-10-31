@@ -862,14 +862,14 @@ test("project vault keeps scene, selects artifacts and survives context loss", a
   const canvas=stage.locator('canvas');await canvas.evaluate(el=>el.setAttribute('data-stable','yes'));
   const box=await stage.boundingBox();
   await page.mouse.move(box!.x+box!.width/2,box!.y+box!.height/2);
-  await expect(page.locator('.project-vault')).toHaveAttribute('data-hovered','laptop');
+  await expect(page.locator('.project-vault')).toHaveAttribute('data-hovered',projectsFixture.data[0].id);
   await page.mouse.click(box!.x+box!.width/2,box!.y+box!.height/2);
   await expect(page.locator('.project-vault')).toHaveAttribute('data-inspection','true');
   await page.getByRole('button',{name:'Next project',exact:true}).click();
   await expect(page.locator('.project-summary h3')).toHaveText(projectsFixture.data[1].title);
   await expect(canvas).toHaveAttribute('data-stable','yes');
   await stage.scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath('project-vault-desktop.png')});
-  expect(models).toHaveLength(4);
+  expect(models).toHaveLength(2);
   await canvas.evaluate(el=>el.dispatchEvent(new Event('webglcontextlost')));
   await expect(stage).toHaveAttribute('data-ready','false');
   await expect(page.locator('.vault-fallback')).toBeVisible();

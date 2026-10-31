@@ -1,4 +1,6 @@
 "use client";
+import {useReduced3DMotion} from "./motionPreference";
+import { RenderQuality } from "./RenderQuality";
 /* Three.js owns these mutable scene objects and shared refs; useFrame updates them outside React rendering. */
 /* eslint-disable react-hooks/immutability */
 import { Component, Suspense, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, type RefObject } from "react";
@@ -24,9 +26,7 @@ function MatrixScene({ category, skills, mobile, tablet, reduced, selected, hove
   category:string; skills:CapabilitySkill[]; mobile:boolean; tablet:boolean; reduced:boolean; selected:string|null; hovered:string|null;
   onHover:(id:string|null)=>void; onSelect:(id:string|null)=>void; interaction:RefObject<AssetInteraction>; onReady:()=>void;
 }) {
-  const core=useGLTF(`${CAPABILITY_PATH}FZH_Capability_Core.glb`);
-  const node=useGLTF(`${CAPABILITY_PATH}FZH_Skill_Node.glb`);
-  const support=useGLTF(`${CAPABILITY_PATH}FZH_Capability_Support.glb`);
+  const [core,node,support]=useGLTF(['FZH_Capability_Core.glb','FZH_Skill_Node.glb','FZH_Capability_Support.glb'].map(file=>CAPABILITY_PATH+file));
   const background=useMemo(()=>{ const object=support.scene.clone(true); const detail=object.getObjectByName("Background_Data_Ring"); if(detail) detail.visible=!tablet; return object; },[support.scene,tablet]);
   const request=useMemo(()=>({category,skills,token:category+skills.map(s=>s.id).join("|")}),[category,skills]);
   const [displayed,setDisplayed]=useState(request);
@@ -68,7 +68,7 @@ function MatrixScene({ category, skills, mobile, tablet, reduced, selected, hove
   </group>;
 }
 export default function CapabilityMatrix({ category,skills,selectedSkillId,onSelect }: { category:string; skills:CapabilitySkill[]; selectedSkillId:string|null; onSelect:(id:string|null)=>void }) {
-  const mobile=useMedia("(max-width: 767px)"), tablet=useMedia("(min-width:768px) and (max-width:1023px)"), reduced=useMedia("(prefers-reduced-motion: reduce)");
+  const mobile=useMedia("(max-width: 767px)"), tablet=useMedia("(min-width:768px) and (max-width:1023px)"), reduced=useReduced3DMotion();
   const { ref:viewportRef,interaction,onPointerEnter,onPointerMove,onPointerLeave,onPointerDown,onPointerUp,entered,running,failed,onFailure }=useAssetViewport();
   const hydrated=useSyncExternalStore(()=>()=>{},()=>true,()=>false);
   const [ready,setReady]=useState(false),[hovered,setHovered]=useState<string|null>(null),[page,setPage]=useState({category,index:0});
@@ -82,10 +82,11 @@ export default function CapabilityMatrix({ category,skills,selectedSkillId,onSel
     <div ref={viewportRef} className="matrix-stage" aria-hidden="true" data-ready={ready&&!failed} data-running={running&&!reduced&&!failed}
       onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave} onPointerMove={onPointerMove} onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={onPointerLeave}>
       {(!ready||failed)&&<div className="matrix-placeholder"><span className="eyebrow">{category.toUpperCase()} / CAPABILITY MATRIX</span><p>{skills.length} connected technologies</p></div>}
-      {hydrated&&entered&&!failed&&<Boundary onFailure={onFailure}><Canvas orthographic camera={{position:[0,0,8],zoom:100,near:.1,far:30}} dpr={mobile?1:[1,1.5]} frameloop={!running?"never":reduced?"demand":"always"} gl={{alpha:true,antialias:!mobile,powerPreference:"low-power"}}
+      {hydrated&&entered&&!failed&&<Boundary onFailure={onFailure}><Canvas orthographic camera={{position:[0,0,8],zoom:100,near:.1,far:30}} dpr={[1.5,2]} frameloop={!running?"never":reduced?"demand":"always"} gl={{alpha:true,antialias:true,powerPreference:"high-performance"}}
         onPointerMissed={()=>onSelect(null)} fallback={<span />} onCreated={({gl})=>gl.domElement.addEventListener("webglcontextlost",onFailure,{once:true})}>
         <ambientLight intensity={.75}/><directionalLight position={[2,4,5]} intensity={2.5}/><directionalLight position={[-3,-2,4]} intensity={1.1} color="#a5dfff"/>
-        <Suspense fallback={null}>
+        <RenderQuality />
+          <Suspense fallback={null}>
           <Environment frames={1} resolution={64}><Lightformer position={[0,3,4]} scale={[5,3,1]} intensity={2}/></Environment>
           <MatrixScene category={category} skills={visible} mobile={mobile} tablet={tablet} reduced={reduced} selected={selectedSkillId} hovered={visible.some(s=>s.id===hovered)?hovered:null} onHover={setHovered} onSelect={onSelect} interaction={interaction} onReady={onReady}/>
         </Suspense>

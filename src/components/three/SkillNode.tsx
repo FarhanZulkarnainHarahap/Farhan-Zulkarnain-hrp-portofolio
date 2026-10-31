@@ -2,7 +2,7 @@
 /* Three.js owns these mutable scene objects and shared refs; useFrame updates them outside React rendering. */
 /* eslint-disable react-hooks/immutability */
 import { Suspense, useEffect, useMemo, useRef, type MutableRefObject } from "react";
-import { createPortal, useFrame } from "@react-three/fiber";
+import { createPortal, useFrame, useThree } from "@react-three/fiber";
 import { Html, useTexture } from "@react-three/drei";
 import { Group, MathUtils, Mesh, MeshStandardMaterial, MeshBasicMaterial, SRGBColorSpace } from "three";
 import type { CapabilitySkill } from "@/data/techStack";
@@ -10,7 +10,8 @@ import type { NodePosition } from "./capabilityLayout";
 
 function Logo({ plane, url }: { plane: Mesh; url: string }) {
   const cached = useTexture(url);
-  const map = useMemo(() => { const t = cached.clone(); t.flipY = false; t.colorSpace = SRGBColorSpace; t.needsUpdate = true; return t; }, [cached]);
+  const gl=useThree(state=>state.gl);
+  const map = useMemo(() => { const t = cached.clone(); t.anisotropy=Math.min(8,gl.capabilities.getMaxAnisotropy()); t.flipY = false; t.colorSpace = SRGBColorSpace; t.needsUpdate = true; return t; }, [cached,gl]);
   useEffect(() => () => map.dispose(), [map]);
   return createPortal(<meshBasicMaterial attach="material" map={map} transparent depthWrite={false} toneMapped={false} />, plane);
 }
