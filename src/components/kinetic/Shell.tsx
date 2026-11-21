@@ -1,5 +1,5 @@
 "use client";
-import {MotionPreference} from "../three/motionPreference";
+import { MotionPreference } from "../three/motionPreference";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -91,25 +91,28 @@ export default function Shell({ children }: { children: ReactNode }) {
   const scaleX = useSpring(scrollYProgress, { stiffness: 180, damping: 30 });
   return (
     <SceneProvider>
-      <Navbar />
-      <motion.div
-        className="scroll-progress"
-        style={{ scaleX: reduced ? scrollYProgress : scaleX }}
-      />
-      <main id="main-content" className="kinetic-main">
+      {/* display: contents; scopes legacy-kinetic.css to the old pages */}
+      <div className="legacy-root">
+        <Navbar />
         <motion.div
-          key={pathname}
-          initial={reduced ? false : { clipPath: "inset(0 0 4% 0)" }}
-          animate={{ clipPath: "inset(0 0 0% 0)" }}
-          transition={{ duration: 0.28 }}
-        >
-          {children}
-        </motion.div>
-      </main>
-      <SceneHost />
-      <MotionPreference />
-      <Footer />
-      <Cursor />
+          className="scroll-progress"
+          style={{ scaleX: reduced ? scrollYProgress : scaleX }}
+        />
+        <main id="main-content" className="kinetic-main">
+          <motion.div
+            key={pathname}
+            initial={reduced ? false : { clipPath: "inset(0 0 4% 0)" }}
+            animate={{ clipPath: "inset(0 0 0% 0)" }}
+            transition={{ duration: 0.28 }}
+          >
+            {children}
+          </motion.div>
+        </main>
+        <SceneHost />
+        <MotionPreference />
+        <Footer />
+        <Cursor />
+      </div>
     </SceneProvider>
   );
 }

@@ -48,6 +48,12 @@
   "System Initialized", "Transmission", "Capability Graph", "Trajectory Map", "FZH-001".
 - Copywriting: bahasa Inggris profesional, kecuali saya minta lain.
 - Animasi wajib menghormati prefers-reduced-motion dan tidak boleh memperburuk LCP/CLS.
+- Token ada di src/app/globals.css (primitive → semantic `@theme static` → component). Tema via
+  `light-dark()`; jangan pakai utilitas `dark:`.
+- SEMENTARA: halaman yang belum di-redesign memakai src/styles/legacy-kinetic.css (CSS lama, di-scope ke
+  wrapper `.legacy-root` di kinetic/Shell.tsx, app/auth/layout.tsx, app/error.tsx). Jangan diperluas.
+  Halaman baru TIDAK dibungkus `.legacy-root`. Hapus file, import di layout.tsx, dan wrapper-nya di Fase 11
+  (atau saat halaman terakhir pemakainya diganti).
 
 ## 3D (Blender)
 - 3D hanya sebagai AKSEN, bukan tema. Sumber .blend di design/blender/, hasil ekspor di public/3d/.
