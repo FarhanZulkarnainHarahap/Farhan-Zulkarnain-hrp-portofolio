@@ -1,7 +1,7 @@
 # Aturan Redesign Portofolio
 
 ## Lingkungan
-- Aplikasi Next.js ada di web/ (root git satu tingkat di atasnya). Semua path di aturan ini relatif ke web/.
+- Aplikasi Next.js ada di web/, yang juga merupakan root git. Semua path di aturan ini relatif ke web/.
 - Referensi desain di ../design-refs/ (awesome-design-md, design.md). Blender Skills ada di ~/.claude/skills (global).
 - WSL, Node 20, tanpa sudo: jangan npm install -g (pakai npx), jangan npx skills add.
 - Blender berjalan di Windows; MCP blender terhubung lewat localhost:9876 (mirrored networking) atau BLENDER_HOST.
@@ -57,7 +57,12 @@
   Untuk Sketchfab, cek lisensinya dan catat di docs/CREDITS.md.
 
 ## Alur kerja
-- Kerja hanya di branch redesign/professional. Commit kecil per fase/section. Jangan push ke main.
+- Kerja hanya di branch redesign/professional. Commit kecil per fase/section.
 - Sebelum menghapus file lama, grep dulu semua import-nya.
-- Di akhir setiap fase: jalankan npm run lint && npm run build, laporkan hasilnya,
-  lalu BERHENTI dan tunggu persetujuan saya.
+- Setiap fase/sub-fase yang selesai DAN lolos npm run lint + npm run build + test yang relevan:
+  langsung commit lalu `git push origin redesign/professional`, tanpa menunggu persetujuan.
+- Push HANYA ke redesign/professional. Jangan pernah push/merge ke main, jangan force push.
+- Kalau lint/build/test gagal: JANGAN push; laporkan kegagalannya.
+- Setelah push: laporkan hash commit dan link preview deploy jika ada.
+- Fase tanpa perubahan file tidak perlu commit/push.
+- Tetap BERHENTI dan tunggu persetujuan saya sebelum memulai fase berikutnya.
