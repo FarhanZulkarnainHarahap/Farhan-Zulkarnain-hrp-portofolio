@@ -2,7 +2,7 @@
 import SpatialSystem from "./SpatialSystem";
 import { useState, type FormEvent } from "react";
 import { apiFetch } from "@/lib/api-client";
-import { profile } from "./data";
+import { profile } from "@/lib/site";
 import { SectionHeading, SystemIcon } from "./Primitives";
 import { useScene } from "./SceneState";
 export default function Contact() {

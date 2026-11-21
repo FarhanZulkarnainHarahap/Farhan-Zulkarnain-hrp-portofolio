@@ -7,7 +7,7 @@ import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import SceneHost from "../three/controllers/SceneHost";
 import Navbar from "@/components/Navbar";
 import { SceneProvider } from "./SceneState";
-import { profile } from "./data";
+import { profile } from "@/lib/site";
 function Footer() {
   const [time, setTime] = useState("Asia/Jakarta");
   useEffect(() => {

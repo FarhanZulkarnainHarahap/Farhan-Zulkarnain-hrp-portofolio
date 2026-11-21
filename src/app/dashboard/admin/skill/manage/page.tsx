@@ -1,5 +1,5 @@
 "use client";
-import Modal from "@/components/kinetic/Modal";
+import Modal from "@/components/admin/Modal";
 
 import { useState, useEffect, useMemo } from "react";
 import {

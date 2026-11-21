@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 
 import { Media, Reveal, SectionHeading, SystemIcon } from "./Primitives";
-import { profile } from "./data";
+import { profile } from "@/lib/site";
 const AboutIdentityCapsule = dynamic(() => import("../three/AboutIdentityCapsule"), {
   loading: () => <Media src={profile.image} alt="" />,
 });
@@ -60,11 +60,11 @@ export default function Profile({ detail = false }: { detail?: boolean }) {
           <div className="button-row">
             <Link
               className="text-link"
-              href={detail ? "/about/docs" : "/about/detail"}
+              href={detail ? "/about#documents" : "/about#profile"}
             >
               {detail ? "CV & credentials" : "Explore my profile"} ↗
             </Link>
-            <Link className="text-link muted" href="/about/skills">
+            <Link className="text-link muted" href="/about#stack">
               Capability graph ↗
             </Link>
           </div>

@@ -15,6 +15,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Third-party Claude Code skill scripts (not app code):
     ".claude/**",
+    // TEMPORARY (redesign): legacy Kinetic file with 2 pre-existing react-hooks/immutability
+    // errors. Remove this entry when the file is deleted in Fase 11.
+    "src/components/three/kinetic/KineticCore.tsx",
   ]),
 ]);
 

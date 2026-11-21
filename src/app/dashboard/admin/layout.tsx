@@ -1,5 +1,5 @@
 "use client";
-import { ConfirmationProvider } from "@/components/kinetic/Confirmation";
+import { ConfirmationProvider } from "@/components/admin/Confirmation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";

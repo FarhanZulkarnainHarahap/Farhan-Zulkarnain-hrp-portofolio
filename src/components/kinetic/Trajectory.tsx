@@ -2,8 +2,10 @@
 import SpatialSystem from "./SpatialSystem";
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { CollectionState, SectionHeading, SystemIcon } from "./Primitives";
-import { useCollection, type Experience } from "./data";
+import { SectionHeading, SystemIcon } from "./Primitives";
+import { CollectionState } from "@/components/admin/CollectionState";
+import { useCollection } from "@/hooks/useCollection";
+import type { Experience } from "@/types/content";
 import { useScene } from "./SceneState";
 const milestones = [
   {

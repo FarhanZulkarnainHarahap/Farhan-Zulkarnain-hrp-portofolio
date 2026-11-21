@@ -3,8 +3,10 @@ import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { capabilityCategories as categories, skillCategory as category, capabilitySkill } from "@/data/techStack";
 const CapabilityMatrix = dynamic(() => import("../three/CapabilityMatrix"), { loading: () => <p>Loading capability matrix…</p> });
-import { CollectionState, SectionHeading } from "./Primitives";
-import { type Skill, useCollection } from "./data";
+import { SectionHeading } from "./Primitives";
+import { CollectionState } from "@/components/admin/CollectionState";
+import { useCollection } from "@/hooks/useCollection";
+import type { Skill } from "@/types/content";
 import { useScene } from "./SceneState";
 export default function Capabilities() {
   const state = useCollection<Skill>("/api/skills");

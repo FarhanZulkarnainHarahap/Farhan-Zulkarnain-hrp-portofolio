@@ -5,6 +5,7 @@ import Capabilities from "@/components/kinetic/Capabilities";
 import Trajectory from "@/components/kinetic/Trajectory";
 import Projects from "@/components/kinetic/Projects";
 import Contact from "@/components/kinetic/Contact";
+import Documents from "@/components/kinetic/Documents";
 type LandingSection = "home" | "about" | "projects" | "journey" | "contact";
 export default function LandingPage({
   initialSection = "home",
@@ -36,8 +37,17 @@ export default function LandingPage({
       )}
       {(home || initialSection === "about") && (
         <>
+          {/* Anchors for the 308 redirects from /about/detail, /about/skills, /about/docs. */}
+          {!home && <span id="profile" />}
           <Profile />
+          {!home && <span id="stack" />}
           <Capabilities />
+          {!home && (
+            <>
+              <span id="documents" />
+              <Documents />
+            </>
+          )}
         </>
       )}
       {(home || initialSection === "journey") && <Trajectory />}

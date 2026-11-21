@@ -8,11 +8,8 @@ import {
   ArrowUpRight,
   RefreshCw,
 } from "lucide-react";
-import {
-  useCollection,
-  type Skill,
-  type Experience,
-} from "@/components/kinetic/data";
+import { useCollection } from "@/hooks/useCollection";
+import type { Skill, Experience } from "@/types/content";
 import type { Project, Document } from "@/services/api";
 export default function Overview() {
   const projects = useCollection<Project>("/api/portofolios");

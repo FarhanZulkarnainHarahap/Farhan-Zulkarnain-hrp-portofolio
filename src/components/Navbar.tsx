@@ -3,7 +3,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Search, Menu, X, ArrowUpRight } from "lucide-react";
-import { profile, useCollection } from "./kinetic/data";
+import { profile } from "@/lib/site";
+import { useCollection } from "@/hooks/useCollection";
 import type { Document } from "@/services/api";
 import { getDocumentSlug } from "@/lib/portfolio/documents";
 const links = [
@@ -41,7 +42,7 @@ function Palette({
       label: "CV",
       href: cv
         ? `/api/documents/${getDocumentSlug(cv)}/download`
-        : "/about/docs",
+        : "/about#documents",
     },
   ].filter((link) => link.label.toLowerCase().includes(query.toLowerCase()));
   function navigate(href: string) {

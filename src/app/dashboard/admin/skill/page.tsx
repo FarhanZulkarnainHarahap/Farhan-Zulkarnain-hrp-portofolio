@@ -1,5 +1,5 @@
 "use client";
-import { useConfirm } from "@/components/kinetic/Confirmation";
+import { useConfirm } from "@/components/admin/Confirmation";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { skillIcons } from "@/lib/skill-icons";

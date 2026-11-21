@@ -1,9 +1,10 @@
 "use client";
-import { useConfirm } from "@/components/kinetic/Confirmation";
+import { useConfirm } from "@/components/admin/Confirmation";
 import { useRef, useState, type FormEvent } from "react";
 import { apiFetch } from "@/lib/api-client";
-import { type Experience, useCollection } from "@/components/kinetic/data";
-import { CollectionState } from "@/components/kinetic/Primitives";
+import { useCollection } from "@/hooks/useCollection";
+import type { Experience } from "@/types/content";
+import { CollectionState } from "@/components/admin/CollectionState";
 export default function ExperiencePage() {
   const confirm = useConfirm();
   const state = useCollection<Experience>("/api/experiences");

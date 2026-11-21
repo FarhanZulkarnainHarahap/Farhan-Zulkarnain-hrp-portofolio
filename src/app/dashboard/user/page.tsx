@@ -1,8 +1,8 @@
 import Link from "next/link";
-import Shell from "@/components/kinetic/Shell";
+import DashboardShell from "@/components/admin/DashboardShell";
 export default function UserPage() {
   return (
-    <Shell>
+    <DashboardShell>
       <div className="route-intro">
         <p className="eyebrow">KINETIC SYSTEMS / MEMBER</p>
         <h1>Welcome back.</h1>
@@ -16,6 +16,6 @@ export default function UserPage() {
           </Link>
         </div>
       </div>
-    </Shell>
+    </DashboardShell>
   );
 }

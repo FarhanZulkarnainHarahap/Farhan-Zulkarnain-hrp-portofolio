@@ -207,3 +207,35 @@ Sepenuhnya untuk KineticCore & device vault → HAPUS/ganti dengan test 3D baru 
 3. **Tampilan admin**: diselaraskan dengan design system baru, atau dibiarkan (kelas CSS-nya dipisah ke file sendiri).
 4. **Proyek unggulan** beranda: tetap 4 item pertama urutan API, atau aturan lain (mis. hanya yang punya case study).
 5. **Email**: `farhanzulkarnaenhrp@gmail.com` ("naen") — konfirmasi.
+
+---
+
+## 8. Keputusan (2026-11-22)
+
+1. **Journey**: data diisi pemilik lewat `/admin/experience`. Milestone hardcode di `kinetic/Trajectory` **dihapus** (dikerjakan saat Journey dibangun ulang). Bila experiences kosong: `/journey` menampilkan EmptyState yang rapi; section Journey di beranda **disembunyikan otomatis**.
+2. **`/about/detail|skills|docs`**: redirect permanen 308 ke `/about#profile`, `/about#stack`, `/about#documents` (✅ Fase 1.5, via `next.config.ts`; `/skills` & `/documents` langsung ke anchor yang sama). Halaman `/about` baru wajib punya anchor `id="profile"`, `id="stack"`, `id="documents"`.
+3. **Admin**: tampilan tidak diubah; diisolasi (✅ Fase 1.5) — lihat CLAUDE.md bagian "Dashboard".
+4. **Proyek unggulan**: proyek yang punya studi kasus (`caseProblem`/`caseSolution`/`caseResult` terisi), maksimal 6; bila < 3, lengkapi dari urutan API.
+5. **Email**: belum dikonfirmasi (masih `farhanzulkarnaenhrp@gmail.com`).
+6. **Lint**: 0 error; `KineticCore.tsx` di-ignore sementara sampai dihapus di Fase 11.
+
+## 9. Catatan untuk fase berikutnya
+
+- **Normalisasi hanya di lapisan tampilan** (data API tidak diubah), di `src/lib/display/`:
+  - peta nama tampilan skill: "Postgresql"→"PostgreSQL", "redux"→"Redux", "Visualstudio"→"VS Code", "Nestjs"→"NestJS", "Github"→"GitHub", "Tailwindcss"→"Tailwind CSS", "Mongodb"→"MongoDB", dst.;
+  - `caseType` dipecah per koma menjadi beberapa badge;
+  - tag di kartu maksimal 4 + "+N";
+  - `features` di studi kasus tampil 6 dulu + tombol "Show all".
+- **Pengelompokan skill**: dasar = kategori API (FRONTEND, BACKEND, TOOLS, OTHERS); sub-kelompok Database/DevOps boleh dari peta nama di lapisan tampilan.
+- **Previous/Next** di `/projects/[slug]` dibuat baru; `sitemap.ts` ditambah semua `/projects/[slug]` (Fase 6).
+- **3D**: model hero lama 3,2 MB tidak dipakai; aset baru wajib sesuai budget (Fase 10).
+- **Test**: `kinetic.spec.ts` dan 2 test 3D lama diganti di Fase 12; test admin/auth/contact dipertahankan. `tests/admin-visual.spec.ts` (baseline screenshot dashboard) wajib tetap lolos.
+
+## 10. Fase 1.5 — isolasi admin (hasil)
+
+- Dipindah tanpa mengubah logika: `kinetic/Modal`, `kinetic/Confirmation` → `src/components/admin/`; `CollectionState` (dari `kinetic/Primitives`) → `src/components/admin/CollectionState.tsx`; `kinetic/data.ts` dipecah → `src/hooks/useCollection.ts`, `src/types/content.ts`, `src/lib/site.ts`. Semua import diperbarui (termasuk komponen kinetic publik yang masih hidup).
+- `/dashboard/user` memakai `src/components/admin/DashboardShell.tsx` + `DashboardNavbar.tsx` (salinan beku Shell/Navbar lama). `SceneHost`/`SceneProvider` tidak ikut disalin: SceneHost hanya menempel pada elemen `[data-scene-slot]` yang tidak ada di dashboard, jadi tak ada perubahan visual. Satu-satunya ketergantungan ke kode lama yang tersisa: `three/motionPreference` (masuk daftar PAKAI ULANG) dan `framer-motion`.
+- CSS: `src/app/dashboard/admin.css` = salinan penuh `globals.css` lama, setiap selector di-scope ke `.dashboard-root` (+1 class spesifisitas, seragam), keyframes diberi awalan `dashboard-`. Diimpor di `src/app/dashboard/layout.tsx`; wrapper `<div class="dashboard-root">` ber-`display: contents`. Banyak aturan publik ikut tersalin (dead weight terisolasi); boleh dipangkas nanti dengan test visual sebagai pengaman.
+- Verifikasi: 20 screenshot (10 rute × 1440/390) sebelum vs sesudah → 17 identik byte-per-byte; `/dashboard/user` beda hanya di digit jam live footer; `/dashboard/admin/experience` @390 beda 35 piksel anti-aliasing sudut kartu (Δ warna ≤ 4/765). Baseline disimpan di `tests/admin-visual.spec.ts-snapshots/`.
+- Lingkungan test lokal: Chromium Playwright butuh `libnspr4`, `libnss3`, `libasound2t64`; tanpa sudo dipasang di `~/.local/pw-libs/root` — jalankan test dengan
+  `export LD_LIBRARY_PATH=~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu:~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu/nss`.

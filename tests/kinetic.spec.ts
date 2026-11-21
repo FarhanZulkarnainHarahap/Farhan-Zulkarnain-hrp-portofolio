@@ -189,9 +189,6 @@ test("public routes, project preview, and all requested responsive widths", asyn
   }
   for (const route of [
     "/about",
-    "/about/detail",
-    "/about/skills",
-    "/about/docs",
     "/journey",
     "/projects",
     "/contact",
@@ -568,7 +565,7 @@ test("live public API, project detail, CV download, and rendered screenshots", a
   await expect(
     page.getByRole("heading", { name: "Overview", exact: true }),
   ).toBeVisible();
-  await page.goto("/about/docs");
+  await page.goto("/about#documents");
   const cv = page
     .locator(".document-item")
     .filter({ hasText: /Curiculum Vitae|Curriculum Vitae|Resume/ })
@@ -912,4 +909,18 @@ test('project vault tablet preserves access after screenshot failure',async({pag
  await expect(page.locator('.project-summary h3')).toHaveText(projectsFixture.data[1].title);
  await expect(page.locator('.project-summary a')).toHaveAttribute('href',/projects\//);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test("former About sub-pages redirect permanently to /about sections", async ({ request }) => {
+  for (const [from, to] of [
+    ["/about/detail", "/about#profile"],
+    ["/about/skills", "/about#stack"],
+    ["/about/docs", "/about#documents"],
+    ["/skills", "/about#stack"],
+    ["/documents", "/about#documents"],
+  ]) {
+    const response = await request.get(from, { maxRedirects: 0 });
+    expect(response.status(), from).toBe(308);
+    expect(response.headers().location, from).toBe(to);
+  }
 });

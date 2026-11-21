@@ -16,6 +16,24 @@
 - Logika /auth/login, /auth/register (JWT via jose) dan /dashboard (redirect ke /admin/home,
   dijaga proxy.ts untuk role ADMIN) jangan diubah. Tampilan /auth boleh diselaraskan.
 
+## Dashboard (di luar cakupan redesign)
+- Tampilan dashboard tidak diubah dalam redesign ini; komponennya ada di src/components/admin/
+  dan CSS-nya di src/app/dashboard/admin.css.
+- admin.css adalah salinan globals.css lama yang di-scope ke `.dashboard-root` (wrapper di
+  src/app/dashboard/layout.tsx, display: contents). Aturan baru di globals.css tetap bisa "bocor"
+  ke dashboard untuk properti yang tidak didefinisikan admin.css, dan utilitas Tailwind dashboard
+  memakai tema default Tailwind. Jadi: jangan reset namespace tema default Tailwind
+  (mis. `--color-*: initial`), dan setelah mengubah globals.css jalankan
+  `npx playwright test tests/admin-visual.spec.ts` (baseline screenshot dashboard harus tetap identik).
+- Modul bersama yang dipindah dari kinetic/: src/hooks/useCollection.ts, src/types/content.ts
+  (Skill, Experience), src/lib/site.ts (profile), src/components/admin/{Modal,Confirmation,
+  CollectionState,DashboardShell,DashboardNavbar}.tsx. Jangan hapus saat bersih-bersih Kinetic.
+- next.config.ts boleh diubah untuk redirects atas izin eksplisit (Fase 1.5: /about/* → /about#…).
+
+## Lint
+- Lint harus 0 error. Pengecualian SEMENTARA di eslint.config.mjs:
+  src/components/three/kinetic/KineticCore.tsx — cabut entri ini saat file dihapus di Fase 11.
+
 ## Struktur halaman
 - Setiap halaman punya tujuan sendiri (lihat "Peta Halaman" di docs/PAGE_MAP.md).
   /about, /journey, /projects, /contact harus menjadi HALAMAN MANDIRI dengan isi lebih dalam dari beranda,
