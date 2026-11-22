@@ -5,7 +5,7 @@
  * The shared 3D SceneHost was dropped: it only positions itself over [data-scene-slot]
  * elements, none of which exist on dashboard pages, so nothing visible changes.
  */
-import { MotionPreference } from "@/components/three/motionPreference";
+import { MotionPreference } from "./MotionPreference";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
