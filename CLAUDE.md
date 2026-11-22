@@ -74,8 +74,14 @@
 - Kalau lint/build/test gagal: JANGAN push; laporkan kegagalannya.
 - Setelah push: laporkan hash commit dan link preview deploy jika ada.
 - Fase tanpa perubahan file tidak perlu commit/push.
-- Test di akhir fase: `npm run test:fast` (tanpa test 3D lama bertag `@legacy3d`, yang lambat dan
-  bergantung pada WebGL). `npm run test:full` untuk semuanya (mis. sebelum PR). Test 3D lama dihapus
-  bersama komponennya di Fase 11/12. Playwright lokal butuh
+- Test di akhir fase: `npm run test:fast` (tanpa test 3D lama bertag `@legacy3d`). `npm run test:full`
+  = semua + `@live`. `npm run test:live` hanya tests/live.spec.ts yang SENGAJA memakai API produksi.
+- Tidak ada test di test:fast yang boleh menyentuh API produksi: server Next untuk test memakai
+  `API_URL` ke tests/fixture-api.mjs (port 3190; skenario normal/empty/fail/extreme via
+  POST /__scenario) dan `CONTENT_CACHE=off`; data browser dimock per test atau lewat /api/public → fixture.
+- Halaman publik merender data di SERVER (src/lib/server/content.ts: fungsi api.ts + unstable_cache 300 dtk),
+  dengan fallback "Try again" ke useCollection di browser (src/components/site/ServerCollection.tsx).
+  Pola ini juga dipakai untuk /about, /journey, /projects di Fase 6.
+- Playwright lokal butuh
   `export LD_LIBRARY_PATH=~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu:~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu/nss`.
 - Tetap BERHENTI dan tunggu persetujuan saya sebelum memulai fase berikutnya.
