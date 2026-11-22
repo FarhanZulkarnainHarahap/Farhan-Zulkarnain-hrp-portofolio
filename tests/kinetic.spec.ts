@@ -225,24 +225,25 @@ test("keyboard palette, focus restoration, mobile menu, and capability tabs", as
 }) => {
   await mockApi(context);
   await page.goto("/");
-  await page.getByRole("button", { name: "Open command palette" }).focus();
+  await page.getByRole("button", { name: "Search and navigate" }).focus();
   await page.keyboard.press("Control+k");
   const search = page.getByRole("combobox");
   await expect(search).toBeFocused();
   await search.fill("jour");
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/journey$/);
-  await page.getByRole("button", { name: "Open command palette" }).click();
+  await page.getByRole("button", { name: "Search and navigate" }).click();
   await page.keyboard.press("Escape");
   await expect(
-    page.getByRole("button", { name: "Open command palette" }),
+    page.getByRole("button", { name: "Search and navigate" }),
   ).toBeFocused();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "Open menu" }).click();
-  await expect(page.locator(".main-nav a").first()).toBeFocused();
+  const menu = page.getByRole("dialog", { name: "Menu" });
+  await expect(menu.getByRole("link", { name: "Projects" })).toBeFocused();
   await page.keyboard.press("Shift+Tab");
-  await expect(page.getByRole("button", { name: "Close menu" })).toBeFocused();
-  await page.getByRole("link", { name: "02 About" }).click();
+  await expect(menu.getByRole("button", { name: "Close menu" })).toBeFocused();
+  await menu.getByRole("link", { name: "About" }).click();
   await expect(page).toHaveURL(/\/about$/);
   const database = page.getByRole("tab", { name: /Database/ });
   await database.click();
@@ -634,6 +635,8 @@ test("mobile core loads LOD and recovers with artwork after context loss", async
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
+  // next/dynamic swaps the server-rendered 3D host once its chunk loads; wait for it to settle.
+  await page.waitForLoadState("networkidle");
   const host = page.locator(".hero [data-fzh-asset=core]"),
     canvas = host.locator("canvas");
   await host.scrollIntoViewIfNeeded();
@@ -746,6 +749,8 @@ for (const width of [390, 1024, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/");
+    // next/dynamic swaps the server-rendered 3D host once its chunk loads; wait for it to settle.
+    await page.waitForLoadState("networkidle");
     for (const kind of ["core", "identity"]) {
       const asset = page.locator(`[data-fzh-asset="${kind}"]`);
       await asset.scrollIntoViewIfNeeded();
@@ -813,6 +818,8 @@ test("mobile capability matrix paginates, supports touch and reduced motion", as
   await page.setViewportSize({width:390,height:844});
   await page.emulateMedia({reducedMotion:'no-preference'});
   await page.goto('/');
+  // next/dynamic swaps the server-rendered 3D host once its chunk loads; wait for it to settle.
+  await page.waitForLoadState('networkidle');
   await page.getByRole('tab', {name:/Frontend/}).click();
   const stage=page.locator('.matrix-stage');
   await stage.scrollIntoViewIfNeeded();
