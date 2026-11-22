@@ -1,6 +1,7 @@
 # Aturan Redesign Portofolio
 
 ## Lingkungan
+- Selalu laporkan dalam Bahasa Indonesia.
 - Aplikasi Next.js ada di web/, yang juga merupakan root git. Semua path di aturan ini relatif ke web/.
 - Referensi desain di ../design-refs/ (awesome-design-md, design.md). Blender Skills ada di ~/.claude/skills (global).
 - WSL, Node 20, tanpa sudo: jangan npm install -g (pakai npx), jangan npx skills add.
@@ -25,19 +26,20 @@
   memakai tema default Tailwind. Jadi: jangan reset namespace tema default Tailwind
   (mis. `--color-*: initial`), dan setelah mengubah globals.css jalankan
   `npx playwright test tests/admin-visual.spec.ts` (baseline screenshot dashboard harus tetap identik).
-- Modul bersama yang dipindah dari kinetic/: src/hooks/useCollection.ts, src/types/content.ts
-  (Skill, Experience), src/lib/site.ts (profile), src/components/admin/{Modal,Confirmation,
-  CollectionState,DashboardShell,DashboardNavbar}.tsx. Jangan hapus saat bersih-bersih Kinetic.
+- Modul bersama yang dipindah dari kinetic/ (kode Kinetic sudah dihapus di Fase 11):
+  src/hooks/useCollection.ts, src/types/content.ts (Skill, Experience), src/lib/site.ts (profile),
+  src/components/admin/{Modal,Confirmation,CollectionState,DashboardShell,DashboardNavbar,
+  MotionPreference}.tsx. DashboardShell (dipakai /dashboard/user) satu-satunya pemakai framer-motion;
+  framer-motion tetap di package.json tetapi TIDAK boleh ter-import di rute publik.
 - next.config.ts boleh diubah untuk redirects atas izin eksplisit (Fase 1.5: /about/* → /about#…).
 
 ## Lint
-- Lint harus 0 error. Pengecualian SEMENTARA di eslint.config.mjs:
-  src/components/three/kinetic/KineticCore.tsx — cabut entri ini saat file dihapus di Fase 11.
+- Lint harus 0 error, tanpa pengecualian file aplikasi di eslint.config.mjs.
 
 ## Struktur halaman
 - Setiap halaman punya tujuan sendiri (lihat "Peta Halaman" di docs/PAGE_MAP.md).
   /about, /journey, /projects, /contact harus menjadi HALAMAN MANDIRI dengan isi lebih dalam dari beranda,
-  BUKAN lagi <LandingPage initialSection="..."/> yang menampilkan potongan beranda.
+  bukan potongan beranda.
 - Pertahankan: rute yang ada, metadata dan canonical tiap halaman, sitemap.ts, robots.ts,
   skip-to-content, command palette ⌘K, dan form kontak yang berfungsi.
 
@@ -57,10 +59,7 @@
   IntersectionObserver (src/components/motion/MotionController.tsx). ScrollTrigger TIDAK dimuat di halaman
   mana pun; kalau 3D di Fase 10 butuh efek scroll, import ScrollTrigger secara dinamis hanya di chunk
   komponen 3D. Rencana dan keputusan motion di docs/MOTION_PLAN.md.
-- SEMENTARA: halaman yang belum di-redesign memakai src/styles/legacy-kinetic.css (CSS lama, di-scope ke
-  wrapper `.legacy-root` di kinetic/Shell.tsx, app/auth/layout.tsx, app/error.tsx). Jangan diperluas.
-  Halaman baru TIDAK dibungkus `.legacy-root`. Hapus file, import di layout.tsx, dan wrapper-nya di Fase 11
-  (atau saat halaman terakhir pemakainya diganti).
+- legacy-kinetic.css dan wrapper `.legacy-root` sudah dihapus (Fase 11); jangan dihidupkan lagi.
 
 ## 3D (Blender)
 - 3D hanya sebagai AKSEN, bukan tema. Sumber .blend di design/blender/, hasil ekspor di public/3d/.
@@ -72,8 +71,9 @@
   search_assets/import_asset) dan Blender Skills: /blender-director sebagai titik awal, lalu
   /minimalist-style, /procedural-modeling, /hard-surface, /materials, /lighting, /lookdev, /rendering,
   /asset-optimization, /export-pipeline, /qa-review. Dikerjakan di Fase 10.
-- DILARANG: memakai ulang GLB/model lama dari public/models, membuat geometri 3D langsung dengan kode
-  three.js sebagai pengganti aset Blender, atau mengambil model dari sumber lain tanpa izin saya.
+- DILARANG: memakai ulang GLB/model lama Kinetic (dulu public/models; dihapus di Fase 11, hanya ada
+  di riwayat git), membuat geometri 3D langsung dengan kode three.js sebagai pengganti aset Blender,
+  atau mengambil model dari sumber lain tanpa izin saya.
 - Hasil Fase 10 (lihat docs/3D_PLAN.md):
   - HeroModel: src/components/hero3d/ (HeroVisual → poster ThemedPicture + HeroModelSlot →
     heroScene.ts, three.js langsung + meshopt, di-import dinamis). Gating di src/lib/webgl-capability.ts
@@ -97,7 +97,7 @@
 - Kalau lint/build/test gagal: JANGAN push; laporkan kegagalannya.
 - Setelah push: laporkan hash commit dan link preview deploy jika ada.
 - Fase tanpa perubahan file tidak perlu commit/push.
-- Test di akhir fase: `npm run test:fast` (tanpa test 3D lama bertag `@legacy3d`). `npm run test:full`
+- Test di akhir fase: `npm run test:fast` (semua test kecuali `@live`; tag `@legacy3d` sudah tidak ada). `npm run test:full`
   = semua + `@live`. `npm run test:live` hanya tests/live.spec.ts yang SENGAJA memakai API produksi.
 - Tidak ada test di test:fast yang boleh menyentuh API produksi: server Next untuk test memakai
   `API_URL` ke tests/fixture-api.mjs (port 3190; skenario normal/empty/fail/extreme via

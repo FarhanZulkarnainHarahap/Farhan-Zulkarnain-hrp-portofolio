@@ -210,3 +210,13 @@ dibandingkan dengan canvas three.js; tidak ada blocker atau major.
 - Minor: bayangan antarpelat di canvas sedikit lebih tipis daripada render Blender (area light vs
   directional light + PCF); perbedaannya hanya terlihat saat dibandingkan berdampingan.
 - Note: ruang kosong di sekitar model bertambah karena `MODEL_SCALE` (keputusan LCP).
+
+## Fase 11 — bersih-bersih aset lama
+
+- Dihapus: GLB/poster Kinetic `public/models/**` (12,5 MB), `public/visuals/system-map.svg`,
+  `public/icons/capability/*`, sumber `.blend` lama `assets/blender/` dan skrip pipeline-nya
+  `scripts/blender/`, `scripts/qa/check-models.mjs`, serta `previews/`. Semuanya masih ada di riwayat git.
+- Aset 3D yang tersisa hanya `public/3d/` (hasil Fase 10) dan sumbernya `design/blender/portfolio-3d.blend`.
+- **Sisa yang tidak berbahaya:** `next.config.ts` masih punya rule `headers()` untuk `/visuals/:path*`
+  (cache immutable). Foldernya sudah tidak ada, jadi rule itu tidak pernah cocok dengan file apa pun.
+  `next.config.ts` termasuk lapisan terlarang, jadi rule itu sengaja dibiarkan.

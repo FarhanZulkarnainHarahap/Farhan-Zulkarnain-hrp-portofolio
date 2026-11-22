@@ -536,8 +536,6 @@ normalises presentation.
 - `cn()` (`src/lib/utils.ts`) knows the custom token names so tailwind-merge does not drop them;
   add new token names there.
 - Do not redefine Tailwind's default theme namespaces; the dashboard depends on them.
-- `src/styles/legacy-kinetic.css` is a temporary, scoped copy of the old styles for pages not yet
-  redesigned; it is deleted in Fase 11 and must not be extended.
 
 ## Do's and Don'ts
 
