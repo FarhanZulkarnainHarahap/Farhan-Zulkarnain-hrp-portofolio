@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { ProjectImage } from "@/components/projects/ProjectImage";
 import { NextSteps } from "@/components/site/NextSteps";
 import { Badge, Chip } from "@/components/ui/badge";
 import { buttonClasses, ExternalMark } from "@/components/ui/button";
@@ -16,6 +15,7 @@ import {
 import { getProjectSlug } from "@/lib/portfolio/projects";
 import { safeHref } from "@/lib/site";
 import type { Project } from "@/services/api";
+import { DeviceMockup } from "./DeviceMockup";
 import { FeatureList } from "./FeatureList";
 
 type Neighbour = Pick<Project, "id" | "title"> | null;
@@ -116,14 +116,7 @@ export function CaseStudy({
             )}
           </div>
           <div data-visual-slot="device-mockup">
-            {media ?? (
-              <ProjectImage
-                src={project.imageUrl}
-                alt={`${project.title} screenshot`}
-                priority
-                sizes="(min-width: 1280px) 1200px, 94vw"
-              />
-            )}
+            {media ?? <DeviceMockup src={project.imageUrl} title={project.title} />}
           </div>
         </Container>
       </header>

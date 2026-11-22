@@ -263,19 +263,21 @@
 
   --skeleton-bg: var(--ui-surface);
 
-  /* Hero visual placeholder (until the 3D accent in Fase 10) */
-  --hero-monogram-lg: clamp(12rem, 18vw, 18rem);
-  --hero-monogram-sm: clamp(8rem, 12vw, 12rem);
+  /* 3D accents (Fase 10): HeroModel material colours mirror the Blender posters */
+  --model-surface: light-dark(var(--paper-50), var(--night-700));
+  --model-line: light-dark(var(--paper-700), var(--night-200));
+  --model-accent: var(--ui-accent);
+  --device-shadow-color: light-dark(rgb(26 25 23 / 0.16), rgb(0 0 0 / 0.55));
 
   /* Accents (Fase 7, React Bits adaptations) */
   --shine-color: var(--ui-accent);
   --shine-duration: 1400ms;
   --spotlight-color: color-mix(in srgb, var(--ui-accent) 9%, transparent);
   --spotlight-size: 22rem;
-  --dotgrid-gap: 22px;
-  --dotgrid-size: 2px;
-  --dotgrid-base: var(--ui-hairline-strong);
-  --dotgrid-active: var(--ui-accent);
+  /* Static dot pattern behind the hero visual (CSS only) */
+  --dots-gap: 22px;
+  --dots-size: 2px;
+  --dots-color: var(--ui-hairline-strong);
 
   --timeline-rule: var(--ui-hairline);
   --prose-measure: var(--container-reading);
@@ -387,10 +389,10 @@ html:has(.site-frame) {
 .dot-pattern {
   background-image: radial-gradient(
     circle,
-    var(--dotgrid-base) calc(var(--dotgrid-size) / 2),
-    transparent calc(var(--dotgrid-size) / 2 + 0.5px)
+    var(--dots-color) calc(var(--dots-size) / 2),
+    transparent calc(var(--dots-size) / 2 + 0.5px)
   );
-  background-size: var(--dotgrid-gap) var(--dotgrid-gap);
+  background-size: var(--dots-gap) var(--dots-gap);
   background-position: center;
 }
 
@@ -409,6 +411,53 @@ html:has(.site-frame) {
   html.js-motion:not(.motion-ready) [data-draw] .draw-fade {
     opacity: 0;
   }
+}
+
+/* ThemedPicture: show the variant of the SITE theme. Before hydration CSS decides (data-theme or
+   the OS); after hydration [data-shown] decides. The hidden variant is display:none + lazy, so it is
+   never downloaded until the theme switches to it. */
+.themed-picture > picture {
+  display: none;
+}
+.themed-picture:not([data-shown]) > .themed-picture__light,
+.themed-picture[data-shown="light"] > .themed-picture__light,
+.themed-picture[data-shown="dark"] > .themed-picture__dark {
+  display: block;
+  height: 100%;
+}
+:root:where([data-theme="dark"]) .themed-picture:not([data-shown]) > .themed-picture__light {
+  display: none;
+}
+:root:where([data-theme="dark"]) .themed-picture:not([data-shown]) > .themed-picture__dark {
+  display: block;
+  height: 100%;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .themed-picture:not([data-shown]) > .themed-picture__light {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .themed-picture:not([data-shown]) > .themed-picture__dark {
+    display: block;
+    height: 100%;
+  }
+}
+
+/* Soft ground shadow under the device mockup (token colour, follows the theme). */
+/* HeroModel: the poster stays until the first WebGL frame, then the canvas cross-fades in. */
+.hero-model-poster,
+.hero-model-canvas {
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+.hero-model-canvas,
+[data-model-ready="true"] .hero-model-poster {
+  opacity: 0;
+}
+[data-model-ready="true"] .hero-model-canvas {
+  opacity: 1;
+}
+
+.device-shadow {
+  background: radial-gradient(closest-side, var(--device-shadow-color), transparent);
 }
 
 /* Locally dark band (footer). */
