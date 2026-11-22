@@ -3,6 +3,10 @@
  * Snapshot of the pre-redesign globals.css, scoped to .legacy-root (display: contents wrapper
  * in kinetic/Shell, auth/layout and error.tsx) so old pages keep their look while globals.css
  * holds only the new design system. Generated once by a postcss script; do not extend.
+ *
+ * Fase 4.1 exception: on public pages (they contain the new .site-frame) the new system owns
+ * :root/html/body (canvas token, theme-aware scheme and scrollbar). The old body styles move to
+ * the .legacy-page wrapper in kinetic/Shell. /auth (no .site-frame) keeps the original rules.
  */
 .legacy-root { display: contents; }
 :root:has(.legacy-root) {
@@ -30,18 +34,32 @@
   --shadow: 0 24px 64px #0004;
   --glow: 0 0 40px color-mix(in srgb, var(--primary) 12%, transparent);
   --space-section: clamp(64px, 8vw, 128px);
+}
+:root:has(.legacy-root):not(:has(.site-frame)) {
   color-scheme: dark;
+}
+/* Old "body" for legacy page bodies rendered inside the new site frame. */
+.legacy-root.legacy-page {
+  display: block;
+  flex: 1 0 auto;
+  color-scheme: dark;
+  color: var(--text);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
 }
 .legacy-root * {
   box-sizing: border-box;
 }
-html:has(.legacy-root) {
+html:has(.legacy-root):not(:has(.site-frame)) {
   scroll-behavior: smooth;
   scroll-padding-top: 96px;
   background: var(--background);
   scrollbar-color: var(--border) var(--background);
 }
-body:has(.legacy-root) {
+body:has(.legacy-root):not(:has(.site-frame)) {
   margin: 0;
   color: var(--text);
   background: var(--background);
@@ -1479,7 +1497,8 @@ body:has(.legacy-root) {
   }
 }
 @media (max-width: 767px) {
-  body:has(.legacy-root) {
+  body:has(.legacy-root):not(:has(.site-frame)),
+  .legacy-root.legacy-page {
     font-size: 14px;
   }
   .legacy-root .hero,
@@ -1887,7 +1906,7 @@ body:has(.legacy-root) {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  html:has(.legacy-root) {
+  html:has(.legacy-root):not(:has(.site-frame)) {
     scroll-behavior: auto;
   }
   .legacy-root *,
@@ -2573,3 +2592,11 @@ body:has(.legacy-root) {
 @media(prefers-reduced-motion:no-preference){.legacy-root .asset-poster-pending{animation:asset-poster-standby 2.8s ease-in-out infinite alternate;transform-origin:center}}
 
 .legacy-root .motion-preference{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;padding:16px;color:var(--muted);font-size:12px}.legacy-root .motion-preference button{border:1px solid var(--border);padding:10px 14px;color:var(--text);background:var(--surface);cursor:pointer}
+/* Fase 4.1: Reveal starts hidden on server and client alike (no hydration mismatch); with reduced
+   motion the content is shown at once, as before. */
+@media (prefers-reduced-motion: reduce) {
+  .legacy-root .kinetic-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

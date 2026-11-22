@@ -1,5 +1,5 @@
 "use client";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import {
   cloudinaryImageLoader,
@@ -14,11 +14,12 @@ export function Reveal({
   children: ReactNode;
   className?: string;
 }) {
-  const reduced = useReducedMotion();
+  // Same initial state on server and client (no hydration mismatch); reduced motion is
+  // handled by <MotionConfig reducedMotion="user"> in Shell, which drops the y offset.
   return (
     <motion.div
-      className={className}
-      initial={reduced ? false : { opacity: 0, y: 24 }}
+      className={`kinetic-reveal ${className}`}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "0px 0px -30px 0px" }}
       transition={{ duration: 0.5 }}
