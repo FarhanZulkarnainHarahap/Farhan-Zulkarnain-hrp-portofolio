@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { HeroDotGrid } from "@/components/accents/HeroDotGrid";
 import { ShinyText } from "@/components/accents/ShinyText";
 import { ArrowRight } from "lucide-react";
 import { buttonClasses } from "@/components/ui/button";
@@ -104,6 +105,7 @@ function HeroVisual() {
     <div aria-hidden="true" className="relative hidden lg:col-span-5 lg:block">
       <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-(--card-radius) border border-hairline bg-surface">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_25%,var(--ui-accent-soft),transparent_60%)]" />
+        <HeroDotGrid className="opacity-60" />
         <div className="absolute inset-x-8 top-8 flex items-center justify-between font-meta text-label text-muted uppercase">
           <span>Medan, Indonesia</span>
           <span>UTC+7</span>
