@@ -29,6 +29,10 @@ const geistMono = Geist_Mono({
 // JS) the CSS follows prefers-color-scheme, so there is no flash either way.
 const themeScript = `try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
 
+// Motion (Fase 8): pre-hide animated elements only when JS runs and motion is allowed. If GSAP is
+// not ready within 2.5 s, drop the class so everything shows (no content is ever stuck hidden).
+const motionScript = `try{var d=document.documentElement;if(matchMedia("(prefers-reduced-motion: no-preference)").matches){d.classList.add("js-motion");setTimeout(function(){if(!d.classList.contains("motion-ready"))d.classList.remove("js-motion")},2500)}}catch(e){}`;
+
 const structuredData = [
   {
     "@context": "https://schema.org",
@@ -153,6 +157,7 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: motionScript }} />
         <link rel="dns-prefetch" href="https://api.farhanzulkarnainhrp.com" />
       </head>
       <body className="min-h-full flex flex-col">

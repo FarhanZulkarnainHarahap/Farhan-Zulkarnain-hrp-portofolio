@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { MotionController } from "@/components/motion/MotionController";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SiteFooter } from "./SiteFooter";
 import { SiteHeader } from "./SiteHeader";
@@ -21,6 +22,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
         <SiteHeader />
         {children}
         <SiteFooter />
+        <MotionController />
       </div>
     </TooltipProvider>
   );

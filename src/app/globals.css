@@ -394,6 +394,16 @@ html:has(.site-frame) {
   background-position: center;
 }
 
+/* Motion (Fase 8): before GSAP is ready, hide only the elements it will animate, and only when JS
+   runs and motion is allowed (html.js-motion is set by the inline script in layout.tsx, removed by a
+   2.5 s failsafe). After that GSAP controls visibility itself; late content is never hidden. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js-motion:not(.motion-ready)
+    :is([data-intro], [data-reveal]:not([data-reveal="group"]), [data-reveal="group"] > *) {
+    opacity: 0;
+  }
+}
+
 /* Locally dark band (footer). */
 .scheme-dark {
   color-scheme: dark;
