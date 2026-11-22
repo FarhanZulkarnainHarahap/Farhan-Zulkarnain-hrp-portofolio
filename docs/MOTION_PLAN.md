@@ -19,7 +19,7 @@ failsafe yang menampilkan semuanya bila GSAP belum siap dalam 2,5 detik. Tanpa J
 | # | Tempat | Hari ini | Tujuan | Frekuensi | Gerak (token) |
 |---|---|---|---|---|---|
 | 1 | Hero beranda (`components/home/Hero.tsx`) | Semua muncul sekaligus | Mencegah perubahan mendadak saat halaman pertama tampil; mengarahkan mata dari siapa → bisa apa → langkah berikutnya | Jarang (sekali per kunjungan) | Timeline GSAP: eyebrow → positioning → CTA → status + proof → slot visual. `opacity 0→1`, `y: --reveal-distance → 0`, durasi `--duration-slow`, `ease-enter`, stagger `--stagger`, overlap sehingga total ≈ 0,65 dtk. **H1 tidak disentuh** (tetap elemen LCP). Hanya sekali per kunjungan: kembali ke `/` lewat navigasi client tidak memutar ulang intro (8.6). |
-| 2 | Reveal section saat masuk viewport (semua halaman publik, kecuali header halaman) | Section langsung ada | Mencegah konten "meloncat" masuk saat scroll; ritme membaca | Kadang (per kunjungan) | ScrollTrigger `once: true`, `start: top 85%`. Header section lalu grup isi (kartu, daftar) dengan stagger `--stagger`; `opacity`, `y: --reveal-distance`, `--duration-reveal`, `ease-enter`. Maks. dua grup per viewport. |
+| 2 | Reveal section saat masuk viewport (semua halaman publik, kecuali header halaman) | Section langsung ada | Mencegah konten "meloncat" masuk saat scroll; ritme membaca | Kadang (per kunjungan) | IntersectionObserver (`rootMargin: 0 0 -15% 0` ≈ top 85%), sekali per elemen lalu `unobserve`; tween GSAP. Header section lalu grup isi (kartu, daftar) dengan stagger `--stagger`; `opacity`, `y: --reveal-distance`, `--duration-reveal`, `ease-enter`. Maks. dua grup per viewport. |
 | 3 | Filter `/projects` (`ProjectsExplorer.tsx`) | Kartu berpindah/hilang seketika | Konsistensi spasial: kartu yang tetap ada bergeser ke posisi baru, yang keluar/masuk memudar | Kadang | GSAP Flip: posisi `--duration-base`, `ease-standard`; kartu yang masuk `opacity 0→1` + `scale 0.98→1` `ease-enter`. Kartu yang keluar dihapus React seketika (tanpa fade-out; hasil filter tidak boleh tertunda). Animasi sebelumnya di-kill (bisa diinterupsi saat mengetik). Hanya transform/opacity. |
 | 4 | Tekan tombol (`components/ui/button.tsx`) | Tidak ada umpan balik tekan | Umpan balik | Puluhan kali | CSS `:active { scale(0.97) }`, `transition: transform --duration-fast ease-standard`. Hanya transform. |
 | 5 | Menu mobile (`site/MobileMenu.tsx`) | Sheet muncul/hilang seketika | Konsistensi spasial (sheet datang dari atas) & mencegah perubahan mendadak | Kadang (mobile) | CSS pada `<dialog>`: masuk `opacity 0→1` + `translateY(-8px)→0` `--duration-base` `ease-enter` (via `@starting-style`), keluar `--duration-fast` `ease-exit` (`allow-discrete`). Interuptibel (transisi CSS). |
@@ -29,14 +29,12 @@ Koreografi (8.4): di hero, satu gerakan dari kiri-atas ke kanan; grid proyek dan
 memakai stagger yang sama (`--stagger`) dengan batas 6 item agar tidak terasa lambat; header section
 selalu mendahului isinya; tidak ada dua grup yang beranimasi bersamaan di satu layar.
 
-## Menunggu keputusan (tidak dikerjakan)
-
-| Usulan | Alasan ragu |
-|---|---|
-| Garis progress timeline di `/journey` | DESIGN.md → Components → Timeline entry: "No dots or glowing rails." Garis progress adalah rel. Perlu keputusan: ubah DESIGN.md atau batal. |
-| Parallax halus gambar utama studi kasus (desktop) | Tujuannya dekoratif; gambar itu adalah konten yang sedang dibaca (UI proyek). Gate "Fungsi" gagal menurut prinsip Emil; DESIGN.md hanya melarang parallax pada teks. Butuh keputusan Anda. |
-
 ## Ditolak
+
+- **Garis progress timeline di `/journey`** (keputusan pemilik, Fase 8): DESIGN.md → Timeline entry
+  melarang "dots or glowing rails"; garis progress adalah rel.
+- **Parallax gambar utama studi kasus** (keputusan pemilik, Fase 8): dekoratif pada konten yang sedang
+  dibaca (UI proyek); gagal gate "fungsi".
 
 - **Palette ⌘K buka/tutup**: dipicu keyboard dan sangat sering. Tidak pernah dianimasikan.
 - **Tooltip**: sering muncul dan sudah ada delay 300 ms; animasi tambahan hanya memperlambat.
@@ -51,11 +49,13 @@ selalu mendahului isinya; tidak ada dua grup yang beranimasi bersamaan di satu l
 
 ## Catatan implementasi
 
-- `src/lib/gsap.ts`: `registerPlugin(useGSAP, ScrollTrigger, Flip)` sekali; default `ease`/`duration`
-  dibaca dari token; `motion()` = `gsap.matchMedia()` dengan kondisi `(prefers-reduced-motion:
-  no-preference)` — di luar kondisi itu tidak ada tween sama sekali.
-- `useGSAP` dengan `scope` ref; ScrollTrigger dibuat di dalam context sehingga otomatis di-kill saat
-  komponen unmount (pindah halaman); `ScrollTrigger.refresh()` setelah `document.fonts.ready`.
+- `src/lib/gsap.ts`: `registerPlugin(useGSAP, CustomEase)` sekali; Flip didaftarkan hanya di filter
+  `/projects`; ease/durasi dari token; `motion()` = `gsap.matchMedia()` dengan kondisi
+  `(prefers-reduced-motion: no-preference)` — di luar kondisi itu tidak ada tween sama sekali.
+- **Tanpa ScrollTrigger** (keputusan Fase 8): reveal memakai IntersectionObserver — tanpa listener scroll
+  dan tanpa loop rAF saat diam. Observer + tween dibuat di context `useGSAP` dan dibersihkan saat
+  pindah halaman (`disconnect`). Kalau Fase 10 butuh efek scroll pada 3D, ScrollTrigger dimuat dinamis
+  hanya di dalam chunk komponen 3D.
 - Komponen client sekecil mungkin: `MotionSection`/`HeroIntro` hanya membungkus markup server.
 
 ## Hasil review (8.6) — yang dibuang / dibatasi
@@ -63,5 +63,5 @@ selalu mendahului isinya; tidak ada dua grup yang beranimasi bersamaan di satu l
 - Intro hero diputar ulang setiap kembali ke beranda → **dibatasi** sekali per kunjungan.
 - Fade-out kartu saat filter → **dibuang** (menunda hasil; kartu keluar langsung hilang).
 - Gerak saat aksi keyboard (palette, toggle tema, "+N", "Show all") → **tetap tanpa animasi**.
-- Under reduced motion: tidak ada tween GSAP maupun ScrollTrigger; transisi CSS memakai token
+- Under reduced motion: tidak ada tween GSAP maupun observer reveal; transisi CSS memakai token
   yang menjadi 1 ms, dan pergeseran (translate/scale) dimatikan.

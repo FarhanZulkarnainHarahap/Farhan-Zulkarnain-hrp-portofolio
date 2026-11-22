@@ -53,6 +53,10 @@
   `.site-scheme` / `.scheme-dark` (token di-deklarasi ulang di sana), bukan `color-scheme` lepas.
 - Komponen dasar di src/components/ui/, frame situs di src/components/site/ (dipasang lewat
   src/app/(site)/layout.tsx; app/not-found.tsx memasangnya sendiri).
+- Motion: GSAP lewat src/lib/gsap.ts (token, reduced-motion = tanpa tween). Reveal memakai
+  IntersectionObserver (src/components/motion/MotionController.tsx). ScrollTrigger TIDAK dimuat di halaman
+  mana pun; kalau 3D di Fase 10 butuh efek scroll, import ScrollTrigger secara dinamis hanya di chunk
+  komponen 3D. Rencana dan keputusan motion di docs/MOTION_PLAN.md.
 - SEMENTARA: halaman yang belum di-redesign memakai src/styles/legacy-kinetic.css (CSS lama, di-scope ke
   wrapper `.legacy-root` di kinetic/Shell.tsx, app/auth/layout.tsx, app/error.tsx). Jangan diperluas.
   Halaman baru TIDAK dibungkus `.legacy-root`. Hapus file, import di layout.tsx, dan wrapper-nya di Fase 11

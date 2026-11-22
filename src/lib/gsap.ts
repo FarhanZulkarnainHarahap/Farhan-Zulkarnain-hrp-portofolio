@@ -1,6 +1,8 @@
 "use client";
 /**
- * Single GSAP entry point (Fase 8). Plugins are registered once; durations and eases come from the
+ * Single GSAP entry point (Fase 8). ScrollTrigger is NOT used anywhere (reveals use
+ * IntersectionObserver); if a Fase 10 3D component needs scroll effects, import ScrollTrigger
+ * dynamically inside that component's chunk only. Plugins are registered once; durations and eases come from the
  * design tokens in globals.css, so motion stays in sync with CSS transitions.
  *
  *  - motion(fn): runs fn only when prefers-reduced-motion is "no-preference" (gsap.matchMedia);
@@ -11,7 +13,6 @@
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export const MOTION_OK = "(prefers-reduced-motion: no-preference)";
 
@@ -49,7 +50,7 @@ function bezier(value: string, fallback: string) {
 export function setupGsap() {
   if (registered || typeof window === "undefined") return gsap;
   registered = true;
-  gsap.registerPlugin(useGSAP, ScrollTrigger, CustomEase);
+  gsap.registerPlugin(useGSAP, CustomEase);
   const root = getComputedStyle(document.documentElement);
   CustomEase.create(
     "enter",
@@ -64,15 +65,6 @@ export function setupGsap() {
     bezier(root.getPropertyValue("--ease-exit"), "0.4,0,1,1"),
   );
   gsap.defaults({ ease: "enter", duration: tokens().slow });
-  // Fonts change line heights; recompute trigger positions once they are ready.
-  document.fonts?.ready.then(() => ScrollTrigger.refresh());
-  window.addEventListener("load", () => ScrollTrigger.refresh(), {
-    once: true,
-  });
-  // Test hook: number of live ScrollTriggers (checks for leaks between pages).
-  (window as unknown as { __motion?: { triggers: () => number } }).__motion = {
-    triggers: () => ScrollTrigger.getAll().length,
-  };
   return gsap;
 }
 
@@ -107,4 +99,4 @@ export function markMotionReady() {
 }
 
 // Flip is registered only where it is used (projects filter), to keep it off other pages.
-export { gsap, ScrollTrigger, useGSAP };
+export { gsap, useGSAP };

@@ -13,12 +13,12 @@ const opacities = (page: Page) =>
     .evaluateAll((els) =>
       els.map((el) => Number(getComputedStyle(el).opacity)),
     );
-const triggers = (page: Page) =>
+const pending = (page: Page) =>
   page.evaluate(
     () =>
       (
-        window as unknown as { __motion?: { triggers: () => number } }
-      ).__motion?.triggers() ?? -1,
+        window as unknown as { __motion?: { pending: () => number } }
+      ).__motion?.pending() ?? -1,
   );
 
 test("without JavaScript every animated element is visible", async ({
@@ -42,7 +42,7 @@ test("without JavaScript every animated element is visible", async ({
   await context.close();
 });
 
-test("reduced motion: no pre-hiding, no tweens, no ScrollTriggers", async ({
+test("reduced motion: no pre-hiding, no tweens, no observers", async ({
   browser,
 }) => {
   const context = await browser.newContext({ reducedMotion: "reduce" });
@@ -55,7 +55,7 @@ test("reduced motion: no pre-hiding, no tweens, no ScrollTriggers", async ({
     .locator(TARGETS)
     .evaluateAll((els) => els.map((el) => (el as HTMLElement).style.transform));
   expect(transforms.every((t) => !t)).toBe(true);
-  expect(await triggers(page)).toBe(0);
+  expect(await pending(page)).toBe(0);
   await context.close();
 });
 
@@ -95,7 +95,7 @@ test("motion: hero intro settles, sections reveal once on scroll, H1 is never an
   await expect
     .poll(() => habits.evaluate((el) => getComputedStyle(el).opacity))
     .toBe("1");
-  expect(await triggers(page)).toBeGreaterThan(0);
+  expect(await pending(page)).toBeGreaterThan(0);
   await context.close();
 });
 
@@ -130,7 +130,7 @@ test("filters stay correct with Flip and leave no transforms behind", async ({
   await context.close();
 });
 
-test("ScrollTriggers are killed when navigating between pages", async ({
+test("reveal observers are cleaned up when navigating between pages", async ({
   browser,
 }) => {
   const context = await browser.newContext({
@@ -139,8 +139,8 @@ test("ScrollTriggers are killed when navigating between pages", async ({
   });
   const page = await context.newPage();
   await page.goto("/about");
-  await expect.poll(() => triggers(page)).toBeGreaterThan(0);
-  const onAbout = await triggers(page);
+  await expect.poll(() => pending(page)).toBeGreaterThan(0);
+  const onAbout = await pending(page);
   const nav = page.getByRole("navigation", { name: "Main" });
   for (const [name, path] of [
     ["Journey", "/journey"],
@@ -150,7 +150,7 @@ test("ScrollTriggers are killed when navigating between pages", async ({
   ] as const) {
     await nav.getByRole("link", { name, exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`${path}$`));
-    // Read both numbers in the same frame: live triggers never exceed this page's reveal targets.
+    // Read both numbers in the same frame: pending reveals never exceed this page's reveal targets.
     await expect
       .poll(() =>
         page.evaluate(() => {
@@ -159,13 +159,13 @@ test("ScrollTriggers are killed when navigating between pages", async ({
           ).length;
           const live =
             (
-              window as unknown as { __motion?: { triggers: () => number } }
-            ).__motion?.triggers() ?? -1;
+              window as unknown as { __motion?: { pending: () => number } }
+            ).__motion?.pending() ?? -1;
           return live >= 0 && live <= reveals;
         }),
       )
       .toBe(true);
   }
-  expect(await triggers(page)).toBe(onAbout);
+  expect(await pending(page)).toBe(onAbout);
   await context.close();
 });

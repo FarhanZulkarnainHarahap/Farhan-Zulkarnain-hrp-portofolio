@@ -129,9 +129,14 @@ test("DotGrid loads only on capable desktops, idles without animation frames, an
     viewport: { width: 1440, height: 900 },
   });
   const page = await desktop.newPage();
-  // Count DotGrid's own WebGL draws (ScrollTrigger keeps an empty rAF loop for a Safari bug,
-  // so counting requestAnimationFrame calls would not isolate the grid).
+  // Count DotGrid's own WebGL draws and every requestAnimationFrame request on the page.
   await page.addInitScript(() => {
+    const raf = window.requestAnimationFrame.bind(window);
+    (window as unknown as { __raf: number }).__raf = 0;
+    window.requestAnimationFrame = (cb) => {
+      (window as unknown as { __raf: number }).__raf += 1;
+      return raf(cb);
+    };
     const proto = WebGL2RenderingContext.prototype;
     const original = proto.drawArraysInstanced;
     (window as unknown as { __draws: number }).__draws = 0;
@@ -158,6 +163,14 @@ test("DotGrid loads only on capable desktops, idles without animation frames, an
     () => (window as unknown as { __draws: number }).__draws,
   );
   expect(after - before).toBe(0);
+  // No idle rAF loop anywhere on the page (no ScrollTrigger; GSAP's ticker sleeps when idle).
+  const rafBefore = await page.evaluate(
+    () => (window as unknown as { __raf: number }).__raf,
+  );
+  await page.waitForTimeout(1000);
+  expect(
+    await page.evaluate(() => (window as unknown as { __raf: number }).__raf),
+  ).toBe(rafBefore);
   // Interaction wakes it.
   const box = (await grid.boundingBox())!;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {
