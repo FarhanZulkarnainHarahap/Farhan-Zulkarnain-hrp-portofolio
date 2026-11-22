@@ -216,7 +216,7 @@ Sepenuhnya untuk KineticCore & device vault → HAPUS/ganti dengan test 3D baru 
 2. **`/about/detail|skills|docs`**: redirect permanen 308 ke `/about#profile`, `/about#stack`, `/about#documents` (✅ Fase 1.5, via `next.config.ts`; `/skills` & `/documents` langsung ke anchor yang sama). Halaman `/about` baru wajib punya anchor `id="profile"`, `id="stack"`, `id="documents"`.
 3. **Admin**: tampilan tidak diubah; diisolasi (✅ Fase 1.5) — lihat CLAUDE.md bagian "Dashboard".
 4. **Proyek unggulan**: proyek yang punya studi kasus (`caseProblem`/`caseSolution`/`caseResult` terisi), maksimal 6; bila < 3, lengkapi dari urutan API.
-5. **Email**: belum dikonfirmasi (masih `farhanzulkarnaenhrp@gmail.com`).
+5. **Email**: dikonfirmasi benar: `farhanzulkarnaenhrp@gmail.com` (2026-11-22).
 6. **Lint**: 0 error; `KineticCore.tsx` di-ignore sementara sampai dihapus di Fase 11.
 
 ## 9. Catatan untuk fase berikutnya
@@ -239,3 +239,20 @@ Sepenuhnya untuk KineticCore & device vault → HAPUS/ganti dengan test 3D baru 
 - Verifikasi: 20 screenshot (10 rute × 1440/390) sebelum vs sesudah → 17 identik byte-per-byte; `/dashboard/user` beda hanya di digit jam live footer; `/dashboard/admin/experience` @390 beda 35 piksel anti-aliasing sudut kartu (Δ warna ≤ 4/765). Baseline disimpan di `tests/admin-visual.spec.ts-snapshots/`.
 - Lingkungan test lokal: Chromium Playwright butuh `libnspr4`, `libnss3`, `libasound2t64`; tanpa sudo dipasang di `~/.local/pw-libs/root` — jalankan test dengan
   `export LD_LIBRARY_PATH=~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu:~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu/nss`.
+
+## 11. Fase 3 — keputusan copy (2026-11-22)
+
+- `docs/COPY.md` disetujui dengan koreksi: status hero "Open to full-time roles and freelance projects";
+  kalimat waktu balas dihapus; h1 `/journey` "Experience & learning" (menu tetap "Journey");
+  baris info Contact "Based in Medan, Indonesia (WIB, UTC+7)".
+- `/dashboard/user`: hanya eyebrow "KINETIC SYSTEMS / MEMBER" → "Member area"; baseline screenshot
+  rute itu (1440 & 390) diperbarui, rute dashboard lain tetap.
+
+## 12. Checklist pra-merge ke main
+
+- [ ] Pemilik mengisi entri pengalaman lewat `/admin/experience` (Journey; empty state tetap ada
+      sebagai cadangan).
+- [ ] `npm run lint` 0 error, `npm run build` lolos, `tests/admin-visual.spec.ts` lolos.
+- [ ] Pengecualian sementara sudah dicabut: entri `KineticCore.tsx` di `eslint.config.mjs`,
+      `src/styles/legacy-kinetic.css` + wrapper `.legacy-root` (Fase 11).
+- [ ] `design-system/farhan-zulkarnain-harahap/MASTER.md` diganti/diselaraskan dengan DESIGN.md.

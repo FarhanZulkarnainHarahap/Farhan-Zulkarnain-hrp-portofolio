@@ -2,7 +2,7 @@
 
 Static interface copy for the redesign. Text from the API (project titles, descriptions, case study
 fields, features, tags, skill names, experience entries, document names) is **never rewritten**; it is
-only presented (see DESIGN.md → Page Patterns). Status: **draft, waiting for approval** (Fase 3).
+only presented (see DESIGN.md → Page Patterns). Status: **approved** (2026-11-22, with corrections).
 
 ## Voice and tone
 
@@ -15,8 +15,8 @@ only presented (see DESIGN.md → Page Patterns). Status: **draft, waiting for a
   capability graph, kinetic, archive, vault, FZH-001, FIG. 001, any sci-fi or terminal metaphor.
 - **Sentence case** everywhere; mono `label-caps` eyebrows are the only uppercase text.
 - **Arrows:** "↗" only for external links; internal links use no arrow or "→".
-- **No unverifiable claims** (years of experience, client counts, availability) unless the owner
-  confirms them. Items marked **[confirm]** need your approval.
+- **No unverifiable claims** (years of experience, client counts, response times). Availability is
+  stated only as approved below.
 
 ## Global
 
@@ -65,7 +65,7 @@ only presented (see DESIGN.md → Page Patterns). Status: **draft, waiting for a
 | Hero · description | Software engineer turning complex ideas into clear digital experiences — from the first interaction to the architecture underneath. | (merged into positioning) |
 | Hero · CTAs | — | View projects · Get in touch |
 | Hero · proof line (new, from API counts) | — | {n} projects · {n} technologies · Next.js, TypeScript, PostgreSQL (top stack from API) |
-| Hero · status (new) | — | Open to full-time roles and freelance projects **[confirm]** |
+| Hero · status (new) | — | Open to full-time roles and freelance projects |
 | Selected work · eyebrow | 04 / SELECTED WORK | Selected work |
 | Selected work · heading | Ideas, engineered into reality. | Projects with the full story. |
 | Selected work · description | A closer look at the interfaces, systems, and decisions behind my work. | Each one covers the problem, the approach, and the result. |
@@ -87,7 +87,7 @@ only presented (see DESIGN.md → Page Patterns). Status: **draft, waiting for a
 | Principles · item 2 | Connected by design. — Interfaces, APIs, and data should share a clear structure, with each part doing its job well. | One clear structure. — Interface, API, and data model are designed together, so each part stays simple. |
 | Principles · item 3 | Built to evolve. — Reusable components, maintainable code, and responsive layouts leave room for what comes next. | Built to be maintained. — Reusable components, typed code, and responsive layouts make the next change easy. |
 | Contact band · heading | — | Have a role or a project in mind? |
-| Contact band · body | — | Tell me about it. I usually reply within two working days. **[confirm]** |
+| Contact band · body | — | Tell me about it. (no response-time promise) |
 | Contact band · CTA | — | Get in touch |
 
 ## About `/about`
@@ -120,7 +120,7 @@ only presented (see DESIGN.md → Page Patterns). Status: **draft, waiting for a
 |---|---|---|
 | Meta · description | Farhan Zulkarnain Harahap's development journey, bootcamp, training, internship, and full-stack project milestones. | Work experience and learning path of Farhan Zulkarnain Harahap, full-stack engineer. |
 | Page eyebrow | FARHAN — KINETIC SYSTEMS / JOURNEY | Journey |
-| Page heading (h1) | A path in progress. | Experience |
+| Page heading (h1) | A path in progress. | Experience & learning (menu label stays "Journey") |
 | Lead | A path through learning, professional practice, and building real products. | Roles, training, and projects that shaped how I build software. |
 | Timeline labels | FOUNDATION · STRUCTURED LEARNING · BACKEND EXPANSION · PROFESSIONAL PRACTICE · CURRENT FOCUS | (removed; date range from API, "Present" when `current`) |
 | Hardcoded milestones | Independent Web Development · Full-Stack Bootcamp (Purwadhika) · Laravel Training · Data-entry Internship (PT Tokio Marine Indonesia) · Full-Stack Product Builds | **Removed** (decision §8.1). Enter real entries via /admin/experience. |
@@ -176,6 +176,7 @@ only presented (see DESIGN.md → Page Patterns). Status: **draft, waiting for a
 | Form · error | Your message could not be sent. Please try again or use email. | Your message couldn't be sent. Please try again, or email me directly at {email}. |
 | Form · timeout | Connection timed out. Please try again or use email. | The request took too long. Please try again, or email me directly. |
 | Direct links | GitHub ↗ · LinkedIn ↗ | Email · GitHub ↗ · LinkedIn ↗ |
+| Info line (new) | — | Based in Medan, Indonesia (WIB, UTC+7) |
 
 The payload format sent to `/api/contact` (`message: "Subject: …\n\n…"`) stays unchanged.
 
@@ -198,7 +199,11 @@ The payload format sent to `/api/contact` (`message: "Subject: …\n\n…"`) sta
 
 ## Out of scope
 
-- Dashboard copy (`/dashboard/*`, `/admin/*`, including "KINETIC SYSTEMS / MEMBER" on
-  `/dashboard/user`) stays as is, per CLAUDE.md. Tell me if you want `/dashboard/user` included.
+- Dashboard copy (`/dashboard/*`, `/admin/*`) stays as is, per CLAUDE.md, with one approved
+  exception below; the rest of the dashboard look stays frozen.
+
+| Halaman | Teks lama | Teks baru |
+|---|---|---|
+| `/dashboard/user` · eyebrow | KINETIC SYSTEMS / MEMBER | Member area (done in Fase 3; screenshot baseline updated) |
 - Internal identifiers (CSS classes, GLB names such as `FZH_*`, storage key `fzh-3d-motion`) are not
   user-facing and disappear with the legacy 3D in Fase 11.
