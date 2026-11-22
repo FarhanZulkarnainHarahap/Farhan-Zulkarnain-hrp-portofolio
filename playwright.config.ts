@@ -1,9 +1,22 @@
 import { defineConfig } from "@playwright/test";
 
-const env = { JWT_SECRET: "kinetic-local-qa-only-not-a-production-secret" };
+/**
+ * Default suite. No test here reaches the production API:
+ *   - browser reads are mocked per test (context.route) or answered by the fixture API;
+ *   - server reads use API_URL → tests/fixture-api.mjs (scenarios: normal/empty/fail/extreme);
+ *   - CONTENT_CACHE=off so scenario switches are visible immediately.
+ * The @live test (real API) lives in tests/live.spec.ts and runs via playwright.live.config.ts.
+ */
+export const FIXTURE_API = "http://localhost:3190";
+const env = {
+  JWT_SECRET: "kinetic-local-qa-only-not-a-production-secret",
+  API_URL: FIXTURE_API,
+  CONTENT_CACHE: "off",
+};
 
 export default defineConfig({
   testDir: "./tests",
+  testIgnore: /live\.spec\.ts/,
   timeout: 90_000,
   expect: { timeout: 15_000 },
   workers: 1,
@@ -22,7 +35,7 @@ export default defineConfig({
   },
   projects: [
     // Production build (npm run build first).
-    { name: "app", testIgnore: /public-quality\.spec\.ts/ },
+    { name: "app", testIgnore: [/public-quality\.spec\.ts/, /live\.spec\.ts/] },
     // Dev server: React only reports hydration mismatches in development.
     {
       name: "dev-quality",
@@ -31,6 +44,12 @@ export default defineConfig({
     },
   ],
   webServer: [
+    {
+      command: "node tests/fixture-api.mjs",
+      url: `${FIXTURE_API}/__health`,
+      timeout: 30_000,
+      reuseExistingServer: false,
+    },
     {
       command: "npm run start -- --port 3101",
       url: "http://localhost:3101",
