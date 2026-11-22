@@ -129,12 +129,17 @@ test("DotGrid loads only on capable desktops, idles without animation frames, an
     viewport: { width: 1440, height: 900 },
   });
   const page = await desktop.newPage();
+  // Count DotGrid's own WebGL draws (ScrollTrigger keeps an empty rAF loop for a Safari bug,
+  // so counting requestAnimationFrame calls would not isolate the grid).
   await page.addInitScript(() => {
-    const original = window.requestAnimationFrame.bind(window);
-    (window as unknown as { __raf: number }).__raf = 0;
-    window.requestAnimationFrame = (cb) => {
-      (window as unknown as { __raf: number }).__raf += 1;
-      return original(cb);
+    const proto = WebGL2RenderingContext.prototype;
+    const original = proto.drawArraysInstanced;
+    (window as unknown as { __draws: number }).__draws = 0;
+    proto.drawArraysInstanced = function (
+      ...args: Parameters<typeof original>
+    ) {
+      (window as unknown as { __draws: number }).__draws += 1;
+      return original.apply(this, args);
     };
   });
   await page.goto("/");
@@ -142,16 +147,17 @@ test("DotGrid loads only on capable desktops, idles without animation frames, an
   await expect(grid).toHaveAttribute("data-live", "true");
   await expect(grid.locator("canvas")).toHaveCount(1);
   // Idle: after settling, no frames are requested.
+  // GSAP's ticker auto-sleeps ~120 frames after the last tween (hero intro), so wait past that.
   await page.mouse.move(5, 5);
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(3500);
   const before = await page.evaluate(
-    () => (window as unknown as { __raf: number }).__raf,
+    () => (window as unknown as { __draws: number }).__draws,
   );
   await page.waitForTimeout(1000);
   const after = await page.evaluate(
-    () => (window as unknown as { __raf: number }).__raf,
+    () => (window as unknown as { __draws: number }).__draws,
   );
-  expect(after - before).toBeLessThanOrEqual(2);
+  expect(after - before).toBe(0);
   // Interaction wakes it.
   const box = (await grid.boundingBox())!;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {
@@ -159,7 +165,9 @@ test("DotGrid loads only on capable desktops, idles without animation frames, an
   });
   await page.waitForTimeout(200);
   expect(
-    await page.evaluate(() => (window as unknown as { __raf: number }).__raf),
+    await page.evaluate(
+      () => (window as unknown as { __draws: number }).__draws,
+    ),
   ).toBeGreaterThan(after);
   // Theme switch without reload keeps the grid and swaps its token colors.
   await page.mouse.move(5, 5);
