@@ -123,12 +123,6 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    images: [
-      {
-        url: "/fz-logo.png",
-        alt: "Farhan Zulkarnain Harahap, Full-Stack Engineer",
-      },
-    ],
     locale: "en_US",
     url: "https://farhanzulkarnainhrp.com",
     siteName: "Farhan Zulkarnain Portfolio",
@@ -137,7 +131,7 @@ export const metadata: Metadata = {
       "Web applications built end to end, from interface to database. Projects, case studies, and CV.",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Farhan Zulkarnain Harahap — Full-Stack Engineer",
     description:
       "Web applications built end to end, from interface to database. Projects, case studies, and CV.",

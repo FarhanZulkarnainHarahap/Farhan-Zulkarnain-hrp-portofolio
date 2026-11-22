@@ -17,7 +17,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           title: project.title,
           description: project.description,
           alternates: { canonical: `/projects/${getProjectSlug(project)}` },
-          openGraph: { images: [{ url: project.imageUrl }] },
+          // Image: ./opengraph-image.tsx (title, case type, project image).
+          openGraph: {
+            type: "article",
+            title: project.title,
+            description: project.description,
+            url: `/projects/${getProjectSlug(project)}`,
+          },
+          twitter: {
+            card: "summary_large_image",
+            title: project.title,
+            description: project.description,
+          },
         }
       : { title: "Project not found" };
   } catch {

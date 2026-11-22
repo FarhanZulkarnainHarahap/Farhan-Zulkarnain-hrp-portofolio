@@ -11,6 +11,19 @@ export const metadata: Metadata = {
   description:
     "Full-stack projects by Farhan Zulkarnain Harahap, with case studies, live demos, source code, and stacks.",
   alternates: { canonical: "/projects" },
+  // Own title/description/url for social cards (images come from ./opengraph-image.tsx).
+  openGraph: {
+    title: "Projects · Farhan Zulkarnain Harahap",
+    description:
+      "Full-stack projects by Farhan Zulkarnain Harahap, with case studies, live demos, source code, and stacks.",
+    url: "/projects",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Projects · Farhan Zulkarnain Harahap",
+    description:
+      "Full-stack projects by Farhan Zulkarnain Harahap, with case studies, live demos, source code, and stacks.",
+  },
 };
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;

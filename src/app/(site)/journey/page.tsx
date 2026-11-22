@@ -10,6 +10,19 @@ export const metadata: Metadata = {
   description:
     "Work experience and learning path of Farhan Zulkarnain Harahap, full-stack engineer.",
   alternates: { canonical: "/journey" },
+  // Own title/description/url for social cards (images come from ./opengraph-image.tsx).
+  openGraph: {
+    title: "Journey · Farhan Zulkarnain Harahap",
+    description:
+      "Work experience and learning path of Farhan Zulkarnain Harahap, full-stack engineer.",
+    url: "/journey",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Journey · Farhan Zulkarnain Harahap",
+    description:
+      "Work experience and learning path of Farhan Zulkarnain Harahap, full-stack engineer.",
+  },
 };
 
 /** Full timeline from /api/experiences (no hardcoded milestones, decision §8.1). */
