@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
+import { ShinyText } from "@/components/accents/ShinyText";
 import { ArrowRight } from "lucide-react";
 import { buttonClasses } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
@@ -15,7 +17,14 @@ export type HeroProof = {
  * the LCP element; nothing above it animates. The visual slot on the right is a static
  * placeholder until the 3D accent arrives (Fase 10).
  */
-export function Hero({ proof }: { proof: HeroProof }) {
+export function Hero({
+  proof,
+  visual,
+}: {
+  proof: HeroProof;
+  /** Slot for the Fase 10 <HeroModel/>; defaults to the static visual with the DotGrid accent. */
+  visual?: ReactNode;
+}) {
   return (
     <section aria-labelledby="hero-title" className="pt-section-sm">
       <Container
@@ -55,12 +64,14 @@ export function Hero({ proof }: { proof: HeroProof }) {
                 aria-hidden="true"
                 className="size-2 shrink-0 rounded-pill bg-success"
               />
-              Open to full-time roles and freelance projects
+              <ShinyText>
+                Open to full-time roles and freelance projects
+              </ShinyText>
             </p>
             <ProofLine proof={proof} />
           </div>
         </div>
-        <HeroVisual />
+        {visual ?? <HeroVisual />}
       </Container>
     </section>
   );
