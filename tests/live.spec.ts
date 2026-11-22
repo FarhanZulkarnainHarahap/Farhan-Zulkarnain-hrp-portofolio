@@ -40,10 +40,16 @@ test("live public API, project detail, CV download, and rendered screenshots @li
     fullPage: true,
   });
   await page.goto("/projects");
-  await page.locator(".project-stage .text-link").click();
-  await expect(page.locator(".project-detail h1")).toBeVisible();
+  await page
+    .getByRole("region", { name: "All projects" })
+    .getByRole("article")
+    .first()
+    .getByRole("link")
+    .first()
+    .click();
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Overview", exact: true }),
+    page.getByRole("navigation", { name: "Breadcrumb" }),
   ).toBeVisible();
   await page.goto("/about#documents");
   const cv = page

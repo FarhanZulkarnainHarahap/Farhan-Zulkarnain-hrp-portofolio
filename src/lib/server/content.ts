@@ -110,6 +110,9 @@ async function settle<T>(read: () => Promise<T[]>): Promise<Loaded<T>> {
   }
 }
 
+/** Cached projects read that throws on failure (case study pages: errors go to error.tsx). */
+export const getCachedProjects = projects;
+
 /** Per-collection loaders: never throw; a failure becomes { data: [], error }. */
 export const loadProjects = () => settle(projects);
 export const loadSkills = () => settle(skills);
