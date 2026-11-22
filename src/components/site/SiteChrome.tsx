@@ -10,7 +10,8 @@ import { SiteHeader } from "./SiteHeader";
 export function SiteChrome({ children }: { children: ReactNode }) {
   return (
     <TooltipProvider>
-      <div id="top" className="contents">
+      {/* .site-frame marks public pages; legacy-kinetic.css yields html/body to it. */}
+      <div id="top" className="site-frame contents">
         <a
           href="#main-content"
           className="site-scheme fixed top-2 left-2 z-(--z-toast) -translate-y-[200%] rounded-pill bg-ink px-4 py-2 font-body text-small text-canvas focus-visible:translate-y-0"

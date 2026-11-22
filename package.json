@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:fast": "playwright test --grep-invert @legacy3d",
+    "test:full": "playwright test"
   },
   "browserslist": {
     "production": [

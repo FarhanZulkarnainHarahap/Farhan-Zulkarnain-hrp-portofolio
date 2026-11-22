@@ -38,8 +38,8 @@ export default async function ProjectPage({ params }: Props) {
         <p className="eyebrow">{project.caseType || "PROJECT ARCHIVE"}</p>
         <h1>{project.title}</h1>
         <div className="tags">
-          {project.tags.map((tag) => (
-            <span key={tag}>{tag}</span>
+          {project.tags.map((tag, index) => (
+            <span key={`${tag}-${index}`}>{tag}</span>
           ))}
         </div>
         <div className="browser-window">
@@ -95,8 +95,8 @@ export default async function ProjectPage({ params }: Props) {
               <section>
                 <h2>Features</h2>
                 <ul>
-                  {project.features.map((feature) => (
-                    <li key={feature}>{feature}</li>
+                  {project.features.map((feature, index) => (
+                    <li key={`${feature}-${index}`}>{feature}</li>
                   ))}
                 </ul>
               </section>

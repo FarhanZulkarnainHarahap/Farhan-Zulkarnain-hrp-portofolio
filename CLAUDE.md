@@ -74,4 +74,8 @@
 - Kalau lint/build/test gagal: JANGAN push; laporkan kegagalannya.
 - Setelah push: laporkan hash commit dan link preview deploy jika ada.
 - Fase tanpa perubahan file tidak perlu commit/push.
+- Test di akhir fase: `npm run test:fast` (tanpa test 3D lama bertag `@legacy3d`, yang lambat dan
+  bergantung pada WebGL). `npm run test:full` untuk semuanya (mis. sebelum PR). Test 3D lama dihapus
+  bersama komponennya di Fase 11/12. Playwright lokal butuh
+  `export LD_LIBRARY_PATH=~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu:~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu/nss`.
 - Tetap BERHENTI dan tunggu persetujuan saya sebelum memulai fase berikutnya.

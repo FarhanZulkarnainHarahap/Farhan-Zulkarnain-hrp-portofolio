@@ -2,7 +2,7 @@
 import { MotionPreference } from "../three/motionPreference";
 import { useEffect, useRef, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
+import { MotionConfig, motion } from "framer-motion";
 import SceneHost from "../three/controllers/SceneHost";
 import { SceneProvider } from "./SceneState";
 function Cursor() {
@@ -32,25 +32,21 @@ function Cursor() {
 // Removed in Fase 11 once every page is rebuilt.
 export default function Shell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const reduced = useReducedMotion();
   return (
-    <SceneProvider>
-      {/* display: contents; scopes legacy-kinetic.css to the old page bodies */}
-      <div className="legacy-root">
-        <main id="main-content" className="kinetic-main">
-          <motion.div
-            key={pathname}
-            initial={reduced ? false : { clipPath: "inset(0 0 4% 0)" }}
-            animate={{ clipPath: "inset(0 0 0% 0)" }}
-            transition={{ duration: 0.28 }}
-          >
-            {children}
-          </motion.div>
-        </main>
-        <SceneHost />
-        <MotionPreference />
-        <Cursor />
-      </div>
-    </SceneProvider>
+    <MotionConfig reducedMotion="user">
+      <SceneProvider>
+        {/* display: contents; scopes legacy-kinetic.css to the old page bodies */}
+        <div className="legacy-root legacy-page">
+          <main id="main-content" className="kinetic-main">
+            <motion.div key={pathname} initial={false}>
+              {children}
+            </motion.div>
+          </main>
+          <SceneHost />
+          <MotionPreference />
+          <Cursor />
+        </div>
+      </SceneProvider>
+    </MotionConfig>
   );
 }

@@ -263,6 +263,10 @@
 
   --skeleton-bg: var(--ui-surface);
 
+  /* Hero visual placeholder (until the 3D accent in Fase 10) */
+  --hero-monogram-lg: clamp(12rem, 18vw, 18rem);
+  --hero-monogram-sm: clamp(8rem, 12vw, 12rem);
+
   --timeline-rule: var(--ui-hairline);
   --prose-measure: var(--container-reading);
 }
@@ -306,6 +310,18 @@
 }
 :root[data-theme="dark"] .site-scheme {
   color-scheme: dark;
+}
+/* Public pages (SiteChrome adds .site-frame): reserve the scrollbar gutter so the modal menu's
+   scroll lock does not shift layout, and offset anchors below the sticky header. Scoped so the
+   dashboard keeps its own html rules. */
+html:has(.site-frame) {
+  scrollbar-gutter: stable;
+  scroll-padding-top: var(--nav-height);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.site-frame) {
+    scroll-behavior: smooth;
+  }
 }
 /* Locally dark band (footer). */
 .scheme-dark {

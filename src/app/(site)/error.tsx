@@ -9,7 +9,7 @@ export default function ErrorPage({
   reset: () => void;
 }) {
   return (
-    <div className="legacy-root">
+    <div className="legacy-root legacy-page">
       <main className="not-found" id="main-content">
         <p className="eyebrow">CONNECTION INTERRUPTED</p>
         <h1>Unable to load this page.</h1>

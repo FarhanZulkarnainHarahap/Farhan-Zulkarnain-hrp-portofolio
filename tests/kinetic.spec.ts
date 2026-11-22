@@ -157,8 +157,10 @@ async function mockApi(context: BrowserContext) {
   return state;
 }
 async function settled(page: Page) {
-  await page.locator(".project-list button").first().waitFor();
-  for (const section of await page.locator(".section").all()) {
+  // Home (Fase 5): every data section has finished loading (no skeletons left).
+  await page.getByRole("main").locator("section").first().waitFor();
+  await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
+  for (const section of await page.getByRole("main").locator("section").all()) {
     await section.scrollIntoViewIfNeeded();
   }
   await page.evaluate(() => window.scrollTo(0, 0));
@@ -173,7 +175,7 @@ test("public routes, project preview, and all requested responsive widths", asyn
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await settled(page);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("FARHAN");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Farhan Zulkarnain Harahap");
   for (const width of [360, 390, 430, 768, 1024, 1280, 1440, 1920]) {
     await page.setViewportSize({ width, height: 1000 });
     expect(
@@ -417,7 +419,7 @@ test("experience create, update, cancellation, and deletion match backend contra
   ]);
 });
 
-test("reduced motion and unavailable WebGL retain the system graphic", async ({
+test("reduced motion and unavailable WebGL retain the system graphic @legacy3d", async ({
   page,
   context,
 }) => {
@@ -581,7 +583,7 @@ test("live public API, project detail, CV download, and rendered screenshots", a
   expect((await download.body()).length).toBeGreaterThan(1000);
 });
 
-test("desktop spatial scene renders and responds to capability selection", async ({
+test("desktop spatial scene renders and responds to capability selection @legacy3d", async ({
   page,
   context,
 }, info) => {
@@ -623,7 +625,7 @@ test("desktop spatial scene renders and responds to capability selection", async
   expect(errors).toEqual([]);
 });
 
-test("mobile core loads LOD and recovers with artwork after context loss", async ({
+test("mobile core loads LOD and recovers with artwork after context loss @legacy3d", async ({
   page,
   context,
 }, info) => {
@@ -651,7 +653,7 @@ test("mobile core loads LOD and recovers with artwork after context loss", async
   await expect(page.locator(".hero [data-fzh-asset=core] > img")).toBeVisible();
 });
 
-test("failed Blender asset retains usable static artwork", async ({
+test("failed Blender asset retains usable static artwork @legacy3d", async ({
   page,
   context,
 }) => {
@@ -666,7 +668,7 @@ test("failed Blender asset retains usable static artwork", async ({
   await expect(page.locator(".hero [data-fzh-asset=core]")).toHaveAttribute("data-ready", "false");
 });
 
-test("project vault details open the project selected in the DOM", async ({
+test("project vault details open the project selected in the DOM @legacy3d", async ({
   page,
   context,
 }) => {
@@ -691,7 +693,7 @@ test("project vault details open the project selected in the DOM", async ({
   await expect(page).toHaveURL(new RegExp(href! + "$"));
 });
 
-test("identity capsule is mounted on About and respects responsive layout and reduced motion", async ({ page, context }, info) => {
+test("identity capsule is mounted on About and respects responsive layout and reduced motion @legacy3d", async ({ page, context }, info) => {
   await mockApi(context);
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
@@ -723,7 +725,7 @@ test("identity capsule is mounted on About and respects responsive layout and re
 });
 
 
-test("standby and interaction motion remain visible at every device size", () => {
+test("standby and interaction motion remain visible at every device size @legacy3d", () => {
   for (const kind of ["core", "identity"] as const) {
     for (const device of [{ mobile: true, tablet: false }, { mobile: false, tablet: true }, { mobile: false, tablet: false }]) {
       const input = { kind, ...device, time: 0, active: false, pointerX: 0, pointerY: 0, scroll: 0 };
@@ -743,7 +745,7 @@ test("standby and interaction motion remain visible at every device size", () =>
 });
 
 for (const width of [390, 1024, 1440]) {
-  test(`standby renders continuously without input at ${width}px`, async ({ page, context }) => {
+  test(`standby renders continuously without input at ${width}px @legacy3d`, async ({ page, context }) => {
     test.setTimeout(150_000);
     await mockApi(context);
     await page.setViewportSize({ width, height: 1000 });
@@ -780,7 +782,7 @@ for (const width of [390, 1024, 1440]) {
   });
 }
 
-test("capability matrix reuses GLBs, selects nodes, and retains accessible fallback", async ({ page, context }, info) => {
+test("capability matrix reuses GLBs, selects nodes, and retains accessible fallback @legacy3d", async ({ page, context }, info) => {
   test.setTimeout(180_000);
   await mockApi(context);
   const requests: string[] = [];
@@ -812,7 +814,7 @@ test("capability matrix reuses GLBs, selects nodes, and retains accessible fallb
 
 test.describe("capability touch device", () => {
   test.use({ hasTouch: true });
-test("mobile capability matrix paginates, supports touch and reduced motion", async ({ page, context }, info) => {
+test("mobile capability matrix paginates, supports touch and reduced motion @legacy3d", async ({ page, context }, info) => {
   test.setTimeout(180_000);
   await mockApi(context);
   await page.setViewportSize({width:390,height:844});
@@ -842,7 +844,7 @@ test("mobile capability matrix paginates, supports touch and reduced motion", as
 
 });
 
-test('capability layouts keep variable counts separated', async () => {
+test('capability layouts keep variable counts separated @legacy3d', async () => {
   for(let count=0;count<=16;count++) {
     const positions=capabilityLayout(count);
     expect(positions).toHaveLength(count);
@@ -851,7 +853,7 @@ test('capability layouts keep variable counts separated', async () => {
 });
 
 
-test("project vault keeps scene, selects artifacts and survives context loss", async ({page,context},info)=>{
+test("project vault keeps scene, selects artifacts and survives context loss @legacy3d", async ({page,context},info)=>{
   test.setTimeout(180_000);
   await mockApi(context);
   await context.route('**/image/upload/f_webp,**',route=>route.fulfill({path:'tests/fixtures/project-preview.webp',contentType:'image/webp',headers:{'access-control-allow-origin':'*'}}));
@@ -883,7 +885,7 @@ test("project vault keeps scene, selects artifacts and survives context loss", a
 });
 test.describe('project vault touch',()=>{
  test.use({hasTouch:true,viewport:{width:390,height:844}});
- test('mobile project vault supports tap and reduced motion',async({page,context},info)=>{
+ test('mobile project vault supports tap and reduced motion @legacy3d',async({page,context},info)=>{
   await mockApi(context);
   await context.route('**/image/upload/f_webp,**',route=>route.fulfill({path:'tests/fixtures/project-preview.webp',contentType:'image/webp',headers:{'access-control-allow-origin':'*'}}));
   await page.goto('/projects');
@@ -906,7 +908,7 @@ test.describe('project vault touch',()=>{
  });
 });
 
-test('project vault tablet preserves access after screenshot failure',async({page,context})=>{
+test('project vault tablet preserves access after screenshot failure @legacy3d',async({page,context})=>{
  await mockApi(context);await page.setViewportSize({width:900,height:1100});
  await context.route('**/image/upload/f_webp,**',route=>route.abort());
  await page.goto('/projects');const stage=page.locator('.vault-canvas');await stage.scrollIntoViewIfNeeded();

@@ -5,6 +5,7 @@ import "./globals.css";
 // Remove with the legacy components in Fase 11.
 import "@/styles/legacy-kinetic.css";
 import { ThemeProvider } from "@/components/site/ThemeProvider";
+import { profile } from "@/lib/site";
 
 const newsreader = Newsreader({
   subsets: ["latin"],
@@ -34,16 +35,15 @@ const structuredData = [
     "@type": "Person",
     name: "Farhan Zulkarnain Harahap",
     url: "https://farhanzulkarnainhrp.com",
-    jobTitle: "Full-Stack Engineer / Software Engineer",
+    jobTitle: "Full-Stack Engineer",
+    email: `mailto:${profile.email}`,
+    image: profile.image,
     address: {
       "@type": "PostalAddress",
       addressLocality: "Medan",
       addressCountry: "ID",
     },
-    sameAs: [
-      "https://github.com/FarhanZulkarnainHarahap",
-      "https://www.linkedin.com/in/farhan-zulkarnain-71801a347",
-    ],
+    sameAs: [profile.github, profile.linkedin],
     knowsAbout: [
       "Next.js",
       "React",
