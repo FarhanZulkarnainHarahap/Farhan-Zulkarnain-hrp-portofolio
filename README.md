@@ -16,7 +16,7 @@ Copy `.env.example` to `.env` and configure the API origin and server-only JWT s
 
 ## Architecture
 
-- Public routes: `/`, `/about`, `/about/detail`, `/about/skills`, `/about/docs`, `/journey`, `/projects`, `/projects/[slug]`, `/contact`.
+- Public routes: `/`, `/about` (`/about/detail`, `/about/skills`, `/about/docs` redirect 308 to `/about#profile|#stack|#documents`), `/journey`, `/projects`, `/projects/[slug]`, `/contact`.
 - Shared UI, data hooks, motion, command palette, and spatial components: `src/components/kinetic` and `src/components/Navbar.tsx`.
 - API origin: `src/lib/api-config.ts`. The browser API client uses same-origin `/api/public/[resource]` for the four public collections. The server forwards only whitelisted GET requests to the configured primary backend, without credentials.
 - Authenticated calls and mutations go directly to the primary API, with credentials. The backend must allow the frontend origin and issue cookies for the frontend domain. Production domain cookies cannot authenticate an unrelated localhost domain; use a local backend configured for localhost for real local login.

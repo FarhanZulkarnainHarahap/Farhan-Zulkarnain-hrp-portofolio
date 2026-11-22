@@ -1,8 +1,9 @@
 "use client";
 import type { Document } from "@/services/api";
 import { getDocumentSlug } from "@/lib/portfolio/documents";
-import { CollectionState, Media, SectionHeading } from "./Primitives";
-import { useCollection } from "./data";
+import { Media, SectionHeading } from "./Primitives";
+import { CollectionState } from "@/components/admin/CollectionState";
+import { useCollection } from "@/hooks/useCollection";
 export default function Documents() {
   const state = useCollection<Document>("/api/documents");
   return (

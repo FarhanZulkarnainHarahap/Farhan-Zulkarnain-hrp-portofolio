@@ -1,4 +1,4 @@
-import type { Skill } from "@/components/kinetic/data";
+import type { Skill } from "@/types/content";
 export const capabilityCategories = ["Frontend", "Backend", "Database", "Infrastructure", "Creative", "Tools"] as const;
 export type CapabilityCategory = typeof capabilityCategories[number];
 export type CapabilitySkill = Skill & { icon: string; role?: string };

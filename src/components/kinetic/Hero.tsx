@@ -8,7 +8,7 @@ import Image from "next/image";
 const HeroKineticCore = dynamic(() => import("../three/HeroKineticCore"), {
   loading: () => <Image className="asset-poster-pending" src="/models/fzh-kinetic-core/FZH_Hero_Kinetic_Core_poster.webp" alt="" width={1200} height={1200} />,
 });
-import { profile } from "./data";
+import { profile } from "@/lib/site";
 export default function Hero() {
   const { setMode, setActive } = useScene();
   return (

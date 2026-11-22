@@ -189,9 +189,6 @@ test("public routes, project preview, and all requested responsive widths", asyn
   }
   for (const route of [
     "/about",
-    "/about/detail",
-    "/about/skills",
-    "/about/docs",
     "/journey",
     "/projects",
     "/contact",
@@ -228,24 +225,25 @@ test("keyboard palette, focus restoration, mobile menu, and capability tabs", as
 }) => {
   await mockApi(context);
   await page.goto("/");
-  await page.getByRole("button", { name: "Open command palette" }).focus();
+  await page.getByRole("button", { name: "Search and navigate" }).focus();
   await page.keyboard.press("Control+k");
   const search = page.getByRole("combobox");
   await expect(search).toBeFocused();
   await search.fill("jour");
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/journey$/);
-  await page.getByRole("button", { name: "Open command palette" }).click();
+  await page.getByRole("button", { name: "Search and navigate" }).click();
   await page.keyboard.press("Escape");
   await expect(
-    page.getByRole("button", { name: "Open command palette" }),
+    page.getByRole("button", { name: "Search and navigate" }),
   ).toBeFocused();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "Open menu" }).click();
-  await expect(page.locator(".main-nav a").first()).toBeFocused();
+  const menu = page.getByRole("dialog", { name: "Menu" });
+  await expect(menu.getByRole("link", { name: "Projects" })).toBeFocused();
   await page.keyboard.press("Shift+Tab");
-  await expect(page.getByRole("button", { name: "Close menu" })).toBeFocused();
-  await page.getByRole("link", { name: "02 About" }).click();
+  await expect(menu.getByRole("button", { name: "Close menu" })).toBeFocused();
+  await menu.getByRole("link", { name: "About" }).click();
   await expect(page).toHaveURL(/\/about$/);
   const database = page.getByRole("tab", { name: /Database/ });
   await database.click();
@@ -568,7 +566,7 @@ test("live public API, project detail, CV download, and rendered screenshots", a
   await expect(
     page.getByRole("heading", { name: "Overview", exact: true }),
   ).toBeVisible();
-  await page.goto("/about/docs");
+  await page.goto("/about#documents");
   const cv = page
     .locator(".document-item")
     .filter({ hasText: /Curiculum Vitae|Curriculum Vitae|Resume/ })
@@ -637,6 +635,8 @@ test("mobile core loads LOD and recovers with artwork after context loss", async
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
+  // next/dynamic swaps the server-rendered 3D host once its chunk loads; wait for it to settle.
+  await page.waitForLoadState("networkidle");
   const host = page.locator(".hero [data-fzh-asset=core]"),
     canvas = host.locator("canvas");
   await host.scrollIntoViewIfNeeded();
@@ -749,6 +749,8 @@ for (const width of [390, 1024, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/");
+    // next/dynamic swaps the server-rendered 3D host once its chunk loads; wait for it to settle.
+    await page.waitForLoadState("networkidle");
     for (const kind of ["core", "identity"]) {
       const asset = page.locator(`[data-fzh-asset="${kind}"]`);
       await asset.scrollIntoViewIfNeeded();
@@ -816,6 +818,8 @@ test("mobile capability matrix paginates, supports touch and reduced motion", as
   await page.setViewportSize({width:390,height:844});
   await page.emulateMedia({reducedMotion:'no-preference'});
   await page.goto('/');
+  // next/dynamic swaps the server-rendered 3D host once its chunk loads; wait for it to settle.
+  await page.waitForLoadState('networkidle');
   await page.getByRole('tab', {name:/Frontend/}).click();
   const stage=page.locator('.matrix-stage');
   await stage.scrollIntoViewIfNeeded();
@@ -912,4 +916,18 @@ test('project vault tablet preserves access after screenshot failure',async({pag
  await expect(page.locator('.project-summary h3')).toHaveText(projectsFixture.data[1].title);
  await expect(page.locator('.project-summary a')).toHaveAttribute('href',/projects\//);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test("former About sub-pages redirect permanently to /about sections", async ({ request }) => {
+  for (const [from, to] of [
+    ["/about/detail", "/about#profile"],
+    ["/about/skills", "/about#stack"],
+    ["/about/docs", "/about#documents"],
+    ["/skills", "/about#stack"],
+    ["/documents", "/about#documents"],
+  ]) {
+    const response = await request.get(from, { maxRedirects: 0 });
+    expect(response.status(), from).toBe(308);
+    expect(response.headers().location, from).toBe(to);
+  }
 });

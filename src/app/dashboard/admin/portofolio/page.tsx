@@ -1,6 +1,6 @@
 "use client";
-import { useConfirm } from "@/components/kinetic/Confirmation";
-import Modal from "@/components/kinetic/Modal";
+import { useConfirm } from "@/components/admin/Confirmation";
+import Modal from "@/components/admin/Modal";
 
 import {
   ChangeEvent,

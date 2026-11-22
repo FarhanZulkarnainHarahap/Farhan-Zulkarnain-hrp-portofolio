@@ -1,5 +1,32 @@
 import type { Metadata } from "next";
+import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
+// TEMPORARY: styles for the not-yet-redesigned Kinetic pages, scoped to .legacy-root.
+// Remove with the legacy components in Fase 11.
+import "@/styles/legacy-kinetic.css";
+import { ThemeProvider } from "@/components/site/ThemeProvider";
+
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  axes: ["opsz"],
+  display: "swap",
+  variable: "--font-newsreader",
+});
+const geist = Geist({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-geist",
+});
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-geist-mono",
+});
+
+// Runs before first paint: pins a stored theme choice. Without a stored choice (or without
+// JS) the CSS follows prefers-color-scheme, so there is no flash either way.
+const themeScript = `try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
 
 const structuredData = [
   {
@@ -33,19 +60,18 @@ const structuredData = [
     name: "Farhan Zulkarnain Portfolio",
     url: "https://farhanzulkarnainhrp.com",
     description:
-      "Interactive portfolio for Farhan Zulkarnain Harahap, a Full-Stack Web Developer and UI Developer based in Medan, Indonesia.",
+      "Portfolio of Farhan Zulkarnain Harahap, a full-stack engineer based in Medan, Indonesia.",
   },
 ];
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://farhanzulkarnainhrp.com"),
   title: {
-    default:
-      "Farhan Zulkarnain Harahap — Full-Stack Engineer | Kinetic Systems",
-    template: "%s | Farhan Zulkarnain",
+    default: "Farhan Zulkarnain Harahap — Full-Stack Engineer",
+    template: "%s · Farhan Zulkarnain Harahap",
   },
   description:
-    "Explore Farhan Zulkarnain Harahap's portfolio: full-stack web apps, modern UI/UX design, Next.js projects, admin dashboards, API integration, certificates, and creative digital experiences.",
+    "Full-stack engineer in Medan, Indonesia, building web applications end to end with Next.js, React, TypeScript, Node.js, and PostgreSQL. Selected projects, case studies, and CV.",
   keywords: [
     "Farhan Zulkarnain Harahap",
     "Farhan Zulkarnain portfolio",
@@ -93,19 +119,24 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    images: [{ url: "/fz-logo.png", alt: "Farhan — Kinetic Systems" }],
+    images: [
+      {
+        url: "/fz-logo.png",
+        alt: "Farhan Zulkarnain Harahap, Full-Stack Engineer",
+      },
+    ],
     locale: "en_US",
     url: "https://farhanzulkarnainhrp.com",
     siteName: "Farhan Zulkarnain Portfolio",
-    title: "Farhan Zulkarnain Harahap — Full-Stack Engineer | Kinetic Systems",
+    title: "Farhan Zulkarnain Harahap — Full-Stack Engineer",
     description:
-      "Kinetic Systems: full-stack applications, system architecture, and interactive digital experiences by Farhan Zulkarnain Harahap.",
+      "Web applications built end to end, from interface to database. Projects, case studies, and CV.",
   },
   twitter: {
     card: "summary",
-    title: "Farhan Zulkarnain Harahap — Full-Stack Engineer | Kinetic Systems",
+    title: "Farhan Zulkarnain Harahap — Full-Stack Engineer",
     description:
-      "Full-stack web portfolio featuring Next.js projects, UI/UX design, dashboards, certificates, and creative digital experiences.",
+      "Web applications built end to end, from interface to database. Projects, case studies, and CV.",
   },
 };
 
@@ -115,8 +146,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html
+      lang="en"
+      className={`${newsreader.variable} ${geist.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <link rel="dns-prefetch" href="https://api.farhanzulkarnainhrp.com" />
       </head>
       <body className="min-h-full flex flex-col">
@@ -124,7 +160,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

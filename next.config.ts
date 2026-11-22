@@ -53,12 +53,28 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/skills",
-        destination: "/about/skills",
+        destination: "/about#stack",
         permanent: true,
       },
       {
         source: "/documents",
-        destination: "/about/docs",
+        destination: "/about#documents",
+        permanent: true,
+      },
+      // Former About sub-pages now live as sections of the standalone /about page.
+      {
+        source: "/about/detail",
+        destination: "/about#profile",
+        permanent: true,
+      },
+      {
+        source: "/about/skills",
+        destination: "/about#stack",
+        permanent: true,
+      },
+      {
+        source: "/about/docs",
+        destination: "/about#documents",
         permanent: true,
       },
     ];
