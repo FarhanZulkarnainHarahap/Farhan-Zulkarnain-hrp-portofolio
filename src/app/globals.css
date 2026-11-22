@@ -402,6 +402,13 @@ html:has(.site-frame) {
     :is([data-intro], [data-reveal]:not([data-reveal="group"]), [data-reveal="group"] > *) {
     opacity: 0;
   }
+  html.js-motion:not(.motion-ready) [data-draw] .draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  html.js-motion:not(.motion-ready) [data-draw] .draw-fade {
+    opacity: 0;
+  }
 }
 
 /* Locally dark band (footer). */

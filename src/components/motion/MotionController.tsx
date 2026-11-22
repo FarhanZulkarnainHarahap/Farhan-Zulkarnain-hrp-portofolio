@@ -72,7 +72,41 @@ export function MotionController() {
             },
           });
 
-        if (!reveals.size) return;
+        // [data-draw] (Fase 9.2): technical drawings draw their lines once, then labels fade in.
+        const drawings = gsap.utils
+          .toArray<SVGElement>("[data-draw]", main)
+          .map((svg) => ({
+            svg,
+            lines: Array.from(svg.querySelectorAll<SVGElement>(".draw")),
+            fades: Array.from(svg.querySelectorAll<SVGElement>(".draw-fade")),
+          }));
+        for (const d of drawings) {
+          gsap.set(d.lines, { strokeDasharray: 1, strokeDashoffset: 1 });
+          gsap.set(d.fades, { opacity: 0 });
+        }
+        const draw = contextSafe!((d: (typeof drawings)[number]) =>
+          gsap
+            .timeline()
+            .to(d.lines, {
+              strokeDashoffset: 0,
+              duration: t.reveal,
+              ease: "standard",
+              stagger: { amount: t.reveal },
+              clearProps: "strokeDasharray,strokeDashoffset",
+            })
+            .to(
+              d.fades,
+              {
+                opacity: 1,
+                duration: t.slow,
+                ease: "enter",
+                stagger: { amount: t.slow },
+              },
+              `<${t.slow}`,
+            ),
+        );
+
+        if (!reveals.size && !drawings.length) return;
         const show = contextSafe!((targets: HTMLElement[]) =>
           gsap.to(targets, {
             opacity: 1,
@@ -90,18 +124,21 @@ export function MotionController() {
               if (!entry.isIntersecting) continue;
               observer.unobserve(entry.target);
               pending.delete(entry.target);
-              show(reveals.get(entry.target) ?? []);
+              const drawing = drawings.find((d) => d.svg === entry.target);
+              if (drawing) draw(drawing);
+              else show(reveals.get(entry.target) ?? []);
             }
           },
           { rootMargin: "0px 0px -15% 0px" },
         );
-        for (const el of reveals.keys()) {
+        const observed = [...reveals.keys(), ...drawings.map((d) => d.svg)];
+        for (const el of observed) {
           pending.add(el);
           observer.observe(el);
         }
         return () => {
           observer.disconnect();
-          for (const el of reveals.keys()) pending.delete(el);
+          for (const el of observed) pending.delete(el);
         };
       });
       markMotionReady();
