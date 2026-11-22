@@ -6,5 +6,9 @@
 | Geist Sans (latin 400, woff) | Vercel via Fontsource `@fontsource/geist-sans@5.3.0` | SIL Open Font License 1.1 | Open Graph images |
 | Geist Mono (latin 400, woff) | Vercel via Fontsource `@fontsource/geist-mono@5.3.0` | SIL Open Font License 1.1 | Open Graph images |
 
-Site fonts are loaded with `next/font/google` (same families, OFL). 3D assets (Fase 10) are listed here
-with their source and license when added.
+Site fonts are loaded with `next/font/google` (same families, OFL).
+
+3D (Fase 10): `public/3d/hero-model.glb`, the hero posters (`public/3d/hero/`) and the device renders
+(`public/3d/device/`) are original work, modelled, lit and rendered procedurally in Blender via MCP
+from `design/blender/portfolio-3d.blend`. No third-party models, textures or HDRIs (Poly Haven,
+Sketchfab and generators were not used).

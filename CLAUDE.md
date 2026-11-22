@@ -74,8 +74,19 @@
   /asset-optimization, /export-pipeline, /qa-review. Dikerjakan di Fase 10.
 - DILARANG: memakai ulang GLB/model lama dari public/models, membuat geometri 3D langsung dengan kode
   three.js sebagai pengganti aset Blender, atau mengambil model dari sumber lain tanpa izin saya.
-- Sebelum Fase 10, halaman hanya menyediakan SLOT visual (poster/placeholder statis rapi) dengan props
-  yang siap menerima <HeroModel/> dan <DeviceMockup/> nanti.
+- Hasil Fase 10 (lihat docs/3D_PLAN.md):
+  - HeroModel: src/components/hero3d/ (HeroVisual → poster ThemedPicture + HeroModelSlot →
+    heroScene.ts, three.js langsung + meshopt, di-import dinamis). Gating di src/lib/webgl-capability.ts
+    (desktop, pointer halus, tanpa reduced motion, WebGL2, slot terlihat). Render on demand: 0 rAF saat
+    diam; dispose saat unmount. Warna dari token `--model-*`; rig cahaya per tema di heroScene.ts.
+  - Geometri poster/kamera di hero3d/hero-frame.ts (crop + MODEL_SCALE). Jangan membesarkan poster:
+    H1 harus tetap elemen LCP (dijaga tests/hero-model.spec.ts).
+  - DeviceMockup STATIS saja (tanpa GLB/three.js): src/components/case-study/DeviceMockup.tsx +
+    device-screen.ts (koordinat layar dari Blender).
+  - Render per tema lewat src/components/media/ThemedPicture.tsx (hanya varian aktif diunduh).
+  - DotGrid (WebGL) DIHAPUS; yang tersisa hanya pola titik CSS statis `.dot-pattern` (token `--dots-*`).
+  - Mengubah aset: edit design/blender/portfolio-3d.blend lewat MCP, render ulang, ekspor ke public/3d/,
+    ulangi /qa-review. PNG sumber tidak di-commit ke public/.
 
 ## Alur kerja
 - Kerja hanya di branch redesign/professional. Commit kecil per fase/section.

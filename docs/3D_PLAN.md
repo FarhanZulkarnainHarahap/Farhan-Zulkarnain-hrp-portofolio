@@ -16,6 +16,22 @@ nexxus-project\nexxus-portofolio\web\design\blender\`), ekspor ke `public/3d/`.
 | Ekspor | glTF 2.0 (Draco tersedia; format gambar WebP/JPEG) |
 | Scene saat ini | default (Camera, Cube, Light), belum tersimpan |
 
+## Workaround pratinjau (pengganti tool `look`)
+
+Tool `look` dari MCP tidak bisa dipakai di setup ini: Blender (Windows) menulis gambar sementaranya ke
+`/tmp` Windows, sedangkan server MCP (WSL) mencarinya di `/tmp` WSL → "file not found". Penggantinya: helper
+`snap()` di Blender (`bpy.app.driver_namespace["snap"]`) memasang kamera sementara dari beberapa arah dan
+merender langsung ke folder WSL lewat path UNC `\\wsl.localhost\Ubuntu-24.04\...` (Workbench untuk bentuk,
+EEVEE untuk material/cahaya), lalu gambar dibuka dari WSL. Kamera sementara dihapus setelahnya.
+
+## Keputusan checkpoint
+
+- **Checkpoint 1 (disetujui):** jarak pelat 36 cm; kamera poster HeroModel 3/4 rendah (~20°).
+  DeviceMockup: area keyboard dilunakkan; kamera **tegak lurus bidang layar** (ikut menunduk ~15°), lensa
+  85–100 mm, shift lensa untuk membingkai deck, sehingga area layar tetap persegi panjang lurus (CSS biasa).
+  Koordinat 4 sudut layar diekspor dalam persen dan diverifikasi lurus (selisih < 0,5%).
+- **B hanya statis** di semua perangkat: tanpa GLB/three.js di halaman studi kasus.
+
 ## Keputusan lintas aset
 
 - **Gaya:** minimalist-style — bentuk sederhana, tepi dibulatkan halus, material matte seperti keramik/clay,
@@ -135,9 +151,62 @@ Poster ada di HTML awal; GLB/three hanya dimuat di desktop mampu (chunk diff sep
 0 rAF dan 0 draw saat diam; warna ikut ganti tema; reduced motion/mobile = statis; mockup statis
 menempatkan gambar proyek di area layar; ukuran setiap file ≤ budget; 0 issue dev overlay.
 
-## Menunggu persetujuan
+## Keputusan final (disetujui) dan hasil
 
-1. Konsep A (lima pelat + sumbu aksen) dan B (laptop generik, mockup statis + 3D desktop).
-2. DotGrid **digantikan** HeroModel (pola titik CSS statis tetap).
-3. C (turntable) **tidak** dibuat.
-4. Runtime three.js langsung + meshopt via `npx @gltf-transform/cli` (tanpa dependensi baru di package.json).
+Keputusan pemilik: A dibuat; **B statis saja** (tanpa GLB/three.js di studi kasus); DotGrid **dihapus**
+dan diganti HeroModel (pola titik CSS statis tetap, token `--dots-*`); C tidak dibuat; runtime three.js
+langsung + meshopt. Koreksi Checkpoint 2: metallic laptop gelap 0,6 → 0,3; ujung sumbu diberi bevel
+(0,006 m, 3 segmen).
+
+### Pipeline akhir
+
+1. `/asset-optimization`: PASS. Hero 2.844 segitiga (budget 12.000), 3 material, 0 non-manifold, skala
+   di-apply, nama `SM_/MAT_/LGT_/CAM_`.
+2. `/export-pipeline`: glTF binary dari scene `Hero` (`use_active_scene`, seleksi dibersihkan di semua
+   scene), Y-up, modifier di-apply, tanpa tekstur, `CAM_Hero` ikut.
+3. meshopt: `npx @gltf-transform/cli` macet saat instalasi (unduhan `sharp`), jadi langkah yang sama
+   dijalankan dengan library `@gltf-transform/{core,extensions,functions}` + `meshoptimizer` di folder
+   sementara (tanpa dependensi baru di package.json): dedup → flatten → join → weld → prune → reorder →
+   quantize → `EXT_meshopt_compression` (filter). 75.960 B → **21.080 B**, 3 mesh (3 draw call).
+4. `/qa-review`: lihat verdict di bawah.
+
+### Integrasi web
+
+- **HeroModel** (`src/components/hero3d/`): `HeroVisual` (poster + slot) → `HeroModelSlot` (gating dari
+  `src/lib/webgl-capability.ts`, IntersectionObserver, import dinamis) → `heroScene.ts` (three.js,
+  `GLTFLoader` + `MeshoptDecoder`, kamera dari GLB, render on demand, `dispose()` + `forceContextLoss`).
+  Warna material dari token `--model-surface/line/accent`; rig cahaya per tema (`RIGS`) disetel terhadap
+  poster (selisih rata-rata piksel ≈ 2,7/255 light, 3,1/255 dark) sehingga cross-fade 240 ms nyaris tak
+  terlihat.
+- **LCP:** poster 4:5 penuh ternyata lebih besar dari H1 (poster jadi elemen LCP). Perbaikan: poster
+  di-crop ke batas alpha model (x 224–968, y 256–1272 dari 1200×1500) dan model digambar pada
+  `MODEL_SCALE = 0,8` di tengah bingkai (rect poster diskalakan, kamera three.js `zoom = 0,8`, tetap
+  sejajar piksel). Luas poster ≤ 0,73× teks H1 di 1024–1920 px; H1 tetap LCP (diuji).
+- **Koreksi warna sumbu gelap:** rig gelap (key 680 W) membuat sumbu `#DE916C` terbakar menjadi
+  (255,255,203). Untuk render poster gelap saja, albedo `MAT_Accent` dikompensasi ×0,4 → sumbu terbaca
+  (221,150,117) ≈ token. `.blend` disimpan dengan palet light.
+- **DeviceMockup** statis (`src/components/case-study/`), render via `ThemedPicture`
+  (`src/components/media/`), bayangan elips dari token `--device-shadow-color`.
+
+### Aset
+
+| File | Ukuran | Budget |
+|---|---|---|
+| `public/3d/hero-model.glb` | 21,1 KB | ≤ 200 KB |
+| `public/3d/hero/{light,dark}-{320,560,744}.avif` | 12,1–23,6 KB | ≤ 120 KB |
+| `public/3d/hero/{light,dark}-{320,560,744}.webp` | 21,4–40,2 KB | ≤ 120 KB |
+| `public/3d/device/{light,dark}-{640,960,1280,1600}.avif` | 3,1–5,5 KB | ≤ 150 KB |
+| `public/3d/device/{light,dark}-{640,960,1280,1600}.webp` | 5,0–12,5 KB | ≤ 150 KB |
+| `design/blender/portfolio-3d.blend` | 133 KB | sumber |
+
+Yang diunduh di beranda desktop mampu: satu poster (≈ 20 KB) + GLB 21 KB + chunk three.js (lazy).
+Mobile/reduced motion: tanpa GLB dan tanpa three.js; mobile juga tanpa poster (slot disembunyikan).
+
+### QA verdict (`/qa-review`)
+
+**SHIP WITH NOTES.** Sudut 3/4, profil, atas, belakang, dan per-objek untuk Hero dan Device; poster
+dibandingkan dengan canvas three.js; tidak ada blocker atau major.
+- Fixed: sumbu gelap overexposed (lihat di atas); kamera sementara `CAM_snap` yang tertinggal dihapus.
+- Minor: bayangan antarpelat di canvas sedikit lebih tipis daripada render Blender (area light vs
+  directional light + PCF); perbedaannya hanya terlihat saat dibandingkan berdampingan.
+- Note: ruang kosong di sekitar model bertambah karena `MODEL_SCALE` (keputusan LCP).
