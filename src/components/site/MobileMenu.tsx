@@ -62,6 +62,10 @@ export function MobileMenu({ cv }: { cv: string }) {
         onClose={() => setOpen(false)}
         className={cn(
           "site-scheme m-0 h-dvh max-h-none w-full max-w-none bg-(--menu-bg) p-0 text-body",
+          // Sheet enters from the top (base, ease-enter) and leaves faster (fast, ease-exit).
+          "transition-[opacity,translate,display,overlay] transition-discrete duration-(--duration-fast) ease-exit",
+          "-translate-y-2 opacity-0 open:translate-y-0 open:opacity-100 open:duration-(--duration-base) open:ease-enter",
+          "starting:open:-translate-y-2 starting:open:opacity-0 motion-reduce:translate-y-0",
           "backdrop:bg-scrim",
         )}
       >
