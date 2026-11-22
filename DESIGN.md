@@ -487,15 +487,13 @@ normalises presentation.
   terracotta axis, warm procedural studio light. It eases towards the pointer (max ±8°) and rests
   when the pointer leaves; nothing loops. No 3D on project cards or forms. The former WebGL DotGrid
   accent is gone; only the static CSS dot pattern stays behind the hero visual.
-- **Case study device:** the hero image is the static **DeviceMockup**: a Blender render of a generic
-  laptop (light/dark) with the project screenshot placed in its screen by CSS (coordinates exported
-  from Blender, `src/components/case-study/device-screen.ts`). No WebGL. The screenshot is the
-  content image (alt from the project title); the laptop is decorative (`alt=""`); the frame keeps
-  the render's 8:5 ratio, so nothing shifts.
-- **Theme-aware renders:** posters and mockups exist per theme and follow the site theme (toggle and
+- **Case study lead image:** the plain project screenshot (`ProjectImage`) in a quiet frame: 16:10
+  locked ratio, `--media-radius`, hairline border, `--media-bg` while loading; priority because it
+  sits above the fold under the title and CTAs. No device mockup (removed in Fase 10.5).
+- **Theme-aware renders:** posters exist per theme and follow the site theme (toggle and
   `data-theme`, OS by default) through `ThemedPicture`: only the active variant is downloaded, and a
   toggle swaps it after decoding, without a reload. 3D material colours come from the `--model-*`
-  tokens; the device shadow from `--device-shadow-color`.
+  tokens.
 - **Budgets:** each GLB ≤ 1.5 MB (Draco or Meshopt), textures ≤ 2K WebP, total 3D on the home page
   ≤ 3 MB. Sources in `design/blender/`, exports in `public/3d/`.
 - **Fallbacks:** a WebP/AVIF poster rendered from the same scene is shown on mobile, with reduced

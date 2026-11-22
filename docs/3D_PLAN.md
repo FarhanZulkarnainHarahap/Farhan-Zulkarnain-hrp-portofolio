@@ -98,7 +98,13 @@ fallback (fallback seharusnya statis, bukan WebGL).
 saat model siap di desktop, cross-fade 240 ms ke canvas. Mobile / pointer kasar / reduced motion /
 tanpa WebGL: poster saja, GLB tidak diunduh.
 
-## B. DeviceMockup (studi kasus, slot gambar utama)
+## B. DeviceMockup (studi kasus, slot gambar utama) — DIHAPUS di Fase 10.5
+
+> Fase 10.5 (keputusan pemilik): mockup laptop dihapus dari studi kasus. Gambar utama kembali ke
+> `ProjectImage` biasa (16:10, `--media-radius`, border hairline, priority). `public/3d/device/`,
+> `DeviceMockup.tsx`, `device-screen.ts`, token `--device-shadow-color` dan test-nya dihapus. Scene
+> `Device` di `design/blender/portfolio-3d.blend` tetap sebagai arsip. Bagian di bawah adalah catatan
+> historis.
 
 **Konsep:** laptop generik tanpa logo: deck tipis dengan trackpad dan area keyboard berupa inset halus
 (tanpa ratusan tombol), engsel, layar terbuka ±105°, bezel tipis. Mesh layar terpisah dengan material

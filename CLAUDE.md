@@ -81,8 +81,8 @@
     diam; dispose saat unmount. Warna dari token `--model-*`; rig cahaya per tema di heroScene.ts.
   - Geometri poster/kamera di hero3d/hero-frame.ts (crop + MODEL_SCALE). Jangan membesarkan poster:
     H1 harus tetap elemen LCP (dijaga tests/hero-model.spec.ts).
-  - DeviceMockup STATIS saja (tanpa GLB/three.js): src/components/case-study/DeviceMockup.tsx +
-    device-screen.ts (koordinat layar dari Blender).
+  - DeviceMockup DIHAPUS di Fase 10.5: gambar utama studi kasus = ProjectImage biasa (16:10, radius
+    `--media-radius`, border hairline, priority). Scene Device di .blend hanya arsip; jangan dipasang lagi.
   - Render per tema lewat src/components/media/ThemedPicture.tsx (hanya varian aktif diunduh).
   - DotGrid (WebGL) DIHAPUS; yang tersisa hanya pola titik CSS statis `.dot-pattern` (token `--dots-*`).
   - Mengubah aset: edit design/blender/portfolio-3d.blend lewat MCP, render ulang, ekspor ke public/3d/,

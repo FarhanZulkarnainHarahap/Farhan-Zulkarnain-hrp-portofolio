@@ -25,7 +25,7 @@ Copy `.env.example` to `.env` and configure the API origin and server-only JWT s
 - `src/proxy.ts` verifies JWTs and enforces ADMIN for both `/admin/*` aliases and `/dashboard/admin/*` routes. Admin layouts also verify the profile with the backend.
 - Project details render only stored fields. Journey uses existing profile milestones when no dated experiences are published; it does not invent dates.
 - Cloudinary image previews use responsive `srcset` widths and automatic formats through a Next Image loader. Invalid or failed images show a local fallback.
-- 3D is an accent only: one original Blender model in the home hero (three.js + meshopt, loaded on demand on capable desktops, with theme posters as fallback) and static device renders on case studies. Source: `design/blender/portfolio-3d.blend`; exports in `public/3d/`. See [docs/3D_PLAN.md](docs/3D_PLAN.md).
+- 3D is an accent only: one original Blender model in the home hero (three.js + meshopt, loaded on demand on capable desktops, with theme posters as fallback). Source: `design/blender/portfolio-3d.blend`; exports in `public/3d/`. See [docs/3D_PLAN.md](docs/3D_PLAN.md).
 
 ## Supported admin operations
 

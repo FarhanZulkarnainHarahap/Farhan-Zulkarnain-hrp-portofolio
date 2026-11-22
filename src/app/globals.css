@@ -267,7 +267,6 @@
   --model-surface: light-dark(var(--paper-50), var(--night-700));
   --model-line: light-dark(var(--paper-700), var(--night-200));
   --model-accent: var(--ui-accent);
-  --device-shadow-color: light-dark(rgb(26 25 23 / 0.16), rgb(0 0 0 / 0.55));
 
   /* Accents (Fase 7, React Bits adaptations) */
   --shine-color: var(--ui-accent);
@@ -440,7 +439,6 @@ html:has(.site-frame) {
   }
 }
 
-/* Soft ground shadow under the device mockup (token colour, follows the theme). */
 /* HeroModel: the poster stays until the first WebGL frame, then the canvas cross-fades in. */
 .hero-model-poster,
 .hero-model-canvas {
@@ -452,10 +450,6 @@ html:has(.site-frame) {
 }
 [data-model-ready="true"] .hero-model-canvas {
   opacity: 1;
-}
-
-.device-shadow {
-  background: radial-gradient(closest-side, var(--device-shadow-color), transparent);
 }
 
 /* Locally dark band (footer). */

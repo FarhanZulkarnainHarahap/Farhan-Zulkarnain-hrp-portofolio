@@ -137,3 +137,43 @@ test("sitemap lists every case study", async ({ request }) => {
   for (const project of projects)
     expect(xml).toContain(`/projects/${slug(project.title)}</loc>`);
 });
+
+test("lead image: plain framed screenshot, locked 16:10 ratio, no CLS, no device assets", async ({
+  browser,
+}) => {
+  for (const width of [390, 1440]) {
+    const context = await browser.newContext({ viewport: { width, height: 900 } });
+    const page = await context.newPage();
+    const assets: string[] = [];
+    page.on("request", (r) => {
+      const path = new URL(r.url()).pathname;
+      if (path.startsWith("/3d/")) assets.push(path);
+    });
+    await page.addInitScript(() => {
+      (window as unknown as { __cls: number }).__cls = 0;
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries() as (PerformanceEntry & { value: number; hadRecentInput: boolean })[])
+          if (!entry.hadRecentInput) (window as unknown as { __cls: number }).__cls += entry.value;
+      }).observe({ type: "layout-shift", buffered: true });
+    });
+    await page.goto(`/projects/${slug(kasirku.title)}`);
+    const media = page.locator("[data-case-media]");
+    await media.scrollIntoViewIfNeeded();
+    await page.waitForLoadState("networkidle");
+
+    const frame = media.locator("> div").first();
+    const box = (await frame.boundingBox())!;
+    expect(Math.abs(box.height - (box.width * 10) / 16)).toBeLessThan(1.5);
+    await expect(frame).toHaveCSS("border-top-width", "1px");
+    expect(Number.parseFloat(await frame.evaluate((el) => getComputedStyle(el).borderTopLeftRadius))).toBeGreaterThan(0);
+    const shot = media.getByRole("img", { name: `${kasirku.title} screenshot` });
+    await expect(shot).toBeVisible();
+    await expect(shot).toHaveCSS("object-fit", "cover");
+
+    expect(await page.evaluate(() => (window as unknown as { __cls: number }).__cls)).toBeLessThan(0.01);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await expect(page.locator("[data-device-mockup], .device-shadow, [data-device-screen]")).toHaveCount(0);
+    expect(assets).toEqual([]);
+    await context.close();
+  }
+});
