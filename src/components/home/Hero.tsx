@@ -33,18 +33,21 @@ export function Hero({
         className="grid items-center gap-12 lg:grid-cols-12"
       >
         <div className="flex flex-col gap-7 lg:col-span-7">
-          <Eyebrow>Full-stack engineer · Medan, Indonesia</Eyebrow>
+          <Eyebrow data-intro>Full-stack engineer · Medan, Indonesia</Eyebrow>
           <h1
             id="hero-title"
             className="font-heading text-display-xl text-ink text-balance"
           >
             Farhan Zulkarnain Harahap
           </h1>
-          <p className="max-w-reading text-copy-lg text-body text-pretty">
+          <p
+            data-intro
+            className="max-w-reading text-copy-lg text-body text-pretty"
+          >
             I build web applications end to end, from a clear interface to the
             API and database behind it.
           </p>
-          <div className="flex flex-wrap items-center gap-3">
+          <div data-intro className="flex flex-wrap items-center gap-3">
             <Link
               href="/projects"
               className={buttonClasses({ variant: "primary", size: "lg" })}
@@ -59,7 +62,10 @@ export function Hero({
               Get in touch
             </Link>
           </div>
-          <div className="flex flex-col gap-3 border-t border-hairline pt-6">
+          <div
+            data-intro
+            className="flex flex-col gap-3 border-t border-hairline pt-6"
+          >
             <p className="flex items-center gap-2.5 text-small text-ink">
               <span
                 aria-hidden="true"
@@ -102,7 +108,11 @@ function ProofLine({ proof }: { proof: HeroProof }) {
 /** Static, decorative placeholder for the future 3D accent (desktop only). */
 function HeroVisual() {
   return (
-    <div aria-hidden="true" className="relative hidden lg:col-span-5 lg:block">
+    <div
+      data-intro
+      aria-hidden="true"
+      className="relative hidden lg:col-span-5 lg:block"
+    >
       <div className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-(--card-radius) border border-hairline bg-surface">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_25%,var(--ui-accent-soft),transparent_60%)]" />
         <HeroDotGrid className="opacity-60" />

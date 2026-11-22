@@ -22,7 +22,7 @@ export function ProfileSection({ cvHref }: { cvHref: string }) {
   const cvIsFile = cvHref.startsWith("/api/");
   return (
     <Section id="profile" eyebrow="Profile" title="Hi, I'm Farhan." size="wide">
-      <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
+      <div data-reveal className="grid gap-10 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-5">
           <ProjectImage
             src={profile.image}

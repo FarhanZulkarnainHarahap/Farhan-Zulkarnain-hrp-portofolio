@@ -24,7 +24,7 @@ export function HowIWork() {
       title="Three habits behind every project."
       className="border-t border-hairline"
     >
-      <ol className="grid gap-10 md:grid-cols-3 md:gap-8">
+      <ol data-reveal="group" className="grid gap-10 md:grid-cols-3 md:gap-8">
         {principles.map((item, index) => (
           <li key={item.title} className="flex flex-col gap-3">
             <span className="font-meta text-label text-accent tabular-nums">

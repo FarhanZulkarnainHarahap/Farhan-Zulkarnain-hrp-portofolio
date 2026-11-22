@@ -7,7 +7,10 @@ export function ContactBand() {
   return (
     <section aria-labelledby="contact-band-title" className="py-section">
       <Container size="wide">
-        <div className="flex flex-col gap-8 rounded-(--card-radius) border border-hairline bg-surface p-(--card-padding) md:flex-row md:items-end md:justify-between md:p-12">
+        <div
+          data-reveal
+          className="flex flex-col gap-8 rounded-(--card-radius) border border-hairline bg-surface p-(--card-padding) md:flex-row md:items-end md:justify-between md:p-12"
+        >
           <div className="flex max-w-reading flex-col gap-3">
             <h2
               id="contact-band-title"

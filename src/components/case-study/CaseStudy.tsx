@@ -212,6 +212,7 @@ export function CaseStudy({
             <section
               key={chapter.title}
               aria-labelledby={`chapter-${chapter.title}`}
+              data-reveal
               className="flex flex-col gap-4"
             >
               <Eyebrow className="text-accent">
@@ -231,6 +232,7 @@ export function CaseStudy({
           {features.length > 0 && (
             <section
               aria-labelledby="key-features"
+              data-reveal
               className="flex flex-col gap-6"
             >
               <h2

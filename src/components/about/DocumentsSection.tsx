@@ -47,7 +47,10 @@ function DocumentsView({ state }: { state: CollectionState<Document> }) {
       ) : state.data.length === 0 ? (
         <EmptyState title="Documents will be listed here soon." />
       ) : (
-        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <ul
+          data-reveal="group"
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        >
           {state.data.map((doc) => {
             const size = formatBytes(doc.size);
             return (

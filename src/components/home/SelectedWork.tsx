@@ -59,7 +59,7 @@ function SelectedWorkView({ state }: { state: CollectionState<Project> }) {
           description="New work is being written up as case studies."
         />
       ) : (
-        <ul className={grid}>
+        <ul data-reveal="group" className={grid}>
           {featured.map((project) => (
             <li key={project.id} className="flex">
               <ProjectCard project={project} className="w-full" />

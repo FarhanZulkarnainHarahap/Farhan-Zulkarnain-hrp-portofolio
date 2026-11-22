@@ -73,7 +73,10 @@ function StackSummaryView({ state }: { state: CollectionState<Skill> }) {
       ) : groups.length === 0 ? (
         <EmptyState title="The stack will be listed here soon." />
       ) : (
-        <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div
+          data-reveal="group"
+          className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
+        >
           {groups.map((group) => (
             <div key={group.category} className="flex flex-col gap-4">
               <h3 className="flex items-baseline justify-between border-b border-hairline pb-2 font-meta text-label text-muted uppercase">

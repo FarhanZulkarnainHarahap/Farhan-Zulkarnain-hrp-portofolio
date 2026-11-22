@@ -77,7 +77,7 @@ function FullStackView({ state }: { state: CollectionState<Skill> }) {
       ) : groups.length === 0 ? (
         <EmptyState title="The stack will be listed here soon." />
       ) : (
-        <div className="flex flex-col">
+        <div data-reveal="group" className="flex flex-col">
           {groups.map((group) => {
             const { main, subgroups } = splitSubgroups(group.skills);
             return (

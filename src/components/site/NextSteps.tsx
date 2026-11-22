@@ -16,7 +16,10 @@ export function NextSteps({
   return (
     <section aria-label="Next steps" className="py-section">
       <Container size="wide">
-        <div className="flex flex-col gap-6 border-t border-hairline pt-10 md:flex-row md:items-center md:justify-between">
+        <div
+          data-reveal
+          className="flex flex-col gap-6 border-t border-hairline pt-10 md:flex-row md:items-center md:justify-between"
+        >
           <p className="font-heading text-headline text-ink text-balance">
             {title}
           </p>
