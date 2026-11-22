@@ -1,7 +1,7 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, Search, X } from "lucide-react";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   ServerCollection,
   type CollectionState,
@@ -19,6 +19,13 @@ import {
   type ProjectFilters,
 } from "@/lib/display/projects";
 import type { Loaded } from "@/lib/server/content";
+import { Flip } from "gsap/Flip";
+import { gsap, prefersMotion, setupGsap, tokens, useGSAP } from "@/lib/gsap";
+
+if (typeof window !== "undefined") {
+  setupGsap();
+  gsap.registerPlugin(Flip);
+}
 import { cn } from "@/lib/utils";
 import type { Project } from "@/services/api";
 import { ProjectCard } from "./ProjectCard";
@@ -61,8 +68,49 @@ function ExplorerView({
       router.replace(next, { scroll: false });
   }, [filters, pathname, router]);
 
-  const update = (patch: Partial<ProjectFilters>) =>
+  // Flip (Fase 8): remember where the cards are just before the filter changes, then animate them
+  // to their new places after render. Interruptible: a new change kills the running animation.
+  const gridRef = useRef<HTMLUListElement>(null);
+  const flipState = useRef<Flip.FlipState | null>(null);
+  const flipTween = useRef<gsap.core.Timeline | null>(null);
+  const capture = () => {
+    if (gridRef.current && prefersMotion())
+      flipState.current = Flip.getState(
+        gridRef.current.querySelectorAll("[data-flip-id]"),
+      );
+  };
+  const resultsKey = results.map((project) => project.id).join("|");
+  useGSAP(
+    () => {
+      const state = flipState.current;
+      flipState.current = null;
+      const grid = gridRef.current;
+      if (!state || !grid) return;
+      flipTween.current?.kill();
+      const t = tokens();
+      flipTween.current = Flip.from(state, {
+        targets: grid.querySelectorAll("[data-flip-id]"),
+        duration: t.base,
+        ease: "standard",
+        onEnter: (entering) =>
+          gsap.fromTo(
+            entering,
+            { opacity: 0, scale: 0.98 },
+            { opacity: 1, scale: 1, duration: t.base, ease: "enter" },
+          ),
+      });
+    },
+    { dependencies: [resultsKey], scope: gridRef },
+  );
+
+  const update = (patch: Partial<ProjectFilters>) => {
+    capture();
     setFilters((current) => ({ ...current, ...patch }));
+  };
+  const clear = () => {
+    capture();
+    setFilters(EMPTY_FILTERS);
+  };
 
   if (state.loading)
     return (
@@ -167,7 +215,7 @@ function ExplorerView({
           <Button
             variant="ghost"
             className={cn("w-full", !active && "invisible")}
-            onClick={() => setFilters(EMPTY_FILTERS)}
+            onClick={clear}
             aria-hidden={!active}
             tabIndex={active ? 0 : -1}
             icon={<X aria-hidden="true" />}
@@ -190,18 +238,15 @@ function ExplorerView({
           headingLevel="h2"
           title="No projects match these filters."
           action={
-            <Button
-              variant="secondary"
-              onClick={() => setFilters(EMPTY_FILTERS)}
-            >
+            <Button variant="secondary" onClick={clear}>
               Clear filters
             </Button>
           }
         />
       ) : (
-        <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <ul ref={gridRef} className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {results.map((project, index) => (
-            <li key={project.id} className="flex">
+            <li key={project.id} data-flip-id={project.id} className="flex">
               <ProjectCard
                 project={project}
                 headingLevel="h2"
