@@ -325,8 +325,9 @@ theme is a full counterpart, not an inversion.
 Verified contrast (WCAG 2.x): ink ≥ 13.8:1, body ≥ 7.1:1, muted ≥ 4.5:1, accent text ≥ 4.8:1 on
 every surface in both themes; on-accent on accent 5.9:1 (light) and 7.4:1 (dark).
 
-Implementation: semantic tokens are `--color-*` in `src/app/globals.css`, each defined as
-`light-dark(light, dark)` over primitives (`--paper-*`, `--night-*`, `--clay-*`). Components use the
+Implementation: semantic colors are `--ui-*` in `src/app/globals.css`, each defined as
+`light-dark(light, dark)` over primitives (`--paper-*`, `--night-*`, `--clay-*`) and exposed to
+Tailwind as `--color-*` utilities through `@theme inline`. Components use the
 semantic Tailwind utilities (`bg-canvas`, `text-ink`, `border-hairline`, `text-accent`) or component
 tokens, never primitives or hex values.
 
@@ -344,8 +345,9 @@ Three families, each with one job.
 Sizes are fluid between a 360px and a 1440px viewport (`clamp()` in `globals.css`): the `-sm` tokens
 are the 360px values and the `-lg` tokens the 1440px values (for example `display-xl-sm` 44px →
 `display-xl-lg` 80px). Utilities: `text-display-xl`,
-`text-display-lg`, `text-headline`, `text-title`, `text-body-lg`, `text-body`, `text-small`,
-`text-meta`, `text-label`; families `font-heading`, `font-body`, `font-meta`.
+`text-display-lg`, `text-headline`, `text-title`, `text-copy-lg` (body-lg), `text-copy` (body-md),
+`text-small`, `text-meta`, `text-label`; families `font-heading`, `font-body`, `font-meta`. Body
+sizes are named `copy` in CSS because `text-body` is the body text *color* utility.
 
 Rules: one `h1` per page; headings never skip levels; body measure 60–75 characters
 (`max-w-reading`); `text-wrap: balance` on short headings, `pretty` on paragraphs; tabular figures for
@@ -506,11 +508,21 @@ normalises presentation.
 
 ## Implementation
 
-- `src/app/globals.css`: primitives, semantic `@theme static` tokens, component tokens, minimal base.
+- `src/app/globals.css`: primitives; `@theme static` for type, spacing, radius, easing; `--ui-*`
+  semantic colors and component tokens in one rule on `:root, .site-scheme, .scheme-dark`;
+  `@theme inline` maps color/shadow utilities to them; a minimal `@layer base`.
+- Lightning CSS compiles `light-dark()` into variables that resolve where a token is declared, so
+  every element that sets its own scheme must re-declare the tokens: use `.site-scheme` (follows the
+  site theme) or `.scheme-dark` (always dark). Do not set `color-scheme` on other elements.
 - `src/app/layout.tsx`: `next/font` (Newsreader with `opsz`, Geist, Geist Mono) and the inline theme
   script. `<html data-theme>` pins a stored choice; otherwise the OS preference applies.
 - Do not use Tailwind `dark:` utilities; semantic tokens adapt by themselves. A section can force a
-  scheme locally with `color-scheme: dark`.
+  dark band with the `scheme-dark` class (not a bare `color-scheme` declaration).
+- Base components live in `src/components/ui/` (Button, Chip/Badge/ChipList, Card, Container,
+  Section, Separator, Avatar, Tooltip, ThemeToggle, Skeleton, EmptyState, ErrorState, form fields);
+  the site frame (header, mobile menu, ⌘K palette, footer) in `src/components/site/`.
+- `cn()` (`src/lib/utils.ts`) knows the custom token names so tailwind-merge does not drop them;
+  add new token names there.
 - Do not redefine Tailwind's default theme namespaces; the dashboard depends on them.
 - `src/styles/legacy-kinetic.css` is a temporary, scoped copy of the old styles for pages not yet
   redesigned; it is deleted in Fase 11 and must not be extended.
