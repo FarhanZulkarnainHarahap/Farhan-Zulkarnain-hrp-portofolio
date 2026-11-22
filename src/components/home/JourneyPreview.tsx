@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { buttonClasses } from "@/components/ui/button";
@@ -7,16 +8,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { displaySkillName } from "@/lib/display/skills";
 import { formatRange, sortExperiences } from "@/lib/display/experiences";
 import type { Experience } from "@/types/content";
-
-type State = {
-  data: Experience[];
-  loading: boolean;
-  error: string;
-  retry: () => void;
-};
+import type { Loaded } from "@/lib/server/content";
+import {
+  ServerCollection,
+  type CollectionState,
+} from "@/components/site/ServerCollection";
 
 /** Three most recent entries. Hidden entirely when there are none (decision §8.1). */
-export function JourneyPreview({ state }: { state: State }) {
+function JourneyPreviewView({ state }: { state: CollectionState<Experience> }) {
   if (!state.loading && !state.error && state.data.length === 0) return null;
   const entries = sortExperiences(state.data).slice(0, 3);
   return (
@@ -77,5 +76,13 @@ export function JourneyPreview({ state }: { state: State }) {
         </ol>
       )}
     </Section>
+  );
+}
+
+export function JourneyPreview({ initial }: { initial: Loaded<Experience> }) {
+  return (
+    <ServerCollection initial={initial} path="/api/experiences">
+      {(state) => <JourneyPreviewView state={state} />}
+    </ServerCollection>
   );
 }

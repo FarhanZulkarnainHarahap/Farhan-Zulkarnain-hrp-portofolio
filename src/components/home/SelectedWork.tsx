@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ProjectCard } from "@/components/projects/ProjectCard";
@@ -8,17 +9,15 @@ import { Section } from "@/components/ui/section";
 import { Skeleton } from "@/components/ui/skeleton";
 import { selectFeatured } from "@/lib/display/projects";
 import type { Project } from "@/services/api";
-
-type State = {
-  data: Project[];
-  loading: boolean;
-  error: string;
-  retry: () => void;
-};
+import type { Loaded } from "@/lib/server/content";
+import {
+  ServerCollection,
+  type CollectionState,
+} from "@/components/site/ServerCollection";
 
 const grid = "grid gap-6 md:grid-cols-2 xl:grid-cols-3";
 
-export function SelectedWork({ state }: { state: State }) {
+function SelectedWorkView({ state }: { state: CollectionState<Project> }) {
   const featured = selectFeatured(state.data);
   return (
     <Section
@@ -69,5 +68,13 @@ export function SelectedWork({ state }: { state: State }) {
         </ul>
       )}
     </Section>
+  );
+}
+
+export function SelectedWork({ initial }: { initial: Loaded<Project> }) {
+  return (
+    <ServerCollection initial={initial} path="/api/portofolios">
+      {(state) => <SelectedWorkView state={state} />}
+    </ServerCollection>
   );
 }
