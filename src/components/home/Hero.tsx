@@ -3,12 +3,12 @@ import { ArrowRight } from "lucide-react";
 import { buttonClasses } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Eyebrow } from "@/components/ui/section";
-import { Skeleton } from "@/components/ui/skeleton";
 
-export type HeroProof =
-  | { projects: number; technologies: number; stack: string[] }
-  | "loading"
-  | null;
+export type HeroProof = {
+  projects: number;
+  technologies: number;
+  stack: string[];
+} | null;
 
 /**
  * First screen: who, what, proof, next step. The H1 is plain server-rendered text so it can be
@@ -68,7 +68,6 @@ export function Hero({ proof }: { proof: HeroProof }) {
 
 /** "{n} projects · {n} technologies · A, B, C" from API data; hidden when there is none. */
 function ProofLine({ proof }: { proof: HeroProof }) {
-  if (proof === "loading") return <Skeleton className="h-5 w-72 max-w-full" />;
   if (!proof) return null;
   const parts = [
     proof.projects > 0 &&

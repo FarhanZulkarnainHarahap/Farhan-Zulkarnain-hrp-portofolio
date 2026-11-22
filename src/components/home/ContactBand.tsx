@@ -1,18 +1,9 @@
-"use client";
 import Link from "next/link";
-import { Check, Copy } from "lucide-react";
-import { useEffect, useState } from "react";
 import { buttonClasses } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { profile } from "@/lib/site";
+import { CopyEmail } from "@/components/site/CopyEmail";
 
 export function ContactBand() {
-  const [copied, setCopied] = useState<"idle" | "copied" | "failed">("idle");
-  useEffect(() => {
-    if (copied === "idle") return;
-    const timer = setTimeout(() => setCopied("idle"), 3000);
-    return () => clearTimeout(timer);
-  }, [copied]);
   return (
     <section aria-labelledby="contact-band-title" className="py-section">
       <Container size="wide">
@@ -33,36 +24,7 @@ export function ContactBand() {
             >
               Get in touch
             </Link>
-            <button
-              type="button"
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(profile.email);
-                  setCopied("copied");
-                } catch {
-                  setCopied("failed");
-                }
-              }}
-              className="inline-flex min-h-(--hit-area-min) items-center gap-2 rounded-(--radius-control) font-meta text-meta text-body transition-colors duration-(--duration-fast) ease-standard hover:text-ink [&_svg]:size-(--icon-sm)"
-            >
-              {copied === "copied" ? (
-                <Check aria-hidden="true" />
-              ) : (
-                <Copy aria-hidden="true" />
-              )}
-              {profile.email}
-              <span className="sr-only">, copy email address</span>
-            </button>
-            <p
-              aria-live="polite"
-              className="min-h-5 font-meta text-meta text-muted"
-            >
-              {copied === "copied"
-                ? "Email address copied."
-                : copied === "failed"
-                  ? "Couldn't copy automatically. Please copy the address above."
-                  : ""}
-            </p>
+            <CopyEmail className="md:items-end" />
           </div>
         </div>
       </Container>

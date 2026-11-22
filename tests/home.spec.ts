@@ -1,71 +1,37 @@
 /**
- * Home page (Fase 5): hero + CTAs, proof line from API data, selected work cards to case studies,
- * Journey hidden when experiences are empty, and ErrorState + retry when the API fails.
- * All /api/* reads are answered from fixtures.
+ * Home page (Fase 5/5.1). Data is rendered on the server from the fixture API
+ * (tests/fixture-api.mjs via API_URL); scenarios are switched per test. Browser retries go
+ * through /api/public/* → Next server → the same fixture API. A guard fails the test if the
+ * browser ever contacts the production API.
  */
-import { test, expect, type BrowserContext } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import { withFixtureApi, setScenario } from "./helpers/fixture";
 import projectsFixture from "./fixtures/projects.json";
-import skillsFixture from "./fixtures/skills.json";
-import documentsFixture from "./fixtures/documents.json";
+import experiencesFixture from "./fixtures/experiences.json";
 
-type Options = {
-  experiences?: unknown[];
-  fail?: string[];
-  projects?: unknown[];
-};
+withFixtureApi();
 
-async function mockApi(context: BrowserContext, options: Options = {}) {
-  const state = { fail: new Set(options.fail ?? []) };
-  const data: Record<string, unknown[]> = {
-    portofolios: options.projects ?? projectsFixture.data,
-    skills: skillsFixture.data,
-    documents: documentsFixture.data,
-    experiences: options.experiences ?? [],
-  };
-  await context.route("**/api/**", (route) => {
-    const url = new URL(route.request().url());
-    const resource = url.pathname
-      .replace("/api/public/", "")
-      .replace("/api/", "")
-      .split("/")[0];
-    if (state.fail.has(resource))
-      return route.fulfill({
-        status: 503,
-        contentType: "application/json",
-        body: JSON.stringify({ success: false, message: "Unavailable" }),
-      });
-    return route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ success: true, data: data[resource] ?? [] }),
-    });
-  });
-  return state;
-}
+const workSection = "Projects with the full story.";
+const stackSection = "Tools I work with every day.";
+const journeySection = "Where I've worked and learned.";
 
-const experience = (
-  id: string,
-  title: string,
-  startDate: string,
-  current = false,
-) => ({
-  id,
-  title,
-  company: `${title} Co`,
-  location: "Medan",
-  startDate,
-  endDate: current ? null : "2024-06-01T00:00:00.000Z",
-  current,
-  description: "Fixture",
-  technologies: ["Next.js", "Postgresql"],
-  sortOrder: 0,
+test("initial HTML (no JavaScript) contains the H1, featured project titles and skill names", async ({
+  request,
+}) => {
+  const html = await (await request.get("/")).text();
+  expect(html).toContain("Farhan Zulkarnain Harahap</h1>");
+  for (const project of projectsFixture.data
+    .filter((p) => p.caseProblem || p.caseSolution || p.caseResult)
+    .slice(0, 6))
+    expect(html).toContain(project.title.trim());
+  for (const name of ["PostgreSQL", "VS Code", "Tailwind CSS", "Next.js"])
+    expect(html).toContain(name);
+  expect(html).toContain("Full-Stack Developer");
 });
 
 test("hero shows who, what, proof from the API, and both CTAs", async ({
   page,
-  context,
 }) => {
-  await mockApi(context);
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Farhan Zulkarnain Harahap",
@@ -95,42 +61,30 @@ test("hero shows who, what, proof from the API, and both CTAs", async ({
   await expect(page).toHaveURL(/\/contact$/);
 });
 
-test("proof line is hidden when the API has no data", async ({
+test("proof line is hidden when projects and skills are unavailable", async ({
   page,
-  context,
+  request,
 }) => {
-  await mockApi(context, { fail: ["portofolios", "skills"] });
+  await setScenario(request, {
+    scenario: "normal",
+    fail: ["portofolios", "skills"],
+  });
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.getByRole("alert").first()).toBeVisible();
   await expect(page.getByTestId("hero-proof")).toHaveCount(0);
 });
 
 test("selected work cards lead to case studies and survive extreme data", async ({
   page,
-  context,
+  request,
 }) => {
-  const base = projectsFixture.data[0];
-  const extreme = {
-    ...base,
-    id: "extreme",
-    title:
-      "An extremely long project title that keeps going well past two lines on any card width",
-    description: "Lorem ipsum ".repeat(80),
-    imageUrl: "https://res.cloudinary.com/demo/image/upload/does-not-exist.jpg",
-    caseType: "Web App, Dashboard, Web App",
-    tags: Array.from({ length: 32 }, (_, i) => `Tag ${i + 1}`),
-    features: Array.from({ length: 94 }, (_, i) => `Feature ${i + 1}`),
-    caseProblem: "Problem",
-  };
-  await mockApi(context, { projects: [extreme, ...projectsFixture.data] });
+  await setScenario(request, { scenario: "extreme" });
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
-    const section = page.getByRole("region", {
-      name: "Projects with the full story.",
-    });
-    const cards = section.getByRole("article");
+    const cards = page
+      .getByRole("region", { name: workSection })
+      .getByRole("article");
     await expect(cards.first()).toBeVisible();
     expect(await cards.count()).toBeGreaterThanOrEqual(3);
     expect(await cards.count()).toBeLessThanOrEqual(6);
@@ -158,7 +112,7 @@ test("selected work cards lead to case studies and survive extreme data", async 
     ).toHaveCount(32);
   }
   await page
-    .getByRole("region", { name: "Projects with the full story." })
+    .getByRole("region", { name: workSection })
     .getByRole("link", { name: projectsFixture.data[0].title })
     .click();
   await expect(page).toHaveURL(/\/projects\/[a-z0-9-]+$/);
@@ -166,74 +120,90 @@ test("selected work cards lead to case studies and survive extreme data", async 
 
 test("journey preview is hidden without experiences and shows the 3 latest otherwise", async ({
   page,
-  context,
-  browser,
+  request,
 }) => {
-  await mockApi(context, { experiences: [] });
+  await setScenario(request, { scenario: "normal", empty: ["experiences"] });
   await page.goto("/");
   await expect(
     page.getByRole("heading", { name: "Three habits behind every project." }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Where I've worked and learned." }),
-  ).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: journeySection })).toHaveCount(
+    0,
+  );
 
-  const other = await browser.newContext();
-  await mockApi(other, {
-    experiences: [
-      experience("a", "Oldest Role", "2019-01-01T00:00:00.000Z"),
-      experience("b", "Middle Role", "2021-01-01T00:00:00.000Z"),
-      experience("c", "Current Role", "2023-01-01T00:00:00.000Z", true),
-      experience("d", "Recent Role", "2022-01-01T00:00:00.000Z"),
-    ],
-  });
-  const page2 = await other.newPage();
-  await page2.goto("/");
-  const journey = page2.getByRole("region", {
-    name: "Where I've worked and learned.",
-  });
+  await setScenario(request, { scenario: "normal" });
+  await page.goto("/");
+  const journey = page.getByRole("region", { name: journeySection });
   await expect(journey.getByRole("listitem")).toHaveCount(3);
+  const current = experiencesFixture.data.find((item) => item.current)!;
   await expect(journey.getByRole("heading", { level: 3 }).first()).toHaveText(
-    "Current Role",
+    current.title,
   );
   await expect(journey).toContainText("Present");
   await expect(journey).not.toContainText("Oldest Role");
   await expect(journey).toContainText("PostgreSQL");
-  await other.close();
 });
 
-test("sections show ErrorState and recover with retry", async ({
+test("a failed collection shows ErrorState in its own section and recovers with retry", async ({
   page,
-  context,
+  request,
 }) => {
-  const state = await mockApi(context, { fail: ["portofolios", "skills"] });
-  await page.goto("/");
-  const work = page.getByRole("region", {
-    name: "Projects with the full story.",
+  await setScenario(request, {
+    scenario: "normal",
+    fail: ["portofolios", "skills"],
   });
+  await page.goto("/");
+  const work = page.getByRole("region", { name: workSection });
+  const stack = page.getByRole("region", { name: stackSection });
   await expect(work.getByRole("alert")).toContainText(
     "Projects couldn't be loaded.",
   );
-  const stack = page.getByRole("region", {
-    name: "Tools I work with every day.",
-  });
   await expect(stack.getByRole("alert")).toBeVisible();
-  state.fail.clear();
+  // Other sections and the page itself are unaffected.
+  await expect(
+    page.getByRole("region", { name: journeySection }).getByRole("listitem"),
+  ).toHaveCount(3);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  // Retry goes through useCollection in the browser (/api/public → fixture API).
+  await setScenario(request, { scenario: "normal" });
   await work.getByRole("button", { name: "Try again" }).click();
   await expect(work.getByRole("article").first()).toBeVisible();
   await stack.getByRole("button", { name: "Try again" }).click();
   await expect(stack.getByText("PostgreSQL")).toBeVisible();
 });
 
+test("retry that fails again keeps the error state with another retry", async ({
+  page,
+  request,
+}) => {
+  await setScenario(request, { scenario: "normal", fail: ["portofolios"] });
+  await page.goto("/");
+  const work = page.getByRole("region", { name: workSection });
+  await work.getByRole("button", { name: "Try again" }).click();
+  await expect(work.getByRole("alert")).toBeVisible();
+  await expect(work.getByRole("button", { name: "Try again" })).toBeVisible();
+});
+
+test("empty collections show calm empty states", async ({ page, request }) => {
+  await setScenario(request, { scenario: "empty" });
+  await page.goto("/");
+  await expect(page.getByRole("region", { name: workSection })).toContainText(
+    "Projects will appear here soon.",
+  );
+  await expect(page.getByRole("region", { name: stackSection })).toContainText(
+    "The stack will be listed here soon.",
+  );
+  await expect(page.getByRole("heading", { name: journeySection })).toHaveCount(
+    0,
+  );
+  await expect(page.getByTestId("hero-proof")).toHaveCount(0);
+});
+
 test("stack groups API skills by category with display names", async ({
   page,
-  context,
 }) => {
-  await mockApi(context);
   await page.goto("/");
-  const stack = page.getByRole("region", {
-    name: "Tools I work with every day.",
-  });
+  const stack = page.getByRole("region", { name: stackSection });
   for (const label of ["Frontend", "Backend", "Tools", "Other"])
     await expect(
       stack.getByRole("heading", { level: 3, name: new RegExp(`^${label}`) }),
@@ -249,7 +219,6 @@ test("contact band copies the email address", async ({ browser }) => {
   const context = await browser.newContext({
     permissions: ["clipboard-read", "clipboard-write"],
   });
-  await mockApi(context);
   const page = await context.newPage();
   await page.goto("/");
   await page.getByRole("button", { name: /copy email address/ }).click();

@@ -33,7 +33,10 @@ const pages = [
   "/about",
   "/journey",
   "/projects",
+  "/projects/kasirku",
   "/contact",
+  "/auth/login",
+  "/auth/register",
   "/missing-page-quality-check",
 ];
 // Known noise that is not an app defect: 3D driver chatter, the expected 404 document response,

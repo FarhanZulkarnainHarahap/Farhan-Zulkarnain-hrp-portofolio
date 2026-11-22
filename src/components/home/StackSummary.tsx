@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { ArrowRight, Code } from "lucide-react";
 import { buttonClasses } from "@/components/ui/button";
@@ -9,13 +10,11 @@ import { displaySkillName, groupSkills } from "@/lib/display/skills";
 import { resolveSkillIconKey } from "@/lib/skill-icon-resolver";
 import { skillIcons } from "@/lib/skill-icons";
 import type { Skill } from "@/types/content";
-
-type State = {
-  data: Skill[];
-  loading: boolean;
-  error: string;
-  retry: () => void;
-};
+import type { Loaded } from "@/lib/server/content";
+import {
+  ServerCollection,
+  type CollectionState,
+} from "@/components/site/ServerCollection";
 
 function SkillIcon({ name }: { name: string }) {
   const Icon = skillIcons[resolveSkillIconKey(name, skillIcons)];
@@ -30,7 +29,7 @@ function SkillIcon({ name }: { name: string }) {
   );
 }
 
-export function StackSummary({ state }: { state: State }) {
+function StackSummaryView({ state }: { state: CollectionState<Skill> }) {
   const groups = groupSkills(state.data);
   return (
     <Section
@@ -97,5 +96,13 @@ export function StackSummary({ state }: { state: State }) {
         </div>
       )}
     </Section>
+  );
+}
+
+export function StackSummary({ initial }: { initial: Loaded<Skill> }) {
+  return (
+    <ServerCollection initial={initial} path="/api/skills">
+      {(state) => <StackSummaryView state={state} />}
+    </ServerCollection>
   );
 }

@@ -76,3 +76,61 @@ export function topStack(skills: Skill[], projects: Project[], count = 3) {
     .slice(0, count)
     .map((item) => item.name);
 }
+
+export type ProjectFilters = { type: string; stack: string; q: string };
+export const EMPTY_FILTERS: ProjectFilters = { type: "", stack: "", q: "" };
+
+/** Filter options from the data: case types and technologies, most used first. */
+export function filterOptions(projects: Project[]) {
+  const count = (values: string[][]) => {
+    const tally = new Map<string, number>();
+    for (const list of values)
+      for (const value of list) tally.set(value, (tally.get(value) ?? 0) + 1);
+    return [...tally.entries()]
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([value]) => value);
+  };
+  return {
+    types: count(projects.map((p) => splitCaseType(p.caseType))),
+    stacks: count(projects.map((p) => displayTags(p.tags))),
+  };
+}
+
+export function filterProjects(projects: Project[], filters: ProjectFilters) {
+  const q = filters.q.trim().toLowerCase();
+  return projects.filter((project) => {
+    if (
+      filters.type &&
+      !splitCaseType(project.caseType).some(
+        (t) => t.toLowerCase() === filters.type.toLowerCase(),
+      )
+    )
+      return false;
+    if (
+      filters.stack &&
+      !displayTags(project.tags).some((tag) => sameSkill(tag, filters.stack))
+    )
+      return false;
+    if (q && !project.title.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+/** Features with exact/near duplicates removed (the API can repeat entries). */
+export function displayFeatures(features: string[] | null | undefined) {
+  const seen = new Set<string>();
+  return (features ?? [])
+    .map((feature) => feature.trim())
+    .filter((feature) => {
+      const k = feature.toLowerCase().replace(/\s+/g, " ");
+      if (!feature || seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+}
+
+/** Year from createdAt, if the API provides one. */
+export function projectYear(project: Pick<Project, "createdAt">) {
+  const time = project.createdAt ? new Date(project.createdAt).getTime() : NaN;
+  return Number.isNaN(time) ? null : new Date(time).getUTCFullYear();
+}

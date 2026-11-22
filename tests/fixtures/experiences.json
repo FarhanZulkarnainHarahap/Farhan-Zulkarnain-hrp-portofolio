@@ -1,0 +1,53 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "fx-exp-1",
+      "title": "Full-Stack Developer",
+      "company": "Fixture Studio",
+      "location": "Medan",
+      "startDate": "2024-01-01T00:00:00.000Z",
+      "endDate": null,
+      "current": true,
+      "description": "Fixture entry for tests.",
+      "technologies": ["Next.js", "Postgresql", "Prisma"],
+      "sortOrder": 0
+    },
+    {
+      "id": "fx-exp-2",
+      "title": "Frontend Engineer",
+      "company": "Fixture Labs",
+      "location": "Remote",
+      "startDate": "2022-05-01T00:00:00.000Z",
+      "endDate": "2023-12-01T00:00:00.000Z",
+      "current": false,
+      "description": "Fixture entry for tests.",
+      "technologies": ["React", "TypeScript"],
+      "sortOrder": 1
+    },
+    {
+      "id": "fx-exp-3",
+      "title": "Full-Stack Bootcamp",
+      "company": "Fixture Academy",
+      "location": "Remote",
+      "startDate": "2021-03-01T00:00:00.000Z",
+      "endDate": "2021-09-01T00:00:00.000Z",
+      "current": false,
+      "description": "Fixture entry for tests.",
+      "technologies": ["Express"],
+      "sortOrder": 2
+    },
+    {
+      "id": "fx-exp-4",
+      "title": "Oldest Role",
+      "company": "Fixture Corp",
+      "location": "Medan",
+      "startDate": "2019-01-01T00:00:00.000Z",
+      "endDate": "2020-06-01T00:00:00.000Z",
+      "current": false,
+      "description": "Fixture entry for tests.",
+      "technologies": [],
+      "sortOrder": 3
+    }
+  ]
+}
