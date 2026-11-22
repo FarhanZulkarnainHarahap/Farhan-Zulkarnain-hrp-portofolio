@@ -1,7 +1,7 @@
 /**
  * Server-side reads for public pages, built only on the existing functions in
  * src/services/api.ts (which stays unchanged):
- *   - projects  → getProjects()
+ *   - projects  → getProjects(), documents → getDocuments()
  *   - skills, experiences → getPublicPayload(path) + validation here (api.ts has no
  *     dedicated function for them; this mirrors its parseCollection pattern).
  *
@@ -10,7 +10,13 @@
  * between tests). Failed reads are not cached, so the next request retries.
  */
 import { unstable_cache } from "next/cache";
-import { getProjects, getPublicPayload, type Project } from "@/services/api";
+import {
+  getDocuments,
+  getProjects,
+  getPublicPayload,
+  type Document,
+  type Project,
+} from "@/services/api";
 import type { Experience, Skill } from "@/types/content";
 
 export const CONTENT_REVALIDATE_SECONDS = 300;
@@ -90,6 +96,7 @@ function cached<T>(key: string, read: () => Promise<T[]>) {
 const projects = cached<Project>("projects", getProjects);
 const skills = cached<Skill>("skills", readSkills);
 const experiences = cached<Experience>("experiences", readExperiences);
+const documents = cached<Document>("documents", getDocuments);
 
 const MESSAGE =
   "The content service may be temporarily unavailable. Please try again in a moment.";
@@ -103,12 +110,18 @@ async function settle<T>(read: () => Promise<T[]>): Promise<Loaded<T>> {
   }
 }
 
+/** Per-collection loaders: never throw; a failure becomes { data: [], error }. */
+export const loadProjects = () => settle(projects);
+export const loadSkills = () => settle(skills);
+export const loadExperiences = () => settle(experiences);
+export const loadDocuments = () => settle(documents);
+
 /** Reads each collection once; one failing collection never fails the others. */
 export async function getHomeContent() {
   const [p, s, e] = await Promise.all([
-    settle(projects),
-    settle(skills),
-    settle(experiences),
+    loadProjects(),
+    loadSkills(),
+    loadExperiences(),
   ]);
   return { projects: p, skills: s, experiences: e };
 }

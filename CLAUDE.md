@@ -64,6 +64,14 @@
 - Wajib ada poster WebP/AVIF sebagai fallback (mobile, reduced-motion, WebGL mati), dan wajib lazy-load.
 - Jangan memakai generate_3d atau fitur berbayar lain tanpa izin saya. Poly Haven (CC0) boleh dipakai.
   Untuk Sketchfab, cek lisensinya dan catat di docs/CREDITS.md.
+- SEMUA aset 3D baru WAJIB dibuat lewat MCP blender (execute_blender_code, look, get_scene_info,
+  search_assets/import_asset) dan Blender Skills: /blender-director sebagai titik awal, lalu
+  /minimalist-style, /procedural-modeling, /hard-surface, /materials, /lighting, /lookdev, /rendering,
+  /asset-optimization, /export-pipeline, /qa-review. Dikerjakan di Fase 10.
+- DILARANG: memakai ulang GLB/model lama dari public/models, membuat geometri 3D langsung dengan kode
+  three.js sebagai pengganti aset Blender, atau mengambil model dari sumber lain tanpa izin saya.
+- Sebelum Fase 10, halaman hanya menyediakan SLOT visual (poster/placeholder statis rapi) dengan props
+  yang siap menerima <HeroModel/> dan <DeviceMockup/> nanti.
 
 ## Alur kerja
 - Kerja hanya di branch redesign/professional. Commit kecil per fase/section.

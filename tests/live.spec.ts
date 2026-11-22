@@ -47,13 +47,13 @@ test("live public API, project detail, CV download, and rendered screenshots @li
   ).toBeVisible();
   await page.goto("/about#documents");
   const cv = page
-    .locator(".document-item")
-    .filter({ hasText: /Curiculum Vitae|Curriculum Vitae|Resume/ })
+    .getByRole("region", { name: "CV and certificates." })
+    .getByRole("link", {
+      name: /^Download (Curiculum Vitae|Curriculum Vitae|Resume)/,
+    })
     .first();
   await expect(cv).toBeVisible();
-  const href = await cv
-    .getByRole("link", { name: "Download document" })
-    .getAttribute("href");
+  const href = await cv.getAttribute("href");
   const download = await page.request.get(href!);
   expect(download.status()).toBe(200);
   expect(download.headers()["content-disposition"]).toContain("attachment");

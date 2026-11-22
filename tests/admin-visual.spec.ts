@@ -13,16 +13,29 @@ import documentsFixture from "./fixtures/documents.json";
 const testSecret = "kinetic-local-qa-only-not-a-production-secret";
 
 function token(role: string) {
-  const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString("base64url");
+  const header = Buffer.from(
+    JSON.stringify({ alg: "HS256", typ: "JWT" }),
+  ).toString("base64url");
   const payload = Buffer.from(
-    JSON.stringify({ id: "qa-local-user", role, exp: Math.floor(Date.now() / 1000) + 3600 }),
+    JSON.stringify({
+      id: "qa-local-user",
+      role,
+      exp: Math.floor(Date.now() / 1000) + 3600,
+    }),
   ).toString("base64url");
   return `${header}.${payload}.${createHmac("sha256", testSecret).update(`${header}.${payload}`).digest("base64url")}`;
 }
 
 async function setup(context: BrowserContext, role: string) {
   await context.addCookies([
-    { name: "accessToken", value: token(role), domain: "localhost", path: "/", httpOnly: true, sameSite: "Lax" },
+    {
+      name: "accessToken",
+      value: token(role),
+      domain: "localhost",
+      path: "/",
+      httpOnly: true,
+      sameSite: "Lax",
+    },
   ]);
   const collections: Record<string, unknown[]> = {
     portofolios: projectsFixture.data,
@@ -46,7 +59,10 @@ async function setup(context: BrowserContext, role: string) {
   // Every API call is answered locally; nothing reaches the real backend.
   await context.route("**/api/**", (route) => {
     const url = new URL(route.request().url());
-    const resource = url.pathname.replace("/api/public/", "").replace("/api/", "").split("/")[0];
+    const resource = url.pathname
+      .replace("/api/public/", "")
+      .replace("/api/", "")
+      .split("/")[0];
     const body =
       url.pathname === "/api/users/profile"
         ? { success: true, data: { name: "QA Administrator", role } }
@@ -81,13 +97,17 @@ for (const viewport of [
   { width: 390, height: 844 },
 ]) {
   for (const route of routes) {
-    test(`dashboard look is unchanged: ${route} @${viewport.width}`, async ({ page, context }) => {
+    test(`dashboard look is unchanged: ${route} @${viewport.width}`, async ({
+      page,
+      context,
+    }) => {
       await setup(context, route === "/dashboard/user" ? "USER" : "ADMIN");
       await page.setViewportSize(viewport);
       await page.goto(route, { waitUntil: "networkidle" });
       await page.waitForTimeout(1200);
       await page.addStyleTag({
-        content: "*{caret-color:transparent!important} canvas{visibility:hidden!important}",
+        content:
+          "*{caret-color:transparent!important} canvas{visibility:hidden!important}",
       });
       await expect(page).toHaveScreenshot(
         `${viewport.width}${route.replaceAll("/", "_")}.png`,

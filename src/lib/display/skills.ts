@@ -94,3 +94,46 @@ export function groupSkills(skills: Skill[]): SkillGroup[] {
 export function countTechnologies(skills: Skill[]) {
   return new Set(skills.map((skill) => key(displaySkillName(skill.name)))).size;
 }
+
+/** Display sub-groups inside an API category (REDESIGN_AUDIT §9): data stores and DevOps tooling. */
+const SUBGROUPS: Record<string, "Database" | "DevOps"> = {
+  postgresql: "Database",
+  mongodb: "Database",
+  mysql: "Database",
+  supabase: "Database",
+  prisma: "Database",
+  redis: "Database",
+  sqlite: "Database",
+  firebase: "Database",
+  docker: "DevOps",
+  vercel: "DevOps",
+  aws: "DevOps",
+  kubernetes: "DevOps",
+  githubactions: "DevOps",
+  netlify: "DevOps",
+  nginx: "DevOps",
+};
+
+export function skillSubgroup(name: string): "Database" | "DevOps" | null {
+  return SUBGROUPS[key(displaySkillName(name))] ?? null;
+}
+
+/** Splits a category's skills into the main list and the Database / DevOps sub-groups. */
+export function splitSubgroups(skills: Skill[]) {
+  const main: Skill[] = [];
+  const sub: Record<"Database" | "DevOps", Skill[]> = {
+    Database: [],
+    DevOps: [],
+  };
+  for (const skill of skills) {
+    const group = skillSubgroup(skill.name);
+    if (group) sub[group].push(skill);
+    else main.push(skill);
+  }
+  return {
+    main,
+    subgroups: (["Database", "DevOps"] as const)
+      .filter((label) => sub[label].length > 0)
+      .map((label) => ({ label, skills: sub[label] })),
+  };
+}

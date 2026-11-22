@@ -4,40 +4,12 @@
  * through /api/public/* → Next server → the same fixture API. A guard fails the test if the
  * browser ever contacts the production API.
  */
-import { test, expect, type APIRequestContext } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import { withFixtureApi, setScenario } from "./helpers/fixture";
 import projectsFixture from "./fixtures/projects.json";
 import experiencesFixture from "./fixtures/experiences.json";
 
-const FIXTURE_API = "http://localhost:3190";
-const PRODUCTION_API = "https://api.farhanzulkarnainhrp.com";
-
-type Scenario = {
-  scenario?: "normal" | "empty" | "fail" | "extreme";
-  fail?: string[];
-  empty?: string[];
-};
-async function useScenario(request: APIRequestContext, body: Scenario) {
-  const response = await request.post(`${FIXTURE_API}/__scenario`, {
-    data: body,
-  });
-  expect(response.ok()).toBe(true);
-}
-
-let productionHits: string[] = [];
-test.beforeEach(async ({ context, request }) => {
-  await useScenario(request, { scenario: "normal" });
-  productionHits = [];
-  await context.route(`${PRODUCTION_API}/**`, (route) => {
-    productionHits.push(route.request().url());
-    return route.abort();
-  });
-});
-test.afterEach(async ({ request }) => {
-  expect(productionHits, "browser must not call the production API").toEqual(
-    [],
-  );
-  await useScenario(request, { scenario: "normal" });
-});
+withFixtureApi();
 
 const workSection = "Projects with the full story.";
 const stackSection = "Tools I work with every day.";
@@ -93,7 +65,7 @@ test("proof line is hidden when projects and skills are unavailable", async ({
   page,
   request,
 }) => {
-  await useScenario(request, {
+  await setScenario(request, {
     scenario: "normal",
     fail: ["portofolios", "skills"],
   });
@@ -106,7 +78,7 @@ test("selected work cards lead to case studies and survive extreme data", async 
   page,
   request,
 }) => {
-  await useScenario(request, { scenario: "extreme" });
+  await setScenario(request, { scenario: "extreme" });
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
@@ -150,7 +122,7 @@ test("journey preview is hidden without experiences and shows the 3 latest other
   page,
   request,
 }) => {
-  await useScenario(request, { scenario: "normal", empty: ["experiences"] });
+  await setScenario(request, { scenario: "normal", empty: ["experiences"] });
   await page.goto("/");
   await expect(
     page.getByRole("heading", { name: "Three habits behind every project." }),
@@ -159,7 +131,7 @@ test("journey preview is hidden without experiences and shows the 3 latest other
     0,
   );
 
-  await useScenario(request, { scenario: "normal" });
+  await setScenario(request, { scenario: "normal" });
   await page.goto("/");
   const journey = page.getByRole("region", { name: journeySection });
   await expect(journey.getByRole("listitem")).toHaveCount(3);
@@ -176,7 +148,7 @@ test("a failed collection shows ErrorState in its own section and recovers with 
   page,
   request,
 }) => {
-  await useScenario(request, {
+  await setScenario(request, {
     scenario: "normal",
     fail: ["portofolios", "skills"],
   });
@@ -193,7 +165,7 @@ test("a failed collection shows ErrorState in its own section and recovers with 
   ).toHaveCount(3);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   // Retry goes through useCollection in the browser (/api/public → fixture API).
-  await useScenario(request, { scenario: "normal" });
+  await setScenario(request, { scenario: "normal" });
   await work.getByRole("button", { name: "Try again" }).click();
   await expect(work.getByRole("article").first()).toBeVisible();
   await stack.getByRole("button", { name: "Try again" }).click();
@@ -204,7 +176,7 @@ test("retry that fails again keeps the error state with another retry", async ({
   page,
   request,
 }) => {
-  await useScenario(request, { scenario: "normal", fail: ["portofolios"] });
+  await setScenario(request, { scenario: "normal", fail: ["portofolios"] });
   await page.goto("/");
   const work = page.getByRole("region", { name: workSection });
   await work.getByRole("button", { name: "Try again" }).click();
@@ -213,7 +185,7 @@ test("retry that fails again keeps the error state with another retry", async ({
 });
 
 test("empty collections show calm empty states", async ({ page, request }) => {
-  await useScenario(request, { scenario: "empty" });
+  await setScenario(request, { scenario: "empty" });
   await page.goto("/");
   await expect(page.getByRole("region", { name: workSection })).toContainText(
     "Projects will appear here soon.",

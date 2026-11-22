@@ -73,10 +73,7 @@ test("header navigates to every page, marks the active link, and appears once", 
   await expect(page.locator("#main-content")).toHaveCount(1);
 });
 
-test("404 page keeps the same header and footer", async ({
-  page,
-  context,
-}) => {
+test("404 page keeps the same header and footer", async ({ page, context }) => {
   await mockApi(context);
   const response = await page.goto("/missing-page-for-frame-test");
   expect(response?.status()).toBe(404);
@@ -177,7 +174,9 @@ test("command palette searches pages and API projects, copies email, and switche
   const search = page.getByRole("combobox", { name: "Search" });
   await expect(search).toBeFocused();
   await search.fill("zzzz-no-match");
-  await expect(page.getByText(/No results for .zzzz-no-match.\./)).toBeVisible();
+  await expect(
+    page.getByText(/No results for .zzzz-no-match.\./),
+  ).toBeVisible();
   await search.fill("copy email");
   await page.keyboard.press("Enter");
   await expect(
