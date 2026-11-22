@@ -1,14 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import {
-  LuUser,
-  LuMail,
-  LuLock,
-  LuRefreshCw,
-  LuCircleCheck,
-  LuArrowRight,
-} from "react-icons/lu";
+import { LoaderCircle } from "lucide-react";
+import { AuthCard } from "@/components/site/AuthCard";
+import { Button } from "@/components/ui/button";
+import { Input, Label } from "@/components/ui/field";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api-client";
@@ -42,103 +38,86 @@ export default function RegisterPage() {
         setError(data.error || "Registration failed");
       }
     } catch {
-      setError("Server connection issue. Please retry.");
+      setError("Couldn't reach the server. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-6 relative overflow-hidden">
-      <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] rounded-full bg-[var(--primary)]/5 blur-[100px]"></div>
-
-      <div className="w-full max-w-100 z-10">
-        <div className="mb-10 text-center">
-          <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">
-            Register
-          </h1>
-          <p className="text-[var(--muted)] text-[10px] font-bold mt-2 tracking-[0.4em] uppercase">
-            Kinetic Systems / Account
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <p className="form-message error" role="alert">
-              {error}
-            </p>
-          )}
-          <div className="bg-zinc-900/30 p-8 rounded-lg border border-zinc-800 space-y-6 shadow-inner">
-            <div className="relative group">
-              <LuUser className="absolute left-0 top-1/2 -translate-y-1/2 text-[var(--text)] group-focus-within:text-white transition-colors" />
-              <input
-                aria-label="Full Name"
-                type="text"
-                placeholder="Full Name"
-                required
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className="w-full bg-transparent border-b border-zinc-800 text-white pl-8 py-3 outline-none focus:border-indigo-500 transition-all text-sm font-medium"
-              />
-            </div>
-
-            <div className="relative group">
-              <LuMail className="absolute left-0 top-1/2 -translate-y-1/2 text-[var(--text)] group-focus-within:text-white transition-colors" />
-              <input
-                aria-label="Email Address"
-                type="email"
-                autoComplete="email"
-                placeholder="Email Address"
-                required
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                className="w-full bg-transparent border-b border-zinc-800 text-white pl-8 py-3 outline-none focus:border-indigo-500 transition-all text-sm font-medium"
-              />
-            </div>
-
-            <div className="relative group">
-              <LuLock className="absolute left-0 top-1/2 -translate-y-1/2 text-[var(--text)] group-focus-within:text-white transition-colors" />
-              <input
-                aria-label="Password"
-                type="password"
-                autoComplete="new-password"
-                placeholder="Password"
-                required
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                className="w-full bg-transparent border-b border-zinc-800 text-white pl-8 py-3 outline-none focus:border-indigo-500 transition-all text-sm font-medium"
-              />
-            </div>
-          </div>
-
-          <button
-            disabled={loading}
-            className="w-full bg-[var(--primary)] hover:bg-indigo-700 text-white py-4 rounded-lg font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg shadow-indigo-500/10"
-          >
-            {loading ? (
-              <LuRefreshCw className="animate-spin" />
-            ) : (
-              <>
-                Create Account <LuCircleCheck />
-              </>
-            )}
-          </button>
-        </form>
-
-        <div className="mt-10 text-center">
+    <AuthCard
+      title="Create an account"
+      subtitle="Member access"
+      footer={
+        <>
+          Already have an account?{" "}
           <Link
             href="/auth/login"
-            className="text-[var(--muted)] hover:text-white font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 transition-all group"
+            className="text-ink underline decoration-(color:--link-underline) underline-offset-(--link-underline-offset)"
           >
-            Already have an account?{" "}
-            <span className="text-white group-hover:underline">Login</span>{" "}
-            <LuArrowRight />
+            Sign in
           </Link>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        {error && (
+          <p
+            role="alert"
+            className="rounded-(--radius-control) border border-(color:--field-border-error) px-3.5 py-2.5 text-small text-danger"
+          >
+            {error}
+          </p>
+        )}
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="register-name">Full name</Label>
+          <Input
+            id="register-name"
+            autoComplete="name"
+            required
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
         </div>
-      </div>
-    </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="register-email">Email</Label>
+          <Input
+            id="register-email"
+            type="email"
+            autoComplete="email"
+            required
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="register-password">Password</Label>
+          <Input
+            id="register-password"
+            type="password"
+            autoComplete="new-password"
+            required
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+          />
+        </div>
+        <Button
+          type="submit"
+          size="lg"
+          disabled={loading}
+          aria-busy={loading}
+          className="w-full"
+        >
+          {loading ? (
+            <LoaderCircle
+              aria-hidden="true"
+              className="motion-safe:animate-spin"
+            />
+          ) : null}
+          {loading ? "Creating account…" : "Create account"}
+        </Button>
+      </form>
+    </AuthCard>
   );
 }

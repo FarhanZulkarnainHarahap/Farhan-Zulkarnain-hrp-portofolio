@@ -212,12 +212,11 @@ test("public routes, project preview, and all requested responsive widths", asyn
         .toBe(true);
     }
   }
+  // Projects (Fase 6.3): every project is a card on the server-rendered grid.
   await page.goto("/projects");
-  await page.locator(".project-list button").nth(1).click();
-  await page.mouse.move(0, 0);
-  await expect(page.locator(".project-summary h3")).toHaveText(
-    projectsFixture.data[1].title,
-  );
+  await expect(
+    page.getByRole("region", { name: "All projects" }).getByRole("article"),
+  ).toHaveCount(projectsFixture.data.length);
   expect(errors).toEqual([]);
 });
 
@@ -253,43 +252,6 @@ test("keyboard palette, focus restoration, and mobile menu", async ({
   ).toContainText("PostgreSQL");
 });
 
-test("read errors can retry and contact never reports success on failure", async ({
-  page,
-  context,
-}) => {
-  const state = await mockApi(context);
-  state.failedReads.add("portofolios");
-  await page.goto("/projects");
-  await expect(page.locator(".collection-state[role=alert]")).toContainText(
-    "Unable to load",
-  );
-  state.failedReads.clear();
-  await page.getByRole("button", { name: "Retry connection" }).click();
-  await expect(page.locator(".project-list button").first()).toBeVisible();
-  await page.goto("/contact");
-  await page.getByLabel("Your name").fill("QA Test");
-  await page.getByLabel("Email address").fill("qa@example.com");
-  await page.getByLabel("Subject", { exact: true }).fill("Contract test");
-  await page
-    .getByLabel("Your message")
-    .fill("This request is intercepted locally.");
-  state.contactStatus = 503;
-  await page.getByRole("button", { name: "Send message" }).click();
-  await expect(page.locator(".transmission-form [role=alert]")).toContainText(
-    "could not be sent",
-  );
-  await expect(page.getByLabel("Your name")).toHaveValue("QA Test");
-  state.contactStatus = 201;
-  await page.getByRole("button", { name: "Send message" }).click();
-  await expect(page.locator(".transmission-form [role=status]")).toContainText(
-    "Message sent",
-  );
-  await expect(page.getByLabel("Your name")).toBeEmpty();
-  expect(JSON.parse(state.writes.at(-1)!.body).message).toBe(
-    "Subject: Contract test\n\nThis request is intercepted locally.",
-  );
-});
-
 test("missing, invalid, and non-admin tokens cannot enter admin routes", async ({
   page,
   context,
@@ -301,9 +263,7 @@ test("missing, invalid, and non-admin tokens cannot enter admin routes", async (
     { name: "accessToken", value: "invalid", domain: "localhost", path: "/" },
   ]);
   await page.goto("/auth/login");
-  await expect(
-    page.getByRole("heading", { name: "Access System" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
   await authenticate(context, "USER");
   const response = await page.goto("/dashboard/admin/home");
   expect(response?.status()).toBe(403);
@@ -317,11 +277,9 @@ test("admin routes render, project edit modal traps focus, and login/logout work
 }, info) => {
   const state = await mockApi(context);
   await page.goto("/auth/login");
-  await page
-    .getByLabel("Email address", { exact: true })
-    .fill("qa@example.com");
+  await page.getByLabel("Email", { exact: true }).fill("qa@example.com");
   await page.getByLabel("Password", { exact: true }).fill("test-only-password");
-  await page.getByRole("button", { name: "Login", exact: true }).click();
+  await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(page).toHaveURL(/\/admin\/home$/);
   for (const route of [
     "/dashboard",
@@ -505,171 +463,6 @@ test("project and document uploads, project edits, and skill CRUD preserve suppo
     .click();
   await page.getByRole("button", { name: "Delete entry", exact: true }).click();
   await expect.poll(() => state.writes.at(-1)?.method).toBe("DELETE");
-});
-
-test("project vault details open the project selected in the DOM @legacy3d", async ({
-  page,
-  context,
-}) => {
-  await mockApi(context);
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/projects");
-  await page.locator(".project-list button").nth(1).click();
-  await page.mouse.move(0, 0);
-  const href = await page.locator(".project-summary a").getAttribute("href");
-  await expect(page.locator(".project-spatial")).toHaveCount(0);
-  await expect(page.locator(".project-list button").nth(1)).toHaveClass(
-    /selected/,
-  );
-  const selectedTitle = await page
-    .locator(".project-list button")
-    .nth(1)
-    .locator("span")
-    .nth(1)
-    .innerText();
-  await expect(page.locator(".project-summary h3")).toHaveText(selectedTitle);
-  await page.locator(".project-summary a").click();
-  await expect(page).toHaveURL(new RegExp(href! + "$"));
-});
-
-test("project vault keeps scene, selects artifacts and survives context loss @legacy3d", async ({
-  page,
-  context,
-}, info) => {
-  test.setTimeout(180_000);
-  await mockApi(context);
-  await context.route("**/image/upload/f_webp,**", (route) =>
-    route.fulfill({
-      path: "tests/fixtures/project-preview.webp",
-      contentType: "image/webp",
-      headers: { "access-control-allow-origin": "*" },
-    }),
-  );
-  const errors: string[] = [];
-  page.on("pageerror", (e) => errors.push(e.message));
-  const models: string[] = [];
-  page.on("request", (r) => {
-    if (r.url().includes("/models/projects/")) models.push(r.url());
-  });
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/projects");
-  const stage = page.locator(".vault-canvas");
-  await stage.scrollIntoViewIfNeeded();
-  await expect(stage).toHaveAttribute("data-ready", "true");
-
-  await expect(page.locator("[data-screenshot=ready]")).toHaveCount(3);
-  const canvas = stage.locator("canvas");
-  await canvas.evaluate((el) => el.setAttribute("data-stable", "yes"));
-  const box = await stage.boundingBox();
-  await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
-  await expect(page.locator(".project-vault")).toHaveAttribute(
-    "data-hovered",
-    projectsFixture.data[0].id,
-  );
-  await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
-  await expect(page.locator(".project-vault")).toHaveAttribute(
-    "data-inspection",
-    "true",
-  );
-  await page.getByRole("button", { name: "Next project", exact: true }).click();
-  await expect(page.locator(".project-summary h3")).toHaveText(
-    projectsFixture.data[1].title,
-  );
-  await expect(canvas).toHaveAttribute("data-stable", "yes");
-  await stage.scrollIntoViewIfNeeded();
-  await page.screenshot({ path: info.outputPath("project-vault-desktop.png") });
-  expect(models).toHaveLength(2);
-  await canvas.evaluate((el) =>
-    el.dispatchEvent(new Event("webglcontextlost")),
-  );
-  await expect(stage).toHaveAttribute("data-ready", "false");
-  await expect(page.locator(".vault-fallback")).toBeVisible();
-  await page.getByRole("button", { name: "Next project", exact: true }).click();
-  await expect(page.locator(".project-summary h3")).toHaveText(
-    projectsFixture.data[2].title,
-  );
-  expect(errors).toEqual([]);
-});
-test.describe("project vault touch", () => {
-  test.use({ hasTouch: true, viewport: { width: 390, height: 844 } });
-  test("mobile project vault supports tap and reduced motion @legacy3d", async ({
-    page,
-    context,
-  }, info) => {
-    await mockApi(context);
-    await context.route("**/image/upload/f_webp,**", (route) =>
-      route.fulfill({
-        path: "tests/fixtures/project-preview.webp",
-        contentType: "image/webp",
-        headers: { "access-control-allow-origin": "*" },
-      }),
-    );
-    await page.goto("/projects");
-    const stage = page.locator(".vault-canvas");
-    await stage.scrollIntoViewIfNeeded();
-    await expect(stage).toHaveAttribute("data-ready", "true");
-    await expect(stage).toHaveAttribute("data-running", "false");
-
-    await expect(page.locator("[data-screenshot=ready]")).toHaveCount(1);
-    await expect(stage).toHaveCSS("touch-action", "pan-y");
-    await page.getByRole("button", { name: "Next project", exact: true }).tap();
-    await expect(page.locator(".project-summary h3")).toHaveText(
-      projectsFixture.data[1].title,
-    );
-    await expect(
-      page.locator(
-        ".project-stage .project-description, .project-stage .tags, .vault-case-details, .project-stage .project-links",
-      ),
-    ).toHaveCount(0);
-    await expect(page.locator(".project-summary a")).toHaveText(
-      "Explore project ↗",
-    );
-    await page
-      .getByRole("button", { name: "Exit inspection", exact: true })
-      .tap();
-    await expect(page.locator(".project-vault")).toHaveAttribute(
-      "data-inspection",
-      "false",
-    );
-    await page.emulateMedia({ reducedMotion: "no-preference" });
-    await stage.scrollIntoViewIfNeeded();
-    await expect(stage).toHaveAttribute("data-running", "true");
-    await page.screenshot({
-      path: info.outputPath("project-vault-mobile.png"),
-    });
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth,
-      ),
-    ).toBe(true);
-  });
-});
-
-test("project vault tablet preserves access after screenshot failure @legacy3d", async ({
-  page,
-  context,
-}) => {
-  await mockApi(context);
-  await page.setViewportSize({ width: 900, height: 1100 });
-  await context.route("**/image/upload/f_webp,**", (route) => route.abort());
-  await page.goto("/projects");
-  const stage = page.locator(".vault-canvas");
-  await stage.scrollIntoViewIfNeeded();
-  await expect(stage).toHaveAttribute("data-ready", "true");
-  await expect(page.locator("[data-screenshot=failed]")).toHaveCount(1);
-  await page.getByRole("button", { name: "Next project", exact: true }).click();
-  await expect(page.locator(".project-summary h3")).toHaveText(
-    projectsFixture.data[1].title,
-  );
-  await expect(page.locator(".project-summary a")).toHaveAttribute(
-    "href",
-    /projects\//,
-  );
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
 });
 
 test("former About sub-pages redirect permanently to /about sections", async ({

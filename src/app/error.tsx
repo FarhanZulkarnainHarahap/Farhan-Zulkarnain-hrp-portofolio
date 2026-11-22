@@ -1,5 +1,10 @@
 "use client";
+// Errors outside the (site) group (auth, dashboard): same look, with the site frame.
 import Link from "next/link";
+import { SiteChrome } from "@/components/site/SiteChrome";
+import { StatusPage } from "@/components/site/StatusPage";
+import { Button, buttonClasses } from "@/components/ui/button";
+
 export default function ErrorPage({
   reset,
 }: {
@@ -7,20 +12,20 @@ export default function ErrorPage({
   reset: () => void;
 }) {
   return (
-    <div className="legacy-root">
-      <main className="not-found" id="main-content">
-        <p className="eyebrow">CONNECTION INTERRUPTED</p>
-        <h1>Unable to load this page.</h1>
-        <p>The data service may be unavailable. Please try again.</p>
-        <div className="button-row">
-          <button className="button" onClick={reset}>
-            Retry connection ↗
-          </button>
-          <Link className="text-link" href="/">
-            Back home
-          </Link>
-        </div>
-      </main>
-    </div>
+    <SiteChrome>
+      <StatusPage
+        eyebrow="Something went wrong"
+        title="This page couldn't be loaded."
+        body="The content service may be temporarily unavailable. Please try again in a moment."
+        actions={
+          <>
+            <Button onClick={reset}>Try again</Button>
+            <Link href="/" className={buttonClasses({ variant: "secondary" })}>
+              Back to home
+            </Link>
+          </>
+        }
+      />
+    </SiteChrome>
   );
 }
