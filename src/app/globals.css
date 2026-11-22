@@ -267,6 +267,16 @@
   --hero-monogram-lg: clamp(12rem, 18vw, 18rem);
   --hero-monogram-sm: clamp(8rem, 12vw, 12rem);
 
+  /* Accents (Fase 7, React Bits adaptations) */
+  --shine-color: var(--ui-accent);
+  --shine-duration: 1400ms;
+  --spotlight-color: color-mix(in srgb, var(--ui-accent) 9%, transparent);
+  --spotlight-size: 22rem;
+  --dotgrid-gap: 22px;
+  --dotgrid-size: 2px;
+  --dotgrid-base: var(--ui-hairline-strong);
+  --dotgrid-active: var(--ui-accent);
+
   --timeline-rule: var(--ui-hairline);
   --prose-measure: var(--container-reading);
 }
@@ -323,6 +333,67 @@ html:has(.site-frame) {
     scroll-behavior: smooth;
   }
 }
+/* ShinyText (React Bits, adapted): one sweep of the accent across the text. Outside the sweep the
+   text is plain (color token), so it is intact without JS and follows theme changes. */
+.shiny-text[data-shine="run"] {
+  background-image: linear-gradient(
+    110deg,
+    currentColor 0%,
+    currentColor 42%,
+    var(--shine-color) 50%,
+    currentColor 58%,
+    currentColor 100%
+  );
+  background-size: 250% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine-sweep var(--shine-duration) var(--ease-standard) 1 both;
+}
+@keyframes shine-sweep {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0% 0;
+  }
+}
+
+/* Spotlight on project cards (React Bits SpotlightCard, adapted): a soft accent light under the
+   pointer on hover, centred while the card's link has keyboard focus. Decorative only. */
+.card-spotlight {
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    var(--spotlight-size) circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    var(--spotlight-color),
+    transparent 70%
+  );
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+@media (hover: hover) and (pointer: fine) {
+  .group:hover > .card-spotlight {
+    opacity: 1;
+  }
+}
+.group:has(a[data-card-link]:focus-visible) > .card-spotlight {
+  --spot-x: 50%;
+  --spot-y: 40%;
+  opacity: 1;
+}
+
+/* Static dot pattern: the DotGrid fallback (mobile, coarse pointer, reduced motion, no WebGL). */
+.dot-pattern {
+  background-image: radial-gradient(
+    circle,
+    var(--dotgrid-base) calc(var(--dotgrid-size) / 2),
+    transparent calc(var(--dotgrid-size) / 2 + 0.5px)
+  );
+  background-size: var(--dotgrid-gap) var(--dotgrid-gap);
+  background-position: center;
+}
+
 /* Locally dark band (footer). */
 .scheme-dark {
   color-scheme: dark;
