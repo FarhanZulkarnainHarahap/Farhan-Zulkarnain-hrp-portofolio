@@ -16,7 +16,7 @@ const slug = (title: string) =>
     .slice(0, 90);
 const kasirku = projects[0];
 
-test("initial HTML has the H1, chapters, features and the OG image", async ({
+test("initial HTML has the H1, chapters, features and the generated OG image", async ({
   request,
 }) => {
   const html = await initialHtml(request, `/projects/${slug(kasirku.title)}`);
@@ -24,7 +24,12 @@ test("initial HTML has the H1, chapters, features and the OG image", async ({
   for (const heading of ["Problem", "Solution", "Result", "Key features"])
     expect(html).toContain(`>${heading}</h2>`);
   expect(html).toContain(kasirku.features[0].trim());
-  expect(html).toContain(`property="og:image" content="${kasirku.imageUrl}"`);
+  // Fase 9.3: generated case-study OG image (title, case type, project image).
+  expect(html).toMatch(
+    new RegExp(
+      `property="og:image" content="[^"]*/projects/${slug(kasirku.title)}/opengraph-image`,
+    ),
+  );
   expect(html).toContain(
     `rel="canonical" href="https://farhanzulkarnainhrp.com/projects/${slug(kasirku.title)}"`,
   );
