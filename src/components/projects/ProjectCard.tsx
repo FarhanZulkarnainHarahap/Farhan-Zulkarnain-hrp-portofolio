@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { CardSpotlight } from "@/components/accents/CardSpotlight";
 import { Badge, ChipList } from "@/components/ui/badge";
 import { displayTags, splitCaseType } from "@/lib/display/projects";
 import { getProjectSlug } from "@/lib/portfolio/projects";
@@ -35,6 +36,7 @@ export function ProjectCard({
         className,
       )}
     >
+      <CardSpotlight />
       <ProjectImage
         src={project.imageUrl}
         alt=""
