@@ -11,7 +11,7 @@ import { SiteHeader } from "./SiteHeader";
 export function SiteChrome({ children }: { children: ReactNode }) {
   return (
     <TooltipProvider>
-      {/* .site-frame marks public pages; legacy-kinetic.css yields html/body to it. */}
+      {/* .site-frame marks public pages (scrollbar gutter rules in globals.css). */}
       <div id="top" className="site-frame contents">
         <a
           href="#main-content"

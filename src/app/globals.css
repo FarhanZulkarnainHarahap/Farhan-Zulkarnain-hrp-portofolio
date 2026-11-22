@@ -15,7 +15,7 @@
  * Boundaries (see CLAUDE.md):
  *   - Do not reset or rename Tailwind's default theme namespaces; the dashboard uses them.
  *   - Base element rules here stay minimal (no heading fonts, no global animation resets)
- *     because they also reach the dashboard (admin.css) and legacy pages (legacy-kinetic.css).
+ *     because they also reach the dashboard (admin.css).
  */
 @import "tailwindcss";
 
@@ -279,8 +279,6 @@
   --dots-size: 2px;
   --dots-color: var(--ui-hairline-strong);
 
-  --timeline-rule: var(--ui-hairline);
-  --prose-measure: var(--container-reading);
 }
 
 :root {
@@ -303,7 +301,7 @@
   --z-toast: 60;
 
   /* Theme: follow the OS unless <html data-theme> pins it. :where() keeps specificity at
-     (0,1,0) so admin.css / legacy-kinetic.css (which pin their own scheme) always win. */
+     (0,1,0) so admin.css (which pins its own scheme) always wins. */
   color-scheme: light dark;
 }
 :root:where([data-theme="light"]) {

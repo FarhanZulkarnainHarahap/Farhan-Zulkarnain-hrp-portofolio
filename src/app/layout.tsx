@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
-// TEMPORARY: styles for the not-yet-redesigned Kinetic pages, scoped to .legacy-root.
-// Remove with the legacy components in Fase 11.
-import "@/styles/legacy-kinetic.css";
 import { ThemeProvider } from "@/components/site/ThemeProvider";
 import { profile } from "@/lib/site";
 
