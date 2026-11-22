@@ -1,5 +1,9 @@
-import LandingPage from "@/components/landing/LandingPage";
+import type { Metadata } from "next";
+import { HomeContent } from "@/components/home/HomeContent";
 
-export default function RootPage() {
-  return <LandingPage initialSection="home" />;
+// Title/description come from the root defaults (docs/COPY.md → Global).
+export const metadata: Metadata = { alternates: { canonical: "/" } };
+
+export default function HomePage() {
+  return <HomeContent />;
 }

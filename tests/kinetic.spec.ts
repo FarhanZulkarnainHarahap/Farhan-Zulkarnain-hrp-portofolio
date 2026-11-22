@@ -157,8 +157,10 @@ async function mockApi(context: BrowserContext) {
   return state;
 }
 async function settled(page: Page) {
-  await page.locator(".project-list button").first().waitFor();
-  for (const section of await page.locator(".section").all()) {
+  // Home (Fase 5): every data section has finished loading (no skeletons left).
+  await page.getByRole("main").locator("section").first().waitFor();
+  await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
+  for (const section of await page.getByRole("main").locator("section").all()) {
     await section.scrollIntoViewIfNeeded();
   }
   await page.evaluate(() => window.scrollTo(0, 0));
@@ -173,7 +175,7 @@ test("public routes, project preview, and all requested responsive widths", asyn
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await settled(page);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("FARHAN");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Farhan Zulkarnain Harahap");
   for (const width of [360, 390, 430, 768, 1024, 1280, 1440, 1920]) {
     await page.setViewportSize({ width, height: 1000 });
     expect(
