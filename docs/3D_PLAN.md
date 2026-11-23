@@ -253,3 +253,112 @@ dibandingkan dengan canvas three.js; tidak ada blocker atau major.
 - **Catatan warna:** pelat HeroModel memakai `--model-surface` (light `--paper-50`), kartu `--paper-200`.
   Disatukan bila HeroModel dipertahankan.
 - Render A0: `.qa/fase10-5/a0/` dan `.qa/fase10-5/a0-compare/` (tidak di-commit).
+
+## Fase 10.5 — Rencana entrance + fly-through (Checkpoint A, DISETUJUI 2026-11-23)
+
+Semua klip dirender di Blender (scene `Card`, koleksi `COL_Card` + `COL_Film`) lewat MCP; tanpa
+generator berbayar. Satu timeline Blender yang kontinu (30 fps) berisi entrance + seluruh fly-through;
+klip web = potongan rentang frame dari timeline itu.
+
+### Jaminan seam (frame-identical)
+
+- Kamera dan semua objek di-keyframe pada SATU timeline. Frame batas tiap klip dirender sekali dan
+  dipakai sebagai frame terakhir klip i dan frame pertama klip i+1 (file PNG yang sama masuk ke kedua
+  encode).
+- Entrance TIDAK dirender terpisah: frame entrance = potongan tengah 4:5 dari render 16:9 kamera yang
+  sama (fit vertikal). Terbukti: potongan tengah F0 vs frame entrance terakhir selisih 0 (max 0/255).
+  Render terpisah pada resolusi lain TIDAK identik (EEVEE: 3 % piksel beda > 2/255 di tepi AA dan
+  bayangan), jadi aturan potong ini wajib.
+- Frame terakhir entrance = poster hero baru = frame pertama fly-through (F0).
+- Morph lapis → pelat Hero identik (Checkpoint A0: mask alfa 0 piksel beda).
+
+### Timeline entrance (2.000 ms, 60 frame) — klip `entrance`
+
+| ms | Frame | Kejadian | Easing |
+|---|---|---|---|
+| 0–450 | 0–13 | Kartu Fz utuh melayang masuk dari kanan-atas, miring ±14°, menghadap kamera | ease-enter |
+| 450–800 | 13–24 | Mendarat dan rebah ke belakang; retak rambut muncul di 700–800 ms | ease-standard |
+| 800–1.250 | 24–37 | Membelah horizontal menjadi lima lapis; tiap lapis menebal 0,022 → 0,06 dan melebar ke 1 × 1 (shape key `Plate`) | ease-standard |
+| 1.250–1.650 | 37–49 | Lapis terangkat ke jarak 0,36 dan terkunci (glif tiap lapis terlihat saat terbuka) | ease-enter |
+| 1.650–1.850 | 49–55 | Sumbu terakota turun dari atas menembus tumpukan | ease-standard |
+| 1.850–2.000 | 55–60 | Sumbu menyala sekilas (emisi 0 → 4 → 0); frame 60 = tumpukan terkunci = F0 | ease-exit |
+
+Kunjungan berikutnya dalam sesi yang sama (`sessionStorage`): klip yang sama diputar dari 1.500 ms
+(±0,5 dtk: lapis mengunci + sumbu menyala). Diputar sekali, `autoplay muted playsinline`, tanpa loop,
+tanpa kontrol; poster awal = frame 0 (kartu utuh).
+
+Teks hero (GSAP, durasi/easing dari token; H1 dan Navbar TIDAK dianimasikan):
+150 ms garis aksen di bawah H1 tergambar kiri → kanan · 250 ms eyebrow · 400 ms positioning naik per
+baris · 550 ms CTA bergantian · 700 ms status + kilau ShinyText · ±2.000 ms penanda "Scroll to explore ↓"
+dengan satu dorongan halus (tanpa loop; hilang saat mulai scroll).
+
+### Fly-through (frame 0 = F0, 30 fps) — scene + connector
+
+| Klip | Frame | Durasi | Isi | Kamera |
+|---|---|---|---|---|
+| S1 Interface | 0–120 | 4,0 dtk | Pelat Interface terangkat dan miring −38° sehingga SISI BAWAHnya (glif jendela) menghadap kamera; kartu, kolom dan tombol UI bermunculan dari glif jendela; bola request lahir dari tombol | Dari bawah-depan, lampu bawah `LGT_Card_Under` menyala hanya di scene ini (syarat A0: glif jendela terlihat jelas) |
+| C1 | 120–165 | 1,5 dtk | Interface kembali ke tumpukan; request turun sejajar sumbu | Turun mengikuti bola |
+| S2 API | 165–285 | 4,0 dtk | Tiga garis API menyala bergantian (emisi per garis); request melesat menembus pelat | Orbit setengah lingkaran di level API |
+| C2 | 285–330 | 1,5 dtk | Lapis atas membuka; request turun | Mengikuti |
+| S3 Service | 330–450 | 4,0 dtk | Ubin 2×2 berbalik satu per satu (sisi belakang terakota); request keluar dengan jejak lebih tebal | Atas-depan, mendekat |
+| C3 | 450–495 | 1,5 dtk | Request turun | Mengikuti, mulai merendah |
+| S4 Database | 495–615 | 4,0 dtk | Empat baris tabel terisi bergantian | Menukik ke sudut rendah |
+| C4 | 615–660 | 1,5 dtk | Request turun ke Deployment | Mengikuti |
+| S5 Deployment | 660–780 | 4,0 dtk | Simpul tumbuh menjadi jaringan titik dan garis; tumpukan menyala sekilas | Mundur jauh |
+| C5 | 780–825 | 1,5 dtk | Lapis merapat dan menipis kembali (morph 1 → 0) | Mendekat ke depan |
+| S6 Penutup | 825–945 | 4,0 dtk | Kartu Fz utuh sejenak (monogram) → mengembang dan menyebar menjadi tiga kartu proyek → berhenti tepat di posisi grid Selected work; crossfade ke kartu HTML asli dari data, sinkron dengan frame terakhir | Lurus ke depan |
+
+Total fly-through 31,5 dtk (945 frame). Jalur request sejajar sumbu (offset x 0,14) supaya jejaknya
+tidak tertutup sumbu. Gerak: easing halus, tanpa kedip, tanpa loop.
+
+### Varian, light/dark, mobile
+
+- **Dua set klip (light + dark)**, bukan satu set netral: H.264 tidak punya alfa, jadi latar kanvas
+  (`--ui-canvas`) ikut terbakar di video; satu set netral pasti tidak cocok dengan salah satu tema. Hanya
+  set tema aktif yang diunduh; ganti tema → klip yang sudah termuat diganti lazily.
+- **Mobile:** rantai portrait 9:16 asli (720 × 1280, GOP 4) dari timeline yang sama dengan kamera
+  portrait sendiri (bukan crop 16:9); `stillMobile` = frame pertama tiap klip portrait.
+- **Reduced motion / tanpa JS:** video tidak diunduh. Visual hero = **tumpukan terkunci** (bukan kartu
+  utuh): itu frame yang menyambung ke still tiap scene, menjelaskan lima lapis tanpa gerak, dan monogram
+  tetap terlihat di pelat teratas. Section fly-through = still per scene + teks.
+
+### Integrasi web (rencana untuk Checkpoint B)
+
+- `references/scrub-engine.js` dari skill dipasang di komponen `"use client"` (mount di `useEffect`,
+  dibersihkan saat unmount): `nav: false`, `atmosphere: false`, font dan warna dari token, blob-seek,
+  prefetch lazy saat section mendekat.
+- Teks tiap scene (eyebrow + judul + satu kalimat + indikator 1/5–5/5) dianimasikan GSAP sinkron dengan
+  progres scroll; ScrollTrigger tidak di bundle utama (bila perlu, dimuat dinamis di chunk section ini).
+  Semua teks scene ada di HTML awal.
+- H1, positioning dan CTA tetap teks server di atas lipatan (H1 = LCP). Section fly-through setelah hero,
+  sebelum Selected work.
+
+### Estimasi ukuran dan waktu render (diukur, bukan ditebak)
+
+Uji: orbit 3 dtk (90 frame) 1080p di scene ini, latar kanvas, encode sesuai skill.
+
+| Varian | Laju terukur | Fly-through 31,5 dtk | Budget |
+|---|---|---|---|
+| Desktop 1920 × 1080, CRF 20, GOP 8 | 276 KB/dtk | ≈ 8,5 MB per tema | ≤ 10 MB ✓ |
+| Mobile 720 × 1280, CRF 23, GOP 4 | ≈ 107 KB/dtk | ≈ 3,4 MB per tema | ≤ 4 MB ✓ |
+| Entrance desktop 4:5 (864 × 1080, potongan render 1080p, 2 dtk) | ≈ 150 KB/dtk | ≈ 0,3 MB | ≤ 600 KB ✓ |
+| Entrance mobile 4:5 (720 × 900, potongan rantai portrait, 2 dtk) | ≈ 90 KB/dtk | ≈ 0,18 MB | ≤ 300 KB ✓ |
+
+Gerak cepat (orbit S2) adalah kasus terberat; scene yang lebih tenang lebih kecil. Kalau hasil akhir
+melewati budget: CRF 21–22 atau GOP 12 di desktop.
+
+Waktu render EEVEE: 1,25 dtk/frame 1080p (termasuk tulis PNG lewat jaringan WSL), ±0,6 dtk/frame
+720 × 1280. Desktop 1.005 frame (entrance dipotong dari render yang sama) + mobile 1.005 frame, × 2
+tema ≈ **65–80 menit** render, ditambah ±5 menit encode (ffmpeg-static lokal, tanpa instalasi global).
+
+### HeroModel three.js — DIHAPUS (keputusan pemilik, Checkpoint A)
+
+Perannya (visual hero yang hidup) digantikan entrance + fly-through. Menghapusnya menghemat ±158 KB gzip
+JS three.js di desktop yang mampu (First Load beranda awal tidak berubah karena chunk-nya dinamis),
+menghapus satu konteks WebGL, dan menghilangkan selisih warna `--model-surface` vs kartu. Visual hero
+menjadi video entrance + poster (frame terakhir entrance). `three` dan `@types/three` bisa ikut dihapus
+dari package.json kalau tidak ada pemakai lain.
+
+### Storyboard
+
+Lokasi gambar: `.qa/fase10-5/a/` (lihat laporan Checkpoint A).
