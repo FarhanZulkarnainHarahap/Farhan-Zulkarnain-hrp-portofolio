@@ -482,25 +482,25 @@ normalises presentation.
 
 - **Project media:** real screenshots from the API in a fixed-ratio frame; never stretched; lazy
   loaded below the fold; meaningful `alt` from the project title.
-- **3D is an accent, never the theme:** one sculptural object in the home hero on desktop: the
-  HeroModel, five matte clay plates (Interface → API → Service → Database → Deployment) on one
-  terracotta axis, warm procedural studio light. It eases towards the pointer (max ±8°) and rests
-  when the pointer leaves; nothing loops. No 3D on project cards or forms. The former WebGL DotGrid
-  accent is gone; only the static CSS dot pattern stays behind the hero visual.
+- **3D is an accent, never the theme:** pre-rendered Blender video, no WebGL at runtime. The home
+  hero (desktop) shows the Fz card entrance once per session (a short version afterwards): the card
+  settles, splits into five matte layers (Interface → API → Service → Database → Deployment) and
+  locks into a stack on a terracotta axis. Below the hero, a scroll-scrubbed fly-through follows one
+  request through the five layers. Nothing loops. No 3D on project cards or forms. The renders carry
+  the canvas colour, so the visuals have no frame.
 - **Case study lead image:** the plain project screenshot (`ProjectImage`) in a quiet frame: 16:10
   locked ratio, `--media-radius`, hairline border, `--media-bg` while loading; priority because it
   sits above the fold under the title and CTAs. No device mockup (removed in Fase 10.5).
 - **Theme-aware renders:** posters exist per theme and follow the site theme (toggle and
   `data-theme`, OS by default) through `ThemedPicture`: only the active variant is downloaded, and a
-  toggle swaps it after decoding, without a reload. 3D material colours come from the `--model-*`
-  tokens.
-- **Budgets:** each GLB ≤ 1.5 MB (Draco or Meshopt), textures ≤ 2K WebP, total 3D on the home page
-  ≤ 3 MB. Sources in `design/blender/`, exports in `public/3d/`.
-- **Fallbacks:** a WebP/AVIF poster rendered from the same scene is shown on mobile, with reduced
-  motion, when WebGL is unavailable, and until the model loads, then cross-fades to the canvas.
-  three.js and the GLB load only on capable desktops, after the slot is visible. Neither the poster
-  nor the canvas may become the LCP element: the model is framed small enough (`MODEL_SCALE`) that
-  the H1 stays larger.
+  toggle swaps it after decoding, without a reload. Videos exist per theme too; only the active
+  theme's clip is fetched.
+- **Budgets:** entrance ≤ 600 KB (desktop), fly-through ≤ 10 MB desktop / ≤ 4 MB mobile, H.264 with
+  faststart. Sources in `design/blender/`, exports in `public/3d/`.
+- **Fallbacks:** without JS or with reduced motion no video is fetched: the hero shows the locked
+  stack still and the fly-through becomes a list of stills with their text. The hero entrance is
+  desktop-only. Neither the poster nor the video may become the LCP element: the entrance is cropped
+  to its motion bounds and sized by `--entrance-width` so the H1 stays larger.
 - **Illustration:** none beyond the 3D accent; no stock photos, no AI-generated people.
 
 ## Accessibility

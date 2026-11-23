@@ -362,3 +362,16 @@ dari package.json kalau tidak ada pemakai lain.
 ### Storyboard
 
 Lokasi gambar: `.qa/fase10-5/a/` (lihat laporan Checkpoint A).
+
+## Fase 10.5 — Checkpoint B (dev)
+
+- Timeline Blender: entrance frame 1–61, S1 Interface frame 61–181 (30 fps); kamera desktop `CAM_Card`
+  (fit vertikal 36 mm, sama dengan `CAM_Hero`), kamera mobile `CAM_Card_M` (Copy Transforms, lensa × 0,72).
+- Entrance: potongan **568 × 930** dari render 1080p (gabungan bounding box alfa seluruh gerak, x 676,
+  y 0), supaya kotak elemen kecil dan H1 tetap LCP. Lebar `--entrance-width: min(16vw, 14rem)`.
+  Desktop saja: di 390 px poster mana pun yang berarti lebih besar dari H1 (31.648 px²).
+- Ukuran: entrance 198 KB (light) / 130 KB (dark); S1 desktop 681 / 474 KB, mobile 478 / 377 KB
+  (≈ 170 / 120 KB per detik → proyeksi film penuh ≈ 5,4 MB desktop, ≈ 3,8 MB mobile per tema).
+- Warna latar video vs token kanvas: selisih ≤ 1/255 (diukur di browser).
+- Panjang scroll: 0,8 layar per scene + 0,4 per connector + 1 → film penuh 7,8 layar (default skill
+  13,3). Checkpoint B (S1 saja): 1,8 layar.

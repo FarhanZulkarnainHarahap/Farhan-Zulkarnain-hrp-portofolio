@@ -65,3 +65,15 @@ selalu mendahului isinya; tidak ada dua grup yang beranimasi bersamaan di satu l
 - Gerak saat aksi keyboard (palette, toggle tema, "+N", "Show all") → **tetap tanpa animasi**.
 - Under reduced motion: tidak ada tween GSAP maupun observer reveal; transisi CSS memakai token
   yang menjadi 1 ms, dan pergeseran (translate/scale) dimatikan.
+
+## Fase 10.5 — Entrance hero dan fly-through
+
+- **Intro hero (sekali per kunjungan):** timeline GSAP dengan waktu mulai dari token `--intro-*`
+  (150 ms garis aksen di bawah H1 tergambar kiri → kanan · 250 ms eyebrow · 400 ms positioning naik per
+  baris (SplitText, di-revert setelahnya) · 550 ms CTA bergantian · 700 ms status + satu sapuan ShinyText
+  · 2.000 ms "Scroll to explore ↓" dengan satu dorongan, tanpa loop, hilang saat mulai scroll). H1 dan
+  header tidak pernah dianimasikan.
+- **Visual hero:** video entrance Blender 2 dtk, sekali per sesi (berikutnya mulai 1,5 dtk); desktop saja.
+- **Fly-through:** waktu video = posisi scroll (scrub, bukan autoplay); teks scene mengikuti progres
+  lewat `gsap.set`. Tanpa ScrollTrigger. rAF hanya selama video mengejar targetnya (0 rAF saat diam).
+- **Reduced motion:** tidak ada tween, tidak ada video; poster tumpukan dan daftar still + teks.

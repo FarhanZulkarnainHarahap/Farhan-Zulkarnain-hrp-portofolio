@@ -74,13 +74,20 @@
 - DILARANG: memakai ulang GLB/model lama Kinetic (dulu public/models; dihapus di Fase 11, hanya ada
   di riwayat git), membuat geometri 3D langsung dengan kode three.js sebagai pengganti aset Blender,
   atau mengambil model dari sumber lain tanpa izin saya.
-- Hasil Fase 10 (lihat docs/3D_PLAN.md):
-  - HeroModel: src/components/hero3d/ (HeroVisual → poster ThemedPicture + HeroModelSlot →
-    heroScene.ts, three.js langsung + meshopt, di-import dinamis). Gating di src/lib/webgl-capability.ts
-    (desktop, pointer halus, tanpa reduced motion, WebGL2, slot terlihat). Render on demand: 0 rAF saat
-    diam; dispose saat unmount. Warna dari token `--model-*`; rig cahaya per tema di heroScene.ts.
-  - Geometri poster/kamera di hero3d/hero-frame.ts (crop + MODEL_SCALE). Jangan membesarkan poster:
-    H1 harus tetap elemen LCP (dijaga tests/hero-model.spec.ts).
+- Hasil Fase 10 / 10.5 (lihat docs/3D_PLAN.md):
+  - HeroModel three.js DIHAPUS di Fase 10.5 (beserta three, @types/three, hero3d/, webgl-capability.ts,
+    token --model-*, hero-model.glb). Jangan pakai three.js / WebGL lagi tanpa izin.
+  - Visual hero = entrance kartu Fz (video Blender, desktop lg+ saja): src/components/home/HeroEntrance.tsx,
+    poster ThemedPicture (frame 1 = kartu utuh bila html.js-motion; selain itu frame terakhir = tumpukan),
+    aset public/3d/entrance/. Potongan video = gabungan bounding box gerak (568 × 930) supaya kotaknya
+    kecil; lebar `--entrance-width` mengikuti H1. Jangan membesarkannya: H1 harus tetap LCP (dijaga
+    tests/entrance.spec.ts di 1024–1920, light + dark). Hero mengisi layar pertama (min-height) supaya
+    section di bawahnya tidak ter-paint saat load.
+  - Fly-through beranda: src/components/flythrough/ (scrub.ts = port engine skill scroll-world, FlyThrough.tsx,
+    content.ts = copy disetujui). Klip per tema di public/3d/flight/. Tanpa JS / reduced motion = daftar
+    still + teks; dengan html.js-motion = stage sticky + scrub. 0 rAF saat diam; destroy saat unmount.
+  - Seam: semua klip dipotong dari SATU timeline Blender (scene Card); entrance = potongan render 16:9 yang
+    sama (bukan render terpisah).
   - DeviceMockup DIHAPUS di Fase 10.5: gambar utama studi kasus = ProjectImage biasa (16:10, radius
     `--media-radius`, border hairline, priority). Scene Device di .blend hanya arsip; jangan dipasang lagi.
   - Render per tema lewat src/components/media/ThemedPicture.tsx (hanya varian aktif diunduh).
