@@ -1,6 +1,6 @@
 /**
- * Fase 7 accents (React Bits, adapted): ShinyText, CardSpotlight. (DotGrid was replaced by the
- * HeroModel in Fase 10; see tests/hero-model.spec.ts.)
+ * Fase 7 accents (React Bits, adapted): ShinyText, CardSpotlight. (The hero visual is the Fz card
+ * entrance since Fase 10.5; see tests/entrance.spec.ts.)
  * Content stays in the server HTML; reduced motion and small/touch screens get the static version;
  * no animation frames while idle.
  */
