@@ -265,7 +265,7 @@
 
   /* Hero entrance + fly-through (Fase 10.5): Blender renders with the canvas colour baked in */
   /* Entrance crop = union of the motion's alpha bounds (568 × 930 of the 1080p render) */
-  --entrance-width: min(16vw, 14rem); /* tracks the H1 so the H1 stays the LCP element */
+  --entrance-width: min(34vw, 36rem); /* lg+ only; the poster may be the LCP (preloaded, srcset) */
   --flight-copy-width: 26rem;
   --flight-scrim-width: min(60vw, 46rem);
   --flight-copy-inset: calc(var(--spacing-gutter) * 3);
@@ -465,6 +465,10 @@ html:has(.site-frame) {
   overflow: hidden;
   aspect-ratio: 16 / 9;
 }
+/* Connectors are camera moves between scenes: only part of the pinned film, not of the static list. */
+.flight-scene--connector {
+  display: none;
+}
 .flight-media > *,
 .flight-still img {
   position: absolute;
@@ -578,14 +582,15 @@ html:has(.site-frame) {
    (html.js-motion); otherwise the last frame (locked stack). The video shows only while it plays
    and after it ends (its last frame equals the stack poster). */
 .hero-entrance {
-  position: relative;
   display: none;
-  aspect-ratio: 568 / 930;
+  position: relative;
+  aspect-ratio: 4 / 5;
   width: min(100%, var(--entrance-width));
   margin-inline: auto;
 }
-/* Desktop only: on phones the visual would out-size the H1 and take the LCP (measured at 390 px:
-   poster 66,240 px² visible vs H1 31,648 px²); the fly-through opens with the same stack there. */
+/* Desktop only (Checkpoint B2, variant C): on phones the stacked hero puts the visual below the first
+   screen, where it would play unseen and add ≈ 0.6–1.3 s of simulated LCP; the fly-through opens
+   with the same stack there. */
 @media (min-width: 64rem) {
   .hero-entrance {
     display: block;
@@ -600,10 +605,12 @@ html:has(.site-frame) {
 .hero-entrance__start {
   display: none;
 }
-html.js-motion .hero-entrance:is([data-state="poster"], [data-state="playing"]) .hero-entrance__start {
+/* "done" keeps the same poster: the video's last frame covers it. Swapping in the end poster there
+   would paint a new large image and move the LCP to the end of the clip. */
+html.js-motion .hero-entrance:not([data-state="still"]) .hero-entrance__start {
   display: block;
 }
-html.js-motion .hero-entrance:is([data-state="poster"], [data-state="playing"]) .hero-entrance__end {
+html.js-motion .hero-entrance:not([data-state="still"]) .hero-entrance__end {
   display: none;
 }
 .hero-entrance__video {

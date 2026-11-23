@@ -2,7 +2,8 @@
 /**
  * Hero visual (Fase 10.5): the Fz card entrance, rendered in Blender (scene `Card`, frames 1–61 of
  * the film timeline; see docs/3D_PLAN.md). Decorative (aria-hidden), desktop only (lg+): on phones
- * it would out-size the H1 and take the LCP; the fly-through opens with the same stack there.
+ * the stacked hero puts it below the first screen, so it would play unseen and only cost LCP time;
+ * the fly-through opens with the same stack there (Checkpoint B2, variant C).
  *
  *  - Before hydration CSS picks the poster: with `html.js-motion` (JS on, motion allowed) the first
  *    frame (Fz card, whole); otherwise — no JS, reduced motion — the last frame (locked stack). The
@@ -20,20 +21,50 @@ import { useTheme } from "@/components/site/ThemeProvider";
 
 /** The visual is desktop-only (lg+); below it nothing is played or downloaded. */
 const SMALL = "(max-width: 63.98rem)";
+const BASE = "/3d/entrance";
+// sizes must be a literal length: keep in step with --entrance-width (globals.css).
+const SIZES = "(min-width: 64rem) min(34vw, 36rem), 1px";
+const WIDTHS = [432, 648, 864] as const;
 const PLAYED_KEY = "fz-entrance";
 const SHORT_FROM = 1.5;
 
 type State = "poster" | "playing" | "done" | "still";
 
 const poster = (name: "start" | "end") => ({
-  base: "/3d/entrance",
+  base: BASE,
   name,
-  widths: [284, 568] as const,
-  width: 568,
-  height: 930,
-  // sizes must be a literal length: keep in step with --entrance-width (globals.css).
-  sizes: "(min-width: 64rem) 14rem, 1px",
+  widths: WIDTHS,
+  width: 864,
+  height: 1080,
+  sizes: SIZES,
 });
+
+/**
+ * The poster can be the LCP element: preload exactly the one that will show, with high priority and
+ * the right srcset, without waiting for JS. Desktop only; one link per theme × motion preference.
+ * The media queries are exclusive, so a single image is fetched (a pinned theme that differs from
+ * the OS costs one extra small request).
+ */
+function PosterPreloads() {
+  const links = [];
+  for (const theme of ["light", "dark"] as const)
+    for (const reduce of [false, true]) {
+      const stem = `${BASE}/${theme}-${reduce ? "end" : "start"}`;
+      links.push(
+        <link
+          key={stem}
+          rel="preload"
+          as="image"
+          type="image/avif"
+          fetchPriority="high"
+          imageSrcSet={WIDTHS.map((w) => `${stem}-${w}.avif ${w}w`).join(", ")}
+          imageSizes={SIZES}
+          media={`(min-width: 64rem) and (prefers-color-scheme: ${theme}) and (prefers-reduced-motion: ${reduce ? "reduce" : "no-preference"})`}
+        />,
+      );
+    }
+  return <>{links}</>;
+}
 
 export function HeroEntrance() {
   const { theme } = useTheme();
@@ -76,7 +107,7 @@ export function HeroEntrance() {
     v.addEventListener("ended", onEnded);
     v.addEventListener("error", onError);
     // preload="none" loads nothing until play(); a media fragment starts the short version at 1.5 s.
-    v.src = `/3d/entrance/${theme}.mp4${short ? `#t=${SHORT_FROM}` : ""}`;
+    v.src = `${BASE}/${theme}.mp4${short ? `#t=${SHORT_FROM}` : ""}`;
     v.play().catch(onError);
     return () => {
       cancelled = true;
@@ -91,6 +122,7 @@ export function HeroEntrance() {
 
   return (
     <div aria-hidden="true" data-hero-entrance data-state={state} className="hero-entrance">
+      <PosterPreloads />
       <ThemedPicture {...poster("start")} className="hero-entrance__start" />
       <ThemedPicture {...poster("end")} className="hero-entrance__end" />
       <video

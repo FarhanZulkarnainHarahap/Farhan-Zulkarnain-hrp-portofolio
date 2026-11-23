@@ -1,5 +1,5 @@
 /**
- * Fase 10.5: the Fz card hero entrance (Blender video, desktop only) and the home fly-through
+ * Fase 10.5: the Fz card hero entrance (Blender video, desktop only — Checkpoint B2 variant C) and the home fly-through
  * (scroll-scrubbed Blender clips). Server data comes from the fixture API.
  */
 import { test, expect, type Page } from "@playwright/test";
@@ -42,17 +42,42 @@ test("initial HTML: H1, scene copy, skip link and no old card placeholder", asyn
   for (const old of ["hero-monogram", "dot-pattern", "data-hero-visual", "hero-model", "<canvas"]) expect(html).not.toContain(old);
 });
 
-test("the H1 stays the LCP element through the entrance at every desktop width, without CLS", async ({ browser }) => {
+test("LCP ≤ 1.2 s and CLS < 0.05 through the entrance at every desktop width; an image LCP is preloaded", async ({ browser }) => {
+  // Rule (Fase 10.5, owner): LCP is a time budget, not a fixed element. Lighthouse mobile (simulated
+  // throttling) ≤ 2.0 s is measured separately (docs/3D_PLAN.md); here the observed desktop budget.
   for (const colorScheme of ["light", "dark"] as const)
     for (const width of [1024, 1280, 1440, 1920]) {
       const context = await browser.newContext({ ...desktop, viewport: { width, height: Math.round(width * 0.62) }, colorScheme });
       const page = await context.newPage();
-      await observeLcp(page);
+      await page.addInitScript(() => {
+        const w = window as unknown as { __lcpE: { t: number; tag: string; src: string }[]; __cls: number };
+        w.__lcpE = [];
+        w.__cls = 0;
+        new PerformanceObserver((list) => {
+          for (const e of list.getEntries() as (PerformanceEntry & { element?: Element; url?: string })[])
+            w.__lcpE.push({ t: e.startTime, tag: e.element?.tagName ?? "?", src: e.url ?? "" });
+        }).observe({ type: "largest-contentful-paint", buffered: true });
+        new PerformanceObserver((list) => {
+          for (const e of list.getEntries() as (PerformanceEntry & { value: number; hadRecentInput: boolean })[])
+            if (!e.hadRecentInput) w.__cls += e.value;
+        }).observe({ type: "layout-shift", buffered: true });
+      });
       await page.goto("/");
       await expect(page.locator("[data-hero-entrance]")).toHaveAttribute("data-state", "done", { timeout: 20_000 });
-      const lcp = await probe<string[]>(page, "__lcp");
-      expect(lcp.at(-1), `${width}px ${colorScheme}`).toBe("hero-title");
-      expect(await probe<number>(page, "__cls")).toBeLessThan(0.01);
+      const lcp = (await probe<{ t: number; tag: string; src: string }[]>(page, "__lcpE")).at(-1)!;
+      expect(lcp.t, `${width}px ${colorScheme}: ${lcp.tag}`).toBeLessThanOrEqual(1200);
+      expect(await probe<number>(page, "__cls")).toBeLessThan(0.05);
+      if (lcp.tag === "IMG") {
+        const file = new URL(lcp.src).pathname;
+        const preloaded = await page.evaluate(
+          (f) =>
+            Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="preload"][as="image"]')).some(
+              (l) => l.getAttribute("fetchpriority") === "high" && (l.getAttribute("imagesrcset") ?? "").includes(f),
+            ),
+          file,
+        );
+        expect(preloaded, `${file} preloaded with fetchpriority=high`).toBe(true);
+      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await context.close();
     }
@@ -94,10 +119,23 @@ test("reduced motion and phones: no entrance video; reduced motion: no fly-throu
     const page = await context.newPage();
     await observeLcp(page);
     const videos: string[] = [];
-    page.on("request", (r) => r.url().endsWith(".mp4") && videos.push(new URL(r.url()).pathname));
+    const posters: string[] = [];
+    page.on("request", (r) => {
+      const path = new URL(r.url()).pathname;
+      if (path.endsWith(".mp4")) videos.push(path);
+      else if (path.startsWith("/3d/entrance/")) posters.push(path);
+    });
     await page.goto("/");
     await page.waitForTimeout(2500);
-    expect((await probe<string[]>(page, "__lcp")).at(-1)).toBe("hero-title");
+    const phone = options.viewport.width < 1024;
+    // Phones: no entrance at all (variant C), so the H1 is the LCP and no entrance poster is fetched.
+    // Desktop reduced motion: the preloaded stack poster may be the LCP (checked in the LCP test).
+    if (phone) {
+      expect((await probe<string[]>(page, "__lcp")).at(-1)).toBe("hero-title");
+      expect(posters).toEqual([]);
+    } else {
+      expect(posters.every((p) => p.includes("-end-"))).toBe(true);
+    }
     await page.evaluate(async (y) => scrollTo(0, y), await flightY(page, 0.5));
     await page.waitForTimeout(1500);
     expect(videos.filter((v) => v.startsWith("/3d/entrance/"))).toEqual([]);
