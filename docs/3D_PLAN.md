@@ -375,3 +375,30 @@ Lokasi gambar: `.qa/fase10-5/a/` (lihat laporan Checkpoint A).
 - Warna latar video vs token kanvas: selisih ≤ 1/255 (diukur di browser).
 - Panjang scroll: 0,8 layar per scene + 0,4 per connector + 1 → film penuh 7,8 layar (default skill
   13,3). Checkpoint B (S1 saja): 1,8 layar.
+
+## Fase 10.5 — Checkpoint B2: visual hero (varian C, DIPILIH 2026-11-23)
+
+- **Aturan LCP baru (pemilik):** waktu, bukan elemen. Lighthouse mobile ≤ 2,0 dtk, desktop ≤ 1,2 dtk,
+  CLS < 0,05. Poster boleh menjadi LCP bila kecil (AVIF/WebP), di-preload `fetchpriority="high"`,
+  srcset pas, tanpa menunggu JS.
+- **Varian C:** desktop (lg+) = visual 4:5 864 × 1080 (potongan tengah render 1080p), lebar
+  `min(34vw, 36rem)`, poster AVIF 432/648/864 di-preload per tema × preferensi gerak. Mobile tanpa
+  entrance (di 390 px visual berada di bawah layar pertama: diputar tanpa terlihat dan menambah
+  ±0,6–1,3 dtk LCP simulasi); tumpukan tampil sebagai pembuka fly-through. Video entrance mobile
+  (720 × 900, 118 / 82 KB) diarsipkan di `design/archive/entrance-mobile/`.
+- **Perbaikan bersama:** Newsreader tanpa italic dan tanpa preload (`display: swap`, fallback dengan
+  metrik disesuaikan; CLS ±0,01); klip fly-through baru di-prefetch setelah scroll pertama; status
+  "done" tetap memakai poster awal (mengganti ke poster akhir memicu kandidat LCP baru ±2,5 dtk).
+- **Hasil Lighthouse 12.8.2 (median 3 run, produksi lokal + fixture API):**
+
+| Varian | Desktop LCP (light / dark) | Mobile LCP (light / dark) | CLS |
+|---|---|---|---|
+| A (Checkpoint B) | 975 / 943 ms | 4,60 / 4,53 dtk | 0,000 |
+| A3 (A + perbaikan bersama) | 834 / 691 ms | 3,79 / 3,33 dtk | 0,010–0,011 |
+| B (visual besar + entrance mobile) | 916 / 915 ms | 5,08 / 3,94 dtk | 0,011–0,018 |
+| **C (dipilih)** | **865 / 859 ms** | **3,96 / 3,05 dtk** (sebaran 2,8–4,2) | 0,010–0,011 |
+
+  Target mobile 2,0 dtk belum tercapai: LCP teramati 140–530 ms, tetapi simulasi Lantern menghitung
+  ±300 KB JS bootstrap Next yang diminta sebelum paint (FCP simulasi sudah 1,4–2,0 dtk). Ditangani di
+  Fase 12 (diet JS beranda). Data: `.qa/fase10-5/b2/`.
+- **Video mobile fly-through:** CRF 24 (proyeksi film penuh 3,15 / 2,52 MB per tema di S1).

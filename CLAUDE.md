@@ -79,10 +79,12 @@
     token --model-*, hero-model.glb). Jangan pakai three.js / WebGL lagi tanpa izin.
   - Visual hero = entrance kartu Fz (video Blender, desktop lg+ saja): src/components/home/HeroEntrance.tsx,
     poster ThemedPicture (frame 1 = kartu utuh bila html.js-motion; selain itu frame terakhir = tumpukan),
-    aset public/3d/entrance/. Potongan video = gabungan bounding box gerak (568 × 930) supaya kotaknya
-    kecil; lebar `--entrance-width` mengikuti H1. Jangan membesarkannya: H1 harus tetap LCP (dijaga
-    tests/entrance.spec.ts di 1024–1920, light + dark). Hero mengisi layar pertama (min-height) supaya
-    section di bawahnya tidak ter-paint saat load.
+    aset public/3d/entrance/ (varian C, Checkpoint B2: potongan 4:5 864 × 1080, `--entrance-width:
+    min(34vw, 36rem)`, poster di-preload; mobile tanpa entrance). Aturan LCP = WAKTU, bukan elemen:
+    LCP ≤ 2,0 dtk Lighthouse mobile (throttling bawaan), ≤ 1,2 dtk desktop, CLS < 0,05. Poster boleh
+    jadi LCP asal AVIF/WebP kecil, di-preload dengan fetchpriority="high", srcset pas, tanpa menunggu
+    JS (dijaga tests/entrance.spec.ts di 1024–1920, light + dark). Hero mengisi layar pertama
+    (min-height) supaya section di bawahnya tidak ter-paint saat load.
   - Fly-through beranda: src/components/flythrough/ (scrub.ts = port engine skill scroll-world, FlyThrough.tsx,
     content.ts = copy disetujui). Klip per tema di public/3d/flight/. Tanpa JS / reduced motion = daftar
     still + teks; dengan html.js-motion = stage sticky + scrub. 0 rAF saat diam; destroy saat unmount.
@@ -115,3 +117,8 @@
 - Playwright lokal butuh
   `export LD_LIBRARY_PATH=~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu:~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu/nss`.
 - Tetap BERHENTI dan tunggu persetujuan saya sebelum memulai fase berikutnya.
+
+## Proses
+- Jangan pernah menghentikan proses berdasarkan pola nama (pkill/killall/kill dengan filter). Hentikan HANYA
+  proses yang kamu jalankan sendiri, berdasarkan PID yang kamu catat. Jangan sentuh proses proyek lain
+  (mis. data-entry-web) atau dev server milik saya.

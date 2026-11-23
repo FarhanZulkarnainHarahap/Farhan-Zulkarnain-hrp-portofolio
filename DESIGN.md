@@ -499,8 +499,11 @@ normalises presentation.
   faststart. Sources in `design/blender/`, exports in `public/3d/`.
 - **Fallbacks:** without JS or with reduced motion no video is fetched: the hero shows the locked
   stack still and the fly-through becomes a list of stills with their text. The hero entrance is
-  desktop-only. Neither the poster nor the video may become the LCP element: the entrance is cropped
-  to its motion bounds and sized by `--entrance-width` so the H1 stays larger.
+  desktop-only (lg+), 4:5 at `--entrance-width: min(34vw, 36rem)`.
+- **LCP is a time budget, not a fixed element** (owner rule, Fase 10.5): LCP ≤ 2.0 s Lighthouse
+  mobile (default throttling), ≤ 1.2 s desktop, CLS < 0.05. The poster may be the LCP element only
+  when it is a small AVIF/WebP, preloaded with `fetchpriority="high"`, sized with srcset, and shown
+  without waiting for JS.
 - **Illustration:** none beyond the 3D accent; no stock photos, no AI-generated people.
 
 ## Accessibility
