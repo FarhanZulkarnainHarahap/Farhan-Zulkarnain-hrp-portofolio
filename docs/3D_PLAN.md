@@ -402,3 +402,47 @@ Lokasi gambar: `.qa/fase10-5/a/` (lihat laporan Checkpoint A).
   ±300 KB JS bootstrap Next yang diminta sebelum paint (FCP simulasi sudah 1,4–2,0 dtk). Ditangani di
   Fase 12 (diet JS beranda). Data: `.qa/fase10-5/b2/`.
 - **Video mobile fly-through:** CRF 24 (proyeksi film penuh 3,15 / 2,52 MB per tema di S1).
+
+## Fase 10.5 — Render penuh (2026-11-24)
+
+- **Timeline Blender (scene `Card`, 30 fps, frame 1–1006):** entrance 1–61 · s1 61–181 · c1 181–226 ·
+  s2 226–346 · c2 346–391 · s3 391–511 · c3 511–556 · s4 556–676 · c4 676–721 · s5 721–841 ·
+  c5 841–886 · s6 886–1006. Frame batas dirender sekali dan dipakai dua klip (seam setelah encode
+  43–52 dB PSNR, hanya selisih kompresi).
+- **Isi:** c1 Interface kembali ke tumpukan, UI mengecil, lampu bawah padam; request berpindah ke
+  `SM_Request2` (dunia) pada frame 181 di posisi yang sama. s2 tiga garis API menyala bergantian,
+  request menembus pelat, kamera orbit. s3 ubin 2×2 berbalik satu per satu. s4 empat baris terisi,
+  kamera merendah. s5 jaringan tumbuh di Deployment, tumpukan merapat dan menyala sekilas, kamera
+  mundur jauh. c5 lapis menipis kembali menjadi kartu Fz (morph 1 → 0), sumbu naik keluar. s6 kartu
+  Fz sejenak, tiga kartu proyek muncul di belakangnya, kartu Fz mengecil masuk di balik kartu tengah,
+  tiga kartu berjajar menghadap kamera. Kamera mobile `CAM_Card_M` = lensa × properti `zoom`
+  (0,72; 0,44 di akhir s6 supaya tiga kartu muat di 9:16).
+- **Penutup → Selected work:** frame akhir s6 (tiga kartu berjajar) ditahan satu layar, lalu section
+  Selected work (kartu HTML dari API) tergulir masuk di bawahnya. Tidak ada crossfade piksel-presisi
+  ke grid HTML: posisi grid berubah per lebar layar dan per jumlah proyek dari API.
+- **Render:** EEVEE 64 sampel, ±3 dtk/frame (frame_set + driver ±0,6 dtk). Desktop 1920 × 1080
+  frame 1–1006, mobile 720 × 1280 frame 61–1006 (varian C tanpa entrance mobile). Blender (Windows)
+  dua kali tertutup di tengah render; dilanjutkan dari frame terakhir, render ulang diverifikasi
+  identik (PSNR ∞) dengan frame lama.
+- **Ukuran akhir per tema:** desktop light 5,05 MB / dark 3,82 MB (CRF 20, GOP 8; budget ≤ 10 MB);
+  mobile light 3,40 MB / dark 2,72 MB (CRF 24, GOP 4; budget ≤ 4 MB). Entrance light 200 KB.
+- **Panjang scroll:** 6 × 0,8 + 5 × 0,4 + 1 = **7,8 layar**.
+- Skrip encode: lihat `.qa/fase10-5/final/` (salinan `encode-full.sh`).
+
+## Catatan untuk Fase 12 — diet JS beranda (BELUM dikerjakan; menunggu aba-aba pemilik)
+
+Dasar ukur: Lighthouse mobile varian C (`.qa/fase10-5/b2/lighthouse/C/`). LCP teramati 280 ms, LCP
+simulasi 2,8–4,2 dtk, FCP simulasi ±2,0 dtk, TBT ±350 ms. Lantern memasukkan semua permintaan yang
+mulai sebelum LCP teramati: 19 chunk JS (281 KB transfer) + font Newsreader variabel opsz 129 KB.
+
+| Kandidat | Isi (gzip) | Cara | Perkiraan dampak LCP mobile simulasi |
+|---|---|---|---|
+| GSAP + SplitText + useGSAP | ±42 KB (2 chunk) | `import()` setelah first paint / saat idle; intro hero tetap dari CSS pre-hide + failsafe | −0,3 s s.d. −0,5 s (transfer + parse di CPU 4×) |
+| Fly-through + HeroEntrance + ShinyText (chunk khusus beranda) | ±16 KB | `next/dynamic` saat section mendekat (IntersectionObserver) | −0,1 s s.d. −0,2 s |
+| Command palette | ±11 KB | muat saat ⌘K / fokus tombol cari | −0,05 s s.d. −0,1 s |
+| Font Newsreader 129 KB (sumbu opsz penuh) | 129 KB | subset Latin + instance statis untuk ukuran display (atau opsz terbatas) → ±25–35 KB | −0,4 s s.d. −0,7 s |
+
+Perkiraan gabungan: LCP mobile simulasi turun dari ±3,0–4,0 dtk ke **±2,0–2,6 dtk**. Diet JS saja
+(tanpa font) diperkirakan ±2,5–3,3 dtk, jadi target 2,0 dtk kemungkinan besar butuh subset font juga.
+Angka ini perkiraan dari ukuran transfer + bootup-time Lighthouse, bukan hasil ukur; diverifikasi dengan
+`lh/run.sh` setelah tiap langkah.
