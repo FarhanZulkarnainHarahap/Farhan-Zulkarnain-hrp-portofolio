@@ -99,6 +99,45 @@ test("motion: hero intro settles, sections reveal once on scroll, H1 is never an
   await context.close();
 });
 
+test("page entrance on /about, /journey, /projects, /contact: accent line draws, lead and visual rise, H1 untouched", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    reducedMotion: "no-preference",
+    viewport: { width: 1440, height: 900 },
+  });
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    // Record the accent line's transform on every frame until it settles (proves it drew).
+    const w = window as unknown as { __scales: number[] };
+    w.__scales = [];
+    const tick = () => {
+      const line = document.querySelector<HTMLElement>("header [data-intro-line]");
+      if (line) w.__scales.push(new DOMMatrix(getComputedStyle(line).transform).a);
+      if (w.__scales.length < 120) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+  for (const path of ["/about", "/journey", "/projects", "/contact"]) {
+    await page.goto(path);
+    const header = page.locator("main header").first();
+    const h1 = header.getByRole("heading", { level: 1 });
+    expect(await h1.evaluate((el) => el.hasAttribute("data-intro") || el.style.opacity !== ""), path).toBe(false);
+    await expect(header.locator('[data-intro="lead"]'), path).toHaveCount(1);
+    await expect
+      .poll(() => header.locator("[data-intro]").evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === "1")), {
+        message: path,
+      })
+      .toBe(true);
+    const scales = await page.evaluate(() => (window as unknown as { __scales: number[] }).__scales);
+    expect(Math.min(...scales), path).toBeLessThan(0.5);
+    await expect
+      .poll(() => header.locator("[data-intro-line]").evaluate((el) => getComputedStyle(el).transform), { message: path })
+      .toBe("none");
+  }
+  await context.close();
+});
+
 test("filters stay correct with Flip and leave no transforms behind", async ({
   browser,
 }) => {

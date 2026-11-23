@@ -1,7 +1,8 @@
 "use client";
 /**
  * One small client component drives the page motion (docs/MOTION_PLAN.md):
- *  - [data-intro]: hero intro, once per visit (the H1 and the header are never marked). Fase 10.5
+ *  - [data-intro]: page intro, once per page per visit (the H1 and the header are never marked): the
+ *    home hero and, lighter, the PageHeader of /about, /journey, /projects, /contact. Fase 10.5
  *    timeline, start times from the --intro-* tokens: accent line under the H1 draws left → right,
  *    eyebrow, lead line by line (SplitText, reverted afterwards), CTAs one after the other, status
  *    (+ the ShinyText sweep), then the scroll hint with a single nudge. Unnamed [data-intro]
@@ -26,8 +27,8 @@ import {
 
 if (typeof window !== "undefined") setupGsap();
 
-// The hero intro plays once per visit; returning to "/" client-side shows it settled.
-let introPlayed = false;
+// Each page's intro plays once per visit; returning to it client-side shows it settled.
+const introPlayed = new Set<string>();
 
 /** Elements still waiting to be revealed (test hook: must never outlive their page). */
 const pending = new Set<Element>();
@@ -48,10 +49,11 @@ export function MotionController() {
       }
       const t = tokens();
       motion(() => {
-        const intro = introPlayed
+        const played = introPlayed.has(pathname);
+        const intro = played
           ? []
           : gsap.utils.toArray<HTMLElement>("[data-intro]", main);
-        const line = introPlayed
+        const line = played
           ? null
           : main.querySelector<HTMLElement>("[data-intro-line]");
         const reveals = new Map<Element, HTMLElement[]>();
@@ -75,12 +77,17 @@ export function MotionController() {
           const rise = { opacity: 1, y: 0, duration: t.slow, ease: "enter", clearProps: "transform" };
           const tl = gsap.timeline({
             onComplete: () => {
-              introPlayed = true;
+              introPlayed.add(pathname);
             },
           });
+          // Pages use a subset of the steps (PageHeader: line, lead, cta, visual): skip empty ones
+          // so GSAP never gets an empty target.
+          const at = (targets: HTMLElement[], vars: gsap.TweenVars, position: number) => {
+            if (targets.length) tl.to(targets, vars, position);
+          };
           if (line)
             tl.to(line, { scaleX: 1, duration: t.base, ease: "standard", clearProps: "transform" }, t.intro.line);
-          tl.to(step("eyebrow"), rise, t.intro.eyebrow);
+          at(step("eyebrow"), rise, t.intro.eyebrow);
           const lead = step("lead");
           if (lead.length) {
             tl.set(lead, { opacity: 1, y: 0 }, t.intro.lead);
@@ -92,7 +99,7 @@ export function MotionController() {
             );
           }
           const others = intro.filter((el) => !known.includes(el.dataset.intro ?? ""));
-          if (others.length) tl.to(others, { ...rise, stagger: t.stagger }, t.intro.lead);
+          at(others, { ...rise, stagger: t.stagger }, t.intro.lead);
           for (const cta of step("cta")) {
             tl.set(cta, { opacity: 1, y: 0 }, t.intro.cta);
             tl.from(
@@ -101,7 +108,7 @@ export function MotionController() {
               t.intro.cta,
             );
           }
-          tl.to(step("status"), rise, t.intro.status);
+          at(step("status"), rise, t.intro.status);
           const hint = step("hint");
           if (hint.length) {
             tl.to(hint, rise, t.intro.hint);
