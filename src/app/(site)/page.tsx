@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { ContactBand } from "@/components/home/ContactBand";
 import { Hero, type HeroProof } from "@/components/home/Hero";
 import { HowIWork } from "@/components/home/HowIWork";
+import { FlyThrough } from "@/components/flythrough/FlyThrough";
 import { JourneyPreview } from "@/components/home/JourneyPreview";
 import { SelectedWork } from "@/components/home/SelectedWork";
 import { StackSummary } from "@/components/home/StackSummary";
@@ -34,6 +35,7 @@ export default async function HomePage() {
   return (
     <main id="main-content" className="flex-1">
       <Hero proof={proof} />
+      <FlyThrough />
       <SelectedWork initial={projects} />
       <StackSummary initial={skills} />
       <JourneyPreview initial={experiences} />
