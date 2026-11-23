@@ -6,7 +6,8 @@
  *  - the segment chain (scene clips + connectors) with per-segment scroll weights and `linger`
  *    (the camera settles mid-scene; f(0) = 0, f(1) = 1 so seam frames are untouched);
  *  - clips fetched as Blobs and played from object URLs (always seekable, no byte-range need);
- *  - lazy loading when a segment comes within 1.6 screens; a short opacity crossfade at seams;
+ *  - lazy loading when a segment comes within 1.6 screens (after the first scroll, so nothing
+ *    competes with the first paint); a short opacity crossfade at seams;
  *  - seek coalescing (never a new currentTime while the decoder is still seeking), a coarser seek
  *    step on phones, iOS priming on the first gesture, and ignoring URL-bar-only resizes.
  *
@@ -86,6 +87,7 @@ export function mountScrub({ root, segments, crossfade = 0.12, onUpdate }: Scrub
   let frame = 0;
   let reading = 0;
   let userReady = false;
+  let scrolled = false;
   let destroyed = false;
 
   function layout() {
@@ -178,7 +180,10 @@ export function mountScrub({ root, segments, crossfade = 0.12, onUpdate }: Scrub
     const progress: number[] = [];
     const opacity: number[] = [];
     segs.forEach((s, i) => {
-      if (y > s.start - 1.6 * vh && y < s.end + 1.6 * vh) load(s);
+      // Prefetch within 1.6 screens, but only once the visitor scrolls (or the segment is on screen):
+      // nothing competes with the first paint.
+      const near = y > s.start - 1.6 * vh && y < s.end + 1.6 * vh;
+      if (near && (scrolled || y > s.start - 0.25 * vh)) load(s);
       const local = clamp((y - s.start) / (s.end - s.start));
       s.target = s.linger ? lingerEase(local, s.linger) : local;
       const outside = y < s.start ? s.start - y : y > s.end ? y - s.end : 0;
@@ -223,6 +228,7 @@ export function mountScrub({ root, segments, crossfade = 0.12, onUpdate }: Scrub
   }
 
   const onScroll = () => {
+    scrolled = true;
     if (!reading) reading = requestAnimationFrame(read);
   };
   const onResize = () => {

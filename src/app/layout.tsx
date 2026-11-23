@@ -4,11 +4,16 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/site/ThemeProvider";
 import { profile } from "@/lib/site";
 
+// Italic is not used on the site; it was a 129 KB preload on the critical path (Fase 10.5). If a
+// phrase ever needs it, add a separate instance with `preload: false`.
 const newsreader = Newsreader({
   subsets: ["latin"],
-  style: ["normal", "italic"],
+  style: ["normal"],
   axes: ["opsz"],
   display: "swap",
+  // Not preloaded: the 144 KB variable file (opsz is a design requirement) stayed on the LCP
+  // critical path on mobile. The H1 paints first in the metric-adjusted fallback serif.
+  preload: false,
   variable: "--font-newsreader",
 });
 const geist = Geist({
