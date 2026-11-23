@@ -31,10 +31,22 @@ const flightY = (page: Page, p: number) =>
     return el.getBoundingClientRect().top + scrollY + (el.offsetHeight - innerHeight) * p;
   }, p);
 
+const SCENE_TITLES = [
+  "Where people meet the product.",
+  "Clear contracts between front and back.",
+  "Business rules in one place.",
+  "Data shaped for the questions it answers.",
+  "Shipped the same way every time.",
+];
+const CLOSING_TITLE = "Five layers, one product.";
+/** Scroll offset (px) of a point `screens` screens into the fly-through. */
+const flightAt = (page: Page, screens: number) =>
+  page.evaluate((n) => document.querySelector<HTMLElement>("[data-flight]")!.getBoundingClientRect().top + scrollY + n * innerHeight, screens);
+
 test("initial HTML: H1, scene copy, skip link and no old card placeholder", async ({ request }) => {
   const html = await initialHtml(request, "/");
   expect(html).toContain('id="hero-title"');
-  expect(html).toContain("Where people meet the product.");
+  for (const title of [...SCENE_TITLES, CLOSING_TITLE]) expect(html).toContain(title);
   expect(html).toContain("How I build, layer by layer");
   expect(html).toContain('href="#selected-work"');
   expect(html).toContain("Skip to projects");
@@ -141,11 +153,16 @@ test("reduced motion and phones: no entrance video; reduced motion: no fly-throu
     expect(videos.filter((v) => v.startsWith("/3d/entrance/"))).toEqual([]);
     if (options.reducedMotion === "reduce") {
       expect(videos).toEqual([]);
-      // Static list: the scene still and its copy, nothing pinned.
+      // Static list: every scene still + copy and the closing, no connectors, nothing pinned.
       await expect(page.locator(".flight-stage")).toHaveCSS("position", "static");
-      await expect(page.getByRole("heading", { level: 3, name: "Where people meet the product." })).toBeVisible();
+      for (const name of [...SCENE_TITLES, CLOSING_TITLE])
+        await expect(page.getByRole("heading", { level: 3, name })).toBeVisible();
+      await expect(page.locator(".flight-scene--connector").first()).toBeHidden();
     } else {
-      expect(videos).toEqual(["/3d/flight/light-s1-m.mp4"]);
+      // Phones: portrait clips of the active theme only, fetched lazily (not the whole film at once).
+      expect(videos.length).toBeGreaterThan(0);
+      expect(videos.length).toBeLessThan(11);
+      for (const v of videos) expect(v).toMatch(/^\/3d\/flight\/light-[sc]\d-m\.mp4$/);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await context.close();
@@ -156,12 +173,13 @@ test("fly-through scrubs a blob clip with scroll, skip link jumps, resources are
   const context = await browser.newContext(desktop);
   const page = await context.newPage();
   await page.goto("/");
-  const y0 = await flightY(page, 0);
-  const y1 = await flightY(page, 1);
+  // Scene 1 spans the first 0.8 screens of the film.
+  const y0 = await flightAt(page, 0);
+  const y1 = await flightAt(page, 0.8);
   await page.evaluate((y) => scrollTo(0, y), y0);
-  const video = page.locator(".flight-video");
+  const video = page.locator(".flight-scene").first().locator(".flight-video");
   await expect(video).toHaveCount(1, { timeout: 15_000 });
-  await expect(page.locator(".flight-media.has-clip")).toHaveCount(1, { timeout: 15_000 });
+  await expect(page.locator(".flight-scene").first().locator(".flight-media.has-clip")).toHaveCount(1, { timeout: 15_000 });
   const src = await video.evaluate((v: HTMLVideoElement) => v.src);
   expect(src.startsWith("blob:")).toBe(true);
   expect(await video.evaluate((v: HTMLVideoElement) => v.seekable.length > 0 && v.seekable.end(0) > 3.9)).toBe(true);
@@ -212,5 +230,43 @@ test("fly-through scrubs a blob clip with scroll, skip link jumps, resources are
   await expect(page).toHaveURL(/\/about$/);
   expect(await probe<string[]>(page, "__revoked")).toContain(src);
   await expect(page.locator(".flight-video")).toHaveCount(0);
+  await context.close();
+});
+
+test("full film: 7.8 screens, clips load lazily along the way, every scene's copy shows, the closing holds", async ({ browser }) => {
+  const context = await browser.newContext(desktop);
+  const page = await context.newPage();
+  const clips: string[] = [];
+  page.on("request", (r) => {
+    const path = new URL(r.url()).pathname;
+    if (path.startsWith("/3d/flight/") && path.endsWith(".mp4")) clips.push(path);
+  });
+  await page.goto("/");
+  const ratio = await page.evaluate(() => document.querySelector<HTMLElement>("[data-flight]")!.offsetHeight / innerHeight);
+  expect(ratio).toBeCloseTo(7.8, 1);
+  // Before any scroll nothing is fetched; at the start only the first few segments.
+  await page.waitForTimeout(1000);
+  expect(clips).toEqual([]);
+  await page.evaluate(async (y) => scrollTo(0, y), await flightAt(page, 0));
+  await expect.poll(() => clips.length, { timeout: 10_000 }).toBeGreaterThan(0);
+  await page.waitForTimeout(800);
+  expect(clips).toContain("/3d/flight/light-s1.mp4");
+  expect(clips).not.toContain("/3d/flight/light-s6.mp4");
+  // Walk scene by scene (scenes 0.8 screens, connectors 0.4): each copy peaks mid-scene.
+  for (const [i, title] of SCENE_TITLES.entries()) {
+    const mid = i * 1.2 + 0.4;
+    await page.evaluate(async (y) => scrollTo(0, y), await flightAt(page, mid));
+    const copy = page.locator(".flight-copy", { has: page.getByRole("heading", { name: title }) });
+    await expect.poll(() => copy.evaluate((el) => Number(getComputedStyle(el).opacity)), { timeout: 5_000 }).toBeGreaterThan(0.8);
+  }
+  // End of the film: the closing copy holds and the last clip sits on its final frame.
+  await page.evaluate(async (y) => scrollTo(0, y), await flightAt(page, 6.8));
+  const closing = page.locator(".flight-copy", { has: page.getByRole("heading", { name: CLOSING_TITLE }) });
+  await expect.poll(() => closing.evaluate((el) => Number(getComputedStyle(el).opacity)), { timeout: 5_000 }).toBeGreaterThan(0.9);
+  const last = page.locator(".flight-scene").last().locator(".flight-video");
+  await expect(last).toHaveCount(1, { timeout: 15_000 });
+  await expect.poll(() => last.evaluate((v: HTMLVideoElement) => v.currentTime / v.duration), { timeout: 8_000 }).toBeGreaterThan(0.95);
+  expect(new Set(clips).size).toBe(clips.length);
+  for (const c of clips) expect(c).toMatch(/^\/3d\/flight\/light-[sc]\d\.mp4$/);
   await context.close();
 });
