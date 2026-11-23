@@ -263,20 +263,19 @@
 
   --skeleton-bg: var(--ui-surface);
 
-  /* 3D accents (Fase 10): HeroModel material colours mirror the Blender posters */
-  --model-surface: light-dark(var(--paper-50), var(--night-700));
-  --model-line: light-dark(var(--paper-700), var(--night-200));
-  --model-accent: var(--ui-accent);
+  /* Hero entrance + fly-through (Fase 10.5): Blender renders with the canvas colour baked in */
+  /* Entrance crop = union of the motion's alpha bounds (568 × 930 of the 1080p render) */
+  --entrance-width: min(16vw, 14rem); /* tracks the H1 so the H1 stays the LCP element */
+  --flight-copy-width: 26rem;
+  --flight-scrim-width: min(60vw, 46rem);
+  --flight-copy-inset: calc(var(--spacing-gutter) * 3);
+  --flight-scrim: color-mix(in srgb, var(--ui-canvas) 88%, transparent);
 
   /* Accents (Fase 7, React Bits adaptations) */
   --shine-color: var(--ui-accent);
   --shine-duration: 1400ms;
   --spotlight-color: color-mix(in srgb, var(--ui-accent) 9%, transparent);
   --spotlight-size: 22rem;
-  /* Static dot pattern behind the hero visual (CSS only) */
-  --dots-gap: 22px;
-  --dots-size: 2px;
-  --dots-color: var(--ui-hairline-strong);
 
 }
 
@@ -288,6 +287,13 @@
   --duration-reveal: 700ms;
   --stagger: 60ms;
   --reveal-distance: 0.5rem;
+  /* Hero intro start times (Fase 10.5; docs/3D_PLAN.md → entrance timeline) */
+  --intro-line: 150ms;
+  --intro-eyebrow: 250ms;
+  --intro-lead: 400ms;
+  --intro-cta: 550ms;
+  --intro-status: 700ms;
+  --intro-hint: 2000ms;
 
   /* Border, z-index */
   --border-hairline: 1px;
@@ -382,16 +388,6 @@ html:has(.site-frame) {
   opacity: 1;
 }
 
-/* Static dot pattern: the DotGrid fallback (mobile, coarse pointer, reduced motion, no WebGL). */
-.dot-pattern {
-  background-image: radial-gradient(
-    circle,
-    var(--dots-color) calc(var(--dots-size) / 2),
-    transparent calc(var(--dots-size) / 2 + 0.5px)
-  );
-  background-size: var(--dots-gap) var(--dots-gap);
-  background-position: center;
-}
 
 /* Motion (Fase 8): before GSAP is ready, hide only the elements it will animate, and only when JS
    runs and motion is allowed (html.js-motion is set by the inline script in layout.tsx, removed by a
@@ -400,6 +396,9 @@ html:has(.site-frame) {
   html.js-motion:not(.motion-ready)
     :is([data-intro], [data-reveal]:not([data-reveal="group"]), [data-reveal="group"] > *) {
     opacity: 0;
+  }
+  html.js-motion:not(.motion-ready) [data-intro-line] {
+    transform: scaleX(0);
   }
   html.js-motion:not(.motion-ready) [data-draw] .draw {
     stroke-dasharray: 1;
@@ -439,16 +438,179 @@ html:has(.site-frame) {
   }
 }
 
-/* HeroModel: the poster stays until the first WebGL frame, then the canvas cross-fades in. */
-.hero-model-poster,
-.hero-model-canvas {
-  transition: opacity var(--duration-base) var(--ease-standard);
+/* Home fly-through (Fase 10.5). Default (no JS, reduced motion): a plain list of stills + text.
+   With html.js-motion (set before paint) the section becomes a pinned scrub stage; the scrub engine
+   only sets opacity on the media and the copy, so the layout never shifts after hydration. */
+.flight {
+  position: relative;
 }
-.hero-model-canvas,
-[data-model-ready="true"] .hero-model-poster {
+.flight-stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-section-sm);
+  padding-block: var(--spacing-section-sm);
+}
+.flight-scenes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-section-sm);
+}
+.flight-scene {
+  display: grid;
+  gap: var(--spacing-gutter);
+  padding-inline: var(--spacing-gutter);
+}
+.flight-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+.flight-media > *,
+.flight-still img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.flight-video {
+  z-index: 1;
+}
+.flight-skip {
+  align-self: flex-start;
+  margin-inline: var(--spacing-gutter);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html.js-motion .flight {
+    height: calc(var(--flight-length) * 100svh);
+  }
+  html.js-motion .flight-stage {
+    position: sticky;
+    top: 0;
+    display: block;
+    height: 100svh;
+    overflow: hidden;
+    padding: 0;
+  }
+  html.js-motion .flight-scenes,
+  html.js-motion .flight-scene {
+    position: absolute;
+    inset: 0;
+    display: block;
+    padding: 0;
+  }
+  html.js-motion .flight-media {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+  }
+  html.js-motion .flight-scene:not(:first-child) .flight-media,
+  html.js-motion .flight-scene:not(:first-child) .flight-copy {
+    opacity: 0;
+  }
+  html.js-motion .flight-media.has-clip .flight-still {
+    opacity: 0;
+  }
+  /* Copy on a soft scrim of the canvas colour (the renders share it, so the edge is invisible). */
+  html.js-motion .flight-scene::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: 2;
+    width: var(--flight-scrim-width);
+    background: linear-gradient(90deg, var(--flight-scrim) 30%, transparent);
+    pointer-events: none;
+  }
+  html.js-motion .flight-copy {
+    position: absolute;
+    top: 50%;
+    left: var(--spacing-gutter);
+    z-index: 3;
+    width: min(42vw, var(--flight-copy-width));
+    translate: 0 -50%;
+  }
+  html.js-motion .flight-skip {
+    position: absolute;
+    right: var(--spacing-gutter);
+    bottom: var(--spacing-gutter);
+    z-index: 4;
+    margin: 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) and (max-width: 53.75rem) {
+  html.js-motion .flight-scene::after {
+    inset: auto 0 0 0;
+    width: auto;
+    height: 55%;
+    background: linear-gradient(0deg, var(--flight-scrim) 45%, transparent);
+  }
+  html.js-motion .flight-copy {
+    top: auto;
+    right: var(--spacing-gutter);
+    bottom: calc(var(--flight-copy-inset) + env(safe-area-inset-bottom));
+    width: auto;
+    translate: none;
+  }
+  html.js-motion .flight-skip {
+    right: auto;
+    left: var(--spacing-gutter);
+    bottom: calc(var(--spacing-gutter) + env(safe-area-inset-bottom));
+  }
+}
+@media (min-width: 64rem) {
+  .flight-scene {
+    grid-template-columns: 7fr 5fr;
+    align-items: center;
+  }
+}
+
+/* "Scroll to explore ↓" hides once the page scrolls (inner span, so GSAP's inline opacity on the
+   paragraph is left alone). */
+.scroll-hint > span {
+  transition: opacity var(--duration-base) var(--ease-exit);
+}
+.scroll-hint[data-hidden] > span {
   opacity: 0;
 }
-[data-model-ready="true"] .hero-model-canvas {
+
+/* Hero entrance (Fase 10.5). The renders carry the canvas colour, so the visual has no frame.
+   Poster choice before hydration: the first frame (Fz card) only when JS runs with motion allowed
+   (html.js-motion); otherwise the last frame (locked stack). The video shows only while it plays
+   and after it ends (its last frame equals the stack poster). */
+.hero-entrance {
+  position: relative;
+  display: none;
+  aspect-ratio: 568 / 930;
+  width: min(100%, var(--entrance-width));
+  margin-inline: auto;
+}
+/* Desktop only: on phones the visual would out-size the H1 and take the LCP (measured at 390 px:
+   poster 66,240 px² visible vs H1 31,648 px²); the fly-through opens with the same stack there. */
+@media (min-width: 64rem) {
+  .hero-entrance {
+    display: block;
+  }
+}
+.hero-entrance > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.hero-entrance__start {
+  display: none;
+}
+html.js-motion .hero-entrance:is([data-state="poster"], [data-state="playing"]) .hero-entrance__start {
+  display: block;
+}
+html.js-motion .hero-entrance:is([data-state="poster"], [data-state="playing"]) .hero-entrance__end {
+  display: none;
+}
+.hero-entrance__video {
+  object-fit: cover;
+  opacity: 0;
+}
+.hero-entrance:is([data-state="playing"], [data-state="done"]) .hero-entrance__video {
   opacity: 1;
 }
 

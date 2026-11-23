@@ -1,7 +1,11 @@
 "use client";
 /**
  * One small client component drives the page motion (docs/MOTION_PLAN.md):
- *  - [data-intro]: hero intro, one GSAP tween in DOM order (the H1 is never marked), once per visit;
+ *  - [data-intro]: hero intro, once per visit (the H1 and the header are never marked). Fase 10.5
+ *    timeline, start times from the --intro-* tokens: accent line under the H1 draws left → right,
+ *    eyebrow, lead line by line (SplitText, reverted afterwards), CTAs one after the other, status
+ *    (+ the ShinyText sweep), then the scroll hint with a single nudge. Unnamed [data-intro]
+ *    elements follow the lead;
  *  - [data-reveal]: revealed once when it enters the viewport, detected with IntersectionObserver
  *    (no ScrollTrigger, no scroll listeners, no idle rAF loop); [data-reveal="group"] staggers its
  *    children (capped at 6 steps). Each element is unobserved after it is shown.
@@ -15,6 +19,7 @@ import {
   markMotionReady,
   motion,
   setupGsap,
+  SplitText,
   tokens,
   useGSAP,
 } from "@/lib/gsap";
@@ -46,6 +51,9 @@ export function MotionController() {
         const intro = introPlayed
           ? []
           : gsap.utils.toArray<HTMLElement>("[data-intro]", main);
+        const line = introPlayed
+          ? null
+          : main.querySelector<HTMLElement>("[data-intro-line]");
         const reveals = new Map<Element, HTMLElement[]>();
         for (const el of gsap.utils.toArray<HTMLElement>("[data-reveal]", main))
           reveals.set(
@@ -58,19 +66,53 @@ export function MotionController() {
         // Hide what we animate before the first paint (same frame as markMotionReady).
         const hidden = [...intro, ...[...reveals.values()].flat()];
         if (hidden.length) gsap.set(hidden, { opacity: 0, y: t.distance });
+        if (line) gsap.set(line, { scaleX: 0 });
 
-        if (intro.length)
-          gsap.to(intro, {
-            opacity: 1,
-            y: 0,
-            duration: t.slow,
-            ease: "enter",
-            stagger: t.stagger,
-            clearProps: "transform",
+        let split: SplitText | null = null;
+        if (intro.length || line) {
+          const step = (name: string) => intro.filter((el) => el.dataset.intro === name);
+          const known = ["eyebrow", "lead", "cta", "status", "hint"];
+          const rise = { opacity: 1, y: 0, duration: t.slow, ease: "enter", clearProps: "transform" };
+          const tl = gsap.timeline({
             onComplete: () => {
               introPlayed = true;
             },
           });
+          if (line)
+            tl.to(line, { scaleX: 1, duration: t.base, ease: "standard", clearProps: "transform" }, t.intro.line);
+          tl.to(step("eyebrow"), rise, t.intro.eyebrow);
+          const lead = step("lead");
+          if (lead.length) {
+            tl.set(lead, { opacity: 1, y: 0 }, t.intro.lead);
+            split = SplitText.create(lead, { type: "lines", mask: "lines" });
+            tl.from(
+              split.lines,
+              { yPercent: 100, duration: t.slow, ease: "enter", stagger: t.stagger, onComplete: () => split?.revert() },
+              t.intro.lead,
+            );
+          }
+          const others = intro.filter((el) => !known.includes(el.dataset.intro ?? ""));
+          if (others.length) tl.to(others, { ...rise, stagger: t.stagger }, t.intro.lead);
+          for (const cta of step("cta")) {
+            tl.set(cta, { opacity: 1, y: 0 }, t.intro.cta);
+            tl.from(
+              Array.from(cta.children),
+              { opacity: 0, y: t.distance, duration: t.slow, ease: "enter", stagger: t.stagger * 2, clearProps: "transform" },
+              t.intro.cta,
+            );
+          }
+          tl.to(step("status"), rise, t.intro.status);
+          const hint = step("hint");
+          if (hint.length) {
+            tl.to(hint, rise, t.intro.hint);
+            // One gentle nudge of the arrow, no loop.
+            tl.to(
+              hint.map((el) => el.querySelector("span > span")),
+              { y: t.distance / 2, duration: t.base, ease: "standard", yoyo: true, repeat: 1 },
+              ">",
+            );
+          }
+        }
 
         // [data-draw] (Fase 9.2): technical drawings draw their lines once, then labels fade in.
         const drawings = gsap.utils
@@ -106,7 +148,8 @@ export function MotionController() {
             ),
         );
 
-        if (!reveals.size && !drawings.length) return;
+        const revertSplit = () => split?.revert();
+        if (!reveals.size && !drawings.length) return revertSplit;
         const show = contextSafe!((targets: HTMLElement[]) =>
           gsap.to(targets, {
             opacity: 1,
@@ -137,6 +180,7 @@ export function MotionController() {
           observer.observe(el);
         }
         return () => {
+          revertSplit();
           observer.disconnect();
           for (const el of observed) pending.delete(el);
         };

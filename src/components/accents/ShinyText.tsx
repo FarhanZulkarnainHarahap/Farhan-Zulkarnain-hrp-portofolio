@@ -3,7 +3,8 @@
  * ShinyText — adapted from React Bits (ShinyText-TS-TW). The original paints a gradient every
  * frame with colors parsed on a canvas (cannot read CSS tokens, ignores theme switches). Here the
  * same sweep is a single CSS animation driven by tokens (--shine-color, --shine-duration):
- *  - one sweep when the text first scrolls into view, again on hover / focus;
+ *  - one sweep when the text first scrolls into view (after `delay` ms, e.g. 700 in the hero intro),
+ *    again on hover / focus;
  *  - outside a sweep the text is ordinary text in its token color (intact without JS, AA);
  *  - prefers-reduced-motion: never sweeps.
  */
@@ -16,9 +17,12 @@ const reducedMotion = () =>
 export function ShinyText({
   children,
   className,
+  delay = 0,
 }: {
   children: ReactNode;
   className?: string;
+  /** Delay (ms) before the first sweep once in view. */
+  delay?: number;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
 
@@ -33,19 +37,21 @@ export function ShinyText({
   useEffect(() => {
     const el = ref.current;
     if (!el || reducedMotion()) return;
+    let timer = 0;
     const observer = new IntersectionObserver(([entry]) => {
       if (!entry.isIntersecting) return;
       observer.disconnect();
-      run();
+      timer = window.setTimeout(run, delay);
     });
     observer.observe(el);
     const done = () => delete el.dataset.shine;
     el.addEventListener("animationend", done);
     return () => {
+      window.clearTimeout(timer);
       observer.disconnect();
       el.removeEventListener("animationend", done);
     };
-  }, []);
+  }, [delay]);
 
   return (
     <span

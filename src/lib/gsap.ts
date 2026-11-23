@@ -13,6 +13,7 @@
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
+import { SplitText } from "gsap/SplitText";
 
 export const MOTION_OK = "(prefers-reduced-motion: no-preference)";
 
@@ -26,6 +27,8 @@ export type MotionTokens = {
   reveal: number;
   stagger: number;
   distance: number;
+  /** Hero intro start times (s), Fase 10.5. */
+  intro: { line: number; eyebrow: number; lead: number; cta: number; status: number; hint: number };
 };
 
 function seconds(value: string, fallback: number) {
@@ -50,7 +53,7 @@ function bezier(value: string, fallback: string) {
 export function setupGsap() {
   if (registered || typeof window === "undefined") return gsap;
   registered = true;
-  gsap.registerPlugin(useGSAP, CustomEase);
+  gsap.registerPlugin(useGSAP, CustomEase, SplitText);
   const root = getComputedStyle(document.documentElement);
   CustomEase.create(
     "enter",
@@ -79,6 +82,14 @@ export function tokens(): MotionTokens {
     reveal: seconds(root.getPropertyValue("--duration-reveal"), 0.7),
     stagger: seconds(root.getPropertyValue("--stagger"), 0.06),
     distance: parseFloat(root.getPropertyValue("--reveal-distance")) || 8,
+    intro: {
+      line: seconds(root.getPropertyValue("--intro-line"), 0.15),
+      eyebrow: seconds(root.getPropertyValue("--intro-eyebrow"), 0.25),
+      lead: seconds(root.getPropertyValue("--intro-lead"), 0.4),
+      cta: seconds(root.getPropertyValue("--intro-cta"), 0.55),
+      status: seconds(root.getPropertyValue("--intro-status"), 0.7),
+      hint: seconds(root.getPropertyValue("--intro-hint"), 2),
+    },
   };
   return cachedTokens;
 }
@@ -99,4 +110,4 @@ export function markMotionReady() {
 }
 
 // Flip is registered only where it is used (projects filter), to keep it off other pages.
-export { gsap, useGSAP };
+export { gsap, useGSAP, SplitText };
