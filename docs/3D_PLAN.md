@@ -226,3 +226,30 @@ dibandingkan dengan canvas three.js; tidak ada blocker atau major.
 - **Sisa yang tidak berbahaya:** `next.config.ts` masih punya rule `headers()` untuk `/visuals/:path*`
   (cache immutable). Foldernya sudah tidak ada, jadi rule itu tidak pernah cocok dengan file apa pun.
   `next.config.ts` termasuk lapisan terlarang, jadi rule itu sengaja dibiarkan.
+
+## Fase 10.5 — Kartu Fz (Checkpoint A0, disetujui)
+
+- **Bentuk (pilihan b):** kartu 0,8 × 1,0 (4:5), tebal 0,11 = lima lapis × 0,022, sudut radius 0,055.
+  Scene `Card`, koleksi `COL_Card`, pivot `EMPTY_Card`.
+- **Monogram:** Newsreader 400 (sama dengan H1). F timbul 12 mm krem, z inlay rata terakota, diselipkan
+  di bawah lengan atas F dengan celah tipis. Celah tersempit 9 px pada kartu selebar 320 px (20 px pada
+  640 px). Ukiran "MEDAN, INDONESIA" / "UTC+7" Geist Mono, dalam 2 mm. Font sumber di
+  `design/blender/fonts/` (OFL).
+- **Warna (cermin token):** light kartu `--paper-200`, F `--paper-50`, z `--clay-600`, ukiran `--paper-500`,
+  glif `--paper-700`; dark kartu `--night-700`, F `--night-50`, z `--clay-400`, ukiran `--night-500`,
+  glif `--night-200`. Latar render transparan. Rig cahaya sendiri (`LGT_Card_*`) dengan key/fill di garis bagi
+  normal "atas" dan "depan", jadi muka kartu sama terangnya saat tegak maupun rebah (diukur: light
+  #e8e1d5 tegak / #e1dbd0 rebah vs token #e4ded3).
+- **Glif lapis:** API, Service, Database, Deployment di muka atas lapisnya (tertutup lapis di atasnya);
+  glif jendela Interface di SISI BAWAH lapis Interface (muka atas = muka kartu dengan monogram). Syarat
+  fly-through scene 1: kamera memperlihatkan glif jendela itu dengan jelas saat pelat Interface terangkat
+  dan miring.
+- **Transisi membelah → tumpukan HeroModel:** tiap lapis memakai topologi pelat Hero (36 titik per cincin).
+  Basis = lapis kartu tipis, shape key `Plate` = pelat Hero (1 × 1 × 0,06, radius 0,07). Bevel dua atribut
+  (`bevel_outer` 0,012 → 0,008, `bevel_seam` 0,0015 → 0,008), glif, monogram dan cutter ukiran digerakkan
+  driver dari nilai morph yang sama. Pada morph = 1 dan posisi z = ±0,72/±0,36/0 tanpa rotasi, mask alfa
+  render `CAM_Hero` identik dengan scene Hero (0 dari 116.626 piksel berbeda; sumbu, monogram dan glif
+  Interface dikecualikan karena berbeda sengaja).
+- **Catatan warna:** pelat HeroModel memakai `--model-surface` (light `--paper-50`), kartu `--paper-200`.
+  Disatukan bila HeroModel dipertahankan.
+- Render A0: `.qa/fase10-5/a0/` dan `.qa/fase10-5/a0-compare/` (tidak di-commit).
