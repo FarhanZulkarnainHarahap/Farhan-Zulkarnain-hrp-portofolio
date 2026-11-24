@@ -116,6 +116,11 @@
   Pola ini juga dipakai untuk /about, /journey, /projects di Fase 6.
 - Playwright lokal butuh
   `export LD_LIBRARY_PATH=~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu:~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu/nss`.
+- `npm run test:browsers` (Fase 12.6, tidak termasuk test:fast): fly-through di Chromium, Firefox, WebKit.
+  Lokal butuh `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 LD_LIBRARY_PATH=~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu`
+  (TANPA folder nss: Firefox memakai NSS bawaannya), `GST_PLUGIN_SYSTEM_PATH_1_0=<lib>/gstreamer-1.0` dan
+  `GST_PLUGIN_SCANNER=<lib>/gstreamer1.0/gstreamer-1.0/gst-plugin-scanner` (H.264 di WebKit). Pustaka WPE
+  ditautkan ke `~/.cache/ms-playwright/webkit-*/minibrowser-wpe/sys/lib` (daftar: ~/.local/pw-libs/wpe-symlinks.txt).
 - Tetap BERHENTI dan tunggu persetujuan saya sebelum memulai fase berikutnya.
 
 ## Proses

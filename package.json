@@ -10,7 +10,8 @@
     "test:e2e": "playwright test",
     "test:fast": "playwright test --grep-invert @legacy3d",
     "test:full": "playwright test && playwright test -c playwright.live.config.ts",
-    "test:live": "playwright test -c playwright.live.config.ts"
+    "test:live": "playwright test -c playwright.live.config.ts",
+    "test:browsers": "playwright test -c playwright.browsers.config.ts"
   },
   "browserslist": {
     "production": [
