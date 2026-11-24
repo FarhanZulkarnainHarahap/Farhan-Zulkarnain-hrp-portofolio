@@ -265,7 +265,11 @@
 
   /* Hero entrance + fly-through (Fase 10.5): Blender renders with the canvas colour baked in */
   /* Entrance crop = union of the motion's alpha bounds (568 × 930 of the 1080p render) */
-  --entrance-width: min(34vw, 36rem); /* lg+ only; the poster may be the LCP (preloaded, srcset) */
+  --entrance-width: min(34vw, 36rem);
+  /* Interactive Fz card (Fase 12.5): renders 720×900 (About) and 320×400 (footer), 4:5 */
+  --fz-card-about-width: min(100%, 26rem);
+  --fz-card-footer-width: 10rem;
+  --fz-card-fade: var(--duration-fast); /* lg+ only; the poster may be the LCP (preloaded, srcset) */
   --flight-copy-width: 26rem;
   --defer-render-size: 60rem; /* placeholder height of a not-yet-rendered home section */
   --flight-scrim-width: min(60vw, 46rem);
@@ -629,13 +633,122 @@ html.js-motion .hero-entrance:not([data-state="still"]) .hero-entrance__end {
 /* 1px inside the poster (Fase 12.1): with sub-pixel sizes the video box could end up a row of pixels
    larger than the poster, and Chrome then reported its first frame (≈ 570 ms) as a new, larger LCP
    candidate. The edge is invisible: the clip and the poster share the canvas colour. */
-.hero-entrance > .hero-entrance__video {
+.hero-entrance > :is(.hero-entrance__video, .hero-entrance__idle, .hero-entrance__seq) {
   inset: 1px;
   width: calc(100% - 2px);
   height: calc(100% - 2px);
 }
-.hero-entrance:is([data-state="playing"], [data-state="done"]) .hero-entrance__video {
+.hero-entrance:is([data-state="playing"], [data-state="done"], [data-state="idle"], [data-state="tilt"]) .hero-entrance__video {
   opacity: 1;
+}
+/* Fase 12.5: idle loop and hover tilt over the entrance's last frame (identical first frames). */
+.hero-entrance__idle,
+.hero-entrance__seq {
+  opacity: 0;
+}
+.hero-entrance[data-state="idle"] .hero-entrance__idle,
+.hero-entrance[data-state="tilt"] .hero-entrance__seq {
+  opacity: 1;
+}
+.hero-entrance__seq:not([src]) {
+  visibility: hidden;
+}
+
+/* Interactive Fz card (Fase 12.5, components/interactive/FzCard.tsx). Pre-rendered layers stacked
+   in a locked 4:5 box (no layout shift); only opacity changes. The renders carry the canvas colour of
+   the surface they sit on, so the card has no frame of its own. */
+.fz-card {
+  position: relative;
+  aspect-ratio: 4 / 5;
+}
+.fz-card--about {
+  width: var(--fz-card-about-width);
+}
+.fz-card--footer {
+  width: var(--fz-card-footer-width);
+}
+/* The loaded card fills its lazy slot (LazyFzCard keeps the size before the code arrives). */
+.fz-card.fz-card--fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+}
+.fz-card__button {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--card-radius);
+  background: transparent;
+  cursor: pointer;
+}
+.fz-card__button > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fz-card__button img {
+  width: 100%;
+  height: 100%;
+}
+.fz-card__idle,
+.fz-card__seq,
+.fz-card__back {
+  opacity: 0;
+  transition: opacity var(--fz-card-fade) var(--ease-standard);
+}
+.fz-card[data-layer="idle"] .fz-card__idle,
+.fz-card[data-layer="seq"] .fz-card__seq,
+.fz-card[data-layer="back"] .fz-card__back {
+  opacity: 1;
+}
+.fz-card[data-layer="back"] .fz-card__still {
+  opacity: 0;
+}
+.fz-card__seq:not([src]) {
+  visibility: hidden;
+}
+/* Real contact links over the rendered lines of the back (positions from the Blender projection). */
+.fz-card__contact {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.fz-card__contact a {
+  position: absolute;
+  left: var(--fz-left);
+  max-width: var(--fz-width);
+  translate: 0 -100%;
+  display: inline-flex;
+  min-height: 1.5rem;
+  align-items: flex-end;
+  /* Break only where the markup allows it (the email before "@"); handles never break. */
+  overflow-wrap: normal;
+  white-space: nowrap;
+  pointer-events: auto;
+  font-family: var(--font-body);
+  line-height: var(--text-label--line-height);
+  color: var(--ui-ink);
+  text-decoration: none;
+}
+.fz-card--about .fz-card__contact a {
+  font-size: var(--text-label);
+}
+.fz-card__contact a.fz-card__email {
+  white-space: normal;
+}
+.fz-card--footer .fz-card__contact a {
+  font-size: var(--text-label);
+}
+@media (hover: hover) and (pointer: fine) {
+  .fz-card__contact a:hover {
+    text-decoration: underline;
+  }
 }
 
 /* Locally dark band (footer). */

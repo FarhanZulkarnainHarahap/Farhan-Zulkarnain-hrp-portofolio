@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowDown, Download } from "lucide-react";
+import { LazyFzCard } from "@/components/interactive/LazyFzCard";
 import { ProjectImage } from "@/components/projects/ProjectImage";
 import { buttonClasses } from "@/components/ui/button";
 import { Section } from "@/components/ui/section";
@@ -33,7 +34,7 @@ export function ProfileSection({ cvHref }: { cvHref: string }) {
             className="aspect-[4/5] max-w-md"
           />
         </div>
-        <div className="flex flex-col gap-8 lg:col-span-7">
+        <div className="flex flex-col gap-8 lg:col-span-7 lg:row-span-2">
           <div className="flex max-w-reading flex-col gap-4">
             <p className="font-heading text-headline text-ink text-balance">
               I connect product design with solid engineering.
@@ -89,6 +90,11 @@ export function ProfileSection({ cvHref }: { cvHref: string }) {
               <ArrowDown aria-hidden="true" />
             </Link>
           </div>
+        </div>
+        {/* Fz card (Fase 12.5): under the portrait on desktop (2nd row of the left column), after the
+            profile on phones (document order). Click / Enter / tap flips it to the contact side. */}
+        <div className="lg:col-span-5">
+          <LazyFzCard variant="about" className="mx-auto lg:mx-0" />
         </div>
       </div>
     </Section>
