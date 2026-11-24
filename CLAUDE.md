@@ -91,7 +91,7 @@
   - Seam: semua klip dipotong dari SATU timeline Blender (scene Card); entrance = potongan render 16:9 yang
     sama (bukan render terpisah).
   - DeviceMockup DIHAPUS di Fase 10.5: gambar utama studi kasus = ProjectImage biasa (16:10, radius
-    `--media-radius`, border hairline, priority). Scene Device di .blend hanya arsip; jangan dipasang lagi.
+    `--media-radius`, border hairline; tanpa priority sejak Fase 12.2: di bawah lipatan di ponsel, bukan LCP). Scene Device di .blend hanya arsip; jangan dipasang lagi.
   - Render per tema lewat src/components/media/ThemedPicture.tsx (hanya varian aktif diunduh).
   - DotGrid (WebGL) DIHAPUS; yang tersisa hanya pola titik CSS statis `.dot-pattern` (token `--dots-*`).
   - Mengubah aset: edit design/blender/portfolio-3d.blend lewat MCP, render ulang, ekspor ke public/3d/,

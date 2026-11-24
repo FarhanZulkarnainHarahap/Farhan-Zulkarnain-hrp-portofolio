@@ -27,6 +27,8 @@ export function ProfileSection({ cvHref }: { cvHref: string }) {
           <ProjectImage
             src={profile.image}
             alt={`Portrait of ${profile.name}`}
+            // In the first screen at most widths and the LCP on phones, tablets and 1920 (Fase 12.2).
+            priority
             sizes="(min-width: 1024px) 420px, 92vw"
             className="aspect-[4/5] max-w-md"
           />

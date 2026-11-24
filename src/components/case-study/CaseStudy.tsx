@@ -121,7 +121,8 @@ export function CaseStudy({
               <ProjectImage
                 src={project.imageUrl}
                 alt={`${project.title} screenshot`}
-                priority
+                // Not priority (Fase 12.2): below the fold on phones, a sliver on desktop, never the
+                // LCP (the lead paragraph is); a preload only competed with the text on mobile.
                 sizes="(min-width: 1280px) 1200px, 94vw"
                 className="border border-hairline"
               />
