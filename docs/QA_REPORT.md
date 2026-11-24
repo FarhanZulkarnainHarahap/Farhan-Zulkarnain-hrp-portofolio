@@ -133,7 +133,7 @@ WebKit (mesin Safari).
 |---|---|---|---|
 | Scrub mengikuti scroll di 5 scene + penutup | ✓ | ✓ | ✓ |
 | "Skip to projects" dengan keyboard | ✓ | ✓ | ✓ (Alt+Tab, perilaku Safari) |
-| 10× bolak-balik: 0 video, 0 blob URL tersisa | ✓ (heap +0,95 MB) | ✓ | ✓ |
+| 10× bolak-balik: 0 video, 0 blob URL tersisa | ✓ (heap +0,76–0,95 MB) | ✓ | ✓ |
 | Reduced motion: daftar statis, 0 video | ✓ | ✓ | ✓ |
 
 WebKit di WSL tanpa sudo: pustaka sistem dan GStreamer (dekoder H.264) diekstrak ke `~/.local/pw-libs`
