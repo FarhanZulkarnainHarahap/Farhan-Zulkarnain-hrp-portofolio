@@ -7,6 +7,8 @@ import { initialHtml, withFixtureApi } from "./helpers/fixture";
 
 withFixtureApi();
 
+/** After the entrance: "done", then (Fase 12.5) the idle loop ("idle") or a hover tilt ("tilt"). */
+const ENDED = /^(done|idle|tilt)$/;
 const desktop = { viewport: { width: 1440, height: 900 }, reducedMotion: "no-preference" as const };
 
 async function observeLcp(page: Page) {
@@ -75,7 +77,7 @@ test("LCP ≤ 1.2 s and CLS < 0.05 through the entrance at every desktop width; 
         }).observe({ type: "layout-shift", buffered: true });
       });
       await page.goto("/");
-      await expect(page.locator("[data-hero-entrance]")).toHaveAttribute("data-state", "done", { timeout: 20_000 });
+      await expect(page.locator("[data-hero-entrance]")).toHaveAttribute("data-state", ENDED, { timeout: 20_000 });
       const lcp = (await probe<{ t: number; tag: string; src: string }[]>(page, "__lcpE")).at(-1)!;
       expect(lcp.t, `${width}px ${colorScheme}: ${lcp.tag}`).toBeLessThanOrEqual(1200);
       expect(await probe<number>(page, "__cls")).toBeLessThan(0.05);
@@ -105,20 +107,23 @@ test("entrance plays once per session, then the short version; theme switch show
   });
   await page.goto("/");
   const visual = page.locator("[data-hero-entrance]");
-  await expect(visual).toHaveAttribute("data-state", "done", { timeout: 20_000 });
-  expect(videos).toEqual(["/3d/entrance/light.mp4"]);
-  const video = visual.locator("video");
+  await expect(visual).toHaveAttribute("data-state", ENDED, { timeout: 20_000 });
+  // The entrance clip, then (Fase 12.5) the idle loop that continues from its last frame.
+  expect(videos).toEqual(["/3d/entrance/light.mp4", "/3d/entrance/light-idle.mp4"]);
+  const video = visual.locator(".hero-entrance__video");
   await expect(video).toHaveJSProperty("loop", false);
   await expect(video).toHaveJSProperty("controls", false);
   await expect(video).toHaveJSProperty("muted", true);
   // Second visit in the session: starts at 1.5 s.
   await page.reload();
-  await expect(visual).toHaveAttribute("data-state", "done", { timeout: 20_000 });
+  await expect(visual).toHaveAttribute("data-state", ENDED, { timeout: 20_000 });
   expect(await video.evaluate((v: HTMLVideoElement) => v.currentSrc)).toContain("#t=1.5");
   // Theme switch: no replay, the stack still of the new theme.
   await page.getByRole("banner").getByRole("button", { name: "Switch to dark theme" }).click();
-  await expect(visual).toHaveAttribute("data-state", "still");
-  await expect(visual.locator(".hero-entrance__end .themed-picture__dark img")).toBeVisible();
+  // No replay: the new theme's stack still, then (Fase 12.5) the new theme's idle loop takes over.
+  await expect(visual).toHaveAttribute("data-state", /^(still|idle)$/);
+  await expect.poll(() => visual.locator(".hero-entrance__idle").evaluate((v: HTMLVideoElement) => v.currentSrc)).toContain("/3d/entrance/dark-idle.mp4");
+  expect(await video.evaluate((v: HTMLVideoElement) => v.getAttribute("src"))).toBeNull();
   await context.close();
 });
 
