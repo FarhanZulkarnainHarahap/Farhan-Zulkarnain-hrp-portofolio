@@ -267,6 +267,7 @@
   /* Entrance crop = union of the motion's alpha bounds (568 × 930 of the 1080p render) */
   --entrance-width: min(34vw, 36rem); /* lg+ only; the poster may be the LCP (preloaded, srcset) */
   --flight-copy-width: 26rem;
+  --defer-render-size: 60rem; /* placeholder height of a not-yet-rendered home section */
   --flight-scrim-width: min(60vw, 46rem);
   --flight-copy-inset: calc(var(--spacing-gutter) * 3);
   --flight-scrim: color-mix(in srgb, var(--ui-canvas) 88%, transparent);
@@ -465,6 +466,13 @@ html:has(.site-frame) {
   overflow: hidden;
   aspect-ratio: 16 / 9;
 }
+/* Off-screen sections of long pages (Fase 12.1): skipped until near the viewport; the remembered
+   size (auto) keeps the scroll height stable once a section has rendered. */
+.defer-render {
+  content-visibility: auto;
+  contain-intrinsic-size: auto var(--defer-render-size);
+}
+
 /* Connectors are camera moves between scenes: only part of the pinned film, not of the static list. */
 .flight-scene--connector {
   display: none;
@@ -616,6 +624,14 @@ html.js-motion .hero-entrance:not([data-state="still"]) .hero-entrance__end {
 .hero-entrance__video {
   object-fit: cover;
   opacity: 0;
+}
+/* 1px inside the poster (Fase 12.1): with sub-pixel sizes the video box could end up a row of pixels
+   larger than the poster, and Chrome then reported its first frame (≈ 570 ms) as a new, larger LCP
+   candidate. The edge is invisible: the clip and the poster share the canvas colour. */
+.hero-entrance > .hero-entrance__video {
+  inset: 1px;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
 }
 .hero-entrance:is([data-state="playing"], [data-state="done"]) .hero-entrance__video {
   opacity: 1;
