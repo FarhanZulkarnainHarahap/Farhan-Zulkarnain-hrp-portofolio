@@ -75,6 +75,11 @@ export function HeroEntrance() {
         disablePictureInPicture
         tabIndex={-1}
       />
+      {/* Fase 12.5: after the entrance, a seamless idle loop (its frame 0 is the entrance's last frame)
+          and a 5 × 3 hover tilt grid; both loaded by the player, desktop + motion only. */}
+      <video className="hero-entrance__idle" muted loop playsInline preload="none" disablePictureInPicture tabIndex={-1} />
+      {/* eslint-disable-next-line @next/next/no-img-element -- hover tilt frame */}
+      <img className="hero-entrance__seq" alt="" width={864} height={1080} decoding="sync" />
     </div>
   );
 }
