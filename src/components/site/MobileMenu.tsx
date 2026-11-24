@@ -69,7 +69,8 @@ export function MobileMenu({ cv }: { cv: string }) {
           "backdrop:bg-scrim",
         )}
       >
-        <div className="flex h-full flex-col px-gutter">
+        {/* Safe areas (viewport-fit=cover) and its own scroll in a short landscape viewport. */}
+        <div className="flex h-full flex-col overflow-y-auto overscroll-contain px-[max(var(--spacing-gutter),env(safe-area-inset-left,0px))] pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]">
           <div className="flex h-(--nav-height) items-center justify-between">
             <Link
               href="/"

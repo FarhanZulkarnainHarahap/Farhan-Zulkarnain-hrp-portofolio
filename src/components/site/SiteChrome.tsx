@@ -15,7 +15,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
       <div id="top" className="site-frame contents">
         <a
           href="#main-content"
-          className="site-scheme fixed top-2 left-2 z-(--z-toast) -translate-y-[200%] rounded-pill bg-ink px-4 py-2 font-body text-small text-canvas focus-visible:translate-y-0"
+          className="site-scheme fixed top-[max(0.5rem,env(safe-area-inset-top,0px))] left-[max(0.5rem,env(safe-area-inset-left,0px))] z-(--z-toast) inline-flex min-h-(--hit-area-min) -translate-y-[200%] items-center rounded-pill bg-ink px-4 font-body text-small text-canvas focus-visible:translate-y-0"
         >
           Skip to content
         </a>

@@ -660,9 +660,14 @@ html.js-motion .hero-entrance:not([data-state="still"]) .hero-entrance__end {
     background: var(--ui-canvas);
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    /* Mobile (Fase 12.4): no grey tap flash; buttons have their own :active feedback. Pull-to-
+       refresh is kept: this is a document, not an app shell. */
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     margin: 0;
+    /* viewport-fit=cover (layout.tsx): keep content clear of a landscape notch; 0 elsewhere. */
+    padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
     background: var(--ui-canvas);
     color: var(--ui-body);
     font-family: var(--font-body);
@@ -671,6 +676,19 @@ html.js-motion .hero-entrance:not([data-state="still"]) .hero-entrance__end {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+  /* No double-tap-zoom wait on controls; long-press does not select a control's label. */
+  a,
+  button,
+  summary,
+  label,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+  button,
+  [role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
   }
   ::selection {
     background: var(--ui-selection);

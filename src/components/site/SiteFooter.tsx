@@ -11,12 +11,12 @@ const footerLink =
 export function SiteFooter() {
   return (
     <footer className="scheme-dark bg-canvas font-body text-body">
-      <div className="mx-auto flex w-full max-w-wide flex-col gap-12 px-gutter py-section-sm">
+      <div className="mx-auto flex w-full max-w-wide flex-col gap-12 px-gutter pt-section-sm pb-[calc(var(--spacing-section-sm)+env(safe-area-inset-bottom,0px))]">
         <div className="flex flex-col gap-10 md:flex-row md:justify-between">
           <div className="flex max-w-sm flex-col gap-2">
             <Link
               href="/"
-              className="w-fit font-heading text-headline text-ink"
+              className="inline-flex min-h-(--hit-area-min) w-fit items-center font-heading text-headline text-ink"
             >
               Farhan Zulkarnain Harahap
             </Link>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/site/ThemeProvider";
@@ -34,6 +34,20 @@ const geistMono = localFont({
   fallback: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
   variable: "--font-geist-mono",
 });
+
+// Mobile (Fase 12.4): edge to edge (safe areas are padded in CSS), browser chrome in the canvas
+// colour of each scheme. The colours mirror --ui-canvas (paper-50 / night-900 in globals.css); a
+// theme picked with the toggle is synced by ThemeProvider. Zoom is never disabled.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf8f4" },
+    { media: "(prefers-color-scheme: dark)", color: "#141311" },
+  ],
+};
 
 // Runs before first paint: pins a stored theme choice. Without a stored choice (or without
 // JS) the CSS follows prefers-color-scheme, so there is no flash either way.

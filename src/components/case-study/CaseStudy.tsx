@@ -57,7 +57,8 @@ export function CaseStudy({
               <li>
                 <Link
                   href="/projects"
-                  className="underline-offset-(--link-underline-offset) hover:text-ink hover:underline"
+                  // 44 px hit area without growing the breadcrumb row (Fase 12.4).
+                  className="relative underline-offset-(--link-underline-offset) after:absolute after:inset-x-0 after:top-1/2 after:h-(--hit-area-min) after:-translate-y-1/2 hover:text-ink hover:underline"
                 >
                   Projects
                 </Link>
