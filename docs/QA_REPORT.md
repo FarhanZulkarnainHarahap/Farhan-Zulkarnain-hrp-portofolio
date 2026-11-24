@@ -193,6 +193,13 @@ dan kualitas 55 (27 KB, LCP justru 4,25 dtk karena bising). Opsi untuk Anda: (a)
 potret setelah bio sehingga LCP menjadi teks (perkiraan skor ±92, mengubah tata letak About);
 (b) potret lebih kecil/terpotong di ponsel; (c) terima 86 (desktop 100, LCP teramati ±0,3 dtk).
 
+**Keputusan pemilik (setelah Fase 12): coba (b) satu kali, terima (c) bila median < 90.** Dicoba: potret
+khusus ponsel (Cloudinary f_auto → AVIF, 320/480 w, q 55 = 15 KB alih-alih 39 KB), `fetchpriority=high`,
+preload hanya untuk media ponsel, tata letak tidak berubah. Hasil 3 run: 77 / 85 / 87 → **median 85**
+(desktop turun ke 99). Dibatalkan; **(c) diterima: /about mobile 86** dengan potret tetap seperti Fase 12.
+Kesimpulan: batasnya ada di simulasi LCP-gambar (foto selesai paling akhir saat bandwidth dibagi dengan JS
+framework), bukan di ukuran foto.
+
 ## 12.9 test:full
 
 `npm run test:full` = suite default + `@live`: **102/102 lolos** (11,5 menit) + **1/1 `@live` lolos**.
@@ -225,8 +232,8 @@ diganti dengan penunjuk ke DESIGN.md.
       (scrub, "Skip to projects"), menu mobile, ⌘K/pencarian, form kontak (keyboard virtual, zoom input),
       safe area di landscape, warna status bar light/dark, teks non-Latin/emoji bila ada di data.
 - [ ] Cek Safari desktop (macOS): entrance, fly-through, tema.
-- [ ] Putuskan favicon: logo lama "FZ DEV" (krom/neon) kini hanya dikecilkan (85 → 2,6 KB); rekomendasi
-      memakai monogram Fz baru agar senada.
+- [x] Favicon: monogram Fz baru (glyph Newsreader dalam komposisi kartu Blender): `icon.svg` (light/dark,
+      986 B), `icon1.png` 32 px, `apple-icon.png` 180 px, `favicon.ico` 32 px. Logo "FZ DEV" dihapus.
 - [ ] Opsional: rapikan kategori skill di `/admin/skill` (kategori API "DEVOPS" tampil sebagai grup sendiri).
 
 ### Teknis
