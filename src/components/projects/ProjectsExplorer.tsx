@@ -19,13 +19,8 @@ import {
   type ProjectFilters,
 } from "@/lib/display/projects";
 import type { Loaded } from "@/lib/server/content";
-import { Flip } from "gsap/Flip";
-import { gsap, prefersMotion, setupGsap, tokens, useGSAP } from "@/lib/gsap";
-
-if (typeof window !== "undefined") {
-  setupGsap();
-  gsap.registerPlugin(Flip);
-}
+import type { Flip } from "gsap/Flip";
+import type * as FlipModule from "./flip";
 import { cn } from "@/lib/utils";
 import type { Project } from "@/services/api";
 import { ProjectCard } from "./ProjectCard";
@@ -70,38 +65,48 @@ function ExplorerView({
 
   // Flip (Fase 8): remember where the cards are just before the filter changes, then animate them
   // to their new places after render. Interruptible: a new change kills the running animation.
+  // GSAP + Flip are loaded the first time the visitor reaches the filters (Fase 12.8: not in the
+  // first load); a change made before the module arrived simply is not animated.
   const gridRef = useRef<HTMLUListElement>(null);
+  const flip = useRef<typeof FlipModule | null>(null);
   const flipState = useRef<Flip.FlipState | null>(null);
   const flipTween = useRef<gsap.core.Timeline | null>(null);
+  const loadFlip = () => {
+    if (!flip.current)
+      import("./flip").then((module) => {
+        flip.current = module;
+      });
+  };
   const capture = () => {
-    if (gridRef.current && prefersMotion())
-      flipState.current = Flip.getState(
+    const m = flip.current;
+    if (m && gridRef.current && m.prefersMotion())
+      flipState.current = m.Flip.getState(
         gridRef.current.querySelectorAll("[data-flip-id]"),
       );
   };
   const resultsKey = results.map((project) => project.id).join("|");
-  useGSAP(
-    () => {
-      const state = flipState.current;
-      flipState.current = null;
-      const grid = gridRef.current;
-      if (!state || !grid) return;
-      flipTween.current?.kill();
-      const t = tokens();
-      flipTween.current = Flip.from(state, {
+  useEffect(() => {
+    const m = flip.current;
+    const state = flipState.current;
+    flipState.current = null;
+    const grid = gridRef.current;
+    if (!m || !state || !grid) return;
+    const { Flip, gsap, tokens } = m;
+    flipTween.current?.kill();
+    const t = tokens();
+    flipTween.current = Flip.from(state, {
         targets: grid.querySelectorAll("[data-flip-id]"),
         duration: t.base,
         ease: "standard",
-        onEnter: (entering) =>
-          gsap.fromTo(
-            entering,
-            { opacity: 0, scale: 0.98 },
-            { opacity: 1, scale: 1, duration: t.base, ease: "enter" },
-          ),
-      });
-    },
-    { dependencies: [resultsKey], scope: gridRef },
-  );
+      onEnter: (entering) =>
+        gsap.fromTo(
+          entering,
+          { opacity: 0, scale: 0.98 },
+          { opacity: 1, scale: 1, duration: t.base, ease: "enter" },
+        ),
+    });
+  }, [resultsKey]);
+  useEffect(() => () => void flipTween.current?.kill(), []);
 
   const update = (patch: Partial<ProjectFilters>) => {
     capture();
@@ -147,6 +152,9 @@ function ExplorerView({
         role="search"
         aria-label="Filter projects"
         onSubmit={(event) => event.preventDefault()}
+        onPointerEnter={loadFlip}
+        onFocusCapture={loadFlip}
+        onTouchStart={loadFlip}
         className="grid gap-4 rounded-(--card-radius) border border-hairline bg-surface p-4 md:grid-cols-12 md:items-end"
       >
         <div className="flex flex-col gap-2 md:col-span-5">
@@ -245,12 +253,11 @@ function ExplorerView({
         />
       ) : (
         <ul ref={gridRef} className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {results.map((project, index) => (
+          {results.map((project) => (
             <li key={project.id} data-flip-id={project.id} className="flex min-w-0">
               <ProjectCard
                 project={project}
                 headingLevel="h2"
-                priority={index < 2}
                 className="w-full"
               />
             </li>

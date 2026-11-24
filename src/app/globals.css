@@ -390,12 +390,13 @@ html:has(.site-frame) {
 }
 
 
-/* Motion (Fase 8): before GSAP is ready, hide only the elements it will animate, and only when JS
-   runs and motion is allowed (html.js-motion is set by the inline script in layout.tsx, removed by a
-   2.5 s failsafe). After that GSAP controls visibility itself; late content is never hidden. */
+/* Motion (Fase 8): before GSAP is ready, hide only the intro elements it will animate, and only when
+   JS runs and motion is allowed (html.js-motion is set by the inline script in layout.tsx, removed by
+   a 2.5 s failsafe). After that GSAP controls visibility itself; late content is never hidden.
+   [data-reveal] is not pre-hidden (Fase 12.8): reveals only apply below the first screen, which is not
+   visible at load anyway; hiding them here delayed the LCP of pages whose first block is a reveal. */
 @media (prefers-reduced-motion: no-preference) {
-  html.js-motion:not(.motion-ready)
-    :is([data-intro], [data-reveal]:not([data-reveal="group"]), [data-reveal="group"] > *) {
+  html.js-motion:not(.motion-ready) [data-intro] {
     opacity: 0;
   }
   html.js-motion:not(.motion-ready) [data-intro-line] {

@@ -99,7 +99,7 @@ test("motion: hero intro settles, sections reveal once on scroll, H1 is never an
   await context.close();
 });
 
-test("page entrance on /about, /journey, /projects, /contact: accent line draws, lead and visual rise, H1 untouched", async ({
+test("page entrance on /about, /journey, /projects, /contact: accent line draws, actions and visual rise, H1 and lead untouched", async ({
   browser,
 }) => {
   const context = await browser.newContext({
@@ -123,7 +123,9 @@ test("page entrance on /about, /journey, /projects, /contact: accent line draws,
     const header = page.locator("main header").first();
     const h1 = header.getByRole("heading", { level: 1 });
     expect(await h1.evaluate((el) => el.hasAttribute("data-intro") || el.style.opacity !== ""), path).toBe(false);
-    await expect(header.locator('[data-intro="lead"]'), path).toHaveCount(1);
+    // The lead is the LCP element on phones (Fase 12.8): never hidden by the entrance.
+    await expect(header.locator('[data-intro="lead"]'), path).toHaveCount(0);
+    await expect(header.locator("p.max-w-reading").first(), path).toHaveCSS("opacity", "1");
     await expect
       .poll(() => header.locator("[data-intro]").evaluateAll((els) => els.every((el) => getComputedStyle(el).opacity === "1")), {
         message: path,

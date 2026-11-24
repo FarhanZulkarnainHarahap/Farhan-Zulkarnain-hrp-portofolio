@@ -27,8 +27,13 @@ export function runMotion(main: HTMLElement, pathname: string, { introPlayed, pe
           ? null
           : main.querySelector<HTMLElement>("[data-intro-line]");
         const reveals = new Map<Element, HTMLElement[]>();
+        // Only what is still below the first screen is revealed on scroll (Fase 12.8): a block that
+        // is already visible stays put, so it is never hidden while the page loads (on /about the
+        // portrait is the LCP element on phones).
+        const firstScreen = window.innerHeight;
         for (const el of gsap.utils.toArray<HTMLElement>("[data-reveal]", main))
-          reveals.set(
+          if (el.getBoundingClientRect().top >= firstScreen)
+            reveals.set(
             el,
             el.dataset.reveal === "group"
               ? (Array.from(el.children) as HTMLElement[])

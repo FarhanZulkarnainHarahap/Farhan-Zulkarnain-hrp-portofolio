@@ -6,15 +6,16 @@ import { profile } from "@/lib/site";
 
 // Fonts are local subsets (Fase 12.1, src/app/fonts/README.md): Latin only, only the weights in use.
 // Newsreader keeps the opsz axis (design requirement) with one file per weight, so the H1 (400)
-// needs 38 KB instead of the 129 KB wght+opsz file. Not preloaded: the H1 paints first in the
-// metric-adjusted fallback serif. Italic is not used on the site.
+// needs 38 KB instead of the 129 KB wght+opsz file. Preloaded again (Fase 12.8): both files were
+// requested before the LCP anyway (VeryHigh), and without the preload the late swap from the fallback
+// re-wrapped long H1s on phones (CLS 0.035 on /about). Italic is not used on the site.
 const newsreader = localFont({
   src: [
     { path: "./fonts/newsreader-400.woff2", weight: "400", style: "normal" },
     { path: "./fonts/newsreader-500.woff2", weight: "500", style: "normal" },
   ],
   display: "swap",
-  preload: false,
+  preload: true,
   adjustFontFallback: "Times New Roman",
   fallback: ["Iowan Old Style", "Georgia", "serif"],
   variable: "--font-newsreader",

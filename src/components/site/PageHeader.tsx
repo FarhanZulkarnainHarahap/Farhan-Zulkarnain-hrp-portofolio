@@ -8,9 +8,9 @@ import { cn } from "@/lib/utils";
  * `visual` is a slot on the right (desktop) for an illustration (Fase 9) or 3D accent (Fase 10).
  *
  * Light entrance (Fase 10.5, same language as the home intro; MotionController): the accent line
- * under the title draws left → right, then the lead (line by line), the actions and the visual rise
- * in turn. The eyebrow and the H1 are not animated (the H1 stays the LCP element). Reduced motion /
- * no JS: everything is shown final.
+ * under the title draws left → right, then the actions and the visual rise in turn. The eyebrow, the
+ * H1 and the lead are not animated: on phones the lead is the LCP element of these pages, and hiding
+ * it until GSAP loaded cost ≈ 1.3 s of LCP (Fase 12.8). Reduced motion / no JS: everything final.
  */
 export function PageHeader({
   eyebrow,
@@ -43,10 +43,7 @@ export function PageHeader({
             />
           </div>
           {lead && (
-            <p
-              data-intro="lead"
-              className="max-w-reading text-copy-lg text-body text-pretty"
-            >
+            <p className="max-w-reading text-copy-lg text-body text-pretty">
               {lead}
             </p>
           )}

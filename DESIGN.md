@@ -550,3 +550,64 @@ normalises presentation.
 - Don't truncate chip labels or hide information behind hover only.
 - Don't animate layout properties or delay content behind animations.
 - Don't place 3D where it competes with text or project images.
+
+## Owner taste rules (learned during the redesign, Fase 12.10)
+
+Distilled from every correction and decision the owner made in Fases 1–12. They win over generic
+guidance; when a new case is unclear, ask instead of guessing.
+
+**Tone and copy**
+- Professional, calm English. No system/sci-fi metaphors ("Kinetic", "transmission", "node",
+  "capability graph"); say what the work is.
+- Claims are only made when the owner has confirmed them, and stay general (no repository or vendor
+  names in copy). Practices may be named (validation, migrations, constraints, automated releases).
+- Small precise wording choices are the owner's: Journey's H1 is "Experience & learning" (menu stays
+  "Journey"); the hero status, the reply-time line and the "Based in Medan, Indonesia (WIB, UTC+7)"
+  line follow docs/COPY.md exactly. Copy changes go through COPY.md, never straight into components.
+
+**Visual**
+- 3D is an accent, never the theme. Renders have a transparent or canvas background: no baked
+  gradients; the page background comes from CSS tokens.
+- Matte materials. Keep metallic low (dark-theme metal 0.3, not 0.6); fix harsh highlights with a small
+  bevel or by moving the key light, not with post effects.
+- Cameras: never a flat front view of an object with depth. Aim perpendicular to the plane that carries
+  the content (e.g. a tilted screen), with a long lens (85–100 mm) so edges stay straight.
+- Lettering is one composed unit: the Fz monogram is balanced as a pair (no wide gap) and must stay
+  legible at its smallest size (checked at ~320 px).
+- Prefer the thin, precise object over the chunky one when both work (card 0.11, not 0.30).
+- No device mockups around project screenshots: a plain screenshot in the token frame (radius, hairline
+  border, locked 16:10 ratio).
+- A visual next to the H1 must balance it, not shrink to avoid it: desktop entrance min(34vw, 36rem).
+  On phones, leave out what would only play below the first screen.
+
+**Motion**
+- Calm, short, meaningful; motion tokens only; no loops; nothing idles (0 rAF at rest).
+- The H1 and the navbar never animate. Page entrances: accent line draws, then lead / actions / visual
+  rise in turn. A sheen plays once, then the text is plain.
+- Rejected on purpose: a progress line on /journey, parallax on case-study images, ScrollTrigger,
+  ScrollSmoother. Reveals run once (IntersectionObserver) and are cleaned up on navigation.
+- Without JS or with reduced motion everything is in its final state and no video is fetched.
+- Long scroll experiences get a visible, keyboard-reachable way out ("Skip to projects") and stay
+  around 8 screens or less.
+- Played-once media remember the session (entrance: full once, then from 1.5 s).
+
+**Data on screen**
+- API data is never changed; normalisation lives in the display layer (skill display names, case type
+  split on commas and de-duplicated). Missing data hides its section or shows a calm empty state, never
+  hard-coded stand-ins.
+- Long collections disclose progressively: card tags 4 + "+N", case-study stack 16 + "+N", features
+  6 + "Show all N". Long labels on cards stay on one line with the full value in a tooltip and on the
+  detail page.
+- Featured work = projects with a case study (max 6, topped up from API order when fewer than 3).
+
+**Interaction and accessibility**
+- Decorative effects (spotlight, sheen) never change the click or focus area; the keyboard ring stays
+  clearly visible.
+- Form failure is announced assertively (role="alert"), success politely (role="status"); with several
+  invalid fields, focus goes to the error summary.
+- Theme follows the site toggle everywhere (pictures, posters, video clips, browser chrome) without a
+  reload or flash, and only the active theme's asset is downloaded.
+
+**Performance**
+- LCP is a time budget, not an element (see Imagery & 3D). Heavy or optional code loads on demand
+  (GSAP, fly-through, palette); report First Load JS and Lighthouse before/after each step.
