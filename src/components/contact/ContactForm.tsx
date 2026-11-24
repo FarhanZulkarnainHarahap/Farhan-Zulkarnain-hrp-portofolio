@@ -223,7 +223,7 @@ export function ContactForm() {
       {/* Success is announced politely; a failed send is assertive. Both regions stay mounted. */}
       <div role="status" className="min-h-6">
         {status === "success" && (
-          <p className="flex items-start gap-2 text-copy text-success">
+          <p className="flex items-start gap-2 transition-[opacity,translate] duration-(--duration-base) ease-enter starting:translate-y-1 starting:opacity-0 motion-reduce:starting:translate-y-0 text-copy text-success">
             <CircleCheck
               aria-hidden="true"
               className="mt-1 size-(--icon-sm) shrink-0"
@@ -234,7 +234,7 @@ export function ContactForm() {
       </div>
       <div role="alert">
         {status === "error" && (
-          <p className="flex items-start gap-2 text-copy text-danger">
+          <p className="flex items-start gap-2 transition-[opacity,translate] duration-(--duration-base) ease-enter starting:translate-y-1 starting:opacity-0 motion-reduce:starting:translate-y-0 text-copy text-danger">
             <TriangleAlert
               aria-hidden="true"
               className="mt-1 size-(--icon-sm) shrink-0"

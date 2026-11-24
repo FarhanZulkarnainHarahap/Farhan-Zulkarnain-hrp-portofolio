@@ -15,12 +15,15 @@ export function ProjectImage({
   alt,
   sizes,
   priority = false,
+  fallbackLabel = "Image unavailable",
   className,
 }: {
   src: string | null | undefined;
   alt: string;
   sizes: string;
   priority?: boolean;
+  /** Text of the calm fallback (e.g. "No preview" for a document that never had one). */
+  fallbackLabel?: string;
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
@@ -51,7 +54,7 @@ export function ProjectImage({
             className="size-(--icon-md)"
             strokeWidth={1.5}
           />
-          <span className="font-meta text-meta">Image unavailable</span>
+          <span className="font-meta text-meta">{fallbackLabel}</span>
         </div>
       )}
     </div>

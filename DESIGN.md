@@ -403,8 +403,17 @@ These live in prose rather than a `motion:` YAML map because the current linter
   a 60ms stagger; maximum one or two revealed groups per viewport. Content is visible without JS.
 - **Media hover:** images scale 1.00 → 1.02 over `emphasis` (420ms); link underlines draw in from the
   left.
-- **Never:** scroll-jacking, pinned scroll scenes on mobile, looping ambient animation, parallax on
-  text, animating width/height/top/left, blocking input during an animation.
+- **Never:** scroll-jacking, pinned scroll scenes on mobile, looping animation on text or UI,
+  parallax on text, animating width/height/top/left, blocking input during an animation.
+- **Decorative 3D loops and hover (Fase 12.5):** an idle loop is allowed ONLY on decorative 3D assets
+  (pre-rendered Blender clips): small amplitude (movement ≤ 6 px, rotation ≤ 3°), no blink or flash,
+  never on text. A loop stops when it is off screen, when the tab is hidden, and under reduced motion
+  (the still is shown). No requestAnimationFrame without interaction, except a visible idle loop
+  (a `<video>`, so the browser's media pipeline, not script). Hover tilts are pre-rendered image
+  sequences driven by the pointer with an eased follower (rAF only while it moves), and only on
+  precise pointers (`(hover: hover) and (pointer: fine)`). Touch screens get idle + tap (a tap flips a
+  card), never tilt and never tap-hijacking. Interactive cards are real `<button>`s (`aria-pressed`,
+  clear label, Enter/Space, visible focus); text shown on a render is real HTML on top.
 - **Reduced motion:** `prefers-reduced-motion: reduce` collapses durations and the reveal distance to
   zero (tokens do this automatically); 3D shows its static poster. Motion must not move LCP elements
   or cause layout shift.
@@ -482,15 +491,29 @@ normalises presentation.
 
 - **Project media:** real screenshots from the API in a fixed-ratio frame; never stretched; lazy
   loaded below the fold; meaningful `alt` from the project title.
-- **3D is an accent, never the theme:** one sculptural object (matte ceramic or clay, warm studio
-  light from a CC0 HDRI) in the home hero on desktop, slowly following the pointer. Optional small
-  reuse on About. No 3D on project cards or forms.
-- **Budgets:** each GLB ≤ 1.5 MB (Draco or Meshopt), textures ≤ 2K WebP, total 3D on the home page
-  ≤ 3 MB. Sources in `design/blender/`, exports in `public/3d/`.
-- **Fallbacks:** a WebP/AVIF poster rendered from the same scene is shown on mobile, with reduced
-  motion, when WebGL is unavailable, and until the model loads. The canvas is lazy loaded after the
-  hero text is painted and never becomes the LCP element. The poster doubles as the Open Graph image
-  background.
+- **3D is an accent, never the theme:** pre-rendered Blender video, no WebGL at runtime. The home
+  hero (desktop) shows the Fz card entrance once per session (a short version afterwards): the card
+  settles, splits into five matte layers (Interface → API → Service → Database → Deployment) and
+  locks into a stack on a terracotta axis. Below the hero, a scroll-scrubbed fly-through follows one
+  request through the five layers. Decorative 3D may idle and react to hover under the loop rules in
+Motion (Fase 12.5): the hero stack after its entrance, the Fz card on About and in the footer. The renders carry
+  the canvas colour, so the visuals have no frame.
+- **Case study lead image:** the plain project screenshot (`ProjectImage`) in a quiet frame: 16:10
+  locked ratio, `--media-radius`, hairline border, `--media-bg` while loading; priority because it
+  sits above the fold under the title and CTAs. No device mockup (removed in Fase 10.5).
+- **Theme-aware renders:** posters exist per theme and follow the site theme (toggle and
+  `data-theme`, OS by default) through `ThemedPicture`: only the active variant is downloaded, and a
+  toggle swaps it after decoding, without a reload. Videos exist per theme too; only the active
+  theme's clip is fetched.
+- **Budgets:** entrance ≤ 600 KB (desktop), fly-through ≤ 10 MB desktop / ≤ 4 MB mobile, H.264 with
+  faststart. Sources in `design/blender/`, exports in `public/3d/`.
+- **Fallbacks:** without JS or with reduced motion no video is fetched: the hero shows the locked
+  stack still and the fly-through becomes a list of stills with their text. The hero entrance is
+  desktop-only (lg+), 4:5 at `--entrance-width: min(34vw, 36rem)`.
+- **LCP is a time budget, not a fixed element** (owner rule, Fase 10.5): LCP ≤ 2.0 s Lighthouse
+  mobile (default throttling), ≤ 1.2 s desktop, CLS < 0.05. The poster may be the LCP element only
+  when it is a small AVIF/WebP, preloaded with `fetchpriority="high"`, sized with srcset, and shown
+  without waiting for JS.
 - **Illustration:** none beyond the 3D accent; no stock photos, no AI-generated people.
 
 ## Accessibility
@@ -524,8 +547,6 @@ normalises presentation.
 - `cn()` (`src/lib/utils.ts`) knows the custom token names so tailwind-merge does not drop them;
   add new token names there.
 - Do not redefine Tailwind's default theme namespaces; the dashboard depends on them.
-- `src/styles/legacy-kinetic.css` is a temporary, scoped copy of the old styles for pages not yet
-  redesigned; it is deleted in Fase 11 and must not be extended.
 
 ## Do's and Don'ts
 
@@ -539,3 +560,65 @@ normalises presentation.
 - Don't truncate chip labels or hide information behind hover only.
 - Don't animate layout properties or delay content behind animations.
 - Don't place 3D where it competes with text or project images.
+
+## Owner taste rules (learned during the redesign, Fase 12.10)
+
+Distilled from every correction and decision the owner made in Fases 1–12. They win over generic
+guidance; when a new case is unclear, ask instead of guessing.
+
+**Tone and copy**
+- Professional, calm English. No system/sci-fi metaphors ("Kinetic", "transmission", "node",
+  "capability graph"); say what the work is.
+- Claims are only made when the owner has confirmed them, and stay general (no repository or vendor
+  names in copy). Practices may be named (validation, migrations, constraints, automated releases).
+- Small precise wording choices are the owner's: Journey's H1 is "Experience & learning" (menu stays
+  "Journey"); the hero status, the reply-time line and the "Based in Medan, Indonesia (WIB, UTC+7)"
+  line follow docs/COPY.md exactly. Copy changes go through COPY.md, never straight into components.
+
+**Visual**
+- 3D is an accent, never the theme. Renders have a transparent or canvas background: no baked
+  gradients; the page background comes from CSS tokens.
+- Matte materials. Keep metallic low (dark-theme metal 0.3, not 0.6); fix harsh highlights with a small
+  bevel or by moving the key light, not with post effects.
+- Cameras: never a flat front view of an object with depth. Aim perpendicular to the plane that carries
+  the content (e.g. a tilted screen), with a long lens (85–100 mm) so edges stay straight.
+- Lettering is one composed unit: the Fz monogram is balanced as a pair (no wide gap) and must stay
+  legible at its smallest size (checked at ~320 px).
+- Prefer the thin, precise object over the chunky one when both work (card 0.11, not 0.30).
+- No device mockups around project screenshots: a plain screenshot in the token frame (radius, hairline
+  border, locked 16:10 ratio).
+- A visual next to the H1 must balance it, not shrink to avoid it: desktop entrance min(34vw, 36rem).
+  On phones, leave out what would only play below the first screen.
+
+**Motion**
+- Calm, short, meaningful; motion tokens only; no loops on text or UI; nothing idles (0 rAF at rest).
+  Decorative 3D may loop gently and react to hover under the Fase 12.5 rules (Motion).
+- The H1 and the navbar never animate. Page entrances: accent line draws, then lead / actions / visual
+  rise in turn. A sheen plays once, then the text is plain.
+- Rejected on purpose: a progress line on /journey, parallax on case-study images, ScrollTrigger,
+  ScrollSmoother. Reveals run once (IntersectionObserver) and are cleaned up on navigation.
+- Without JS or with reduced motion everything is in its final state and no video is fetched.
+- Long scroll experiences get a visible, keyboard-reachable way out ("Skip to projects") and stay
+  around 8 screens or less.
+- Played-once media remember the session (entrance: full once, then from 1.5 s).
+
+**Data on screen**
+- API data is never changed; normalisation lives in the display layer (skill display names, case type
+  split on commas and de-duplicated). Missing data hides its section or shows a calm empty state, never
+  hard-coded stand-ins.
+- Long collections disclose progressively: card tags 4 + "+N", case-study stack 16 + "+N", features
+  6 + "Show all N". Long labels on cards stay on one line with the full value in a tooltip and on the
+  detail page.
+- Featured work = projects with a case study (max 6, topped up from API order when fewer than 3).
+
+**Interaction and accessibility**
+- Decorative effects (spotlight, sheen) never change the click or focus area; the keyboard ring stays
+  clearly visible.
+- Form failure is announced assertively (role="alert"), success politely (role="status"); with several
+  invalid fields, focus goes to the error summary.
+- Theme follows the site toggle everywhere (pictures, posters, video clips, browser chrome) without a
+  reload or flash, and only the active theme's asset is downloaded.
+
+**Performance**
+- LCP is a time budget, not an element (see Imagery & 3D). Heavy or optional code loads on demand
+  (GSAP, fly-through, palette); report First Load JS and Lighthouse before/after each step.

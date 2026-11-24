@@ -1,33 +1,62 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
-// TEMPORARY: styles for the not-yet-redesigned Kinetic pages, scoped to .legacy-root.
-// Remove with the legacy components in Fase 11.
-import "@/styles/legacy-kinetic.css";
 import { ThemeProvider } from "@/components/site/ThemeProvider";
 import { profile } from "@/lib/site";
 
-const newsreader = Newsreader({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  axes: ["opsz"],
+// Fonts are local subsets (Fase 12.1, src/app/fonts/README.md): Latin only, only the weights in use.
+// Newsreader keeps the opsz axis (design requirement) with one file per weight, so the H1 (400)
+// needs 38 KB instead of the 129 KB wght+opsz file. Preloaded again (Fase 12.8): both files were
+// requested before the LCP anyway (VeryHigh), and without the preload the late swap from the fallback
+// re-wrapped long H1s on phones (CLS 0.035 on /about). Italic is not used on the site.
+const newsreader = localFont({
+  src: [
+    { path: "./fonts/newsreader-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/newsreader-500.woff2", weight: "500", style: "normal" },
+  ],
   display: "swap",
+  preload: true,
+  adjustFontFallback: "Times New Roman",
+  fallback: ["Iowan Old Style", "Georgia", "serif"],
   variable: "--font-newsreader",
 });
-const geist = Geist({
-  subsets: ["latin"],
+const geist = localFont({
+  src: "./fonts/geist.woff2",
+  weight: "400 700",
   display: "swap",
+  adjustFontFallback: "Arial",
   variable: "--font-geist",
 });
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
+const geistMono = localFont({
+  src: "./fonts/geist-mono.woff2",
+  weight: "400 500",
   display: "swap",
+  adjustFontFallback: false,
+  fallback: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
   variable: "--font-geist-mono",
 });
+
+// Mobile (Fase 12.4): edge to edge (safe areas are padded in CSS), browser chrome in the canvas
+// colour of each scheme. The colours mirror --ui-canvas (paper-50 / night-900 in globals.css); a
+// theme picked with the toggle is synced by ThemeProvider. Zoom is never disabled.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf8f4" },
+    { media: "(prefers-color-scheme: dark)", color: "#141311" },
+  ],
+};
 
 // Runs before first paint: pins a stored theme choice. Without a stored choice (or without
 // JS) the CSS follows prefers-color-scheme, so there is no flash either way.
 const themeScript = `try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
+
+// Motion (Fase 8): pre-hide animated elements only when JS runs and motion is allowed. If GSAP is
+// not ready within 2.5 s, drop the class so everything shows (no content is ever stuck hidden).
+const motionScript = `try{var d=document.documentElement;if(matchMedia("(prefers-reduced-motion: no-preference)").matches){d.classList.add("js-motion");setTimeout(function(){if(!d.classList.contains("motion-ready"))d.classList.remove("js-motion")},2500)}}catch(e){}`;
 
 const structuredData = [
   {
@@ -119,12 +148,6 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    images: [
-      {
-        url: "/fz-logo.png",
-        alt: "Farhan Zulkarnain Harahap, Full-Stack Engineer",
-      },
-    ],
     locale: "en_US",
     url: "https://farhanzulkarnainhrp.com",
     siteName: "Farhan Zulkarnain Portfolio",
@@ -133,7 +156,7 @@ export const metadata: Metadata = {
       "Web applications built end to end, from interface to database. Projects, case studies, and CV.",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Farhan Zulkarnain Harahap — Full-Stack Engineer",
     description:
       "Web applications built end to end, from interface to database. Projects, case studies, and CV.",
@@ -153,6 +176,7 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: motionScript }} />
         <link rel="dns-prefetch" href="https://api.farhanzulkarnainhrp.com" />
       </head>
       <body className="min-h-full flex flex-col">

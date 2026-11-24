@@ -1,6 +1,7 @@
 # Aturan Redesign Portofolio
 
 ## Lingkungan
+- Selalu laporkan dalam Bahasa Indonesia.
 - Aplikasi Next.js ada di web/, yang juga merupakan root git. Semua path di aturan ini relatif ke web/.
 - Referensi desain di ../design-refs/ (awesome-design-md, design.md). Blender Skills ada di ~/.claude/skills (global).
 - WSL, Node 20, tanpa sudo: jangan npm install -g (pakai npx), jangan npx skills add.
@@ -25,19 +26,20 @@
   memakai tema default Tailwind. Jadi: jangan reset namespace tema default Tailwind
   (mis. `--color-*: initial`), dan setelah mengubah globals.css jalankan
   `npx playwright test tests/admin-visual.spec.ts` (baseline screenshot dashboard harus tetap identik).
-- Modul bersama yang dipindah dari kinetic/: src/hooks/useCollection.ts, src/types/content.ts
-  (Skill, Experience), src/lib/site.ts (profile), src/components/admin/{Modal,Confirmation,
-  CollectionState,DashboardShell,DashboardNavbar}.tsx. Jangan hapus saat bersih-bersih Kinetic.
+- Modul bersama yang dipindah dari kinetic/ (kode Kinetic sudah dihapus di Fase 11):
+  src/hooks/useCollection.ts, src/types/content.ts (Skill, Experience), src/lib/site.ts (profile),
+  src/components/admin/{Modal,Confirmation,CollectionState,DashboardShell,DashboardNavbar,
+  MotionPreference}.tsx. DashboardShell (dipakai /dashboard/user) satu-satunya pemakai framer-motion;
+  framer-motion tetap di package.json tetapi TIDAK boleh ter-import di rute publik.
 - next.config.ts boleh diubah untuk redirects atas izin eksplisit (Fase 1.5: /about/* → /about#…).
 
 ## Lint
-- Lint harus 0 error. Pengecualian SEMENTARA di eslint.config.mjs:
-  src/components/three/kinetic/KineticCore.tsx — cabut entri ini saat file dihapus di Fase 11.
+- Lint harus 0 error, tanpa pengecualian file aplikasi di eslint.config.mjs.
 
 ## Struktur halaman
 - Setiap halaman punya tujuan sendiri (lihat "Peta Halaman" di docs/PAGE_MAP.md).
   /about, /journey, /projects, /contact harus menjadi HALAMAN MANDIRI dengan isi lebih dalam dari beranda,
-  BUKAN lagi <LandingPage initialSection="..."/> yang menampilkan potongan beranda.
+  bukan potongan beranda.
 - Pertahankan: rute yang ada, metadata dan canonical tiap halaman, sitemap.ts, robots.ts,
   skip-to-content, command palette ⌘K, dan form kontak yang berfungsi.
 
@@ -53,10 +55,11 @@
   `.site-scheme` / `.scheme-dark` (token di-deklarasi ulang di sana), bukan `color-scheme` lepas.
 - Komponen dasar di src/components/ui/, frame situs di src/components/site/ (dipasang lewat
   src/app/(site)/layout.tsx; app/not-found.tsx memasangnya sendiri).
-- SEMENTARA: halaman yang belum di-redesign memakai src/styles/legacy-kinetic.css (CSS lama, di-scope ke
-  wrapper `.legacy-root` di kinetic/Shell.tsx, app/auth/layout.tsx, app/error.tsx). Jangan diperluas.
-  Halaman baru TIDAK dibungkus `.legacy-root`. Hapus file, import di layout.tsx, dan wrapper-nya di Fase 11
-  (atau saat halaman terakhir pemakainya diganti).
+- Motion: GSAP lewat src/lib/gsap.ts (token, reduced-motion = tanpa tween). Reveal memakai
+  IntersectionObserver (src/components/motion/MotionController.tsx). ScrollTrigger TIDAK dimuat di halaman
+  mana pun; kalau 3D di Fase 10 butuh efek scroll, import ScrollTrigger secara dinamis hanya di chunk
+  komponen 3D. Rencana dan keputusan motion di docs/MOTION_PLAN.md.
+- legacy-kinetic.css dan wrapper `.legacy-root` sudah dihapus (Fase 11); jangan dihidupkan lagi.
 
 ## 3D (Blender)
 - 3D hanya sebagai AKSEN, bukan tema. Sumber .blend di design/blender/, hasil ekspor di public/3d/.
@@ -68,10 +71,31 @@
   search_assets/import_asset) dan Blender Skills: /blender-director sebagai titik awal, lalu
   /minimalist-style, /procedural-modeling, /hard-surface, /materials, /lighting, /lookdev, /rendering,
   /asset-optimization, /export-pipeline, /qa-review. Dikerjakan di Fase 10.
-- DILARANG: memakai ulang GLB/model lama dari public/models, membuat geometri 3D langsung dengan kode
-  three.js sebagai pengganti aset Blender, atau mengambil model dari sumber lain tanpa izin saya.
-- Sebelum Fase 10, halaman hanya menyediakan SLOT visual (poster/placeholder statis rapi) dengan props
-  yang siap menerima <HeroModel/> dan <DeviceMockup/> nanti.
+- DILARANG: memakai ulang GLB/model lama Kinetic (dulu public/models; dihapus di Fase 11, hanya ada
+  di riwayat git), membuat geometri 3D langsung dengan kode three.js sebagai pengganti aset Blender,
+  atau mengambil model dari sumber lain tanpa izin saya.
+- Hasil Fase 10 / 10.5 (lihat docs/3D_PLAN.md):
+  - HeroModel three.js DIHAPUS di Fase 10.5 (beserta three, @types/three, hero3d/, webgl-capability.ts,
+    token --model-*, hero-model.glb). Jangan pakai three.js / WebGL lagi tanpa izin.
+  - Visual hero = entrance kartu Fz (video Blender, desktop lg+ saja): src/components/home/HeroEntrance.tsx,
+    poster ThemedPicture (frame 1 = kartu utuh bila html.js-motion; selain itu frame terakhir = tumpukan),
+    aset public/3d/entrance/ (varian C, Checkpoint B2: potongan 4:5 864 × 1080, `--entrance-width:
+    min(34vw, 36rem)`, poster di-preload; mobile tanpa entrance). Aturan LCP = WAKTU, bukan elemen:
+    LCP ≤ 2,0 dtk Lighthouse mobile (throttling bawaan), ≤ 1,2 dtk desktop, CLS < 0,05. Poster boleh
+    jadi LCP asal AVIF/WebP kecil, di-preload dengan fetchpriority="high", srcset pas, tanpa menunggu
+    JS (dijaga tests/entrance.spec.ts di 1024–1920, light + dark). Hero mengisi layar pertama
+    (min-height) supaya section di bawahnya tidak ter-paint saat load.
+  - Fly-through beranda: src/components/flythrough/ (scrub.ts = port engine skill scroll-world, FlyThrough.tsx,
+    content.ts = copy disetujui). Klip per tema di public/3d/flight/. Tanpa JS / reduced motion = daftar
+    still + teks; dengan html.js-motion = stage sticky + scrub. 0 rAF saat diam; destroy saat unmount.
+  - Seam: semua klip dipotong dari SATU timeline Blender (scene Card); entrance = potongan render 16:9 yang
+    sama (bukan render terpisah).
+  - DeviceMockup DIHAPUS di Fase 10.5: gambar utama studi kasus = ProjectImage biasa (16:10, radius
+    `--media-radius`, border hairline; tanpa priority sejak Fase 12.2: di bawah lipatan di ponsel, bukan LCP). Scene Device di .blend hanya arsip; jangan dipasang lagi.
+  - Render per tema lewat src/components/media/ThemedPicture.tsx (hanya varian aktif diunduh).
+  - DotGrid (WebGL) DIHAPUS; yang tersisa hanya pola titik CSS statis `.dot-pattern` (token `--dots-*`).
+  - Mengubah aset: edit design/blender/portfolio-3d.blend lewat MCP, render ulang, ekspor ke public/3d/,
+    ulangi /qa-review. PNG sumber tidak di-commit ke public/.
 
 ## Alur kerja
 - Kerja hanya di branch redesign/professional. Commit kecil per fase/section.
@@ -82,7 +106,7 @@
 - Kalau lint/build/test gagal: JANGAN push; laporkan kegagalannya.
 - Setelah push: laporkan hash commit dan link preview deploy jika ada.
 - Fase tanpa perubahan file tidak perlu commit/push.
-- Test di akhir fase: `npm run test:fast` (tanpa test 3D lama bertag `@legacy3d`). `npm run test:full`
+- Test di akhir fase: `npm run test:fast` (semua test kecuali `@live`; tag `@legacy3d` sudah tidak ada). `npm run test:full`
   = semua + `@live`. `npm run test:live` hanya tests/live.spec.ts yang SENGAJA memakai API produksi.
 - Tidak ada test di test:fast yang boleh menyentuh API produksi: server Next untuk test memakai
   `API_URL` ke tests/fixture-api.mjs (port 3190; skenario normal/empty/fail/extreme via
@@ -92,4 +116,14 @@
   Pola ini juga dipakai untuk /about, /journey, /projects di Fase 6.
 - Playwright lokal butuh
   `export LD_LIBRARY_PATH=~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu:~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu/nss`.
+- `npm run test:browsers` (Fase 12.6, tidak termasuk test:fast): fly-through di Chromium, Firefox, WebKit.
+  Lokal butuh `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 LD_LIBRARY_PATH=~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu`
+  (TANPA folder nss: Firefox memakai NSS bawaannya), `GST_PLUGIN_SYSTEM_PATH_1_0=<lib>/gstreamer-1.0` dan
+  `GST_PLUGIN_SCANNER=<lib>/gstreamer1.0/gstreamer-1.0/gst-plugin-scanner` (H.264 di WebKit). Pustaka WPE
+  ditautkan ke `~/.cache/ms-playwright/webkit-*/minibrowser-wpe/sys/lib` (daftar: ~/.local/pw-libs/wpe-symlinks.txt).
 - Tetap BERHENTI dan tunggu persetujuan saya sebelum memulai fase berikutnya.
+
+## Proses
+- Jangan pernah menghentikan proses berdasarkan pola nama (pkill/killall/kill dengan filter). Hentikan HANYA
+  proses yang kamu jalankan sendiri, berdasarkan PID yang kamu catat. Jangan sentuh proses proyek lain
+  (mis. data-entry-web) atau dev server milik saya.

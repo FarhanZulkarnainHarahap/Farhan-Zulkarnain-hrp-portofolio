@@ -39,14 +39,13 @@ const pages = [
   "/auth/register",
   "/missing-page-quality-check",
 ];
-// Known noise that is not an app defect: 3D driver chatter, the expected 404 document response,
-// framer-motion's reduced-motion notice, and Next.js' LCP-image advice on the legacy Journey art.
+// Known noise that is not an app defect: headless WebGL driver chatter, the expected 404 document
+// response, and Next.js' LCP-image advice. framer-motion (dashboard only) must never reach public
+// pages, so its reduced-motion notice is deliberately NOT ignored here.
 const ignored = [
-  /THREE\.Clock/,
   /GL Driver Message/,
   /GPU stall/,
   /status of 404/,
-  /Reduced Motion enabled/,
   /was detected as the Largest Contentful Paint/,
 ];
 

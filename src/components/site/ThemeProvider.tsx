@@ -6,6 +6,7 @@ import {
   useMemo,
   useSyncExternalStore,
   type ReactNode,
+  useEffect,
 } from "react";
 
 export type Theme = "light" | "dark";
@@ -61,6 +62,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       /* storage unavailable (private mode): the choice lasts for this page only */
     }
   }, []);
+  // Browser chrome follows the site theme, not only the OS one (Fase 12.4): both theme-color
+  // tags take the canvas colour the page actually shows.
+  useEffect(() => {
+    if (!theme) return;
+    const canvas = getComputedStyle(document.body).backgroundColor;
+    for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]'))
+      meta.content = canvas;
+  }, [theme]);
   const value = useMemo(
     () => ({
       theme,

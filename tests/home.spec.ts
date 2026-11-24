@@ -98,6 +98,8 @@ test("selected work cards lead to case studies and survive extreme data", async 
     const more = card.getByRole("button", { name: "28 more technologies" });
     await expect(more).toBeVisible();
     await expect(card).not.toContainText("Feature 1");
+    // Card images are lazy: below the fly-through they load (and fail) only once scrolled near.
+    await card.scrollIntoViewIfNeeded();
     await expect(card.getByText("Image unavailable")).toBeVisible();
     expect(
       await page.evaluate(

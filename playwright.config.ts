@@ -16,7 +16,8 @@ const env = {
 
 export default defineConfig({
   testDir: "./tests",
-  testIgnore: /live\.spec\.ts/,
+  // live: real API (playwright.live.config.ts); browsers: Firefox + WebKit (playwright.browsers.config.ts).
+  testIgnore: [/live\.spec\.ts/, /-browsers\.spec\.ts/],
   timeout: 90_000,
   expect: { timeout: 15_000 },
   workers: 1,
@@ -35,7 +36,7 @@ export default defineConfig({
   },
   projects: [
     // Production build (npm run build first).
-    { name: "app", testIgnore: [/public-quality\.spec\.ts/, /live\.spec\.ts/] },
+    { name: "app", testIgnore: [/public-quality\.spec\.ts/, /live\.spec\.ts/, /-browsers\.spec\.ts/] },
     // Dev server: React only reports hydration mismatches in development.
     {
       name: "dev-quality",

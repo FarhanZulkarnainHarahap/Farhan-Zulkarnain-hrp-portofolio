@@ -298,12 +298,18 @@ export function CommandPalette({
   dialog,
   cv,
   mountKey,
+  onReady,
 }: {
   dialog: RefObject<HTMLDialogElement | null>;
   cv: string;
   /** Changes on every open, so the query starts empty. 0 = not opened yet. */
   mountKey: number;
+  /** Called once the <dialog> is in the DOM (the palette is loaded on first use, Fase 12.1). */
+  onReady?: () => void;
 }) {
+  useEffect(() => {
+    onReady?.();
+  }, [onReady]);
   return (
     <dialog
       ref={dialog}

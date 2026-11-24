@@ -5,7 +5,8 @@ import { FullStack } from "@/components/about/FullStack";
 import { ProfileSection } from "@/components/about/ProfileSection";
 import { HowIWork } from "@/components/home/HowIWork";
 import { NextSteps } from "@/components/site/NextSteps";
-import { PageHeader, VisualSlot } from "@/components/site/PageHeader";
+import { StackAnatomy } from "@/components/illustrations/StackAnatomy";
+import { PageHeader } from "@/components/site/PageHeader";
 import { cvHref } from "@/components/site/nav";
 import { loadDocuments, loadSkills } from "@/lib/server/content";
 
@@ -14,6 +15,19 @@ export const metadata: Metadata = {
   description:
     "About Farhan Zulkarnain Harahap, a full-stack engineer in Medan: background, approach, full stack, CV, and certificates.",
   alternates: { canonical: "/about" },
+  // Own title/description/url for social cards (images come from ./opengraph-image.tsx).
+  openGraph: {
+    title: "About · Farhan Zulkarnain Harahap",
+    description:
+      "About Farhan Zulkarnain Harahap, a full-stack engineer in Medan: background, approach, full stack, CV, and certificates.",
+    url: "/about",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About · Farhan Zulkarnain Harahap",
+    description:
+      "About Farhan Zulkarnain Harahap, a full-stack engineer in Medan: background, approach, full stack, CV, and certificates.",
+  },
 };
 
 /** Standalone About page. Anchors #profile, #stack and #documents are targets of 308 redirects. */
@@ -29,7 +43,11 @@ export default async function AboutPage() {
         eyebrow="About"
         title="Engineer, from interface to database."
         lead="Background, the way I work, the full stack, and my CV."
-        visual={<VisualSlot label="Illustration" />}
+        visual={
+          <figure className="rounded-(--card-radius) border border-hairline bg-surface p-4">
+            <StackAnatomy />
+          </figure>
+        }
       />
       <ProfileSection cvHref={cvHref(documents.data)} />
       <FullStack initial={skills} />

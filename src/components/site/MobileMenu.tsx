@@ -62,10 +62,15 @@ export function MobileMenu({ cv }: { cv: string }) {
         onClose={() => setOpen(false)}
         className={cn(
           "site-scheme m-0 h-dvh max-h-none w-full max-w-none bg-(--menu-bg) p-0 text-body",
+          // Sheet enters from the top (base, ease-enter) and leaves faster (fast, ease-exit).
+          "transition-[opacity,translate,display,overlay] transition-discrete duration-(--duration-fast) ease-exit",
+          "-translate-y-2 opacity-0 open:translate-y-0 open:opacity-100 open:duration-(--duration-base) open:ease-enter",
+          "starting:open:-translate-y-2 starting:open:opacity-0 motion-reduce:translate-y-0",
           "backdrop:bg-scrim",
         )}
       >
-        <div className="flex h-full flex-col px-gutter">
+        {/* Safe areas (viewport-fit=cover) and its own scroll in a short landscape viewport. */}
+        <div className="flex h-full flex-col overflow-y-auto overscroll-contain px-[max(var(--spacing-gutter),env(safe-area-inset-left,0px))] pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]">
           <div className="flex h-(--nav-height) items-center justify-between">
             <Link
               href="/"

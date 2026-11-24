@@ -197,6 +197,43 @@ The payload format sent to `/api/contact` (`message: "Subject: …\n\n…"`) sta
 | Register · errors | Registration failed · Server connection issue. Please retry. | (API message kept) · "Couldn't reach the server. Please try again." |
 | Register · footer | Login | Already have an account? Sign in |
 
+## Home fly-through (Fase 10.5) — approved (2026-11-23)
+
+Scroll section between the hero and Selected work. Every line below is in the initial HTML (SEO, no
+JS, reduced motion). Indicator format: `1 / 5`. Eyebrows are mono `label-caps`.
+
+| Key | Copy |
+|---|---|
+| Hero · scroll hint | Scroll to explore ↓ |
+| Section · accessible name (`aria-label`) | How I build, layer by layer |
+| Section · skip link | Skip to projects |
+| 1 / 5 · eyebrow | 01 · Interface |
+| 1 / 5 · title | Where people meet the product. |
+| 1 / 5 · body | I build responsive, accessible interfaces in React and Next.js, with shared design tokens so every screen behaves the same way. |
+| 2 / 5 · eyebrow | 02 · API |
+| 2 / 5 · title | Clear contracts between front and back. |
+| 2 / 5 · body | I design typed endpoints with input validation and consistent error responses, so each side can change without breaking the other. |
+| 3 / 5 · eyebrow | 03 · Service |
+| 3 / 5 · title | Business rules in one place. |
+| 3 / 5 · body | Authentication, permissions and domain logic live in TypeScript services on Node.js, kept apart from routes and storage. |
+| 4 / 5 · eyebrow | 04 · Database |
+| 4 / 5 · title | Data shaped for the questions it answers. |
+| 4 / 5 · body | I model relational data in PostgreSQL with migrations, constraints and indexes, so it stays correct as the product grows. |
+| 5 / 5 · eyebrow | 05 · Deployment |
+| 5 / 5 · title | Shipped the same way every time. |
+| 5 / 5 · body | Builds and releases are automated, with configuration kept out of the code, so shipping is routine. |
+| Closing · title | Five layers, one product. |
+| Closing · body | The projects below show them in practice. |
+
+Notes:
+- Stack names (React, Next.js, TypeScript, Node.js, PostgreSQL) match the approved meta description.
+- Practices in 2–5 are confirmed by the owner: input validation (Zod), migrations, constraints and
+  indexes (Prisma migrate, `@unique`, `@@index`), automated releases (GitHub → Vercel). The copy stays
+  general on purpose: no repository or vendor names.
+- "Scroll to explore ↓" keeps the direction arrow (a cue, not a link; approved exception).
+- Skip link during the section: "Skip to projects" (jumps to Selected work).
+- Avoided by the voice rules: "system", "node", "connection" as metaphor, sci-fi wording.
+
 ## Out of scope
 
 - Dashboard copy (`/dashboard/*`, `/admin/*`) stays as is, per CLAUDE.md, with one approved

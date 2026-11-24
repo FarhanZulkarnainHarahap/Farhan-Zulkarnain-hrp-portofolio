@@ -8,7 +8,7 @@ export type ButtonSize = "sm" | "md" | "lg";
 
 const base =
   "relative inline-flex shrink-0 items-center justify-center gap-2 font-body font-medium whitespace-nowrap select-none " +
-  "transition-[color,background-color,border-color,text-decoration-color] duration-(--duration-fast) ease-standard " +
+  "transition-[color,background-color,border-color,text-decoration-color,scale] duration-(--duration-fast) ease-standard active:scale-[0.97] motion-reduce:active:scale-100 " +
   "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 " +
   "[&_svg]:pointer-events-none [&_svg]:size-(--icon-sm)";
 

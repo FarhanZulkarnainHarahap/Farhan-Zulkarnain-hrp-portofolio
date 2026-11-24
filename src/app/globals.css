@@ -15,7 +15,7 @@
  * Boundaries (see CLAUDE.md):
  *   - Do not reset or rename Tailwind's default theme namespaces; the dashboard uses them.
  *   - Base element rules here stay minimal (no heading fonts, no global animation resets)
- *     because they also reach the dashboard (admin.css) and legacy pages (legacy-kinetic.css).
+ *     because they also reach the dashboard (admin.css).
  */
 @import "tailwindcss";
 
@@ -263,12 +263,25 @@
 
   --skeleton-bg: var(--ui-surface);
 
-  /* Hero visual placeholder (until the 3D accent in Fase 10) */
-  --hero-monogram-lg: clamp(12rem, 18vw, 18rem);
-  --hero-monogram-sm: clamp(8rem, 12vw, 12rem);
+  /* Hero entrance + fly-through (Fase 10.5): Blender renders with the canvas colour baked in */
+  /* Entrance crop = union of the motion's alpha bounds (568 × 930 of the 1080p render) */
+  --entrance-width: min(34vw, 36rem);
+  /* Interactive Fz card (Fase 12.5): renders 720×900 (About) and 320×400 (footer), 4:5 */
+  --fz-card-about-width: min(100%, 26rem);
+  --fz-card-footer-width: 10rem;
+  --fz-card-fade: var(--duration-fast); /* lg+ only; the poster may be the LCP (preloaded, srcset) */
+  --flight-copy-width: 26rem;
+  --defer-render-size: 60rem; /* placeholder height of a not-yet-rendered home section */
+  --flight-scrim-width: min(60vw, 46rem);
+  --flight-copy-inset: calc(var(--spacing-gutter) * 3);
+  --flight-scrim: color-mix(in srgb, var(--ui-canvas) 88%, transparent);
 
-  --timeline-rule: var(--ui-hairline);
-  --prose-measure: var(--container-reading);
+  /* Accents (Fase 7, React Bits adaptations) */
+  --shine-color: var(--ui-accent);
+  --shine-duration: 1400ms;
+  --spotlight-color: color-mix(in srgb, var(--ui-accent) 9%, transparent);
+  --spotlight-size: 22rem;
+
 }
 
 :root {
@@ -279,6 +292,13 @@
   --duration-reveal: 700ms;
   --stagger: 60ms;
   --reveal-distance: 0.5rem;
+  /* Hero intro start times (Fase 10.5; docs/3D_PLAN.md → entrance timeline) */
+  --intro-line: 150ms;
+  --intro-eyebrow: 250ms;
+  --intro-lead: 400ms;
+  --intro-cta: 550ms;
+  --intro-status: 700ms;
+  --intro-hint: 2000ms;
 
   /* Border, z-index */
   --border-hairline: 1px;
@@ -291,7 +311,7 @@
   --z-toast: 60;
 
   /* Theme: follow the OS unless <html data-theme> pins it. :where() keeps specificity at
-     (0,1,0) so admin.css / legacy-kinetic.css (which pin their own scheme) always win. */
+     (0,1,0) so admin.css (which pins its own scheme) always wins. */
   color-scheme: light dark;
 }
 :root:where([data-theme="light"]) {
@@ -323,6 +343,414 @@ html:has(.site-frame) {
     scroll-behavior: smooth;
   }
 }
+/* ShinyText (React Bits, adapted): one sweep of the accent across the text. Outside the sweep the
+   text is plain (color token), so it is intact without JS and follows theme changes. */
+.shiny-text[data-shine="run"] {
+  background-image: linear-gradient(
+    110deg,
+    currentColor 0%,
+    currentColor 42%,
+    var(--shine-color) 50%,
+    currentColor 58%,
+    currentColor 100%
+  );
+  background-size: 250% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine-sweep var(--shine-duration) var(--ease-standard) 1 both;
+}
+@keyframes shine-sweep {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0% 0;
+  }
+}
+
+/* Spotlight on project cards (React Bits SpotlightCard, adapted): a soft accent light under the
+   pointer on hover, centred while the card's link has keyboard focus. Decorative only. */
+.card-spotlight {
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    var(--spotlight-size) circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    var(--spotlight-color),
+    transparent 70%
+  );
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+@media (hover: hover) and (pointer: fine) {
+  .group:hover > .card-spotlight {
+    opacity: 1;
+  }
+}
+.group:has(a[data-card-link]:focus-visible) > .card-spotlight {
+  --spot-x: 50%;
+  --spot-y: 40%;
+  opacity: 1;
+}
+
+
+/* Motion (Fase 8): before GSAP is ready, hide only the intro elements it will animate, and only when
+   JS runs and motion is allowed (html.js-motion is set by the inline script in layout.tsx, removed by
+   a 2.5 s failsafe). After that GSAP controls visibility itself; late content is never hidden.
+   [data-reveal] is not pre-hidden (Fase 12.8): reveals only apply below the first screen, which is not
+   visible at load anyway; hiding them here delayed the LCP of pages whose first block is a reveal. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js-motion:not(.motion-ready) [data-intro] {
+    opacity: 0;
+  }
+  html.js-motion:not(.motion-ready) [data-intro-line] {
+    transform: scaleX(0);
+  }
+  html.js-motion:not(.motion-ready) [data-draw] .draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  html.js-motion:not(.motion-ready) [data-draw] .draw-fade {
+    opacity: 0;
+  }
+}
+
+/* ThemedPicture: show the variant of the SITE theme. Before hydration CSS decides (data-theme or
+   the OS); after hydration [data-shown] decides. The hidden variant is display:none + lazy, so it is
+   never downloaded until the theme switches to it. */
+.themed-picture > picture {
+  display: none;
+}
+.themed-picture:not([data-shown]) > .themed-picture__light,
+.themed-picture[data-shown="light"] > .themed-picture__light,
+.themed-picture[data-shown="dark"] > .themed-picture__dark {
+  display: block;
+  height: 100%;
+}
+:root:where([data-theme="dark"]) .themed-picture:not([data-shown]) > .themed-picture__light {
+  display: none;
+}
+:root:where([data-theme="dark"]) .themed-picture:not([data-shown]) > .themed-picture__dark {
+  display: block;
+  height: 100%;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .themed-picture:not([data-shown]) > .themed-picture__light {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .themed-picture:not([data-shown]) > .themed-picture__dark {
+    display: block;
+    height: 100%;
+  }
+}
+
+/* Home fly-through (Fase 10.5). Default (no JS, reduced motion): a plain list of stills + text.
+   With html.js-motion (set before paint) the section becomes a pinned scrub stage; the scrub engine
+   only sets opacity on the media and the copy, so the layout never shifts after hydration. */
+.flight {
+  position: relative;
+}
+.flight-stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-section-sm);
+  padding-block: var(--spacing-section-sm);
+}
+.flight-scenes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-section-sm);
+}
+.flight-scene {
+  display: grid;
+  gap: var(--spacing-gutter);
+  padding-inline: var(--spacing-gutter);
+}
+.flight-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+/* Off-screen sections of long pages (Fase 12.1): skipped until near the viewport; the remembered
+   size (auto) keeps the scroll height stable once a section has rendered. */
+.defer-render {
+  content-visibility: auto;
+  contain-intrinsic-size: auto var(--defer-render-size);
+}
+
+/* Connectors are camera moves between scenes: only part of the pinned film, not of the static list. */
+.flight-scene--connector {
+  display: none;
+}
+.flight-media > *,
+.flight-still img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.flight-video {
+  z-index: 1;
+}
+.flight-skip {
+  align-self: flex-start;
+  margin-inline: var(--spacing-gutter);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html.js-motion .flight {
+    height: calc(var(--flight-length) * 100svh);
+  }
+  html.js-motion .flight-stage {
+    position: sticky;
+    top: 0;
+    display: block;
+    height: 100svh;
+    overflow: hidden;
+    padding: 0;
+  }
+  html.js-motion .flight-scenes,
+  html.js-motion .flight-scene {
+    position: absolute;
+    inset: 0;
+    display: block;
+    padding: 0;
+  }
+  html.js-motion .flight-media {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+  }
+  html.js-motion .flight-scene:not(:first-child) .flight-media,
+  html.js-motion .flight-scene:not(:first-child) .flight-copy {
+    opacity: 0;
+  }
+  html.js-motion .flight-media.has-clip .flight-still {
+    opacity: 0;
+  }
+  /* Copy on a soft scrim of the canvas colour (the renders share it, so the edge is invisible). */
+  html.js-motion .flight-scene::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: 2;
+    width: var(--flight-scrim-width);
+    background: linear-gradient(90deg, var(--flight-scrim) 30%, transparent);
+    pointer-events: none;
+  }
+  html.js-motion .flight-copy {
+    position: absolute;
+    top: 50%;
+    left: var(--spacing-gutter);
+    z-index: 3;
+    width: min(42vw, var(--flight-copy-width));
+    translate: 0 -50%;
+  }
+  html.js-motion .flight-skip {
+    position: absolute;
+    right: var(--spacing-gutter);
+    bottom: var(--spacing-gutter);
+    z-index: 4;
+    margin: 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) and (max-width: 53.75rem) {
+  html.js-motion .flight-scene::after {
+    inset: auto 0 0 0;
+    width: auto;
+    height: 55%;
+    background: linear-gradient(0deg, var(--flight-scrim) 45%, transparent);
+  }
+  html.js-motion .flight-copy {
+    top: auto;
+    right: var(--spacing-gutter);
+    bottom: calc(var(--flight-copy-inset) + env(safe-area-inset-bottom));
+    width: auto;
+    translate: none;
+  }
+  html.js-motion .flight-skip {
+    right: auto;
+    left: var(--spacing-gutter);
+    bottom: calc(var(--spacing-gutter) + env(safe-area-inset-bottom));
+  }
+}
+@media (min-width: 64rem) {
+  .flight-scene {
+    grid-template-columns: 7fr 5fr;
+    align-items: center;
+  }
+}
+
+/* "Scroll to explore ↓" hides once the page scrolls (inner span, so GSAP's inline opacity on the
+   paragraph is left alone). */
+.scroll-hint > span {
+  transition: opacity var(--duration-base) var(--ease-exit);
+}
+.scroll-hint[data-hidden] > span {
+  opacity: 0;
+}
+
+/* Hero entrance (Fase 10.5). The renders carry the canvas colour, so the visual has no frame.
+   Poster choice before hydration: the first frame (Fz card) only when JS runs with motion allowed
+   (html.js-motion); otherwise the last frame (locked stack). The video shows only while it plays
+   and after it ends (its last frame equals the stack poster). */
+.hero-entrance {
+  display: none;
+  position: relative;
+  aspect-ratio: 4 / 5;
+  width: min(100%, var(--entrance-width));
+  margin-inline: auto;
+}
+/* Desktop only (Checkpoint B2, variant C): on phones the stacked hero puts the visual below the first
+   screen, where it would play unseen and add ≈ 0.6–1.3 s of simulated LCP; the fly-through opens
+   with the same stack there. */
+@media (min-width: 64rem) {
+  .hero-entrance {
+    display: block;
+  }
+}
+.hero-entrance > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.hero-entrance__start {
+  display: none;
+}
+/* "done" keeps the same poster: the video's last frame covers it. Swapping in the end poster there
+   would paint a new large image and move the LCP to the end of the clip. */
+html.js-motion .hero-entrance:not([data-state="still"]) .hero-entrance__start {
+  display: block;
+}
+html.js-motion .hero-entrance:not([data-state="still"]) .hero-entrance__end {
+  display: none;
+}
+.hero-entrance__video {
+  object-fit: cover;
+  opacity: 0;
+}
+/* 1px inside the poster (Fase 12.1): with sub-pixel sizes the video box could end up a row of pixels
+   larger than the poster, and Chrome then reported its first frame (≈ 570 ms) as a new, larger LCP
+   candidate. The edge is invisible: the clip and the poster share the canvas colour. */
+.hero-entrance > :is(.hero-entrance__video, .hero-entrance__idle, .hero-entrance__seq) {
+  inset: 1px;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+}
+.hero-entrance:is([data-state="playing"], [data-state="done"], [data-state="idle"], [data-state="tilt"]) .hero-entrance__video {
+  opacity: 1;
+}
+/* Fase 12.5: idle loop and hover tilt over the entrance's last frame (identical first frames). */
+.hero-entrance__idle,
+.hero-entrance__seq {
+  opacity: 0;
+}
+.hero-entrance[data-state="idle"] .hero-entrance__idle,
+.hero-entrance[data-state="tilt"] .hero-entrance__seq {
+  opacity: 1;
+}
+.hero-entrance__seq:not([src]) {
+  visibility: hidden;
+}
+
+/* Interactive Fz card (Fase 12.5, components/interactive/FzCard.tsx). Pre-rendered layers stacked
+   in a locked 4:5 box (no layout shift); only opacity changes. The renders carry the canvas colour of
+   the surface they sit on, so the card has no frame of its own. */
+.fz-card {
+  position: relative;
+  aspect-ratio: 4 / 5;
+}
+.fz-card--about {
+  width: var(--fz-card-about-width);
+}
+.fz-card--footer {
+  width: var(--fz-card-footer-width);
+}
+/* The loaded card fills its lazy slot (LazyFzCard keeps the size before the code arrives). */
+.fz-card.fz-card--fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+}
+.fz-card__button {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--card-radius);
+  background: transparent;
+  cursor: pointer;
+}
+.fz-card__button > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fz-card__button img {
+  width: 100%;
+  height: 100%;
+}
+.fz-card__idle,
+.fz-card__seq,
+.fz-card__back {
+  opacity: 0;
+  transition: opacity var(--fz-card-fade) var(--ease-standard);
+}
+.fz-card[data-layer="idle"] .fz-card__idle,
+.fz-card[data-layer="seq"] .fz-card__seq,
+.fz-card[data-layer="back"] .fz-card__back {
+  opacity: 1;
+}
+.fz-card[data-layer="back"] .fz-card__still {
+  opacity: 0;
+}
+.fz-card__seq:not([src]) {
+  visibility: hidden;
+}
+/* Real contact links over the rendered lines of the back (positions from the Blender projection). */
+.fz-card__contact {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.fz-card__contact a {
+  position: absolute;
+  left: var(--fz-left);
+  max-width: var(--fz-width);
+  translate: 0 -100%;
+  display: inline-flex;
+  min-height: 1.5rem;
+  align-items: flex-end;
+  /* Break only where the markup allows it (the email before "@"); handles never break. */
+  overflow-wrap: normal;
+  white-space: nowrap;
+  pointer-events: auto;
+  font-family: var(--font-body);
+  line-height: var(--text-label--line-height);
+  color: var(--ui-ink);
+  text-decoration: none;
+}
+.fz-card--about .fz-card__contact a {
+  font-size: var(--text-label);
+}
+.fz-card__contact a.fz-card__email {
+  white-space: normal;
+}
+.fz-card--footer .fz-card__contact a {
+  font-size: var(--text-label);
+}
+@media (hover: hover) and (pointer: fine) {
+  .fz-card__contact a:hover {
+    text-decoration: underline;
+  }
+}
+
 /* Locally dark band (footer). */
 .scheme-dark {
   color-scheme: dark;
@@ -346,9 +774,14 @@ html:has(.site-frame) {
     background: var(--ui-canvas);
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    /* Mobile (Fase 12.4): no grey tap flash; buttons have their own :active feedback. Pull-to-
+       refresh is kept: this is a document, not an app shell. */
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     margin: 0;
+    /* viewport-fit=cover (layout.tsx): keep content clear of a landscape notch; 0 elsewhere. */
+    padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
     background: var(--ui-canvas);
     color: var(--ui-body);
     font-family: var(--font-body);
@@ -357,6 +790,19 @@ html:has(.site-frame) {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+  /* No double-tap-zoom wait on controls; long-press does not select a control's label. */
+  a,
+  button,
+  summary,
+  label,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+  button,
+  [role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
   }
   ::selection {
     background: var(--ui-selection);

@@ -1,18 +1,22 @@
 "use client";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useCollection } from "@/hooks/useCollection";
 import { ExternalMark } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Tooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import type { Document } from "@/services/api";
-import { CommandPalette } from "./CommandPalette";
 import { MobileMenu } from "./MobileMenu";
 import { CV_FALLBACK, cvHref, isActive, primaryLinks } from "./nav";
 
+// The ⌘K palette (±10 KB) is loaded on first use (Fase 12.1): ⌘K / Ctrl+K or the search button.
+// Hovering or focusing the button warms the chunk so the first open feels instant.
+const loadPalette = () => import("./CommandPalette");
+const CommandPalette = dynamic(() => loadPalette().then((m) => m.CommandPalette), { ssr: false });
 const navLink =
   "relative inline-flex min-h-(--hit-area-min) items-center px-3 text-small text-body transition-colors duration-(--duration-fast) ease-standard hover:text-ink " +
   "aria-[current=page]:text-ink after:absolute after:inset-x-3 after:bottom-2.5 after:h-(--border-hairline) after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-(--duration-base) after:ease-standard aria-[current=page]:after:scale-x-100 hover:after:scale-x-100";
@@ -23,6 +27,8 @@ export function SiteHeader() {
   const cv = cvHref(documents.data);
   const [scrolled, setScrolled] = useState(false);
   const [paletteKey, setPaletteKey] = useState(0);
+  const [paletteWanted, setPaletteWanted] = useState(false);
+  const openWhenReady = useRef(false);
   const palette = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -45,10 +51,22 @@ export function SiteHeader() {
   }, []);
 
   function openPalette() {
-    if (!palette.current || palette.current.open) return;
+    if (!palette.current) {
+      // First use: load the palette, open it as soon as its <dialog> is mounted.
+      openWhenReady.current = true;
+      setPaletteWanted(true);
+      return;
+    }
+    if (palette.current.open) return;
     setPaletteKey((key) => key + 1);
     palette.current.showModal();
   }
+  const onPaletteReady = useCallback(() => {
+    if (!openWhenReady.current || !palette.current || palette.current.open) return;
+    openWhenReady.current = false;
+    setPaletteKey((key) => key + 1);
+    palette.current.showModal();
+  }, []);
 
   return (
     <header
@@ -105,6 +123,8 @@ export function SiteHeader() {
             <button
               type="button"
               onClick={openPalette}
+              onPointerEnter={loadPalette}
+              onFocus={loadPalette}
               aria-label="Search and navigate"
               aria-keyshortcuts="Meta+K Control+K"
               className="inline-flex min-h-(--hit-area-min) min-w-(--hit-area-min) items-center justify-center gap-2 rounded-pill text-ink transition-colors duration-(--duration-fast) ease-standard hover:bg-(--button-ghost-bg-hover) md:border md:border-hairline md:px-3 [&_svg]:size-(--icon-sm)"
@@ -119,7 +139,9 @@ export function SiteHeader() {
           <MobileMenu cv={cv} />
         </div>
       </div>
-      <CommandPalette dialog={palette} cv={cv} mountKey={paletteKey} />
+      {paletteWanted && (
+        <CommandPalette dialog={palette} cv={cv} mountKey={paletteKey} onReady={onPaletteReady} />
+      )}
     </header>
   );
 }

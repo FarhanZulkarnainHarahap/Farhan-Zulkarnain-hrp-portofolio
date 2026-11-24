@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { ContactBand } from "@/components/home/ContactBand";
 import { Hero, type HeroProof } from "@/components/home/Hero";
 import { HowIWork } from "@/components/home/HowIWork";
+import { FlyThrough } from "@/components/flythrough/FlyThrough";
 import { JourneyPreview } from "@/components/home/JourneyPreview";
 import { SelectedWork } from "@/components/home/SelectedWork";
 import { StackSummary } from "@/components/home/StackSummary";
@@ -34,11 +35,25 @@ export default async function HomePage() {
   return (
     <main id="main-content" className="flex-1">
       <Hero proof={proof} />
-      <SelectedWork initial={projects} />
-      <StackSummary initial={skills} />
-      <JourneyPreview initial={experiences} />
-      <HowIWork />
-      <ContactBand />
+      <FlyThrough />
+      {/* Below the fly-through (≥ 7.8 screens down): rendering is skipped until near the viewport
+          (content-visibility, Fase 12.1), so the first paint does not lay out, or fetch fonts for,
+          sections nobody can see yet. */}
+      <div className="defer-render">
+        <SelectedWork initial={projects} />
+      </div>
+      <div className="defer-render">
+        <StackSummary initial={skills} />
+      </div>
+      <div className="defer-render">
+        <JourneyPreview initial={experiences} />
+      </div>
+      <div className="defer-render">
+        <HowIWork />
+      </div>
+      <div className="defer-render">
+        <ContactBand />
+      </div>
     </main>
   );
 }

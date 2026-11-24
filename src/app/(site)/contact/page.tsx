@@ -11,6 +11,19 @@ export const metadata: Metadata = {
   description:
     "Contact Farhan Zulkarnain Harahap about full-time roles, freelance projects, or collaboration.",
   alternates: { canonical: "/contact" },
+  // Own title/description/url for social cards (images come from ./opengraph-image.tsx).
+  openGraph: {
+    title: "Contact · Farhan Zulkarnain Harahap",
+    description:
+      "Contact Farhan Zulkarnain Harahap about full-time roles, freelance projects, or collaboration.",
+    url: "/contact",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact · Farhan Zulkarnain Harahap",
+    description:
+      "Contact Farhan Zulkarnain Harahap about full-time roles, freelance projects, or collaboration.",
+  },
 };
 
 const linkClass =

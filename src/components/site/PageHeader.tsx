@@ -6,6 +6,11 @@ import { cn } from "@/lib/utils";
 /**
  * Top of a standalone page: eyebrow, the page's single H1, a lead and optional actions.
  * `visual` is a slot on the right (desktop) for an illustration (Fase 9) or 3D accent (Fase 10).
+ *
+ * Light entrance (Fase 10.5, same language as the home intro; MotionController): the accent line
+ * under the title draws left → right, then the actions and the visual rise in turn. The eyebrow, the
+ * H1 and the lead are not animated: on phones the lead is the LCP element of these pages, and hiding
+ * it until GSAP loaded cost ≈ 1.3 s of LCP (Fase 12.8). Reduced motion / no JS: everything final.
  */
 export function PageHeader({
   eyebrow,
@@ -27,18 +32,27 @@ export function PageHeader({
       <Container size="wide" className="grid items-end gap-10 lg:grid-cols-12">
         <div className="flex flex-col gap-6 lg:col-span-8">
           <Eyebrow>{eyebrow}</Eyebrow>
-          <h1 className="font-heading text-display-lg text-ink text-balance">
-            {title}
-          </h1>
+          <div className="flex flex-col gap-5">
+            <h1 className="font-heading text-display-lg text-ink text-balance">
+              {title}
+            </h1>
+            <span
+              aria-hidden="true"
+              data-intro-line
+              className="block h-0.5 w-16 origin-left bg-accent"
+            />
+          </div>
           {lead && (
             <p className="max-w-reading text-copy-lg text-body text-pretty">
               {lead}
             </p>
           )}
-          {children}
+          {children && <div data-intro="cta">{children}</div>}
         </div>
         {visual && (
-          <div className="hidden lg:col-span-4 lg:block">{visual}</div>
+          <div data-intro="visual" className="hidden lg:col-span-4 lg:block">
+            {visual}
+          </div>
         )}
       </Container>
     </header>

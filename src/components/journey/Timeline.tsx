@@ -54,7 +54,10 @@ function TimelineView({ state }: { state: CollectionState<Experience> }) {
             }
           />
         ) : (
-          <ol className="flex flex-col border-t border-hairline">
+          <ol
+            data-reveal="group"
+            className="flex flex-col border-t border-hairline"
+          >
             {entries.map((item) => {
               const stack = displayTags(item.technologies);
               return (

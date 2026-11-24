@@ -49,7 +49,7 @@ function JourneyPreviewView({ state }: { state: CollectionState<Experience> }) {
           onRetry={state.retry}
         />
       ) : (
-        <ol className="flex flex-col">
+        <ol data-reveal="group" className="flex flex-col">
           {entries.map((item) => (
             <li
               key={item.id}

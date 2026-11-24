@@ -1,5 +1,4 @@
 "use client";
-import { Code } from "lucide-react";
 import {
   ServerCollection,
   type CollectionState,
@@ -14,22 +13,9 @@ import {
   splitSubgroups,
 } from "@/lib/display/skills";
 import type { Loaded } from "@/lib/server/content";
-import { resolveSkillIconKey } from "@/lib/skill-icon-resolver";
-import { skillIcons } from "@/lib/skill-icons";
+import { SkillIcon } from "@/components/ui/skill-icon";
 import type { Skill } from "@/types/content";
 
-function SkillIcon({ name }: { name: string }) {
-  const Icon = skillIcons[resolveSkillIconKey(name, skillIcons)];
-  return Icon ? (
-    <Icon aria-hidden="true" className="size-(--icon-sm) shrink-0 text-muted" />
-  ) : (
-    <Code
-      aria-hidden="true"
-      className="size-(--icon-sm) shrink-0 text-muted"
-      strokeWidth={1.5}
-    />
-  );
-}
 
 function SkillList({ skills }: { skills: Skill[] }) {
   return (
@@ -77,7 +63,7 @@ function FullStackView({ state }: { state: CollectionState<Skill> }) {
       ) : groups.length === 0 ? (
         <EmptyState title="The stack will be listed here soon." />
       ) : (
-        <div className="flex flex-col">
+        <div data-reveal="group" className="flex flex-col">
           {groups.map((group) => {
             const { main, subgroups } = splitSubgroups(group.skills);
             return (

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { CardSpotlight } from "@/components/accents/CardSpotlight";
 import { Badge, ChipList } from "@/components/ui/badge";
 import { displayTags, splitCaseType } from "@/lib/display/projects";
 import { getProjectSlug } from "@/lib/portfolio/projects";
@@ -35,6 +36,7 @@ export function ProjectCard({
         className,
       )}
     >
+      <CardSpotlight />
       <ProjectImage
         src={project.imageUrl}
         alt=""
@@ -45,8 +47,12 @@ export function ProjectCard({
         {caseTypes.length > 0 && (
           <ul className="flex flex-wrap gap-2" aria-label="Project type">
             {caseTypes.map((type) => (
-              <li key={type}>
-                <Badge>{type}</Badge>
+              <li key={type} className="min-w-0 max-w-full">
+                {/* One line on cards (Fase 12.3): a 90-character type wrapped into a 4-line pill.
+                    The full value is in the tooltip and on the case study. */}
+                <Badge title={type} className="max-w-full">
+                  <span className="truncate">{type}</span>
+                </Badge>
               </li>
             ))}
           </ul>

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { ProjectImage } from "@/components/projects/ProjectImage";
 import { NextSteps } from "@/components/site/NextSteps";
-import { Badge, Chip } from "@/components/ui/badge";
+import { Badge, ChipList } from "@/components/ui/badge";
 import { buttonClasses, ExternalMark } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Eyebrow } from "@/components/ui/section";
@@ -21,8 +21,9 @@ import { FeatureList } from "./FeatureList";
 type Neighbour = Pick<Project, "id" | "title"> | null;
 
 /**
- * Case study article. `media` is the slot for the Fase 10 <DeviceMockup/>; until then the
- * project screenshot is shown in a fixed-ratio frame.
+ * Case study article. The lead image is the project screenshot in a fixed-ratio frame (16:10,
+ * media radius, hairline border) so nothing shifts while it loads. It sits right under the title
+ * and CTAs, above the fold on desktop, so it is loaded with priority. `media` can replace it.
  */
 export function CaseStudy({
   project,
@@ -56,7 +57,8 @@ export function CaseStudy({
               <li>
                 <Link
                   href="/projects"
-                  className="underline-offset-(--link-underline-offset) hover:text-ink hover:underline"
+                  // 44 px hit area without growing the breadcrumb row (Fase 12.4).
+                  className="relative underline-offset-(--link-underline-offset) after:absolute after:inset-x-0 after:top-1/2 after:h-(--hit-area-min) after:-translate-y-1/2 hover:text-ink hover:underline"
                 >
                   Projects
                 </Link>
@@ -115,13 +117,15 @@ export function CaseStudy({
               </div>
             )}
           </div>
-          <div data-visual-slot="device-mockup">
+          <div data-case-media>
             {media ?? (
               <ProjectImage
                 src={project.imageUrl}
                 alt={`${project.title} screenshot`}
-                priority
+                // Not priority (Fase 12.2): below the fold on phones, a sliver on desktop, never the
+                // LCP (the lead paragraph is); a preload only competed with the text on mobile.
                 sizes="(min-width: 1280px) 1200px, 94vw"
+                className="border border-hairline"
               />
             )}
           </div>
@@ -151,13 +155,9 @@ export function CaseStudy({
                   Stack
                 </dt>
                 <dd>
-                  <ul className="flex flex-wrap gap-2">
-                    {stack.map((name) => (
-                      <li key={name}>
-                        <Chip>{name}</Chip>
-                      </li>
-                    ))}
-                  </ul>
+                  {/* 56 technologies made a 2,000 px column on phones (Fase 12.3): first 16,
+                      then "N more technologies", like the features list. */}
+                  <ChipList items={stack} max={16} />
                 </dd>
               </div>
             )}
@@ -212,6 +212,7 @@ export function CaseStudy({
             <section
               key={chapter.title}
               aria-labelledby={`chapter-${chapter.title}`}
+              data-reveal
               className="flex flex-col gap-4"
             >
               <Eyebrow className="text-accent">
@@ -231,6 +232,7 @@ export function CaseStudy({
           {features.length > 0 && (
             <section
               aria-labelledby="key-features"
+              data-reveal
               className="flex flex-col gap-6"
             >
               <h2
