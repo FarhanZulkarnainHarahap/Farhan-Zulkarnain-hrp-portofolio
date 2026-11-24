@@ -208,3 +208,32 @@ test("reveal observers are cleaned up when navigating between pages", async ({
   expect(await pending(page)).toBe(onAbout);
   await context.close();
 });
+
+test("lazy loading (Fase 12.1): no GSAP under reduced motion, palette only on first ⌘K", async ({
+  browser,
+}) => {
+  const reduced = await browser.newContext({ reducedMotion: "reduce" });
+  const r = await reduced.newPage();
+  await r.goto("/");
+  await expect(r.locator("html")).toHaveClass(/motion-ready/);
+  await r.waitForTimeout(800);
+  expect(await r.evaluate(() => (window as unknown as { __motion?: { loaded: () => boolean } }).__motion?.loaded())).toBe(false);
+  await reduced.close();
+
+  const context = await browser.newContext({
+    reducedMotion: "no-preference",
+    viewport: { width: 1440, height: 900 },
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  // GSAP arrives after hydration (dynamic import) and runs the intro.
+  await expect.poll(() => page.evaluate(() => (window as unknown as { __motion?: { loaded: () => boolean } }).__motion?.loaded())).toBe(true);
+  const dialog = page.locator('dialog[aria-label="Search and navigate"]');
+  await expect(dialog).toHaveCount(0);
+  await page.keyboard.press("ControlOrMeta+k");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("combobox")).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await context.close();
+});
