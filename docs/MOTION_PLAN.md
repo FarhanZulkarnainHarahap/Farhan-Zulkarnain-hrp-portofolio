@@ -1,6 +1,6 @@
 # Motion Plan (Fase 8)
 
-Dasar: DESIGN.md → Motion (tenang, singkat, bermakna; tanpa loop; H1 tidak dianimasikan) dan prinsip
+Dasar: DESIGN.md → Motion (tenang, singkat, bermakna; tanpa loop pada teks/UI — loop hanya untuk aset 3D dekoratif, lihat Fase 12.5; H1 tidak dianimasikan) dan prinsip
 Emil Kowalski ("you don't need animations"): setiap gerak harus lolos 4 pertanyaan — **frekuensi**,
 **tujuan**, **durasi**, **fungsi**. Lebih sedikit gerak untuk elemen yang sering dipakai.
 
@@ -78,3 +78,23 @@ selalu mendahului isinya; tidak ada dua grup yang beranimasi bersamaan di satu l
 - **Fly-through:** waktu video = posisi scroll (scrub, bukan autoplay); teks scene mengikuti progres
   lewat `gsap.set`. Tanpa ScrollTrigger. rAF hanya selama video mengejar targetnya (0 rAF saat diam).
 - **Reduced motion:** tidak ada tween, tidak ada video; poster tumpukan dan daftar still + teks.
+
+
+## Fase 12.5 — aset 3D interaktif (idle + hover)
+
+Aturan (menggantikan larangan loop untuk aset 3D dekoratif saja):
+- Loop idle hanya pada aset 3D dekoratif (klip Blender pre-render): gerak ≤ 6 px, rotasi ≤ 3°, tanpa
+  kedip/flash, tidak pada teks.
+- Loop berhenti saat di luar viewport, tab tersembunyi (`visibilitychange`), atau reduced motion (still).
+- Tidak ada rAF tanpa interaksi, kecuali loop idle yang sedang terlihat (berupa `<video>`, jadi tanpa
+  skrip per frame). Hover = image sequence + follower ber-easing; rAF hanya selama bergerak.
+- Hover hanya `(hover: hover) and (pointer: fine)`. Layar sentuh: idle + tap (kartu berbalik), tanpa tilt,
+  tanpa tap-hijack.
+
+| # | Tempat | Idle | Hover / interaksi | Status |
+|---|---|---|---|---|
+| 12.5-1 | Hero beranda (setelah entrance, desktop) | `{theme}-idle.mp4` 4 dtk: melayang ±4 px, sumbu bernapas; frame 0 = frame akhir entrance | tilt 5×3 (±6°/±8°) | X1 |
+| 12.5-2 | Kartu Fz About (di bawah potret; ponsel setelah profil) | `idle.mp4` 3,5 dtk: melayang ±4 px, goyang ≤ 2°, satu kilau | tilt 7×5 (±12°); klik/Enter/Space/tap berbalik (18 frame) → kontak HTML | X1 |
+| 12.5-3 | Kartu Fz footer (semua halaman) | idem, satu set gelap | idem; sisi belakang: Email / GitHub / LinkedIn | X1 |
+| 12.5-4 | Idle mikro scene fly-through | klip 2 dtk mulai/berakhir di frame istirahat (tengah dataran linger); scroll lagi → crossfade ±150 ms ke scrub | parallax ≤ 1,5 % | setelah X1 |
+| 12.5-5 | Journey, Projects, studi kasus, Contact, 404 | lihat `.qa/fase12-5/x0/PLAN.md` | | setelah X1 |

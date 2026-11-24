@@ -403,8 +403,17 @@ These live in prose rather than a `motion:` YAML map because the current linter
   a 60ms stagger; maximum one or two revealed groups per viewport. Content is visible without JS.
 - **Media hover:** images scale 1.00 → 1.02 over `emphasis` (420ms); link underlines draw in from the
   left.
-- **Never:** scroll-jacking, pinned scroll scenes on mobile, looping ambient animation, parallax on
-  text, animating width/height/top/left, blocking input during an animation.
+- **Never:** scroll-jacking, pinned scroll scenes on mobile, looping animation on text or UI,
+  parallax on text, animating width/height/top/left, blocking input during an animation.
+- **Decorative 3D loops and hover (Fase 12.5):** an idle loop is allowed ONLY on decorative 3D assets
+  (pre-rendered Blender clips): small amplitude (movement ≤ 6 px, rotation ≤ 3°), no blink or flash,
+  never on text. A loop stops when it is off screen, when the tab is hidden, and under reduced motion
+  (the still is shown). No requestAnimationFrame without interaction, except a visible idle loop
+  (a `<video>`, so the browser's media pipeline, not script). Hover tilts are pre-rendered image
+  sequences driven by the pointer with an eased follower (rAF only while it moves), and only on
+  precise pointers (`(hover: hover) and (pointer: fine)`). Touch screens get idle + tap (a tap flips a
+  card), never tilt and never tap-hijacking. Interactive cards are real `<button>`s (`aria-pressed`,
+  clear label, Enter/Space, visible focus); text shown on a render is real HTML on top.
 - **Reduced motion:** `prefers-reduced-motion: reduce` collapses durations and the reveal distance to
   zero (tokens do this automatically); 3D shows its static poster. Motion must not move LCP elements
   or cause layout shift.
@@ -486,7 +495,8 @@ normalises presentation.
   hero (desktop) shows the Fz card entrance once per session (a short version afterwards): the card
   settles, splits into five matte layers (Interface → API → Service → Database → Deployment) and
   locks into a stack on a terracotta axis. Below the hero, a scroll-scrubbed fly-through follows one
-  request through the five layers. Nothing loops. No 3D on project cards or forms. The renders carry
+  request through the five layers. Decorative 3D may idle and react to hover under the loop rules in
+Motion (Fase 12.5): the hero stack after its entrance, the Fz card on About and in the footer. The renders carry
   the canvas colour, so the visuals have no frame.
 - **Case study lead image:** the plain project screenshot (`ProjectImage`) in a quiet frame: 16:10
   locked ratio, `--media-radius`, hairline border, `--media-bg` while loading; priority because it
@@ -581,7 +591,8 @@ guidance; when a new case is unclear, ask instead of guessing.
   On phones, leave out what would only play below the first screen.
 
 **Motion**
-- Calm, short, meaningful; motion tokens only; no loops; nothing idles (0 rAF at rest).
+- Calm, short, meaningful; motion tokens only; no loops on text or UI; nothing idles (0 rAF at rest).
+  Decorative 3D may loop gently and react to hover under the Fase 12.5 rules (Motion).
 - The H1 and the navbar never animate. Page entrances: accent line draws, then lead / actions / visual
   rise in turn. A sheen plays once, then the text is plain.
 - Rejected on purpose: a progress line on /journey, parallax on case-study images, ScrollTrigger,
