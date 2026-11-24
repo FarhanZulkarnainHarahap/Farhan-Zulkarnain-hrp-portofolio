@@ -79,3 +79,22 @@ test("old URLs answer 308 with the new location", async ({ request }) => {
     expect(res.headers().location, from).toBe(to);
   }
 });
+
+test("favicon set is the Fz monogram: SVG (light/dark) + PNG fallback + apple-touch-icon, all small", async ({ request }) => {
+  const html = await initialHtml(request, "/");
+  const links = Array.from(html.matchAll(/<link[^>]+rel="(icon|apple-touch-icon)"[^>]*>/g), (m) => m[0]);
+  const href = (re: RegExp) => links.find((l) => re.test(l))?.match(/href="([^"]+)"/)?.[1];
+  const svg = href(/type="image\/svg\+xml"/);
+  const png = href(/rel="icon"[^>]+type="image\/png"|type="image\/png"[^>]+rel="icon"/);
+  const apple = href(/apple-touch-icon/);
+  expect(svg, "icon.svg").toBeTruthy();
+  expect(png, "png fallback").toBeTruthy();
+  expect(apple, "apple-touch-icon").toBeTruthy();
+  for (const [url, max] of [[svg!, 2048], [png!, 2048], [apple!, 8192], ["/favicon.ico", 2048]] as const) {
+    const res = await request.get(url);
+    expect(res.status(), url).toBe(200);
+    expect((await res.body()).length, url).toBeLessThan(max);
+  }
+  const body = await (await request.get(svg!)).text();
+  expect(body).toContain("prefers-color-scheme:dark");
+});
