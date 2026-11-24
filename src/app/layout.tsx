@@ -1,29 +1,37 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/site/ThemeProvider";
 import { profile } from "@/lib/site";
 
-// Italic is not used on the site; it was a 129 KB preload on the critical path (Fase 10.5). If a
-// phrase ever needs it, add a separate instance with `preload: false`.
-const newsreader = Newsreader({
-  subsets: ["latin"],
-  style: ["normal"],
-  axes: ["opsz"],
+// Fonts are local subsets (Fase 12.1, src/app/fonts/README.md): Latin only, only the weights in use.
+// Newsreader keeps the opsz axis (design requirement) with one file per weight, so the H1 (400)
+// needs 38 KB instead of the 129 KB wght+opsz file. Not preloaded: the H1 paints first in the
+// metric-adjusted fallback serif. Italic is not used on the site.
+const newsreader = localFont({
+  src: [
+    { path: "./fonts/newsreader-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/newsreader-500.woff2", weight: "500", style: "normal" },
+  ],
   display: "swap",
-  // Not preloaded: the 144 KB variable file (opsz is a design requirement) stayed on the LCP
-  // critical path on mobile. The H1 paints first in the metric-adjusted fallback serif.
   preload: false,
+  adjustFontFallback: "Times New Roman",
+  fallback: ["Iowan Old Style", "Georgia", "serif"],
   variable: "--font-newsreader",
 });
-const geist = Geist({
-  subsets: ["latin"],
+const geist = localFont({
+  src: "./fonts/geist.woff2",
+  weight: "400 700",
   display: "swap",
+  adjustFontFallback: "Arial",
   variable: "--font-geist",
 });
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
+const geistMono = localFont({
+  src: "./fonts/geist-mono.woff2",
+  weight: "400 500",
   display: "swap",
+  adjustFontFallback: false,
+  fallback: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
   variable: "--font-geist-mono",
 });
 
