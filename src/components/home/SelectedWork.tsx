@@ -15,7 +15,8 @@ import {
   type CollectionState,
 } from "@/components/site/ServerCollection";
 
-const grid = "grid gap-6 md:grid-cols-2 xl:grid-cols-3";
+// grid-cols-1 = minmax(0, 1fr): a card never widens the column to its content (Fase 12.3).
+const grid = "grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3";
 
 function SelectedWorkView({ state }: { state: CollectionState<Project> }) {
   const featured = selectFeatured(state.data);
@@ -61,7 +62,7 @@ function SelectedWorkView({ state }: { state: CollectionState<Project> }) {
       ) : (
         <ul data-reveal="group" className={grid}>
           {featured.map((project) => (
-            <li key={project.id} className="flex">
+            <li key={project.id} className="flex min-w-0">
               <ProjectCard project={project} className="w-full" />
             </li>
           ))}

@@ -244,9 +244,9 @@ function ExplorerView({
           }
         />
       ) : (
-        <ul ref={gridRef} className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <ul ref={gridRef} className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
           {results.map((project, index) => (
-            <li key={project.id} data-flip-id={project.id} className="flex">
+            <li key={project.id} data-flip-id={project.id} className="flex min-w-0">
               <ProjectCard
                 project={project}
                 headingLevel="h2"

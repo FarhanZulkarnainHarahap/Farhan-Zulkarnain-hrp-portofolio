@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { ProjectImage } from "@/components/projects/ProjectImage";
 import { NextSteps } from "@/components/site/NextSteps";
-import { Badge, Chip } from "@/components/ui/badge";
+import { Badge, ChipList } from "@/components/ui/badge";
 import { buttonClasses, ExternalMark } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Eyebrow } from "@/components/ui/section";
@@ -154,13 +154,9 @@ export function CaseStudy({
                   Stack
                 </dt>
                 <dd>
-                  <ul className="flex flex-wrap gap-2">
-                    {stack.map((name) => (
-                      <li key={name}>
-                        <Chip>{name}</Chip>
-                      </li>
-                    ))}
-                  </ul>
+                  {/* 56 technologies made a 2,000 px column on phones (Fase 12.3): first 16,
+                      then "N more technologies", like the features list. */}
+                  <ChipList items={stack} max={16} />
                 </dd>
               </div>
             )}

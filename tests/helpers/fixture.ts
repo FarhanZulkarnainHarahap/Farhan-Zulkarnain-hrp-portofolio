@@ -9,9 +9,11 @@ export const FIXTURE_API = "http://localhost:3190";
 export const PRODUCTION_API = "https://api.farhanzulkarnainhrp.com";
 
 export type Scenario = {
-  scenario?: "normal" | "empty" | "fail" | "extreme";
+  scenario?: "normal" | "empty" | "fail" | "extreme" | "worst";
   fail?: string[];
   empty?: string[];
+  /** worst only: one document without `size` (the API layer rejects the collection). */
+  nosize?: boolean;
 };
 
 export async function setScenario(request: APIRequestContext, body: Scenario) {

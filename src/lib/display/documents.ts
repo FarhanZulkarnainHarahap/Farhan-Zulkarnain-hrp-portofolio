@@ -10,10 +10,12 @@ export function formatBytes(size: number | null | undefined) {
   return `${(size / (1024 * 1024)).toFixed(1).replace(/\.0$/, "")} MB`;
 }
 
-/** "CERTIFICATE" → "Certificate". */
+/** "CERTIFICATE" → "Certificate"; a category already written in mixed case is kept as is
+ * ("Résumé — English & Bahasa Indonesia" keeps its proper nouns, Fase 12.3). */
 export function documentCategoryLabel(category: string | null | undefined) {
   const value = (category ?? "").trim();
   if (!value) return "Document";
+  if (value !== value.toUpperCase()) return value.charAt(0).toUpperCase() + value.slice(1);
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }
 

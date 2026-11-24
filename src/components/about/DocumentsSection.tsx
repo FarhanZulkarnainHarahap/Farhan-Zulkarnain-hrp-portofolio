@@ -61,6 +61,8 @@ function DocumentsView({ state }: { state: CollectionState<Document> }) {
                 <ProjectImage
                   src={doc.previewUrl}
                   alt=""
+                  // No preview stored is not a broken image (Fase 12.3).
+                  fallbackLabel={doc.previewUrl ? "Image unavailable" : "No preview"}
                   sizes="(min-width: 1024px) 300px, (min-width: 640px) 45vw, 92vw"
                   className="aspect-[4/3]"
                 />

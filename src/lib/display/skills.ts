@@ -54,14 +54,18 @@ export const CATEGORY_LABELS: Record<string, string> = {
   BACKEND: "Backend",
   TOOLS: "Tools",
   OTHERS: "Other",
+  DEVOPS: "DevOps",
+  DATABASE: "Database",
 };
 const CATEGORY_ORDER = ["FRONTEND", "BACKEND", "TOOLS", "OTHERS"];
 
-function categoryLabel(category: string) {
-  return (
-    CATEGORY_LABELS[category] ??
-    category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()
-  );
+/** Known labels; otherwise the API spelling when it is mixed case ("Programming Languages &
+ * Runtimes"), or sentence case when it is all caps ("CLOUD" → "Cloud"). Fase 12.3. */
+function categoryLabel(category: string, original = category) {
+  if (CATEGORY_LABELS[category]) return CATEGORY_LABELS[category];
+  const value = original.trim();
+  if (value !== value.toUpperCase()) return value.charAt(0).toUpperCase() + value.slice(1);
+  return category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
 }
 
 export type SkillGroup = { category: string; label: string; skills: Skill[] };
@@ -72,8 +76,10 @@ export type SkillGroup = { category: string; label: string; skills: Skill[] };
  */
 export function groupSkills(skills: Skill[]): SkillGroup[] {
   const groups = new Map<string, Skill[]>();
+  const spelling = new Map<string, string>();
   for (const skill of skills) {
     const category = (skill.category || "OTHERS").toUpperCase();
+    if (!spelling.has(category)) spelling.set(category, skill.category || "OTHERS");
     const list = groups.get(category) ?? [];
     if (!list.some((item) => sameSkill(item.name, skill.name)))
       list.push(skill);
@@ -85,7 +91,7 @@ export function groupSkills(skills: Skill[]): SkillGroup[] {
   );
   return [...known, ...unknown].map((category) => ({
     category,
-    label: categoryLabel(category),
+    label: categoryLabel(category, spelling.get(category)),
     skills: groups.get(category)!,
   }));
 }
