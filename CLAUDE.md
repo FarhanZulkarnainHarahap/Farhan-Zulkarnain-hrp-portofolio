@@ -17,21 +17,16 @@
 - Logika /auth/login, /auth/register (JWT via jose) dan /dashboard (redirect ke /admin/home,
   dijaga proxy.ts untuk role ADMIN) jangan diubah. Tampilan /auth boleh diselaraskan.
 
-## Dashboard (di luar cakupan redesign)
-- Tampilan dashboard tidak diubah dalam redesign ini; komponennya ada di src/components/admin/
-  dan CSS-nya di src/app/dashboard/admin.css.
-- admin.css adalah salinan globals.css lama yang di-scope ke `.dashboard-root` (wrapper di
-  src/app/dashboard/layout.tsx, display: contents). Aturan baru di globals.css tetap bisa "bocor"
-  ke dashboard untuk properti yang tidak didefinisikan admin.css, dan utilitas Tailwind dashboard
-  memakai tema default Tailwind. Jadi: jangan reset namespace tema default Tailwind
-  (mis. `--color-*: initial`), dan setelah mengubah globals.css jalankan
-  `npx playwright test tests/admin-visual.spec.ts` (baseline screenshot dashboard harus tetap identik).
-- Modul bersama yang dipindah dari kinetic/ (kode Kinetic sudah dihapus di Fase 11):
-  src/hooks/useCollection.ts, src/types/content.ts (Skill, Experience), src/lib/site.ts (profile),
-  src/components/admin/{Modal,Confirmation,CollectionState,DashboardShell,DashboardNavbar,
-  MotionPreference}.tsx. DashboardShell (dipakai /dashboard/user) satu-satunya pemakai framer-motion;
-  framer-motion tetap di package.json tetapi TIDAK boleh ter-import di rute publik.
-- next.config.ts boleh diubah untuk redirects atas izin eksplisit (Fase 1.5: /about/* → /about#…).
+## Dashboard (Fase 11 redesign Kinetic)
+- Sejak 2026-11-27 dashboard BOLEH diselaraskan dengan design language Kinetic di Fase 11 saja: animasi
+  ringan dan fungsional, tanpa efek sinematik/WebGL yang mengganggu CRUD, upload, atau auth.
+  Komponennya di src/components/admin/, CSS di src/app/dashboard/admin.css (di-scope ke `.dashboard-root`).
+- Sebelum Fase 11: perubahan globals.css tidak boleh mengubah dashboard. Jangan reset namespace tema default
+  Tailwind (mis. `--color-*: initial`); jalankan `npx playwright test tests/admin-visual.spec.ts` setelah
+  mengubah globals.css. Baseline screenshot hanya boleh diperbarui dengan sengaja di Fase 11.
+- Modul bersama: src/hooks/useCollection.ts, src/types/content.ts, src/lib/site.ts,
+  src/components/admin/{Modal,Confirmation,CollectionState,DashboardShell,DashboardNavbar,MotionPreference}.tsx.
+- next.config.ts boleh diubah untuk redirects atas izin eksplisit.
 
 ## Lint
 - Lint harus 0 error, tanpa pengecualian file aplikasi di eslint.config.mjs.
@@ -43,62 +38,42 @@
 - Pertahankan: rute yang ada, metadata dan canonical tiap halaman, sitemap.ts, robots.ts,
   skip-to-content, command palette ⌘K, dan form kontak yang berfungsi.
 
-## Desain
-- DESIGN.md adalah sumber kebenaran visual. Semua warna, font, spacing, radius, dan motion memakai token.
-  Tidak ada nilai hardcode.
-- Gaya: portofolio profesional, bersih, tenang, berkelas. Hilangkan semua istilah "Kinetic Systems",
-  "System Initialized", "Transmission", "Capability Graph", "Trajectory Map", "FZH-001".
-- Copywriting: bahasa Inggris profesional, kecuali saya minta lain.
-- Animasi wajib menghormati prefers-reduced-motion dan tidak boleh memperburuk LCP/CLS.
-- Token ada di src/app/globals.css (primitive → semantic `--ui-*` + `@theme` → component). Tema via
-  `light-dark()`; jangan pakai utilitas `dark:`. Elemen yang butuh skema sendiri pakai class
-  `.site-scheme` / `.scheme-dark` (token di-deklarasi ulang di sana), bukan `color-scheme` lepas.
+## Desain (arah baru sejak 2026-11-27: master prompt "FARHAN — KINETIC SYSTEMS")
+- Arah "Quiet Editorial" DIGANTI oleh master prompt Kinetic Systems (keputusan pemilik 2026-11-27):
+  "Cinematic Spatial Computing Experience & Interactive 3D Developer Portfolio" — industrial futuristik,
+  tipografi Swiss minimalis, kedalaman spasial, dark mode premium, motion sinematik. Hindari gradient/neon/
+  glassmorphism berlebihan dan kumpulan card monoton. Audit: docs/KINETIC_AUDIT.md.
+- DESIGN.md tetap sumber kebenaran visual; ditulis ulang ke sistem Kinetic di Fase 2. Semua warna, font,
+  spacing, radius, motion memakai token di src/app/globals.css. Tidak ada nilai hardcode.
+- Copywriting: bahasa Inggris profesional, kecuali saya minta lain. Istilah Kinetic boleh dipakai.
+- Animasi wajib menghormati prefers-reduced-motion; konten tidak boleh bergantung pada animasi/WebGL.
+  LCP tetap teks/HTML server, bukan canvas. CLS < 0,05.
+- Stack motion (pembagian peran, satu pemilik per properti transform):
+  three + @react-three/fiber + drei + postprocessing = render 3D; @theatre/core = timeline sinematik
+  (Studio HANYA dev, import dinamis, tidak pernah ter-bundle/aktif di production; state di JSON yang di-commit);
+  GSAP (+ScrollTrigger, Flip, SplitText) = scroll & sequencing DOM; motion = transisi DOM/mikro-interaksi;
+  Lenis = smooth scroll; maath = damping; GLSL = masking/dissolve. SATU sumber scroll progress bersama.
+  @theatre/r3f TIDAK dipakai (peer fiber ^8, tidak kompatibel dengan fiber 9 / React 19).
+- Jangan setState React per frame; gerakkan objek lewat ref/useFrame/uniform. Satu Canvas persisten untuk
+  rute publik; satu render loop; berhenti saat tab tersembunyi/offscreen.
 - Komponen dasar di src/components/ui/, frame situs di src/components/site/ (dipasang lewat
   src/app/(site)/layout.tsx; app/not-found.tsx memasangnya sendiri).
-- Motion: GSAP lewat src/lib/gsap.ts (token, reduced-motion = tanpa tween). Reveal memakai
-  IntersectionObserver (src/components/motion/MotionController.tsx). ScrollTrigger TIDAK dimuat di halaman
-  mana pun; kalau 3D di Fase 10 butuh efek scroll, import ScrollTrigger secara dinamis hanya di chunk
-  komponen 3D. Rencana dan keputusan motion di docs/MOTION_PLAN.md.
-- legacy-kinetic.css dan wrapper `.legacy-root` sudah dihapus (Fase 11); jangan dihidupkan lagi.
 
-## 3D (Blender)
-- 3D hanya sebagai AKSEN, bukan tema. Sumber .blend di design/blender/, hasil ekspor di public/3d/.
-- Budget: tiap GLB <= 1.5 MB (Draco/Meshopt), tekstur <= 2K WebP, total 3D halaman utama <= 3 MB.
-- Wajib ada poster WebP/AVIF sebagai fallback (mobile, reduced-motion, WebGL mati), dan wajib lazy-load.
+## 3D
+- 3D adalah inti pengalaman (bukan lagi aksen). Sumber .blend di design/blender/, ekspor GLB di public/3d/.
+- Objek boleh dibuat lewat MCP blender + Blender Skills (diutamakan untuk monogram FZ dan objek hero) ATAU
+  geometri prosedural three.js (orbit, badge, partikel, garis). Identitas: monogram Fz asli
+  (src/app/icon.svg, public/fz-logo.png).
+- Budget: tiap GLB <= 1.5 MB (Draco/Meshopt), tekstur <= 2K (WebP/KTX2), total 3D halaman utama <= 3 MB.
+- Wajib fallback tanpa WebGL (SVG/statis) dengan seluruh konten & navigasi tetap berfungsi; mobile dan
+  perangkat lemah memakai kualitas adaptif (DPR, tanpa postprocessing berat).
 - Jangan memakai generate_3d atau fitur berbayar lain tanpa izin saya. Poly Haven (CC0) boleh dipakai.
-  Untuk Sketchfab, cek lisensinya dan catat di docs/CREDITS.md.
-- SEMUA aset 3D baru WAJIB dibuat lewat MCP blender (execute_blender_code, look, get_scene_info,
-  search_assets/import_asset) dan Blender Skills: /blender-director sebagai titik awal, lalu
-  /minimalist-style, /procedural-modeling, /hard-surface, /materials, /lighting, /lookdev, /rendering,
-  /asset-optimization, /export-pipeline, /qa-review. Dikerjakan di Fase 10.
-- DILARANG: memakai ulang GLB/model lama Kinetic (dulu public/models; dihapus di Fase 11, hanya ada
-  di riwayat git), membuat geometri 3D langsung dengan kode three.js sebagai pengganti aset Blender,
-  atau mengambil model dari sumber lain tanpa izin saya.
-- Hasil Fase 10 / 10.5 (lihat docs/3D_PLAN.md):
-  - HeroModel three.js DIHAPUS di Fase 10.5 (beserta three, @types/three, hero3d/, webgl-capability.ts,
-    token --model-*, hero-model.glb). Jangan pakai three.js / WebGL lagi tanpa izin.
-  - Visual hero = entrance kartu Fz (video Blender, desktop lg+ saja): src/components/home/HeroEntrance.tsx,
-    poster ThemedPicture (frame 1 = kartu utuh bila html.js-motion; selain itu frame terakhir = tumpukan),
-    aset public/3d/entrance/ (varian C, Checkpoint B2: potongan 4:5 864 × 1080, `--entrance-width:
-    min(34vw, 36rem)`, poster di-preload; mobile tanpa entrance). Aturan LCP = WAKTU, bukan elemen:
-    LCP ≤ 2,0 dtk Lighthouse mobile (throttling bawaan), ≤ 1,2 dtk desktop, CLS < 0,05. Poster boleh
-    jadi LCP asal AVIF/WebP kecil, di-preload dengan fetchpriority="high", srcset pas, tanpa menunggu
-    JS (dijaga tests/entrance.spec.ts di 1024–1920, light + dark). Hero mengisi layar pertama
-    (min-height) supaya section di bawahnya tidak ter-paint saat load.
-  - Fly-through beranda: src/components/flythrough/ (scrub.ts = port engine skill scroll-world, FlyThrough.tsx,
-    content.ts = copy disetujui). Klip per tema di public/3d/flight/. Tanpa JS / reduced motion = daftar
-    still + teks; dengan html.js-motion = stage sticky + scrub. 0 rAF saat diam; destroy saat unmount.
-  - Seam: semua klip dipotong dari SATU timeline Blender (scene Card); entrance = potongan render 16:9 yang
-    sama (bukan render terpisah).
-  - DeviceMockup DIHAPUS di Fase 10.5: gambar utama studi kasus = ProjectImage biasa (16:10, radius
-    `--media-radius`, border hairline; tanpa priority sejak Fase 12.2: di bawah lipatan di ponsel, bukan LCP). Scene Device di .blend hanya arsip; jangan dipasang lagi.
-  - Render per tema lewat src/components/media/ThemedPicture.tsx (hanya varian aktif diunduh).
-  - DotGrid (WebGL) DIHAPUS; yang tersisa hanya pola titik CSS statis `.dot-pattern` (token `--dots-*`).
-  - Mengubah aset: edit design/blender/portfolio-3d.blend lewat MCP, render ulang, ekspor ke public/3d/,
-    ulangi /qa-review. PNG sumber tidak di-commit ke public/.
+  Untuk Sketchfab, cek lisensinya dan catat di docs/CREDITS.md. Tidak ada aset berhak cipta tanpa izin.
+- Aset video/poster lama (public/3d/entrance, flight, card) dan komponen HeroEntrance/FlyThrough/FzCard
+  diganti di Fase 6–10; grep import sebelum menghapus. Riwayat lama: docs/3D_PLAN.md.
 
 ## Alur kerja
-- Kerja hanya di branch redesign/professional. Commit kecil per fase/section.
+- Kerja hanya di branch redesign/professional (dikonfirmasi lagi 2026-11-27). Commit kecil per fase/section.
 - Sebelum menghapus file lama, grep dulu semua import-nya.
 - Setiap fase/sub-fase yang selesai DAN lolos npm run lint + npm run build + test yang relevan:
   langsung commit lalu `git push origin redesign/professional`, tanpa menunggu persetujuan.
