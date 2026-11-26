@@ -34,7 +34,7 @@ export default async function HomePage() {
 
   return (
     <main id="main-content" className="flex-1">
-      <Hero proof={proof} />
+      <Hero proof={proof} skills={skills.data} />
       <FlyThrough />
       {/* Below the fly-through (≥ 7.8 screens down): rendering is skipped until near the viewport
           (content-visibility, Fase 12.1), so the first paint does not lay out, or fetch fonts for,

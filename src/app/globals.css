@@ -1,66 +1,73 @@
 /*
- * Design system — "Quiet Editorial". Source of truth: DESIGN.md (tokens mirror its YAML).
+ * Design system — "Kinetic Systems: Immersive Digital Engineering" (since 2026-11-27).
+ * Source of truth: DESIGN.md (tokens mirror its YAML). Replaces "Quiet Editorial".
  *
  * Three layers:
  *   1. Primitives  (:root, raw values; never used directly in components)
  *   2. Semantic    (--ui-* colors, @theme type/space/radius/ease → utilities such as
- *                   bg-canvas, text-ink, font-heading, text-display-xl, py-section)
- *   3. Component   (--button-*, --card-*, --chip-*, --field-*, --nav-*)
+ *                   bg-canvas, text-ink, font-display, text-display-hero, py-section)
+ *   3. Component   (--button-*, --card-*, --chip-*, --field-*, --nav-*, --layer-*)
+ * Plus runtime tokens for motion and 3D (--duration-*, --spring-*, --mask-*, --hover-*, --press-*,
+ * --idle-*, --camera-*), read by src/lib/design-tokens.ts for GSAP, Motion, Theatre.js and R3F.
  *
- * Theming: every semantic color is light-dark(<light>, <dark>). It resolves against the
- * element's color-scheme, which follows the OS by default and is pinned by
- * <html data-theme="light|dark"> (set before paint by the inline script in layout.tsx).
- * A section can also force a scheme locally with `color-scheme: dark`.
+ * Theming: dark is the default scheme (premium dark interface). <html data-theme="light"> opts into
+ * the light variant (theme toggle / ⌘K); every semantic color is light-dark(<light>, <dark>).
  *
  * Boundaries (see CLAUDE.md):
  *   - Do not reset or rename Tailwind's default theme namespaces; the dashboard uses them.
  *   - Base element rules here stay minimal (no heading fonts, no global animation resets)
- *     because they also reach the dashboard (admin.css).
+ *     because they also reach the dashboard (admin.css). Public-only rules are scoped to
+ *     .site-frame or to classes the dashboard never uses.
  */
 @import "tailwindcss";
 
 /* ── 1. Primitives ─────────────────────────────────────────────────────────── */
 :root {
-  /* Paper: warm neutrals for the light theme */
-  --paper-0: #ffffff;
-  --paper-50: #faf8f4;
-  --paper-100: #f2eee7;
-  --paper-200: #e4ded3;
-  --paper-300: #bdb4a6;
-  --paper-500: #8f877a;
-  --paper-600: #6b6760;
-  --paper-700: #4a4843;
-  --paper-900: #1a1917;
+  /* Void: cool graphite neutrals (dark scheme) */
+  --void-950: #08090b;
+  --void-900: #101216;
+  --void-850: #171a20;
+  --void-800: #1e222a;
+  --void-700: #272b33;
+  --void-600: #3a404b;
+  --void-500: #5a616d;
+  --void-400: #80808a;
+  --void-300: #a1a1aa;
+  --void-50: #f2f3f5;
 
-  /* Night: warm neutrals for the dark theme */
-  --night-50: #f2efe8;
-  --night-200: #bab5ab;
-  --night-400: #94907f;
-  --night-500: #77716a;
-  --night-600: #4a463f;
-  --night-700: #2e2b26;
-  --night-800: #24221e;
-  --night-850: #1d1b18;
-  --night-900: #141311;
+  /* Daylight: cool neutrals (light scheme) */
+  --day-0: #ffffff;
+  --day-50: #f3f4f6;
+  --day-100: #e9ebef;
+  --day-200: #d5d9e0;
+  --day-300: #a9b0bc;
+  --day-500: #7b828e;
+  --day-600: #5d626c;
+  --day-700: #3f434b;
+  --day-950: #0b0c0e;
 
-  /* Clay: the single accent */
-  --clay-50: #f5e6dd;
-  --clay-300: #e9a887;
-  --clay-400: #de916c;
-  --clay-600: #a34a27;
-  --clay-700: #873c1f;
-  --clay-950: #3a2419;
+  /* Ice: the single accent. Used sparingly; light and 3D lighting carry the visual weight. */
+  --ice-100: #d7f1f5;
+  --ice-200: #b9f5ff;
+  --ice-300: #93e9f7;
+  --ice-700: #0b6e7f;
+  --ice-800: #08525f;
+  --ice-950: #0d2a30;
+
+  /* Metal: brushed alloy, for 3D materials and secondary highlights */
+  --metal-300: #a8b3c2;
+  --metal-600: #5b6573;
 
   /* Status */
-  --moss-300: #7cc29c;
-  --moss-600: #2e6a4c;
-  --brick-300: #f2928a;
-  --brick-600: #b3261e;
-  --ochre-300: #e3b45c;
-  --ochre-700: #8a5a00;
+  --signal-ok-300: #7fe0b0;
+  --signal-ok-700: #1f6b48;
+  --signal-err-300: #ff8a80;
+  --signal-err-700: #b3261e;
+  --signal-warn-300: #f2c46d;
+  --signal-warn-700: #8a5a00;
 
-  /* Font stacks (next/font variables are set on <html> in layout.tsx) */
-  --stack-serif: var(--font-newsreader), "Iowan Old Style", Georgia, serif;
+  /* Font stacks (next/font variables are set on <html> in layout.tsx). Geist carries display and
+     body (two optical roles of one family); Geist Mono carries technical metadata. */
   --stack-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --stack-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
@@ -68,58 +75,71 @@
 /* ── 2. Semantic tokens (Tailwind theme) ───────────────────────────────────── */
 @theme static {
   /* Families */
-  --font-heading: var(--stack-serif);
+  --font-display: var(--stack-sans);
+  --font-heading: var(--stack-sans);
   --font-body: var(--stack-sans);
   --font-meta: var(--stack-mono);
 
-  /* Type scale (fluid between 360px and 1440px viewports) */
-  --text-display-xl: clamp(2.75rem, 2rem + 3.3333vw, 5rem);
-  --text-display-xl--line-height: 1.04;
-  --text-display-xl--letter-spacing: -0.025em;
-  --text-display-xl--font-weight: 400;
-  --text-display-lg: clamp(2.25rem, 1.75rem + 2.2222vw, 3.75rem);
-  --text-display-lg--line-height: 1.08;
-  --text-display-lg--letter-spacing: -0.02em;
-  --text-display-lg--font-weight: 400;
-  --text-headline: clamp(1.75rem, 1.5rem + 1.1111vw, 2.5rem);
-  --text-headline--line-height: 1.15;
-  --text-headline--letter-spacing: -0.015em;
-  --text-headline--font-weight: 500;
-  --text-title: clamp(1.25rem, 1.1667rem + 0.3704vw, 1.5rem);
-  --text-title--line-height: 1.3;
-  --text-title--letter-spacing: -0.01em;
+  /* Type scale: fluid between 360px and 1440px, capped for 4K. Display sizes are set tight and
+     uppercase-ready (masked line reveal needs line boxes that hug the glyphs). */
+  --text-display-hero: clamp(3rem, 0.75rem + 8vw, 9.5rem);
+  --text-display-hero--line-height: 0.86;
+  --text-display-hero--letter-spacing: -0.045em;
+  --text-display-hero--font-weight: 600;
+  --text-display-xl: clamp(2.75rem, 1.25rem + 5.5vw, 6.5rem);
+  --text-display-xl--line-height: 0.9;
+  --text-display-xl--letter-spacing: -0.04em;
+  --text-display-xl--font-weight: 600;
+  --text-display-lg: clamp(2.25rem, 1.25rem + 3.6vw, 4.75rem);
+  --text-display-lg--line-height: 0.95;
+  --text-display-lg--letter-spacing: -0.035em;
+  --text-display-lg--font-weight: 600;
+  --text-headline: clamp(1.75rem, 1.35rem + 1.6vw, 3rem);
+  --text-headline--line-height: 1.02;
+  --text-headline--letter-spacing: -0.03em;
+  --text-headline--font-weight: 550;
+  --text-title: clamp(1.25rem, 1.15rem + 0.45vw, 1.625rem);
+  --text-title--line-height: 1.2;
+  --text-title--letter-spacing: -0.015em;
   --text-title--font-weight: 500;
-  --text-copy-lg: clamp(1.0625rem, 1.0208rem + 0.1852vw, 1.1875rem);
-  --text-copy-lg--line-height: 1.6;
+  --text-copy-lg: clamp(1.0625rem, 1.02rem + 0.19vw, 1.1875rem);
+  --text-copy-lg--line-height: 1.55;
   --text-copy: 1rem;
-  --text-copy--line-height: 1.65;
+  --text-copy--line-height: 1.6;
   --text-small: 0.875rem;
-  --text-small--line-height: 1.55;
+  --text-small--line-height: 1.5;
   --text-meta: 0.8125rem;
   --text-meta--line-height: 1.45;
   --text-meta--letter-spacing: 0.01em;
-  --text-label: 0.75rem;
-  --text-label--line-height: 1.4;
-  --text-label--letter-spacing: 0.08em;
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.35;
+  --text-label--letter-spacing: 0.12em;
   --text-label--font-weight: 500;
 
-  /* Layout (Tailwind's 4px --spacing base and default breakpoints are kept) */
-  --spacing-gutter: clamp(1.25rem, 0.8333rem + 1.8519vw, 2.5rem);
-  --spacing-section: clamp(4.5rem, 3.3333rem + 5.1852vw, 8rem);
-  --spacing-section-sm: clamp(3rem, 2.3333rem + 2.963vw, 5rem);
-  --container-page: 72rem;
-  --container-wide: 80rem;
-  --container-reading: 42rem;
+  /* Layout: 12-column grid, Tailwind's 4px --spacing base is kept. */
+  --spacing-gutter: clamp(1.25rem, 0.75rem + 2.2vw, 3rem);
+  --spacing-grid-gap: clamp(1rem, 0.6rem + 1.1vw, 1.75rem);
+  --spacing-section: clamp(5rem, 3.5rem + 6.5vw, 10rem);
+  --spacing-section-sm: clamp(3rem, 2.25rem + 3.3vw, 5.5rem);
+  --container-page: 78rem;
+  --container-wide: 96rem;
+  --container-reading: 40rem;
 
-  /* Shape */
-  --radius-control: 0.5rem;
-  --radius-card: 0.75rem;
+  /* Breakpoints: Tailwind defaults (sm 40, md 48, lg 64, xl 80, 2xl 96rem) plus large desktops. */
+  --breakpoint-3xl: 120rem;
+  --breakpoint-4xl: 160rem;
+
+  /* Shape: industrial, nearly square. Pills only for status dots and toggles. */
+  --radius-control: 0.125rem;
+  --radius-card: 0.25rem;
   --radius-pill: 9999px;
 
   /* Easing */
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ease-cinematic: cubic-bezier(0.83, 0, 0.17, 1);
+  --ease-mask: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 /* Utility names (bg-canvas, text-ink, shadow-raised…) point at per-element tokens.
@@ -139,87 +159,102 @@
   --color-accent-hover: var(--ui-accent-hover);
   --color-on-accent: var(--ui-on-accent);
   --color-accent-soft: var(--ui-accent-soft);
+  --color-metal: var(--ui-metal);
   --color-focus: var(--ui-focus);
   --color-selection: var(--ui-selection);
   --color-success: var(--ui-success);
   --color-danger: var(--ui-danger);
   --color-warning: var(--ui-warning);
 
-  /* Elevation (mostly flat; depth comes from tone and hairlines) */
-  --shadow-raised: 0 1px 2px var(--shadow-tint-soft), 0 8px 24px var(--shadow-tint-soft);
-  --shadow-overlay: 0 2px 6px var(--shadow-tint-soft), 0 24px 64px var(--shadow-tint-strong);
+  /* Elevation: depth comes from tone, hairlines and real 3D light, not from soft drop shadows. */
+  --shadow-raised: 0 1px 0 var(--shadow-tint-soft), 0 12px 32px var(--shadow-tint-soft);
+  --shadow-overlay: 0 2px 8px var(--shadow-tint-soft), 0 32px 80px var(--shadow-tint-strong);
+  --shadow-glow: 0 0 0 1px var(--ui-accent-soft), 0 0 24px var(--ui-accent-glow);
 }
 
 /* ── 2b/3. Scheme-dependent tokens ──────────────────────────────────────────
  * Declared on every element that sets its own color-scheme. Lightning CSS compiles
  * light-dark() into variables that resolve where a token is *declared*, so tokens must be
- * re-declared on .site-scheme / .scheme-dark to follow that element's scheme instead of
- * :root's (legacy pages pin :root to dark). */
+ * re-declared on .site-scheme / .scheme-dark to follow that element's scheme instead of :root's. */
 :root,
 .site-scheme,
 .scheme-dark {
   /* Surfaces */
-  --ui-canvas: light-dark(var(--paper-50), var(--night-900));
-  --ui-surface: light-dark(var(--paper-100), var(--night-850));
-  --ui-raised: light-dark(var(--paper-0), var(--night-800));
-  --ui-scrim: light-dark(rgb(26 25 23 / 0.4), rgb(0 0 0 / 0.6));
+  --ui-canvas: light-dark(var(--day-50), var(--void-950));
+  --ui-surface: light-dark(var(--day-100), var(--void-900));
+  --ui-raised: light-dark(var(--day-0), var(--void-850));
+  --ui-scrim: light-dark(rgb(11 12 14 / 0.4), rgb(0 0 0 / 0.7));
 
-  /* Text */
-  --ui-ink: light-dark(var(--paper-900), var(--night-50));
-  --ui-body: light-dark(var(--paper-700), var(--night-200));
-  --ui-muted: light-dark(var(--paper-600), var(--night-400));
+  /* Text (contrast on canvas: ink ≥ 15:1, body ≥ 7:1, muted ≥ 4.5:1 in both schemes) */
+  --ui-ink: light-dark(var(--day-950), var(--void-50));
+  --ui-body: light-dark(var(--day-700), var(--void-300));
+  --ui-muted: light-dark(var(--day-600), var(--void-400));
 
   /* Lines */
-  --ui-hairline: light-dark(var(--paper-200), var(--night-700));
-  --ui-hairline-strong: light-dark(var(--paper-300), var(--night-600));
-  --ui-field: light-dark(var(--paper-500), var(--night-500));
+  --ui-hairline: light-dark(var(--day-200), var(--void-700));
+  --ui-hairline-strong: light-dark(var(--day-300), var(--void-600));
+  --ui-field: light-dark(var(--day-500), var(--void-500));
+  --ui-grid-line: light-dark(rgb(11 12 14 / 0.05), rgb(242 243 245 / 0.035));
 
   /* Accent */
-  --ui-accent: light-dark(var(--clay-600), var(--clay-400));
-  --ui-accent-hover: light-dark(var(--clay-700), var(--clay-300));
-  --ui-on-accent: light-dark(var(--paper-0), var(--night-900));
-  --ui-accent-soft: light-dark(var(--clay-50), var(--clay-950));
-  --ui-focus: light-dark(var(--clay-600), var(--clay-400));
-  --ui-selection: light-dark(var(--clay-50), var(--clay-950));
+  --ui-accent: light-dark(var(--ice-700), var(--ice-200));
+  --ui-accent-hover: light-dark(var(--ice-800), var(--ice-300));
+  --ui-on-accent: light-dark(var(--day-0), var(--void-950));
+  --ui-accent-soft: light-dark(var(--ice-100), var(--ice-950));
+  --ui-accent-glow: light-dark(rgb(11 110 127 / 0.18), rgb(185 245 255 / 0.22));
+  --ui-metal: light-dark(var(--metal-600), var(--metal-300));
+  --ui-focus: light-dark(var(--ice-700), var(--ice-200));
+  --ui-selection: light-dark(var(--ice-100), var(--ice-950));
 
   /* Status (always paired with text or an icon, never color alone) */
-  --ui-success: light-dark(var(--moss-600), var(--moss-300));
-  --ui-danger: light-dark(var(--brick-600), var(--brick-300));
-  --ui-warning: light-dark(var(--ochre-700), var(--ochre-300));
+  --ui-success: light-dark(var(--signal-ok-700), var(--signal-ok-300));
+  --ui-danger: light-dark(var(--signal-err-700), var(--signal-err-300));
+  --ui-warning: light-dark(var(--signal-warn-700), var(--signal-warn-300));
 
-  --shadow-tint-soft: light-dark(rgb(26 25 23 / 0.05), rgb(0 0 0 / 0.3));
-  --shadow-tint-strong: light-dark(rgb(26 25 23 / 0.12), rgb(0 0 0 / 0.5));
+  --shadow-tint-soft: light-dark(rgb(11 12 14 / 0.06), rgb(0 0 0 / 0.4));
+  --shadow-tint-strong: light-dark(rgb(11 12 14 / 0.14), rgb(0 0 0 / 0.6));
+
+  /* Temporary (until the WebGL scenes of Fase 6–10 replace them): the pre-rendered Blender
+     videos/posters (entrance, fly-through, Fz card) carry the old canvas colour baked in, so the
+     surfaces that frame them use it too instead of showing a mismatched rectangle. */
+  --legacy-render-canvas: light-dark(#faf8f4, #141311);
 
   /* ── 3. Component tokens ─────────────────────────────────────────────────── */
+  --border-hairline: 1px;
+  --border-strong: 1.5px;
   --focus-ring-width: 2px;
   --focus-ring-offset: 3px;
 
   --hit-area-min: 2.75rem;
   --icon-sm: 1rem;
   --icon-md: 1.25rem;
-  --overlay-blur: 12px;
+  --overlay-blur: 16px;
 
-  --nav-height: 4rem;
-  --nav-bg: color-mix(in srgb, var(--ui-canvas) 86%, transparent);
+  --nav-height: 4.5rem;
+  --nav-bg: color-mix(in srgb, var(--ui-canvas) 78%, transparent);
   --nav-border: var(--ui-hairline);
-  --nav-blur: 12px;
+  --nav-blur: 14px;
   --menu-bg: var(--ui-canvas);
   --palette-width: 40rem;
   --palette-max-height: 26rem;
 
+  --label-rule-width: 1.5rem;
+
   --button-height: 2.75rem;
   --button-height-sm: 2.25rem;
-  --button-height-lg: 3.25rem;
+  --button-height-lg: 3.5rem;
   --button-padding-x: 1.25rem;
   --button-padding-x-sm: 0.875rem;
-  --button-padding-x-lg: 1.5rem;
-  --button-radius: var(--radius-pill);
-  --button-primary-bg: var(--ui-accent);
-  --button-primary-bg-hover: var(--ui-accent-hover);
-  --button-primary-text: var(--ui-on-accent);
+  --button-padding-x-lg: 1.75rem;
+  --button-radius: var(--radius-control);
+  --button-primary-bg: var(--ui-ink);
+  --button-primary-bg-hover: var(--ui-accent);
+  --button-primary-text: var(--ui-canvas);
+  --button-primary-text-hover: var(--ui-on-accent);
   --button-secondary-bg: transparent;
   --button-secondary-bg-hover: var(--ui-surface);
   --button-secondary-border: var(--ui-hairline-strong);
+  --button-secondary-border-hover: var(--ui-ink);
   --button-secondary-text: var(--ui-ink);
   --button-ghost-bg-hover: var(--ui-surface);
   --button-ghost-text: var(--ui-ink);
@@ -227,30 +262,30 @@
   --link-text: var(--ui-ink);
   --link-underline: var(--ui-accent);
   --link-underline-thickness: 1px;
-  --link-underline-offset: 0.22em;
+  --link-underline-offset: 0.25em;
 
-  --card-bg: var(--ui-canvas);
+  --card-bg: transparent;
   --card-bg-hover: var(--ui-surface);
   --card-border: var(--ui-hairline);
   --card-radius: var(--radius-card);
-  --card-padding: clamp(1.25rem, 1.0833rem + 0.7407vw, 1.75rem);
+  --card-padding: clamp(1.25rem, 1rem + 1vw, 2rem);
   --media-radius: var(--radius-card);
   --media-bg: var(--ui-surface);
 
-  --chip-bg: var(--ui-surface);
+  --chip-bg: transparent;
   --chip-text: var(--ui-body);
-  --chip-border: var(--ui-hairline);
-  --chip-radius: var(--radius-pill);
-  --chip-padding-x: 0.625rem;
-  --chip-height: 1.625rem;
+  --chip-border: var(--ui-hairline-strong);
+  --chip-radius: var(--radius-control);
+  --chip-padding-x: 0.5rem;
+  --chip-height: 1.5rem;
 
-  --field-bg: var(--ui-raised);
+  --field-bg: var(--ui-surface);
   --field-text: var(--ui-ink);
   --field-border: var(--ui-field);
   --field-border-focus: var(--ui-accent);
   --field-border-error: var(--ui-danger);
   --field-radius: var(--radius-control);
-  --field-height: 3rem;
+  --field-height: 3.25rem;
 
   --avatar-sm: 2rem;
   --avatar-md: 3rem;
@@ -262,37 +297,92 @@
   --tooltip-radius: var(--radius-control);
 
   --skeleton-bg: var(--ui-surface);
+  --skeleton-sheen: color-mix(in srgb, var(--ui-ink) 6%, transparent);
 
-  /* Hero entrance + fly-through (Fase 10.5): Blender renders with the canvas colour baked in */
-  /* Entrance crop = union of the motion's alpha bounds (568 × 930 of the 1080p render) */
+  /* Hero orbit stage (WebGL in Fase 6; static SVG fallback until then and without WebGL) */
+  --orbit-stage-size: min(100%, 46rem);
+  --orbit-stage-size-mobile: min(100%, 24rem);
+  --orbit-ring: var(--ui-hairline-strong);
+  --orbit-node: var(--ui-ink);
+  --orbit-core: var(--ui-raised);
+
+  /* Scroll indicator */
+  --scroll-rail-height: clamp(3rem, 1.5rem + 4vw, 6rem);
+
+  /* Legacy Blender renders (Fase 10.5 / 12.5) */
   --entrance-width: min(34vw, 36rem);
-  /* Interactive Fz card (Fase 12.5): renders 720×900 (About) and 320×400 (footer), 4:5 */
   --fz-card-about-width: min(100%, 26rem);
   --fz-card-footer-width: 10rem;
-  --fz-card-fade: var(--duration-fast); /* lg+ only; the poster may be the LCP (preloaded, srcset) */
+  --fz-card-fade: var(--duration-fast);
   --flight-copy-width: 26rem;
   --defer-render-size: 60rem; /* placeholder height of a not-yet-rendered home section */
   --flight-scrim-width: min(60vw, 46rem);
   --flight-copy-inset: calc(var(--spacing-gutter) * 3);
-  --flight-scrim: color-mix(in srgb, var(--ui-canvas) 88%, transparent);
+  --flight-scrim: color-mix(in srgb, var(--legacy-render-canvas) 88%, transparent);
 
-  /* Accents (Fase 7, React Bits adaptations) */
+  /* Accents */
   --shine-color: var(--ui-accent);
   --shine-duration: 1400ms;
-  --spotlight-color: color-mix(in srgb, var(--ui-accent) 9%, transparent);
+  --spotlight-color: color-mix(in srgb, var(--ui-accent) 7%, transparent);
   --spotlight-size: 22rem;
-
 }
 
+/* ── Runtime tokens: motion, interaction, 3D (scheme-independent) ───────────── */
 :root {
-  /* Motion durations */
+  /* Durations */
+  --duration-instant: 90ms;
   --duration-fast: 150ms;
   --duration-base: 240ms;
   --duration-slow: 420ms;
-  --duration-reveal: 700ms;
+  --duration-reveal: 800ms;
+  --duration-cinematic: 1400ms;
+  --duration-page-exit: 450ms;
+  --duration-page-enter: 700ms;
+
+  /* Stagger */
   --stagger: 60ms;
-  --reveal-distance: 0.5rem;
-  /* Hero intro start times (Fase 10.5; docs/3D_PLAN.md → entrance timeline) */
+  --stagger-chars: 18ms;
+  --stagger-words: 40ms;
+  --stagger-lines: 90ms;
+  --reveal-distance: 0.75rem;
+
+  /* Springs (Motion / maath); stiffness, damping, mass */
+  --spring-stiffness: 260;
+  --spring-damping: 26;
+  --spring-mass: 1;
+  --spring-soft-stiffness: 120;
+  --spring-soft-damping: 20;
+
+  /* Masking: DOM reveals use clip-path insets; 3D reveals use a world-space clipping plane that
+     rises with --mask-direction (+1 = bottom → top). Feather = soft edge of mask-image gradients. */
+  --mask-hidden: inset(100% 0 0 0);
+  --mask-shown: inset(0 0 0 0);
+  --mask-exit: inset(0 0 100% 0);
+  --mask-feather: 12%;
+  --mask-direction: 1;
+
+  /* Hover / click response */
+  --hover-scale: 1.03;
+  --hover-lift: -0.125rem;
+  --hover-tilt: 6deg;
+  --magnetic-strength: 0.3;
+  --magnetic-radius: 6rem;
+  --press-scale: 0.96;
+
+  /* Idle (3D units: scene metres / radians per second) */
+  --idle-float-amplitude: 0.06;
+  --idle-float-period: 6s;
+  --idle-rotation-speed: 0.15;
+  --idle-breath-scale: 1.015;
+  --idle-light-period: 12s;
+
+  /* Camera */
+  --camera-fov: 35;
+  --camera-fov-mobile: 45;
+  --camera-duration: 1600ms;
+  --camera-smooth-time: 0.35;
+
+  /* Hero intro start times (docs/MOTION_PLAN.md) */
   --intro-line: 150ms;
   --intro-eyebrow: 250ms;
   --intro-lead: 400ms;
@@ -300,36 +390,36 @@
   --intro-status: 700ms;
   --intro-hint: 2000ms;
 
-  /* Border, z-index */
-  --border-hairline: 1px;
-  --z-base: 0;
+  /* Depth layers (back → front). <dialog> modals use the browser top layer and sit above all. */
+  --z-environment: 0;
+  --z-canvas: 1;
+  --z-mask: 2;
+  --z-base: 3;
+  --z-content: 3;
+  --z-ui: 4;
   --z-raised: 10;
   --z-sticky: 20;
   --z-header: 30;
   --z-overlay: 40;
   --z-modal: 50;
   --z-toast: 60;
+  --z-transition: 70;
+  --z-cursor: 80;
 
-  /* Theme: follow the OS unless <html data-theme> pins it. :where() keeps specificity at
-     (0,1,0) so admin.css (which pins its own scheme) always wins. */
-  color-scheme: light dark;
+  /* Theme: dark unless <html data-theme="light"> opts in. :where() keeps specificity at (0,1,0)
+     so admin.css (which pins its own scheme) always wins. */
+  color-scheme: dark;
 }
 :root:where([data-theme="light"]) {
   color-scheme: light;
 }
-:root:where([data-theme="dark"]) {
-  color-scheme: dark;
-}
 
-/* New UI re-asserts the site scheme. Needed while legacy pages pin :root to dark; harmless after. */
+/* New UI re-asserts the site scheme. */
 .site-scheme {
-  color-scheme: light dark;
+  color-scheme: dark;
 }
 :root[data-theme="light"] .site-scheme {
   color-scheme: light;
-}
-:root[data-theme="dark"] .site-scheme {
-  color-scheme: dark;
 }
 /* Public pages (SiteChrome adds .site-frame): reserve the scrollbar gutter so the modal menu's
    scroll lock does not shift layout, and offset anchors below the sticky header. Scoped so the
@@ -343,6 +433,162 @@ html:has(.site-frame) {
     scroll-behavior: smooth;
   }
 }
+
+/* ── Layer stack (public pages, SiteChrome) ────────────────────────────────────
+ * 1 environment (CSS grid + vignette) · 2 WebGL canvas (Fase 4) · 3 3D mask layer (Fase 7) ·
+ * 4 main content · 5 interactive UI · 6 navigation · 7 page-transition overlay (Fase 8) ·
+ * 8 modal / dialog (top layer). Background layers never take pointer events; the canvas layer
+ * opts in per object from Fase 4 (pointer-events on the canvas only where 3D is interactive). */
+.layer-environment,
+.layer-canvas,
+.layer-mask,
+.layer-transition {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+.layer-environment {
+  z-index: var(--z-environment);
+  background:
+    radial-gradient(120% 80% at 70% 20%, transparent 55%, color-mix(in srgb, var(--ui-canvas) 70%, black) 100%);
+}
+/* The 12-column grid, drawn as hairlines on large screens: the layout grid made visible. */
+.layer-environment::before {
+  content: "";
+  position: absolute;
+  inset: 0 max(var(--spacing-gutter), calc((100% - var(--container-wide)) / 2 + var(--spacing-gutter)));
+  display: none;
+  background-image: linear-gradient(to right, var(--ui-grid-line) 1px, transparent 1px);
+  background-size: calc(100% / 12) 100%;
+  border-right: 1px solid var(--ui-grid-line);
+}
+@media (min-width: 64rem) {
+  .layer-environment::before {
+    display: block;
+  }
+}
+.layer-canvas {
+  z-index: var(--z-canvas);
+}
+.layer-canvas:empty,
+.layer-mask:empty,
+.layer-transition:empty {
+  display: none;
+}
+.layer-mask {
+  z-index: var(--z-mask);
+}
+.layer-transition {
+  z-index: var(--z-transition);
+}
+.layer-content {
+  position: relative;
+  z-index: var(--z-content);
+}
+
+/* ── Typography helpers ─────────────────────────────────────────────────────── */
+/* A masked line: the box clips its child so a line can rise into view (text masking, Fase 3+).
+   Padding keeps descenders and accents inside the clip at tight display line heights. */
+.mask-line {
+  display: block;
+  overflow: clip;
+  padding-block: 0.06em 0.1em;
+  margin-block: -0.06em -0.1em;
+}
+.mask-line > * {
+  display: block;
+}
+/* Animated underline: grows from the left on hover / focus / current page. */
+.link-sweep {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% var(--link-underline-thickness);
+  transition: background-size var(--duration-base) var(--ease-standard);
+}
+.link-sweep:is(:hover, :focus-visible, [aria-current="page"]) {
+  background-size: 100% var(--link-underline-thickness);
+}
+/* Skeleton sheen (loading). Static under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .skeleton-sheen {
+    background-image: linear-gradient(90deg, transparent 0%, var(--skeleton-sheen) 50%, transparent 100%);
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    animation: skeleton-sheen 1.6s var(--ease-standard) infinite;
+  }
+}
+@keyframes skeleton-sheen {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+/* Availability pulse: one soft ring, the only looping CSS animation (stops under reduced motion). */
+@media (prefers-reduced-motion: no-preference) {
+  .status-pulse::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: currentColor;
+    animation: status-pulse 2.4s var(--ease-enter) infinite;
+  }
+}
+@keyframes status-pulse {
+  from {
+    opacity: 0.5;
+    scale: 1;
+  }
+  to {
+    opacity: 0;
+    scale: 2.6;
+  }
+}
+
+/* Scroll indicator: a rail with a travelling dot (hero). Hidden once the page scrolls. */
+.scroll-rail {
+  position: relative;
+  width: 1px;
+  height: var(--scroll-rail-height);
+  background: var(--ui-hairline-strong);
+}
+.scroll-rail::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 5px;
+  height: 5px;
+  translate: -50% 50%;
+  border-radius: var(--radius-pill);
+  background: var(--ui-ink);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-rail::after {
+    animation: scroll-rail 2.8s var(--ease-cinematic) infinite;
+  }
+}
+@keyframes scroll-rail {
+  0% {
+    bottom: 100%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    bottom: 0;
+    opacity: 0;
+  }
+}
+
+/* ── Legacy pre-rendered 3D (Fase 10.5 / 12.5), kept until the WebGL scenes replace them ── */
 /* ShinyText (React Bits, adapted): one sweep of the accent across the text. Outside the sweep the
    text is plain (color token), so it is intact without JS and follows theme changes. */
 .shiny-text[data-shine="run"] {
@@ -415,33 +661,24 @@ html:has(.site-frame) {
   }
 }
 
-/* ThemedPicture: show the variant of the SITE theme. Before hydration CSS decides (data-theme or
-   the OS); after hydration [data-shown] decides. The hidden variant is display:none + lazy, so it is
-   never downloaded until the theme switches to it. */
+/* ThemedPicture: show the variant of the SITE theme. Before hydration CSS decides (dark unless
+   data-theme="light"); after hydration [data-shown] decides. The hidden variant is display:none +
+   lazy, so it is never downloaded until the theme switches to it. */
 .themed-picture > picture {
   display: none;
 }
-.themed-picture:not([data-shown]) > .themed-picture__light,
+.themed-picture:not([data-shown]) > .themed-picture__dark,
 .themed-picture[data-shown="light"] > .themed-picture__light,
 .themed-picture[data-shown="dark"] > .themed-picture__dark {
   display: block;
   height: 100%;
 }
-:root:where([data-theme="dark"]) .themed-picture:not([data-shown]) > .themed-picture__light {
+:root:where([data-theme="light"]) .themed-picture:not([data-shown]) > .themed-picture__dark {
   display: none;
 }
-:root:where([data-theme="dark"]) .themed-picture:not([data-shown]) > .themed-picture__dark {
+:root:where([data-theme="light"]) .themed-picture:not([data-shown]) > .themed-picture__light {
   display: block;
   height: 100%;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .themed-picture:not([data-shown]) > .themed-picture__light {
-    display: none;
-  }
-  :root:not([data-theme="light"]) .themed-picture:not([data-shown]) > .themed-picture__dark {
-    display: block;
-    height: 100%;
-  }
 }
 
 /* Home fly-through (Fase 10.5). Default (no JS, reduced motion): a plain list of stills + text.
@@ -449,6 +686,7 @@ html:has(.site-frame) {
    only sets opacity on the media and the copy, so the layout never shifts after hydration. */
 .flight {
   position: relative;
+  background: var(--legacy-render-canvas);
 }
 .flight-stage {
   display: flex;
@@ -597,6 +835,7 @@ html:has(.site-frame) {
 .hero-entrance {
   display: none;
   position: relative;
+  background: var(--legacy-render-canvas);
   aspect-ratio: 4 / 5;
   width: min(100%, var(--entrance-width));
   margin-inline: auto;
@@ -660,6 +899,8 @@ html.js-motion .hero-entrance:not([data-state="still"]) .hero-entrance__end {
 .fz-card {
   position: relative;
   aspect-ratio: 4 / 5;
+  background: var(--legacy-render-canvas);
+  border-radius: var(--card-radius);
 }
 .fz-card--about {
   width: var(--fz-card-about-width);
@@ -751,7 +992,7 @@ html.js-motion .hero-entrance:not([data-state="still"]) .hero-entrance__end {
   }
 }
 
-/* Locally dark band (footer). */
+/* Locally dark band: always dark, whatever the site theme. */
 .scheme-dark {
   color-scheme: dark;
 }
@@ -761,14 +1002,29 @@ html.js-motion .hero-entrance:not([data-state="still"]) .hero-entrance__end {
     --duration-base: 1ms;
     --duration-slow: 1ms;
     --duration-reveal: 1ms;
+    --duration-cinematic: 1ms;
+    --duration-page-exit: 1ms;
+    --duration-page-enter: 1ms;
+    --camera-duration: 1ms;
     --stagger: 0ms;
+    --stagger-chars: 0ms;
+    --stagger-words: 0ms;
+    --stagger-lines: 0ms;
     --reveal-distance: 0px;
+    --hover-scale: 1;
+    --hover-lift: 0px;
+    --hover-tilt: 0deg;
+    --magnetic-strength: 0;
+    --press-scale: 1;
+    --idle-float-amplitude: 0;
+    --idle-rotation-speed: 0;
+    --idle-breath-scale: 1;
   }
 }
 
 /* ── Base (minimal on purpose; see header) ─────────────────────────────────── */
-/* In @layer base so utilities (e.g. outline-none) can override it; legacy and admin CSS are
-   unlayered and keep winning on their own pages. */
+/* In @layer base so utilities (e.g. outline-none) can override it; admin CSS is unlayered and
+   keeps winning on its own pages. */
 @layer base {
   html {
     background: var(--ui-canvas);

@@ -1,24 +1,28 @@
 /**
- * Fase 10.5: the Fz card hero entrance (Blender video, desktop only — Checkpoint B2 variant C) and the home fly-through
- * (scroll-scrubbed Blender clips). Server data comes from the fixture API.
+ * Fase 10.5: the home fly-through (scroll-scrubbed Blender clips), and the hero first paint.
+ * Fase K2 (Kinetic, 2026-11-27): the Fz card entrance video is no longer mounted in the hero (the orbit
+ * stage replaced it: static SVG now, WebGL in Fase 6). Its two tests ("LCP through the entrance", "entrance
+ * plays once per session") were rewritten to the new hero: the H1 is the LCP and no entrance media loads.
+ * The site is dark by default, so the fly-through fetches the dark clips. Server data: fixture API.
  */
 import { test, expect, type Page } from "@playwright/test";
 import { initialHtml, withFixtureApi } from "./helpers/fixture";
 
 withFixtureApi();
 
-/** After the entrance: "done", then (Fase 12.5) the idle loop ("idle") or a hover tilt ("tilt"). */
-const ENDED = /^(done|idle|tilt)$/;
 const desktop = { viewport: { width: 1440, height: 900 }, reducedMotion: "no-preference" as const };
 
 async function observeLcp(page: Page) {
   await page.addInitScript(() => {
-    const w = window as unknown as { __lcp: string[]; __cls: number };
+    const w = window as unknown as { __lcp: string[]; __lcpT: number[]; __cls: number };
     w.__lcp = [];
+    w.__lcpT = [];
     w.__cls = 0;
     new PerformanceObserver((list) => {
-      for (const e of list.getEntries() as (PerformanceEntry & { element?: Element })[])
+      for (const e of list.getEntries() as (PerformanceEntry & { element?: Element })[]) {
         w.__lcp.push(e.element?.id || e.element?.tagName || "?");
+        w.__lcpT.push(e.startTime);
+      }
     }).observe({ type: "largest-contentful-paint", buffered: true });
     new PerformanceObserver((list) => {
       for (const e of list.getEntries() as (PerformanceEntry & { value: number; hadRecentInput: boolean })[])
@@ -56,75 +60,58 @@ test("initial HTML: H1, scene copy, skip link and no old card placeholder", asyn
   for (const old of ["hero-monogram", "dot-pattern", "data-hero-visual", "hero-model", "<canvas"]) expect(html).not.toContain(old);
 });
 
-test("LCP ≤ 1.2 s and CLS < 0.05 through the entrance at every desktop width; an image LCP is preloaded", async ({ browser }) => {
-  // Rule (Fase 10.5, owner): LCP is a time budget, not a fixed element. Lighthouse mobile (simulated
-  // throttling) ≤ 2.0 s is measured separately (docs/3D_PLAN.md); here the observed desktop budget.
-  for (const colorScheme of ["light", "dark"] as const)
+test("LCP ≤ 1.2 s and CLS < 0.05 at every desktop width in both themes; the H1 is the LCP; no entrance media", async ({ browser }) => {
+  // Rule (Fase 10.5, owner): LCP is a time budget, not a fixed element. Since Fase K2 the hero has no
+  // image or video, so the oversized H1 is the LCP; the orbit stage must not shift the layout.
+  for (const theme of ["light", "dark"] as const)
     for (const width of [1024, 1280, 1440, 1920]) {
-      const context = await browser.newContext({ ...desktop, viewport: { width, height: Math.round(width * 0.62) }, colorScheme });
+      const context = await browser.newContext({ ...desktop, viewport: { width, height: Math.round(width * 0.62) } });
+      await context.addInitScript((t) => localStorage.setItem("theme", t), theme);
       const page = await context.newPage();
-      await page.addInitScript(() => {
-        const w = window as unknown as { __lcpE: { t: number; tag: string; src: string }[]; __cls: number };
-        w.__lcpE = [];
-        w.__cls = 0;
-        new PerformanceObserver((list) => {
-          for (const e of list.getEntries() as (PerformanceEntry & { element?: Element; url?: string })[])
-            w.__lcpE.push({ t: e.startTime, tag: e.element?.tagName ?? "?", src: e.url ?? "" });
-        }).observe({ type: "largest-contentful-paint", buffered: true });
-        new PerformanceObserver((list) => {
-          for (const e of list.getEntries() as (PerformanceEntry & { value: number; hadRecentInput: boolean })[])
-            if (!e.hadRecentInput) w.__cls += e.value;
-        }).observe({ type: "layout-shift", buffered: true });
+      const media: string[] = [];
+      page.on("request", (r) => {
+        const path = new URL(r.url()).pathname;
+        if (path.startsWith("/3d/entrance/")) media.push(path);
       });
+      await observeLcp(page);
       await page.goto("/");
-      await expect(page.locator("[data-hero-entrance]")).toHaveAttribute("data-state", ENDED, { timeout: 20_000 });
-      const lcp = (await probe<{ t: number; tag: string; src: string }[]>(page, "__lcpE")).at(-1)!;
-      expect(lcp.t, `${width}px ${colorScheme}: ${lcp.tag}`).toBeLessThanOrEqual(1200);
+      await page.waitForTimeout(1500);
+      const lcpTimes = await probe<number[]>(page, "__lcpT");
+      expect(lcpTimes.length, `${width}px ${theme}: an LCP entry`).toBeGreaterThan(0);
+      expect(lcpTimes.at(-1)!, `${width}px ${theme}`).toBeLessThanOrEqual(1200);
+      expect((await probe<string[]>(page, "__lcp")).at(-1), `${width}px ${theme}`).toBe("hero-title");
       expect(await probe<number>(page, "__cls")).toBeLessThan(0.05);
-      if (lcp.tag === "IMG") {
-        const file = new URL(lcp.src).pathname;
-        const preloaded = await page.evaluate(
-          (f) =>
-            Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="preload"][as="image"]')).some(
-              (l) => l.getAttribute("fetchpriority") === "high" && (l.getAttribute("imagesrcset") ?? "").includes(f),
-            ),
-          file,
-        );
-        expect(preloaded, `${file} preloaded with fetchpriority=high`).toBe(true);
-      }
+      expect(media, "no entrance poster or clip").toEqual([]);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await context.close();
     }
 });
 
-test("entrance plays once per session, then the short version; theme switch shows the still", async ({ browser }) => {
+test("hero orbit stage: server-rendered SVG of the API skills on three rings, with a text summary", async ({ browser, request }) => {
+  const html = await initialHtml(request, "/");
+  expect(html).toContain("data-orbit-stage");
+  expect(html).toContain('data-orbit-renderer="svg"');
   const context = await browser.newContext(desktop);
   const page = await context.newPage();
-  const videos: string[] = [];
-  page.on("request", (r) => {
-    const u = new URL(r.url());
-    if (u.pathname.startsWith("/3d/entrance/") && u.pathname.endsWith(".mp4")) videos.push(u.pathname);
-  });
   await page.goto("/");
-  const visual = page.locator("[data-hero-entrance]");
-  await expect(visual).toHaveAttribute("data-state", ENDED, { timeout: 20_000 });
-  // The entrance clip, then (Fase 12.5) the idle loop that continues from its last frame.
-  expect(videos).toEqual(["/3d/entrance/light.mp4", "/3d/entrance/light-idle.mp4"]);
-  const video = visual.locator(".hero-entrance__video");
-  await expect(video).toHaveJSProperty("loop", false);
-  await expect(video).toHaveJSProperty("controls", false);
-  await expect(video).toHaveJSProperty("muted", true);
-  // Second visit in the session: starts at 1.5 s.
-  await page.reload();
-  await expect(visual).toHaveAttribute("data-state", ENDED, { timeout: 20_000 });
-  expect(await video.evaluate((v: HTMLVideoElement) => v.currentSrc)).toContain("#t=1.5");
-  // Theme switch: no replay, the stack still of the new theme.
-  await page.getByRole("banner").getByRole("button", { name: "Switch to dark theme" }).click();
-  // No replay: the new theme's stack still, then (Fase 12.5) the new theme's idle loop takes over.
-  await expect(visual).toHaveAttribute("data-state", /^(still|idle)$/);
-  await expect.poll(() => visual.locator(".hero-entrance__idle").evaluate((v: HTMLVideoElement) => v.currentSrc)).toContain("/3d/entrance/dark-idle.mp4");
-  expect(await video.evaluate((v: HTMLVideoElement) => v.getAttribute("src"))).toBeNull();
+  const orbit = page.getByRole("img", { name: /^Technology orbit around the Fz monogram\./ });
+  await expect(orbit).toBeVisible();
+  const name = (await orbit.getAttribute("aria-label")) ?? "";
+  // Ring order and labels come from src/lib/display/orbit.ts; names from the fixture skills.
+  expect(name).toMatch(/Frontend: .+\. Backend: .+\. Tools & platforms: .+\.$/);
+  const box = (await page.locator("[data-orbit-stage]").boundingBox())!;
+  const h1 = (await page.getByRole("heading", { level: 1 }).boundingBox())!;
+  expect(box.x, "orbit sits right of the name on desktop").toBeGreaterThanOrEqual(h1.x + h1.width - 1);
   await context.close();
+  // Phones: the orbit has its own area below the text (never over it).
+  const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const mobile = await phone.newPage();
+  await mobile.goto("/");
+  const stage = (await mobile.locator("[data-orbit-stage]").boundingBox())!;
+  const status = (await mobile.getByText("Open to full-time roles and freelance projects").boundingBox())!;
+  expect(stage.y).toBeGreaterThanOrEqual(status.y + status.height);
+  expect(await mobile.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await phone.close();
 });
 
 test("reduced motion and phones: no entrance video; reduced motion: no fly-through video either", async ({ browser }) => {
@@ -167,7 +154,7 @@ test("reduced motion and phones: no entrance video; reduced motion: no fly-throu
       // Phones: portrait clips of the active theme only, fetched lazily (not the whole film at once).
       expect(videos.length).toBeGreaterThan(0);
       expect(videos.length).toBeLessThan(11);
-      for (const v of videos) expect(v).toMatch(/^\/3d\/flight\/light-[sc]\d-m\.mp4$/);
+      for (const v of videos) expect(v).toMatch(/^\/3d\/flight\/dark-[sc]\d-m\.mp4$/);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await context.close();
@@ -255,8 +242,8 @@ test("full film: 7.8 screens, clips load lazily along the way, every scene's cop
   await page.evaluate(async (y) => scrollTo(0, y), await flightAt(page, 0));
   await expect.poll(() => clips.length, { timeout: 10_000 }).toBeGreaterThan(0);
   await page.waitForTimeout(800);
-  expect(clips).toContain("/3d/flight/light-s1.mp4");
-  expect(clips).not.toContain("/3d/flight/light-s6.mp4");
+  expect(clips).toContain("/3d/flight/dark-s1.mp4");
+  expect(clips).not.toContain("/3d/flight/dark-s6.mp4");
   // Walk scene by scene (scenes 0.8 screens, connectors 0.4): each copy peaks mid-scene.
   for (const [i, title] of SCENE_TITLES.entries()) {
     const mid = i * 1.2 + 0.4;
@@ -272,6 +259,6 @@ test("full film: 7.8 screens, clips load lazily along the way, every scene's cop
   await expect(last).toHaveCount(1, { timeout: 15_000 });
   await expect.poll(() => last.evaluate((v: HTMLVideoElement) => v.currentTime / v.duration), { timeout: 8_000 }).toBeGreaterThan(0.95);
   expect(new Set(clips).size).toBe(clips.length);
-  for (const c of clips) expect(c).toMatch(/^\/3d\/flight\/light-[sc]\d\.mp4$/);
+  for (const c of clips) expect(c).toMatch(/^\/3d\/flight\/dark-[sc]\d\.mp4$/);
   await context.close();
 });

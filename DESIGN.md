@@ -1,624 +1,300 @@
 ---
-version: alpha
-name: Quiet Editorial
+version: kinetic-1
+name: Kinetic Systems
 description: >-
-  Visual system for the personal portfolio of Farhan Zulkarnain Harahap, a full-stack
-  engineer in Medan, Indonesia. A warm paper canvas, an optical-size serif for headlines,
-  a neutral sans for reading, a monospaced face for metadata, hairline structure, and one
-  terracotta accent. Light-first with a complete dark theme.
+  Visual system for the portfolio of Farhan Zulkarnain Harahap, full-stack engineer and creative
+  developer in Medan, Indonesia. "FARHAN — KINETIC SYSTEMS: Immersive Digital Engineering": a
+  premium dark, cinematic spatial interface. Swiss typography set large and tight, a visible
+  12-column grid, hairline structure, one ice accent used sparingly, and real-time 3D (WebGL) as
+  the main source of light and depth. Dark by default, with a complete light variant.
+supersedes: Quiet Editorial (Fase 1–12.11, until 2026-11-27)
 colors:
-  primary: "#A34A27"
-  on-primary: "#FFFFFF"
-  secondary: "#4A4843"
-  neutral: "#FAF8F4"
-  error: "#B3261E"
+  dark:
+    canvas: "#08090B"
+    surface: "#101216"
+    raised: "#171A20"
+    ink: "#F2F3F5"
+    body: "#A1A1AA"
+    muted: "#80808A"
+    hairline: "#272B33"
+    hairline-strong: "#3A404B"
+    field: "#5A616D"
+    accent: "#B9F5FF"
+    accent-hover: "#93E9F7"
+    on-accent: "#08090B"
+    accent-soft: "#0D2A30"
+    metal: "#A8B3C2"
+    focus: "#B9F5FF"
+    success: "#7FE0B0"
+    danger: "#FF8A80"
+    warning: "#F2C46D"
   light:
-    canvas: "#FAF8F4"
-    surface: "#F2EEE7"
+    canvas: "#F3F4F6"
+    surface: "#E9EBEF"
     raised: "#FFFFFF"
-    ink: "#1A1917"
-    body: "#4A4843"
-    muted: "#6B6760"
-    hairline: "#E4DED3"
-    hairline-strong: "#BDB4A6"
-    field: "#8F877A"
-    accent: "#A34A27"
-    accent-hover: "#873C1F"
+    ink: "#0B0C0E"
+    body: "#3F434B"
+    muted: "#5D626C"
+    hairline: "#D5D9E0"
+    hairline-strong: "#A9B0BC"
+    field: "#7B828E"
+    accent: "#0B6E7F"
+    accent-hover: "#08525F"
     on-accent: "#FFFFFF"
-    accent-soft: "#F5E6DD"
-    focus: "#A34A27"
-    success: "#2E6A4C"
+    accent-soft: "#D7F1F5"
+    metal: "#5B6573"
+    focus: "#0B6E7F"
+    success: "#1F6B48"
     danger: "#B3261E"
     warning: "#8A5A00"
-  dark:
-    canvas: "#141311"
-    surface: "#1D1B18"
-    raised: "#24221E"
-    ink: "#F2EFE8"
-    body: "#BAB5AB"
-    muted: "#94907F"
-    hairline: "#2E2B26"
-    hairline-strong: "#4A463F"
-    field: "#77716A"
-    accent: "#DE916C"
-    accent-hover: "#E9A887"
-    on-accent: "#141311"
-    accent-soft: "#3A2419"
-    focus: "#DE916C"
-    success: "#7CC29C"
-    danger: "#F2928A"
-    warning: "#E3B45C"
 typography:
-  body-md:
-    fontFamily: Geist
-    fontSize: 16px
-    fontWeight: 400
-    lineHeight: 1.65
-  body-sm:
-    fontFamily: Geist
-    fontSize: 14px
-    fontWeight: 400
-    lineHeight: 1.55
-  meta:
-    fontFamily: Geist Mono
-    fontSize: 13px
-    fontWeight: 400
-    lineHeight: 1.45
-    letterSpacing: 0.01em
-  label-caps:
-    fontFamily: Geist Mono
-    fontSize: 12px
-    fontWeight: 500
-    lineHeight: 1.4
-    letterSpacing: 0.08em
-  display-xl-sm:
-    fontFamily: Newsreader
-    fontSize: 44px
-    fontWeight: 400
-    lineHeight: 1.04
-    letterSpacing: -0.025em
-  display-lg-sm:
-    fontFamily: Newsreader
-    fontSize: 36px
-    fontWeight: 400
-    lineHeight: 1.08
-    letterSpacing: -0.02em
-  headline-sm:
-    fontFamily: Newsreader
-    fontSize: 28px
-    fontWeight: 500
-    lineHeight: 1.15
-    letterSpacing: -0.015em
-  title-sm:
-    fontFamily: Newsreader
-    fontSize: 20px
-    fontWeight: 500
-    lineHeight: 1.3
-    letterSpacing: -0.01em
-  body-lg-sm:
-    fontFamily: Geist
-    fontSize: 17px
-    fontWeight: 400
-    lineHeight: 1.6
-  display-xl-lg:
-    fontFamily: Newsreader
-    fontSize: 80px
-    fontWeight: 400
-    lineHeight: 1.04
-    letterSpacing: -0.025em
-  display-lg-lg:
-    fontFamily: Newsreader
-    fontSize: 60px
-    fontWeight: 400
-    lineHeight: 1.08
-    letterSpacing: -0.02em
-  headline-lg:
-    fontFamily: Newsreader
-    fontSize: 40px
-    fontWeight: 500
-    lineHeight: 1.15
-    letterSpacing: -0.015em
-  title-lg:
-    fontFamily: Newsreader
-    fontSize: 24px
-    fontWeight: 500
-    lineHeight: 1.3
-    letterSpacing: -0.01em
-  body-lg-lg:
-    fontFamily: Geist
-    fontSize: 19px
-    fontWeight: 400
-    lineHeight: 1.6
-rounded:
-  control: 8px
-  card: 12px
-  pill: 9999px
-spacing:
-  base: 4px
-  container-page: 1152px
-  container-wide: 1280px
-  container-reading: 672px
-  nav-height: 64px
-  sm:
-    gutter: 20px
-    section: 72px
-    section-sm: 48px
-    card-padding: 20px
-    columns: 4
-  lg:
-    gutter: 40px
-    section: 128px
-    section-sm: 80px
-    card-padding: 28px
-    columns: 12
-components:
-  button-primary:
-    backgroundColor: "{colors.light.accent}"
-    textColor: "{colors.light.on-accent}"
-    typography: "{typography.body-sm}"
-    rounded: "{rounded.pill}"
-    height: 44px
-    padding: 20px
-  button-primary-hover:
-    backgroundColor: "{colors.light.accent-hover}"
-    textColor: "{colors.light.on-accent}"
-  button-primary-dark:
-    backgroundColor: "{colors.dark.accent}"
-    textColor: "{colors.dark.on-accent}"
-  button-secondary:
-    backgroundColor: "{colors.light.canvas}"
-    textColor: "{colors.light.ink}"
-    typography: "{typography.body-sm}"
-    rounded: "{rounded.pill}"
-    height: 44px
-    padding: 20px
-  button-secondary-hover:
-    backgroundColor: "{colors.light.surface}"
-    textColor: "{colors.light.ink}"
-  link:
-    textColor: "{colors.light.ink}"
-    typography: "{typography.body-md}"
-  chip:
-    backgroundColor: "{colors.light.surface}"
-    textColor: "{colors.light.body}"
-    typography: "{typography.meta}"
-    rounded: "{rounded.pill}"
-    height: 26px
-    padding: 10px
-  badge-case-type:
-    backgroundColor: "{colors.light.accent-soft}"
-    textColor: "{colors.light.ink}"
-    typography: "{typography.label-caps}"
-    rounded: "{rounded.pill}"
-    padding: 10px
-  card-project:
-    backgroundColor: "{colors.light.canvas}"
-    textColor: "{colors.light.ink}"
-    typography: "{typography.title-sm}"
-    rounded: "{rounded.card}"
-    padding: 20px
-  card-project-hover:
-    backgroundColor: "{colors.light.surface}"
-    textColor: "{colors.light.ink}"
-  input-field:
-    backgroundColor: "{colors.light.raised}"
-    textColor: "{colors.light.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.control}"
-    height: 48px
-    padding: 14px
-  input-field-error:
-    backgroundColor: "{colors.light.raised}"
-    textColor: "{colors.light.danger}"
-  nav-bar:
-    backgroundColor: "{colors.light.canvas}"
-    textColor: "{colors.light.ink}"
-    typography: "{typography.body-sm}"
-    height: 64px
-  timeline-entry:
-    backgroundColor: "{colors.light.canvas}"
-    textColor: "{colors.light.body}"
-    typography: "{typography.body-md}"
-  meta-text:
-    backgroundColor: "{colors.light.canvas}"
-    textColor: "{colors.light.muted}"
-    typography: "{typography.meta}"
-  footer:
-    backgroundColor: "{colors.dark.canvas}"
-    textColor: "{colors.dark.body}"
-    typography: "{typography.body-sm}"
-  page:
-    backgroundColor: "{colors.neutral}"
-    textColor: "{colors.light.ink}"
-  page-dark:
-    backgroundColor: "{colors.dark.canvas}"
-    textColor: "{colors.dark.ink}"
-  divider:
-    backgroundColor: "{colors.light.hairline}"
-  divider-dark:
-    backgroundColor: "{colors.dark.hairline}"
-  button-secondary-outline:
-    backgroundColor: "{colors.light.hairline-strong}"
-  button-secondary-outline-dark:
-    backgroundColor: "{colors.dark.hairline-strong}"
-  button-primary-hover-dark:
-    backgroundColor: "{colors.dark.accent-hover}"
-    textColor: "{colors.dark.on-accent}"
-  focus-ring:
-    backgroundColor: "{colors.light.focus}"
-  focus-ring-dark:
-    backgroundColor: "{colors.dark.focus}"
-  input-field-outline:
-    backgroundColor: "{colors.light.field}"
-  input-field-outline-dark:
-    backgroundColor: "{colors.dark.field}"
-  input-field-dark:
-    backgroundColor: "{colors.dark.raised}"
-    textColor: "{colors.dark.ink}"
-  card-project-hover-dark:
-    backgroundColor: "{colors.dark.surface}"
-    textColor: "{colors.dark.ink}"
-  chip-dark:
-    backgroundColor: "{colors.dark.surface}"
-    textColor: "{colors.dark.body}"
-  badge-case-type-dark:
-    backgroundColor: "{colors.dark.accent-soft}"
-    textColor: "{colors.dark.ink}"
-  meta-text-dark:
-    backgroundColor: "{colors.dark.canvas}"
-    textColor: "{colors.dark.muted}"
-  status-success:
-    backgroundColor: "{colors.light.canvas}"
-    textColor: "{colors.light.success}"
-  status-danger:
-    backgroundColor: "{colors.light.canvas}"
-    textColor: "{colors.light.danger}"
-  status-warning:
-    backgroundColor: "{colors.light.canvas}"
-    textColor: "{colors.light.warning}"
-  status-success-dark:
-    backgroundColor: "{colors.dark.canvas}"
-    textColor: "{colors.dark.success}"
-  status-danger-dark:
-    backgroundColor: "{colors.dark.canvas}"
-    textColor: "{colors.dark.danger}"
-  status-warning-dark:
-    backgroundColor: "{colors.dark.canvas}"
-    textColor: "{colors.dark.warning}"
+  families:
+    display: Geist (600, tight tracking, uppercase for display sizes)
+    body: Geist (400–500)
+    meta: Geist Mono (400–500, uppercase labels)
+  scale:
+    display-hero: { size: "clamp(3rem, 0.75rem + 8vw, 9.5rem)", line: 0.86, tracking: -0.045em, weight: 600 }
+    display-xl: { size: "clamp(2.75rem, 1.25rem + 5.5vw, 6.5rem)", line: 0.9, tracking: -0.04em, weight: 600 }
+    display-lg: { size: "clamp(2.25rem, 1.25rem + 3.6vw, 4.75rem)", line: 0.95, tracking: -0.035em, weight: 600 }
+    headline: { size: "clamp(1.75rem, 1.35rem + 1.6vw, 3rem)", line: 1.02, tracking: -0.03em, weight: 550 }
+    title: { size: "clamp(1.25rem, 1.15rem + 0.45vw, 1.625rem)", line: 1.2, tracking: -0.015em, weight: 500 }
+    copy-lg: { size: "clamp(1.0625rem, 1.02rem + 0.19vw, 1.1875rem)", line: 1.55 }
+    copy: { size: 1rem, line: 1.6 }
+    small: { size: 0.875rem, line: 1.5 }
+    meta: { size: 0.8125rem, line: 1.45, family: mono }
+    label: { size: 0.6875rem, line: 1.35, tracking: 0.12em, weight: 500, family: mono, case: upper }
+layout:
+  grid: 12 columns, gap clamp(1rem, 0.6rem + 1.1vw, 1.75rem)
+  gutter: "clamp(1.25rem, 0.75rem + 2.2vw, 3rem)"
+  section: "clamp(5rem, 3.5rem + 6.5vw, 10rem)"
+  section-sm: "clamp(3rem, 2.25rem + 3.3vw, 5.5rem)"
+  container: { page: 78rem, wide: 96rem, reading: 40rem }
+  breakpoints: { sm: 40rem, md: 48rem, lg: 64rem, xl: 80rem, 2xl: 96rem, 3xl: 120rem, 4xl: 160rem }
+  nav-height: 4.5rem
+rounded: { control: 0.125rem, card: 0.25rem, pill: 9999px }
+borders: { hairline: 1px, strong: 1.5px, focus-ring: 2px, focus-offset: 3px }
+depth-layers: [environment 0, canvas 1, mask 2, content 3, ui 4, raised 10, sticky 20, header 30, overlay 40, modal 50, toast 60, transition 70, cursor 80]
+motion:
+  duration: { instant: 90ms, fast: 150ms, base: 240ms, slow: 420ms, reveal: 800ms, cinematic: 1400ms, page-exit: 450ms, page-enter: 700ms, camera: 1600ms }
+  ease:
+    standard: cubic-bezier(0.2, 0, 0, 1)
+    enter: cubic-bezier(0.16, 1, 0.3, 1)
+    exit: cubic-bezier(0.4, 0, 1, 1)
+    cinematic: cubic-bezier(0.83, 0, 0.17, 1)
+    mask: cubic-bezier(0.77, 0, 0.175, 1)
+  spring: { default: [260, 26, 1], soft: [120, 20, 1] }
+  stagger: { base: 60ms, chars: 18ms, words: 40ms, lines: 90ms }
+  mask: { hidden: "inset(100% 0 0 0)", shown: "inset(0 0 0 0)", exit: "inset(0 0 100% 0)", feather: 12%, direction: bottom-to-top }
+  hover: { scale: 1.03, lift: -0.125rem, tilt: 6deg, magnetic-strength: 0.3, magnetic-radius: 6rem }
+  press: { scale: 0.96 }
+  idle: { float-amplitude: 0.06, float-period: 6s, rotation-speed: 0.15 rad/s, breath-scale: 1.015, light-period: 12s }
+  camera: { fov: 35, fov-mobile: 45, smooth-time: 0.35s }
 ---
 
-# Quiet Editorial
+# Kinetic Systems
 
 ## Overview
 
-**Brand essence:** a calm, well-edited record of an engineer's work. The site should read like a
-thoughtful engineering publication, not a product launch and not a control panel.
+**FARHAN — KINETIC SYSTEMS: Immersive Digital Engineering.** A cinematic spatial-computing portfolio
+for a full-stack engineer. The page reads as an engineering instrument: a dark void, a visible grid,
+precise hairlines, technical labels, and large Swiss type. Real-time 3D (from Fase 4) supplies the
+light, the depth and the motion; the interface stays quiet so the objects can carry the attention.
 
-- **Audience:** recruiters and hiring managers (10–30 seconds to judge fit), and prospective clients
-  (looking for proof that work ships and solves problems).
-- **Feeling:** professional, trustworthy, modern, calm, refined. Confidence comes from restraint:
-  generous whitespace, one accent, precise metadata, real project evidence.
-- **Personality in three words:** precise, warm, unhurried.
-- **What it is not:** sci-fi, neon, glowing grids, terminal cosplay, "system" vocabulary, dense
-  dashboards on public pages, decorative motion.
+Principles:
+1. **Space before decoration.** Whitespace, type hierarchy, spatial depth, lighting and motion are the
+   design. No ornaments without a job.
+2. **Asymmetry on a strict grid.** Labels live in a narrow column, content in a wide one; compositions
+   are off-centre but every edge lands on the 12-column grid.
+3. **One accent, used rarely.** Ice (#B9F5FF) marks focus, current state, the "z" of the monogram and
+   emissive details in 3D. Never large fills, never gradients.
+4. **Content never depends on effects.** Everything is server-rendered HTML first; 3D, masks and
+   transitions are layers on top, with complete fallbacks.
 
-The editorial serif carries the voice; the mono metadata (years, roles, stack, case type) carries the
-engineering precision. Everything else stays out of the way of the content that comes from the API.
+Avoid: card grids as the default answer, glassmorphism, purple/blue gradients, neon glows, rounded
+corners on everything, symmetrical hero templates, badges without a function.
 
 ## Colors
 
-The palette is warm neutrals with a single terracotta accent. Light theme is the default; the dark
-theme is a full counterpart, not an inversion.
+Dark is the default scheme (`:root { color-scheme: dark }`); `<html data-theme="light">` (toggle, ⌘K,
+stored in localStorage) opts into the light variant. All semantic tokens are `light-dark()` pairs in
+`src/app/globals.css`; components use only semantic tokens (`bg-canvas`, `text-ink`, `border-hairline`…).
 
-- **Paper (#FAF8F4) / Night (#141311):** the page canvas. Warmer than pure white or black, so long
-  reading feels soft.
-- **Surface (#F2EEE7 / #1D1B18):** tonal step for hover states, chips, media placeholders, and
-  quiet panels. **Raised (#FFFFFF / #24221E)** is reserved for inputs and overlays.
-- **Ink (#1A1917 / #F2EFE8):** headlines and primary text. **Body (#4A4843 / #BAB5AB)** for running
-  text. **Muted (#6B6760 / #94907F)** for metadata and captions; still AA on every surface.
-- **Hairline (#E4DED3 / #2E2B26):** dividers and card outlines. **Hairline strong** for secondary
-  button borders. **Field (#8F877A / #77716A)** for input borders (3:1 non-text contrast).
-- **Terracotta accent (#A34A27 / #DE916C):** primary CTA, link underlines, focus ring, active nav
-  marker, the one highlighted word or number per view. Never used for large fills or backgrounds.
-- **Status:** success moss, danger brick, warning ochre. Always paired with text or an icon.
+| Role | Use |
+|---|---|
+| canvas / surface / raised | page, bands and panels, popovers and 3D core plates |
+| ink / body / muted | headings, reading text, metadata |
+| hairline / hairline-strong | structure, rules, rings in diagrams |
+| field | form control borders (≥ 3:1 against canvas) |
+| accent | focus ring, current state, hover target colour, small emissive details |
+| metal | 3D brushed materials, secondary highlights |
+| success / danger / warning | status, always with text or an icon |
 
-Verified contrast (WCAG 2.x): ink ≥ 13.8:1, body ≥ 7.1:1, muted ≥ 4.5:1, accent text ≥ 4.8:1 on
-every surface in both themes; on-accent on accent 5.9:1 (light) and 7.4:1 (dark).
+Contrast (computed, WCAG 2): dark on canvas — ink 17.9, body 7.8, muted 5.1 (4.8 on surface),
+accent 16.7, field 3.2 (non-text). Light on canvas — ink 17.8, body 9.0, muted 5.6, accent 5.4 (5.0 on
+surface), field 3.5. White on the light accent 5.9.
 
-Implementation: semantic colors are `--ui-*` in `src/app/globals.css`, each defined as
-`light-dark(light, dark)` over primitives (`--paper-*`, `--night-*`, `--clay-*`) and exposed to
-Tailwind as `--color-*` utilities through `@theme inline`. Components use the
-semantic Tailwind utilities (`bg-canvas`, `text-ink`, `border-hairline`, `text-accent`) or component
-tokens, never primitives or hex values.
+`--legacy-render-canvas` is temporary: it frames the pre-rendered Blender assets of Fase 10.5/12.5
+(fly-through, Fz card) in the colour baked into them, until the WebGL scenes replace them.
 
 ## Typography
 
-Three families, each with one job.
+Two families with three roles (max three, by rule):
+- **Display — Geist 600**, uppercase at display sizes, tracking −0.035 to −0.045em, line-height
+  0.86–0.95. Hero name and page H1s. Each display line can sit in a `.mask-line` box so it can rise
+  from behind its mask (Fase 3+).
+- **Body — Geist 400/500**, sentence case, line-height 1.5–1.6, measure ≤ 40rem.
+- **Meta — Geist Mono**, uppercase labels (0.6875rem, +0.12em) for coordinates, indices, captions,
+  form labels and navigation; mono `meta` (0.8125rem) for API-derived data lines.
 
-- **Newsreader** (serif, variable optical size): display, headlines, card and section titles. Weight
-  400 for display sizes, 500 for headline and title. Tight negative tracking at large sizes. Italic is
-  allowed for a single emphasized phrase in a hero or pull quote.
-- **Geist** (sans): body copy, UI labels, buttons, navigation, forms. 16px base, line-height 1.65.
-- **Geist Mono:** metadata only: dates, durations, roles, stack lists, case type, counts, file sizes.
-  `label-caps` (12px, uppercase, 0.08em tracking) for eyebrows and small section labels.
-
-Sizes are fluid between a 360px and a 1440px viewport (`clamp()` in `globals.css`): the `-sm` tokens
-are the 360px values and the `-lg` tokens the 1440px values (for example `display-xl-sm` 44px →
-`display-xl-lg` 80px). Utilities: `text-display-xl`,
-`text-display-lg`, `text-headline`, `text-title`, `text-copy-lg` (body-lg), `text-copy` (body-md),
-`text-small`, `text-meta`, `text-label`; families `font-heading`, `font-body`, `font-meta`. Body
-sizes are named `copy` in CSS because `text-body` is the body text *color* utility.
-
-Rules: one `h1` per page; headings never skip levels; body measure 60–75 characters
-(`max-w-reading`); `text-wrap: balance` on short headings, `pretty` on paragraphs; tabular figures for
-dates and counts; long URLs and tokens wrap with `overflow-wrap: anywhere`.
+All sizes are fluid (`clamp()`), tuned for 360 → 1440 px and capped for 4K. Headings use
+`text-balance`, paragraphs `text-pretty`. Nothing moves continuously except where Motion says so.
 
 ## Layout
 
-- **Container:** `max-w-page` (1152px) for most sections, `max-w-wide` (1280px) for project grids
-  and hero media, `max-w-reading` (672px) for prose. Horizontal padding is `px-gutter`
-  (20px → 40px).
-- **Grid:** 4 columns on mobile, 12 on desktop. Editorial layouts use asymmetric spans (for example
-  4/8 for label + content, 7/5 for hero text + media).
-- **Rhythm:** Tailwind's 4px spacing scale for components; `py-section` (72px → 128px) between page
-  sections and `py-section-sm` (48px → 80px) inside long pages.
-- **Breakpoints:** Tailwind defaults (sm 640, md 768, lg 1024, xl 1280, 2xl 1536). Test at 360, 390,
-  768, 1024, 1440. No horizontal scroll at any width.
-- **Header:** sticky, 64px, translucent canvas with a hairline bottom border after scroll. Content
-  anchors use `scroll-margin-top` equal to the header height.
+- 12-column grid (`--spacing-grid-gap`), drawn as faint hairlines by `.layer-environment` on lg+.
+- Containers: page 78rem, wide 96rem, reading 40rem; fluid gutter.
+- **Editorial section header:** label in columns 1–3, heading + description in 4–12, action aligned
+  right, a hairline rule on top.
+- **Page header:** label, display H1 across the width, full-width drawn rule, lead and actions in
+  columns 7–12 (asymmetric).
+- **Hero:** full viewport. Desktop: text block in columns 1–7, orbit stage in 8–12. Mobile: text,
+  CTAs within thumb reach, then the orbit in its own area — the 3D never overlaps text.
+- Breakpoints: Tailwind defaults plus `3xl` (120rem, 1920 px) and `4xl` (160rem, 2560 px+).
+
+### Layer stack (public pages)
+
+| # | Layer | Element | z |
+|---|---|---|---|
+| 1 | Background environment | `.layer-environment` (grid, vignette) | 0 |
+| 2 | WebGL canvas | `#webgl-root` (persistent R3F canvas, Fase 4) | 1 |
+| 3 | 3D masking | `#mask-root` (Fase 7) | 2 |
+| 4 | Main content | `.layer-content` → `<main>`, footer | 3 |
+| 5 | Interactive UI | in-content controls, orbit labels | 4 |
+| 6 | Navigation | sticky header | 30 |
+| 7 | Page transition overlay | `#transition-root` (Fase 8) | 70 |
+| 8 | Modal / dialog | native `<dialog>` (browser top layer) | — |
+
+Background layers are `position: fixed; pointer-events: none` and `display: none` while empty. The
+canvas opts into pointer events only where 3D is interactive. Custom cursor (Fase 12): z 80.
 
 ## Elevation & Depth
 
-Depth comes from tone and hairlines, not shadows. Pages are flat: canvas, a surface step, a hairline.
-`shadow-raised` is used only for floating elements (menu, toast, command palette trigger) and
-`shadow-overlay` only for modals and the command palette. Overlays sit on a `scrim` backdrop. Z-index
-uses the scale `--z-base` (0) → `--z-raised` (10) → `--z-sticky` (20) → `--z-header` (30) →
-`--z-overlay` (40) → `--z-modal` (50) → `--z-toast` (60).
+Depth comes from tone steps (canvas → surface → raised), hairlines and real 3D light — not from soft
+drop shadows. `shadow-overlay` only for popovers and dialogs; `shadow-glow` (accent hairline + soft
+glow) only for a focused 3D/interactive object, never for static cards.
 
 ## Shapes
 
-Soft but disciplined. Cards and media use 12px (`rounded-card`); inputs and small controls 8px
-(`rounded-control`); buttons, chips, and badges are pills (`rounded-pill`). Borders are 1px hairlines.
-No mixed radii inside one component, no sharp corners next to rounded ones.
+Industrial and nearly square: controls 2px, panels and media 4px. Pills only for status dots and
+toggles. Diamonds (rotated squares) mark nodes in technical diagrams.
 
 ## Motion & Micro-interaction
 
-Motion is slow, soft, and purposeful: it confirms an action or guides the eye, never decorates.
+Motion tokens live in CSS and reach every engine through `src/lib/design-tokens.ts`
+(`getMotionTokens()`, `getColorTokens()`, `springTransition()`). Reduced motion is applied in CSS:
+durations → 1ms, staggers → 0, hover/press/idle → neutral, so engines inherit it for free.
 
-| Token | Duration | Easing | CSS |
-|---|---|---|---|
-| `state-change` | 150ms | `cubic-bezier(0.2, 0, 0, 1)` | `--duration-fast`, `ease-standard` |
-| `surface-enter` | 240ms | `cubic-bezier(0.16, 1, 0.3, 1)` | `--duration-base`, `ease-enter` |
-| `surface-exit` | 150ms | `cubic-bezier(0.4, 0, 1, 1)` | `--duration-fast`, `ease-exit` |
-| `emphasis` | 420ms | `cubic-bezier(0.2, 0, 0, 1)` | `--duration-slow`, `ease-standard` |
-| `reveal` | 700ms, 60ms stagger | `cubic-bezier(0.16, 1, 0.3, 1)` | `--duration-reveal`, `--stagger`, `ease-enter` |
+Engine ownership (one owner per property; one shared scroll progress):
+- Three.js + React Three Fiber: rendering and 3D interaction. maath: damping.
+- Theatre.js (`@theatre/core` only; Studio in development only): cinematic timelines, camera
+  choreography, 3D keyframes. State JSON is committed.
+- GSAP (+ ScrollTrigger, Flip, SplitText): scroll-driven sequencing and DOM timelines.
+- Motion: DOM transitions and micro-interactions (springs from tokens).
+- Lenis: smooth scrolling. GLSL: masking, dissolve, distortion.
+- CSS: simple states (hover, focus, press, the scroll rail, the status pulse, the skeleton sheen).
 
-These live in prose rather than a `motion:` YAML map because the current linter
-(`@google/design.md` 0.4.0) does not yet accept that key.
+### Interaction states (every interactive element)
 
-- **State changes** (hover, press, focus, color): `state-change`, 150ms.
-- **Surfaces entering** (menus, dialogs, toasts): `surface-enter`, 240ms, decelerating; exits are
-  faster (`surface-exit`, 150ms, accelerating).
-- **Scroll reveal:** headings and blocks fade up 8px (`--reveal-distance`) over `reveal` (700ms) with
-  a 60ms stagger; maximum one or two revealed groups per viewport. Content is visible without JS.
-- **Media hover:** images scale 1.00 → 1.02 over `emphasis` (420ms); link underlines draw in from the
-  left.
-- **Never:** scroll-jacking, pinned scroll scenes on mobile, looping animation on text or UI,
-  parallax on text, animating width/height/top/left, blocking input during an animation.
-- **Decorative 3D loops and hover (Fase 12.5):** an idle loop is allowed ONLY on decorative 3D assets
-  (pre-rendered Blender clips): small amplitude (movement ≤ 6 px, rotation ≤ 3°), no blink or flash,
-  never on text. A loop stops when it is off screen, when the tab is hidden, and under reduced motion
-  (the still is shown). No requestAnimationFrame without interaction, except a visible idle loop
-  (a `<video>`, so the browser's media pipeline, not script). Hover tilts are pre-rendered image
-  sequences driven by the pointer with an eased follower (rAF only while it moves), and only on
-  precise pointers (`(hover: hover) and (pointer: fine)`). Touch screens get idle + tap (a tap flips a
-  card), never tilt and never tap-hijacking. Interactive cards are real `<button>`s (`aria-pressed`,
-  clear label, Enter/Space, visible focus); text shown on a render is real HTML on top.
-- **Reduced motion:** `prefers-reduced-motion: reduce` collapses durations and the reveal distance to
-  zero (tokens do this automatically); 3D shows its static poster. Motion must not move LCP elements
-  or cause layout shift.
+| State | Treatment |
+|---|---|
+| Idle | 3D floats/breathes/orbits (idle tokens); UI is still. Only the scroll rail and status pulse loop in CSS. |
+| Hover | colour shift to accent or ink fill, trailing icon travels, underline grows from the left, hairline strengthens; magnetic pull on `[data-magnetic]` (Fase 12) |
+| Click | press compression `--press-scale`, then the next action (navigation, toggle) |
+| Focus | 2px accent outline, 3px offset, always visible; fields also get an accent bottom bar |
+| Active / current | `aria-current` → accent index + full underline |
+| Disabled | 40% opacity, no pointer events |
+| Loading | skeleton sized like the content with a light sheen; `aria-busy` on buttons |
+| Success / error | icon + text (role status / alert); error panels carry a danger rule on the left |
+| Entrance / exit | masked line reveal (`--mask-*`, ease `mask`), staggered; exit is the reverse, faster |
+
+Hooks prepared in markup: `.mask-line` (text masking), `[data-magnetic]`, `[data-cursor="explore|
+external|view|drag"]` (cursor labels), `[data-intro]` / `[data-reveal]` (MotionController),
+`[data-orbit-stage]` (hero 3D slot), `#webgl-root`, `#mask-root`, `#transition-root`.
 
 ## Voice & Content Strategy
 
-- **Tone:** professional, clear, confident without hype. Short declarative sentences. No exclamation
-  marks, no "system", "transmission", "initialize", or sci-fi metaphors.
-- **Language:** professional English.
-- **Capitalization:** sentence case for headings, buttons, labels, and navigation. Mono
-  `label-caps` is the only uppercase text.
-- **Terminology:** "Projects" (not "Vault" or "Works"), "Journey" for experience, "Case study" for a
-  project page, "Stack" for skills, "Documents" for CV and certificates.
-- **Actions:** verb phrases naming the outcome: "View case study", "Download CV", "Send message",
-  "Show all features".
-- **Empty, loading, error:** empty states say what will appear and offer a next step ("Experience
-  entries will appear here. Meanwhile, browse the projects."). Loading uses skeletons sized like the
-  content. Errors say what failed and offer a retry.
-- **Numbers and dates:** `MMM YYYY` for ranges ("Jan 2024 – Present"), en dash between dates, file
-  sizes as "1.2 MB".
-- **API content is never rewritten**, only presented (see Page Patterns for display normalisation).
+- Professional, confident English; short declarative sentences; no exclamation marks.
+- The Kinetic identity name may appear as a signature (footer colophon), not as sci-fi role-play in
+  body copy. Say what the work is.
+- Sentence case for headings in body sections, buttons and descriptions; uppercase for display H1s
+  and mono labels.
+- API content is never rewritten, only presented (display normalisation lives in `src/lib/display/`).
+- Empty, loading and error states say what will appear / what failed and offer a next step.
 
 ## Components
 
-Component tokens live in `src/app/globals.css` (`--button-*`, `--link-*`, `--card-*`, `--media-*`,
-`--chip-*`, `--field-*`, `--nav-*`, `--focus-ring-*`).
+- **Button** (`ui/button.tsx`): primary = ink fill → accent on hover; secondary = hairline-strong
+  border → ink border; ghost; link. Heights 36/44/56px, hit area ≥ 44px.
+- **Eyebrow / technical label** (`ui/section.tsx`): rule + optional index + mono uppercase text.
+- **SectionHeader / Section / PageHeader**: the editorial grid patterns above.
+- **Header**: Fz monogram + name, paired technical labels (xl+), mono indexed nav, ⌘K, theme toggle.
+  Transparent at the top, canvas 78% + blur + hairline once scrolled.
+- **Mobile menu**: full-height modal sheet, indexed display-size links, elsewhere links and theme at
+  the bottom; focus trapped, Esc closes, scroll locked.
+- **Footer**: always dark; display-size "Get in touch" CTA, brand, index, elsewhere, Fz card, colophon.
+- **Fields**: surface fill, field border, mono uppercase labels, accent border + bottom bar on focus.
+- **Orbit fallback** (`hero/OrbitFallback.tsx`): static SVG of the orbit model — the no-WebGL fallback
+  and the stand-in until the WebGL orbit (Fase 6).
 
-- **Buttons:** primary (accent fill, on-accent text) for the single most important action per view;
-  secondary (hairline-strong outline, ink text, surface on hover); text link (ink with accent
-  underline). Height 44px (36px only for dense desktop toolbars), pill shape, visible focus ring,
-  `aria-busy` + spinner while submitting.
-- **Project card:** fixed 16:10 media frame with `media-bg` placeholder, then case type badges, title
-  (serif `title`, max 2 lines), description (max 3 lines), and metadata. Tags show at most 4 chips plus
-  a "+N" chip that reveals the rest on focus or click; `features` never appear on cards. The whole card
-  is one link with a single accessible name. Hover: surface background and a 1.02 media scale.
-- **Chips and badges:** mono `meta` text on surface with a hairline; case type badges use accent-soft.
-  Chips wrap; labels are never truncated.
-- **Timeline entry:** two columns on desktop (mono date range left, role + company + description +
-  technologies right), stacked on mobile, separated by hairlines. No dots or glowing rails.
-- **Input fields:** visible label above, 48px height, field border, accent border and focus ring on
-  focus, error text below the field linked with `aria-describedby`, error summary on failed submit.
-- **Navigation bar:** name on the left, primary links (Projects, About, Journey, Contact), theme
-  toggle, ⌘K trigger. Active link uses an accent underline. Mobile uses a full-height sheet.
-- **Footer:** dark band (`color-scheme: dark` locally) with name, short positioning line, links,
-  and copyright. No live clock.
-- **Section header:** mono `label-caps` eyebrow, serif headline, optional lead paragraph in
-  `body-lg`, optional text link aligned right on desktop.
+## 3D
 
-## Page Patterns
-
-Follows `docs/PAGE_MAP.md`. All data comes from the API; the display layer (`src/lib/display/`) only
-normalises presentation.
-
-- **Home `/`:** editorial hero (eyebrow "Full-Stack Engineer · Medan, Indonesia", serif name and
-  one-line positioning, two CTAs, a mono proof line from API counts, one 3D accent on the right on
-  desktop). Then selected projects (projects with a case study, max 6; filled from API order when
-  fewer than 3), stack summary by API category, a short journey preview (hidden automatically when
-  there are no experiences), and a contact CTA band.
-- **About `/about`:** profile, approach, full stack grouped by API category (FRONTEND, BACKEND,
-  TOOLS, OTHERS, with Database/DevOps sub-groups from the display map), and documents. Anchors
-  `#profile`, `#stack`, `#documents` must exist (308 redirects point to them).
-- **Journey `/journey`:** full timeline from `experiences`. When empty: a calm empty state with a link
-  to Projects.
-- **Projects `/projects`:** all projects in a 2-column grid (1 on mobile), filterable by case type and
-  stack; filter state lives in the URL.
-- **Case study `/projects/[slug]`:** article layout. Header with case type badges, title, description,
-  demo and repository links, and the hero image. A sticky aside (desktop) holds role, stack, and links.
-  Body chapters 01 Problem, 02 Solution, 03 Result in `max-w-reading`. Features show 6 first with a
-  "Show all features" control. Previous / Next project at the end, then a contact CTA.
-- **Contact `/contact`:** short intro, the working form (name, email, subject, message), direct email,
-  GitHub, and LinkedIn. Success and error states inline.
-- **Auth, 404, error:** same canvas and type, minimal content, one clear way back.
-
-## Imagery & 3D
-
-- **Project media:** real screenshots from the API in a fixed-ratio frame; never stretched; lazy
-  loaded below the fold; meaningful `alt` from the project title.
-- **3D is an accent, never the theme:** pre-rendered Blender video, no WebGL at runtime. The home
-  hero (desktop) shows the Fz card entrance once per session (a short version afterwards): the card
-  settles, splits into five matte layers (Interface → API → Service → Database → Deployment) and
-  locks into a stack on a terracotta axis. Below the hero, a scroll-scrubbed fly-through follows one
-  request through the five layers. Decorative 3D may idle and react to hover under the loop rules in
-Motion (Fase 12.5): the hero stack after its entrance, the Fz card on About and in the footer. The renders carry
-  the canvas colour, so the visuals have no frame.
-- **Case study lead image:** the plain project screenshot (`ProjectImage`) in a quiet frame: 16:10
-  locked ratio, `--media-radius`, hairline border, `--media-bg` while loading; priority because it
-  sits above the fold under the title and CTAs. No device mockup (removed in Fase 10.5).
-- **Theme-aware renders:** posters exist per theme and follow the site theme (toggle and
-  `data-theme`, OS by default) through `ThemedPicture`: only the active variant is downloaded, and a
-  toggle swaps it after decoding, without a reload. Videos exist per theme too; only the active
-  theme's clip is fetched.
-- **Budgets:** entrance ≤ 600 KB (desktop), fly-through ≤ 10 MB desktop / ≤ 4 MB mobile, H.264 with
-  faststart. Sources in `design/blender/`, exports in `public/3d/`.
-- **Fallbacks:** without JS or with reduced motion no video is fetched: the hero shows the locked
-  stack still and the fly-through becomes a list of stills with their text. The hero entrance is
-  desktop-only (lg+), 4:5 at `--entrance-width: min(34vw, 36rem)`.
-- **LCP is a time budget, not a fixed element** (owner rule, Fase 10.5): LCP ≤ 2.0 s Lighthouse
-  mobile (default throttling), ≤ 1.2 s desktop, CLS < 0.05. The poster may be the LCP element only
-  when it is a small AVIF/WebP, preloaded with `fetchpriority="high"`, sized with srcset, and shown
-  without waiting for JS.
-- **Illustration:** none beyond the 3D accent; no stock photos, no AI-generated people.
+3D is the core of the experience. Rules:
+- One persistent canvas for public routes (Fase 4); scene switching per route and section.
+- Brand: the original Fz monogram glyphs (`src/app/icon.svg`, `components/brand/FzMark.tsx`).
+- The hero orbit model (`src/lib/display/orbit.ts`) is shared by the SVG fallback and the WebGL
+  scene: ring 1 Frontend, ring 2 Backend, ring 3 Tools & platforms — API skills only.
+- Materials: dark brushed metal, restrained emissive accents, PBR. Lighting from the scene, not baked
+  gradients. Bloom/DOF/grain low and selective; text always readable.
+- Budgets: GLB ≤ 1.5 MB (Draco/Meshopt), textures ≤ 2K (WebP/KTX2), ≤ 3 MB 3D on the home page.
+- Adaptive quality (DPR, post-processing off on mobile/low-end), stop when hidden, WebGL context-loss
+  handling, full fallback without WebGL.
 
 ## Accessibility
 
-- WCAG 2.2 AA: text contrast ≥ 4.5:1 (verified above), non-text ≥ 3:1 (field borders, focus ring).
-- Visible focus on every interactive element (2px accent outline, 3px offset); focus never hidden by
-  the sticky header.
-- Skip-to-content link first in the tab order; landmarks (`header`, `nav`, `main`, `footer`).
-- Targets ≥ 44px on touch, ≥ 24px minimum on pointer devices.
-- Color is never the only signal (status has text or an icon).
-- `prefers-reduced-motion` and `prefers-color-scheme` respected; the theme choice persists without a
-  flash.
-- Forms: visible labels, inline errors with `aria-describedby`, an error summary, `aria-live` for the
-  result.
+- Text contrast ≥ 4.5:1 (all text tokens), UI contrast ≥ 3:1; never colour alone for status.
+- Visible focus on every control; skip link first; landmarks; one H1 per page.
+- `prefers-reduced-motion`: no tweens, no idle motion, no smooth scroll; content final.
+- 3D and decorative layers are `aria-hidden`; the orbit carries an accessible text summary.
+- Touch targets ≥ 44px; custom cursor only on fine pointers without reduced motion.
 
 ## Implementation
 
-- `src/app/globals.css`: primitives; `@theme static` for type, spacing, radius, easing; `--ui-*`
-  semantic colors and component tokens in one rule on `:root, .site-scheme, .scheme-dark`;
-  `@theme inline` maps color/shadow utilities to them; a minimal `@layer base`.
-- Lightning CSS compiles `light-dark()` into variables that resolve where a token is declared, so
-  every element that sets its own scheme must re-declare the tokens: use `.site-scheme` (follows the
-  site theme) or `.scheme-dark` (always dark). Do not set `color-scheme` on other elements.
-- `src/app/layout.tsx`: `next/font` (Newsreader with `opsz`, Geist, Geist Mono) and the inline theme
-  script. `<html data-theme>` pins a stored choice; otherwise the OS preference applies.
-- Do not use Tailwind `dark:` utilities; semantic tokens adapt by themselves. A section can force a
-  dark band with the `scheme-dark` class (not a bare `color-scheme` declaration).
-- Base components live in `src/components/ui/` (Button, Chip/Badge/ChipList, Card, Container,
-  Section, Separator, Avatar, Tooltip, ThemeToggle, Skeleton, EmptyState, ErrorState, form fields);
-  the site frame (header, mobile menu, ⌘K palette, footer) in `src/components/site/`.
-- `cn()` (`src/lib/utils.ts`) knows the custom token names so tailwind-merge does not drop them;
-  add new token names there.
-- Do not redefine Tailwind's default theme namespaces; the dashboard depends on them.
+- Tokens: `src/app/globals.css` (primitives → semantic `--ui-*` + `@theme` → component → runtime).
+- Runtime bridge: `src/lib/design-tokens.ts`. GSAP setup: `src/lib/gsap.ts`.
+- Dashboard isolation: `src/app/dashboard/admin.css` is scoped to `.dashboard-root` and pins its own
+  scheme; do not reset Tailwind's default theme namespaces; `tests/admin-visual.spec.ts` guards it.
 
-## Do's and Don'ts
+## Owner taste rules (carried over from Fase 12.10; superseded items marked)
 
-- Do let real project evidence lead; every section answers "who, what can he do, where is the proof".
-- Do use the accent for one primary action and one highlight per view.
-- Do keep metadata in Geist Mono and prose in Geist; serif only for headings.
-- Do design empty states for every API-driven section.
-- Don't use hex values, raw pixel sizes, or ad-hoc durations in components; use tokens.
-- Don't use glow, neon gradients, grids of dots, scanlines, or terminal styling.
-- Don't use emoji as icons; use one stroke icon set (Lucide) at consistent sizes.
-- Don't truncate chip labels or hide information behind hover only.
-- Don't animate layout properties or delay content behind animations.
-- Don't place 3D where it competes with text or project images.
+Still in force:
+- Claims only when the owner confirmed them; no vendor or repository names in copy. Copy changes go
+  through docs/COPY.md.
+- Lettering is one composed unit: the Fz monogram stays balanced and legible at its smallest size.
+- Prefer the thin, precise object over the chunky one.
+- No device mockups around project screenshots unless a page phase decides otherwise with the owner.
+- API data is never changed; missing data hides its section or shows a calm empty state.
+- Long collections disclose progressively (+N, "Show all").
+- Decorative effects never change the click or focus area; the keyboard ring stays visible.
+- Form failure is announced assertively, success politely; with several invalid fields focus goes to
+  the error summary.
+- Theme follows the site toggle everywhere without a reload or flash; only the active theme's asset
+  downloads.
+- Performance is a time budget: report First Load JS and Lighthouse before/after each step.
 
-## Owner taste rules (learned during the redesign, Fase 12.10)
-
-Distilled from every correction and decision the owner made in Fases 1–12. They win over generic
-guidance; when a new case is unclear, ask instead of guessing.
-
-**Tone and copy**
-- Professional, calm English. No system/sci-fi metaphors ("Kinetic", "transmission", "node",
-  "capability graph"); say what the work is.
-- Claims are only made when the owner has confirmed them, and stay general (no repository or vendor
-  names in copy). Practices may be named (validation, migrations, constraints, automated releases).
-- Small precise wording choices are the owner's: Journey's H1 is "Experience & learning" (menu stays
-  "Journey"); the hero status, the reply-time line and the "Based in Medan, Indonesia (WIB, UTC+7)"
-  line follow docs/COPY.md exactly. Copy changes go through COPY.md, never straight into components.
-
-**Visual**
-- 3D is an accent, never the theme. Renders have a transparent or canvas background: no baked
-  gradients; the page background comes from CSS tokens.
-- Matte materials. Keep metallic low (dark-theme metal 0.3, not 0.6); fix harsh highlights with a small
-  bevel or by moving the key light, not with post effects.
-- Cameras: never a flat front view of an object with depth. Aim perpendicular to the plane that carries
-  the content (e.g. a tilted screen), with a long lens (85–100 mm) so edges stay straight.
-- Lettering is one composed unit: the Fz monogram is balanced as a pair (no wide gap) and must stay
-  legible at its smallest size (checked at ~320 px).
-- Prefer the thin, precise object over the chunky one when both work (card 0.11, not 0.30).
-- No device mockups around project screenshots: a plain screenshot in the token frame (radius, hairline
-  border, locked 16:10 ratio).
-- A visual next to the H1 must balance it, not shrink to avoid it: desktop entrance min(34vw, 36rem).
-  On phones, leave out what would only play below the first screen.
-
-**Motion**
-- Calm, short, meaningful; motion tokens only; no loops on text or UI; nothing idles (0 rAF at rest).
-  Decorative 3D may loop gently and react to hover under the Fase 12.5 rules (Motion).
-- The H1 and the navbar never animate. Page entrances: accent line draws, then lead / actions / visual
-  rise in turn. A sheen plays once, then the text is plain.
-- Rejected on purpose: a progress line on /journey, parallax on case-study images, ScrollTrigger,
-  ScrollSmoother. Reveals run once (IntersectionObserver) and are cleaned up on navigation.
-- Without JS or with reduced motion everything is in its final state and no video is fetched.
-- Long scroll experiences get a visible, keyboard-reachable way out ("Skip to projects") and stay
-  around 8 screens or less.
-- Played-once media remember the session (entrance: full once, then from 1.5 s).
-
-**Data on screen**
-- API data is never changed; normalisation lives in the display layer (skill display names, case type
-  split on commas and de-duplicated). Missing data hides its section or shows a calm empty state, never
-  hard-coded stand-ins.
-- Long collections disclose progressively: card tags 4 + "+N", case-study stack 16 + "+N", features
-  6 + "Show all N". Long labels on cards stay on one line with the full value in a tooltip and on the
-  detail page.
-- Featured work = projects with a case study (max 6, topped up from API order when fewer than 3).
-
-**Interaction and accessibility**
-- Decorative effects (spotlight, sheen) never change the click or focus area; the keyboard ring stays
-  clearly visible.
-- Form failure is announced assertively (role="alert"), success politely (role="status"); with several
-  invalid fields, focus goes to the error summary.
-- Theme follows the site toggle everywhere (pictures, posters, video clips, browser chrome) without a
-  reload or flash, and only the active theme's asset is downloaded.
-
-**Performance**
-- LCP is a time budget, not an element (see Imagery & 3D). Heavy or optional code loads on demand
-  (GSAP, fly-through, palette); report First Load JS and Lighthouse before/after each step.
+Superseded by the Kinetic direction (2026-11-27):
+- ~~3D is an accent, never the theme~~ → 3D is the core.
+- ~~No system/sci-fi metaphors, no "Kinetic"~~ → the Kinetic identity is allowed as a signature.
+- ~~No ScrollTrigger, no loops, nothing idles~~ → scroll-driven 3D and gentle idle motion are part of
+  the experience (still reduced-motion aware, still 0 work when the tab is hidden).
+- ~~Serif headlines, warm paper canvas, terracotta accent~~ → Geist display, void canvas, ice accent.
+- ~~Light-first, OS-following theme~~ → dark by default, light on request.

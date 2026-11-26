@@ -1,7 +1,7 @@
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils";
 
-/** Content-shaped placeholder. Pulses only when motion is allowed. */
+/** Content-shaped placeholder. A light sheen passes over it only when motion is allowed. */
 export function Skeleton({
   className,
   ...props
@@ -10,7 +10,7 @@ export function Skeleton({
     <div
       aria-hidden="true"
       className={cn(
-        "rounded-(--radius-control) bg-(--skeleton-bg) motion-safe:animate-pulse",
+        "skeleton-sheen rounded-(--radius-control) bg-(--skeleton-bg)",
         className,
       )}
       {...props}

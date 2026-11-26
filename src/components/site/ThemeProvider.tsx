@@ -12,20 +12,17 @@ import {
 export type Theme = "light" | "dark";
 const STORAGE_KEY = "theme"; // read before paint by the inline script in app/layout.tsx
 
+/** Dark is the default scheme (Kinetic, 2026-11-27); only a stored choice pins light. */
 function readTheme(): Theme {
-  const pinned = document.documentElement.dataset.theme;
-  if (pinned === "light" || pinned === "dark") return pinned;
-  return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return document.documentElement.dataset.theme === "light" ? "light" : "dark";
 }
 
 function subscribe(onChange: () => void) {
-  const media = matchMedia("(prefers-color-scheme: dark)");
   const observer = new MutationObserver(onChange);
   observer.observe(document.documentElement, {
     attributes: true,
     attributeFilter: ["data-theme"],
   });
-  media.addEventListener("change", onChange);
   const onStorage = (event: StorageEvent) => {
     if (event.key !== STORAGE_KEY) return;
     if (event.newValue === "light" || event.newValue === "dark")
@@ -35,7 +32,6 @@ function subscribe(onChange: () => void) {
   window.addEventListener("storage", onStorage);
   return () => {
     observer.disconnect();
-    media.removeEventListener("change", onChange);
     window.removeEventListener("storage", onStorage);
   };
 }

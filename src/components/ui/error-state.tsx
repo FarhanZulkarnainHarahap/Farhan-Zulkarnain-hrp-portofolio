@@ -22,7 +22,7 @@ export function ErrorState({
     <div
       role="alert"
       className={cn(
-        "flex flex-col items-start gap-4 rounded-(--card-radius) border border-hairline bg-surface p-(--card-padding)",
+        "flex flex-col items-start gap-4 rounded-(--card-radius) border border-hairline border-l-2 border-l-danger bg-surface p-(--card-padding)",
         className,
       )}
     >

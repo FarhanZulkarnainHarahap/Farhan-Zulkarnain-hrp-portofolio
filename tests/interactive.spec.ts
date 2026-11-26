@@ -140,19 +140,6 @@ test("cards never take the LCP or shift layout; the footer card loads only near 
   }
 });
 
-test("hero: idle loop after the entrance, hover tilts, leaving returns to the loop", async ({ browser }) => {
-  const context = await browser.newContext(desktop);
-  const page = await context.newPage();
-  const urls = track(page);
-  await page.goto("/");
-  const hero = page.locator("[data-hero-entrance]");
-  await expect(hero).toHaveAttribute("data-state", "idle", { timeout: 20_000 });
-  const box = (await hero.boundingBox())!;
-  await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.5);
-  await page.mouse.move(box.x + box.width * 0.9, box.y + box.height * 0.2, { steps: 8 });
-  await expect(hero).toHaveAttribute("data-state", "tilt");
-  await expect.poll(() => urls.filter((u) => u.includes("/tilt-")).length).toBeGreaterThan(0);
-  await page.mouse.move(10, box.y + box.height + 200);
-  await expect(hero).toHaveAttribute("data-state", "idle", { timeout: 5_000 });
-  await context.close();
-});
+// Fase K2 (Kinetic, 2026-11-27): "hero: idle loop after the entrance, hover tilts" was removed with the
+// hero entrance itself — the hero visual is now the orbit stage (tests/entrance.spec.ts → "hero orbit
+// stage"); its idle / hover / click states arrive with the WebGL orbit in Fase 6 and get tests there.

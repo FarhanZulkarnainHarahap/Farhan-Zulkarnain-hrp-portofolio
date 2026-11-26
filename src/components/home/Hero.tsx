@@ -1,12 +1,12 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { HeroEntrance } from "@/components/home/HeroEntrance";
-import { ScrollHint } from "@/components/home/ScrollHint";
-import { ShinyText } from "@/components/accents/ShinyText";
 import { ArrowRight } from "lucide-react";
+import { ShinyText } from "@/components/accents/ShinyText";
+import { OrbitFallback } from "@/components/hero/OrbitFallback";
+import { ScrollHint } from "@/components/home/ScrollHint";
 import { buttonClasses } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { Eyebrow } from "@/components/ui/section";
+import type { Skill } from "@/types/content";
 
 export type HeroProof = {
   projects: number;
@@ -15,73 +15,102 @@ export type HeroProof = {
 } | null;
 
 /**
- * First screen: who, what, proof, next step. The H1 is plain server-rendered text so it can be
- * the LCP element and is never animated (nor is the header). The visual is the Fz card entrance
- * rendered in Blender (Fase 10.5, HeroEntrance); the intro timeline for the text lives in
- * MotionController ([data-intro] steps).
+ * First screen (Kinetic, Fase K2): a full-viewport composition on the 12-column grid.
+ *  - Left (7 cols): paired technical labels, the name set oversized in three masked lines, a
+ *    drawn rule, the lead, CTAs, availability and API-derived proof.
+ *  - Right (5 cols): the orbit stage. Fase 6 mounts the WebGL orbital system there through the
+ *    persistent canvas; until then — and permanently without WebGL — the static SVG orbit renders.
+ *  - Mobile: text first, then the orbit in its own square area (never over the text), CTAs in
+ *    thumb reach right after the lead.
+ * The H1 is one plain server-rendered text block (the LCP element on every width) and is never
+ * hidden by the intro. Masked line reveals split it at runtime (SplitText, Fase 3+) and revert;
+ * wrapping lines in block spans on the server would split the LCP block and hand it to the lead.
  */
 export function Hero({
   proof,
+  skills = [],
   visual,
 }: {
   proof: HeroProof;
-  /** Overrides the default visual (the Fz card entrance). */
+  /** API skills for the orbit (no hardcoded list). */
+  skills?: Skill[];
+  /** Overrides the orbit stage content. */
   visual?: ReactNode;
 }) {
   return (
     <section
       aria-labelledby="hero-title"
-      className="relative flex min-h-[calc(100svh-var(--nav-height))] flex-col pt-section-sm"
+      className="relative flex min-h-[calc(100svh-var(--nav-height))] flex-col"
     >
       <Container
         size="wide"
-        className="grid flex-1 items-center gap-12 lg:grid-cols-12"
+        className="grid flex-1 content-center gap-x-(--spacing-grid-gap) gap-y-14 pt-section-sm pb-24 lg:grid-cols-12 lg:items-center lg:pb-section-sm"
       >
-        <div className="flex flex-col gap-7 lg:col-span-7">
-          <Eyebrow data-intro="eyebrow">Full-stack engineer · Medan, Indonesia</Eyebrow>
-          <div className="flex flex-col gap-5">
-            <h1
-              id="hero-title"
-              className="font-heading text-display-xl text-ink text-balance"
-            >
-              Farhan Zulkarnain Harahap
-            </h1>
-            <span
-              aria-hidden="true"
-              data-intro-line
-              className="block h-0.5 w-16 origin-left bg-accent"
-            />
-          </div>
-          <p
-            data-intro="lead"
-            className="max-w-reading text-copy-lg text-body text-pretty"
+        <div className="relative z-(--z-ui) flex min-w-0 flex-col gap-8 lg:col-span-7">
+          <div
+            data-intro="eyebrow"
+            className="flex flex-wrap gap-x-10 gap-y-3 font-meta text-label text-muted uppercase"
           >
-            I build web applications end to end, from a clear interface to the
-            API and database behind it.
-          </p>
-          <div data-intro="cta" className="flex flex-wrap items-center gap-3">
-            <Link
-              href="/projects"
-              className={buttonClasses({ variant: "primary", size: "lg" })}
+            <p>
+              Full-stack engineer
+              <br />
+              Creative developer
+            </p>
+            <p>
+              Based in
+              <br />
+              Medan, Indonesia
+            </p>
+          </div>
+          <h1
+            id="hero-title"
+            className="font-display text-display-hero text-ink uppercase"
+          >
+            Farhan Zulkarnain Harahap
+          </h1>
+          <span
+            aria-hidden="true"
+            data-intro-line
+            className="block h-(--border-hairline) w-full origin-left bg-hairline-strong"
+          />
+          <div className="grid gap-8 xl:grid-cols-7 xl:gap-x-(--spacing-grid-gap)">
+            <p
+              data-intro="lead"
+              className="max-w-reading text-copy-lg text-body text-pretty xl:col-span-4"
             >
-              View projects
-              <ArrowRight aria-hidden="true" />
-            </Link>
-            <Link
-              href="/contact"
-              className={buttonClasses({ variant: "secondary", size: "lg" })}
+              I build web applications end to end, from a clear interface to
+              the API and database behind it.
+            </p>
+            <div
+              data-intro="cta"
+              className="flex flex-wrap items-start gap-3 xl:col-span-3 xl:flex-col"
             >
-              Get in touch
-            </Link>
+              <Link
+                href="/projects"
+                data-magnetic
+                data-cursor="explore"
+                className={buttonClasses({ variant: "primary", size: "lg" })}
+              >
+                Explore projects
+                <ArrowRight aria-hidden="true" />
+              </Link>
+              <Link
+                href="/contact"
+                data-magnetic
+                className={buttonClasses({ variant: "secondary", size: "lg" })}
+              >
+                Get in touch
+              </Link>
+            </div>
           </div>
           <div
             data-intro="status"
-            className="flex flex-col gap-3 border-t border-hairline pt-6"
+            className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-8"
           >
-            <p className="flex items-center gap-2.5 text-small text-ink">
+            <p className="flex items-center gap-3 text-small text-ink">
               <span
                 aria-hidden="true"
-                className="size-2 shrink-0 rounded-pill bg-success"
+                className="status-pulse relative size-2 shrink-0 rounded-pill bg-success text-success"
               />
               <ShinyText delay={700}>
                 Open to full-time roles and freelance projects
@@ -90,7 +119,15 @@ export function Hero({
             <ProofLine proof={proof} />
           </div>
         </div>
-        <div className="lg:col-span-5">{visual ?? <HeroEntrance />}</div>
+        <div className="relative lg:col-span-5">
+          <div
+            data-orbit-stage
+            data-orbit-renderer="svg"
+            className="relative mx-auto aspect-[264/200] w-(--orbit-stage-size-mobile) lg:w-(--orbit-stage-size)"
+          >
+            {visual ?? <OrbitFallback skills={skills} />}
+          </div>
+        </div>
       </Container>
       <ScrollHint />
     </section>

@@ -103,11 +103,19 @@ test("mobile menu opens as a modal sheet, locks scroll, and closes with Esc", as
       () => getComputedStyle(document.documentElement).overflow,
     ),
   ).toBe("hidden");
-  // Focus stays inside the sheet: tabbing past the last control does not reach the page.
-  for (let i = 0; i < 8; i++) await page.keyboard.press("Tab");
-  expect(await menu.evaluate((el) => el.contains(document.activeElement))).toBe(
-    true,
-  );
+  // Focus stays inside the sheet: tabbing past the last control never reaches the page behind it.
+  // (Fase K2: the sheet has more controls — elsewhere links — so past the last one the browser may move
+  // focus to its own UI, which leaves document.activeElement on <body>; the page itself stays inert.)
+  for (let i = 0; i < 14; i++) {
+    await page.keyboard.press("Tab");
+    expect(
+      await menu.evaluate(
+        (el) =>
+          el.contains(document.activeElement) ||
+          document.activeElement === document.body,
+      ),
+    ).toBe(true);
+  }
   await page.keyboard.press("Escape");
   await expect(menu).toBeHidden();
   await expect(trigger).toBeFocused();
@@ -127,36 +135,32 @@ test("mobile menu opens as a modal sheet, locks scroll, and closes with Esc", as
 test("theme toggle switches theme and persists after reload", async ({
   browser,
 }) => {
+  // Fase K2 (Kinetic): dark is the default whatever the OS prefers; light is opt-in and remembered.
   const context = await browser.newContext({ colorScheme: "light" });
   await mockApi(context);
   const page = await context.newPage();
   await page.goto("/projects");
   const header = page.getByRole("banner");
-  const lightBg = await header.evaluate(
-    (el) => getComputedStyle(el).backgroundColor,
+  const darkBg = await page.evaluate(
+    () => getComputedStyle(document.body).backgroundColor,
   );
-  await page
-    .getByRole("banner")
-    .getByRole("button", { name: "Switch to dark theme" })
-    .click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.reload();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(
-    page
-      .getByRole("banner")
-      .getByRole("button", { name: "Switch to light theme" }),
+    header.getByRole("button", { name: "Switch to light theme" }),
   ).toBeVisible();
-  const darkBg = await header.evaluate(
-    (el) => getComputedStyle(el).backgroundColor,
-  );
-  expect(darkBg).not.toBe(lightBg);
-  await page
-    .getByRole("banner")
-    .getByRole("button", { name: "Switch to light theme" })
-    .click();
+  await header.getByRole("button", { name: "Switch to light theme" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(
+    header.getByRole("button", { name: "Switch to dark theme" }),
+  ).toBeVisible();
+  const lightBg = await page.evaluate(
+    () => getComputedStyle(document.body).backgroundColor,
+  );
+  expect(lightBg).not.toBe(darkBg);
+  await header.getByRole("button", { name: "Switch to dark theme" }).click();
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await context.close();
 });
 
@@ -185,9 +189,10 @@ test("command palette searches pages and API projects, copies email, and switche
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(
     "@",
   );
-  await search.fill("dark theme");
+  // Fase K2: the site starts dark, so the palette offers the light theme.
+  await search.fill("light theme");
   await page.keyboard.press("Enter");
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.keyboard.press("Control+k");
   await page
     .getByRole("combobox", { name: "Search" })

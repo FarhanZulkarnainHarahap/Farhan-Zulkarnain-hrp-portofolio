@@ -3,8 +3,8 @@ import { cn } from "@/lib/utils";
 
 const control =
   "w-full rounded-(--field-radius) border border-(color:--field-border) bg-(--field-bg) px-3.5 font-body text-copy text-(color:--field-text) " +
-  "placeholder:text-muted transition-colors duration-(--duration-fast) ease-standard " +
-  "focus-visible:border-(color:--field-border-focus) " +
+  "placeholder:text-muted transition-[border-color,box-shadow,background-color] duration-(--duration-base) ease-standard " +
+  "hover:border-(color:--ui-hairline-strong) focus-visible:border-(color:--field-border-focus) focus-visible:bg-(--ui-canvas) focus-visible:shadow-[inset_0_-2px_0_var(--field-border-focus)] " +
   "aria-invalid:border-(color:--field-border-error) disabled:cursor-not-allowed disabled:opacity-50";
 
 export function Label({
@@ -15,7 +15,7 @@ export function Label({
 }: ComponentPropsWithoutRef<"label"> & { required?: boolean }) {
   return (
     <label
-      className={cn("text-small font-medium text-ink", className)}
+      className={cn("font-meta text-label text-body uppercase", className)}
       {...props}
     >
       {children}

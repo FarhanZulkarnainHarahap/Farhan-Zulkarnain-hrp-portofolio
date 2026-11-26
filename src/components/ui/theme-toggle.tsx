@@ -25,9 +25,9 @@ export function ThemeToggle({
       onClick={toggleTheme}
       aria-label={label}
       className={cn(
-        "inline-flex size-(--hit-area-min) items-center justify-center rounded-pill text-ink",
+        "inline-flex size-(--hit-area-min) items-center justify-center rounded-(--radius-control) text-ink",
         "transition-colors duration-(--duration-fast) ease-standard hover:bg-(--button-ghost-bg-hover)",
-        "[&_svg]:size-(--icon-md)",
+        "[&_svg]:size-(--icon-sm)",
         className,
       )}
     >

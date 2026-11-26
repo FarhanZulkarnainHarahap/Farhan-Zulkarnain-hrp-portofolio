@@ -4,13 +4,14 @@ import { Eyebrow } from "@/components/ui/section";
 import { cn } from "@/lib/utils";
 
 /**
- * Top of a standalone page: eyebrow, the page's single H1, a lead and optional actions.
- * `visual` is a slot on the right (desktop) for an illustration (Fase 9) or 3D accent (Fase 10).
+ * Top of a standalone page (Kinetic): technical label, the page's single H1 set large and tight,
+ * a full-width rule, then the lead and actions offset to the right of the 12-column grid
+ * (asymmetric editorial layout). `visual` is a right-hand slot on desktop for a 3D object or an
+ * illustration (the WebGL page scenes of Fase 10 mount into the persistent canvas instead).
  *
- * Light entrance (Fase 10.5, same language as the home intro; MotionController): the accent line
- * under the title draws left → right, then the actions and the visual rise in turn. The eyebrow, the
- * H1 and the lead are not animated: on phones the lead is the LCP element of these pages, and hiding
- * it until GSAP loaded cost ≈ 1.3 s of LCP (Fase 12.8). Reduced motion / no JS: everything final.
+ * Entrance (MotionController): the rule under the title draws left → right, then the actions and
+ * the visual rise. The eyebrow, the H1 and the lead are never hidden: on phones the lead is the
+ * LCP element of these pages (Fase 12.8). Reduced motion / no JS: everything final.
  */
 export function PageHeader({
   eyebrow,
@@ -29,29 +30,42 @@ export function PageHeader({
 }) {
   return (
     <header className={cn("pt-section-sm pb-section-sm", className)}>
-      <Container size="wide" className="grid items-end gap-10 lg:grid-cols-12">
-        <div className="flex flex-col gap-6 lg:col-span-8">
-          <Eyebrow>{eyebrow}</Eyebrow>
-          <div className="flex flex-col gap-5">
-            <h1 className="font-heading text-display-lg text-ink text-balance">
-              {title}
-            </h1>
-            <span
-              aria-hidden="true"
-              data-intro-line
-              className="block h-0.5 w-16 origin-left bg-accent"
-            />
-          </div>
-          {lead && (
-            <p className="max-w-reading text-copy-lg text-body text-pretty">
-              {lead}
-            </p>
+      <Container
+        size="wide"
+        className="grid gap-x-(--spacing-grid-gap) gap-y-10 lg:grid-cols-12"
+      >
+        <div
+          className={cn(
+            "flex flex-col gap-8",
+            visual ? "lg:col-span-8" : "lg:col-span-11",
           )}
-          {children && <div data-intro="cta">{children}</div>}
+        >
+          <Eyebrow>{eyebrow}</Eyebrow>
+          <h1 className="font-display text-display-xl text-ink text-balance uppercase">
+            {title}
+          </h1>
         </div>
         {visual && (
-          <div data-intro="visual" className="hidden lg:col-span-4 lg:block">
+          <div
+            data-intro="visual"
+            className="hidden self-end lg:col-span-4 lg:block"
+          >
             {visual}
+          </div>
+        )}
+        <span
+          aria-hidden="true"
+          data-intro-line
+          className="block h-(--border-hairline) origin-left bg-hairline-strong lg:col-span-12"
+        />
+        {(lead || children) && (
+          <div className="flex flex-col gap-6 lg:col-span-6 lg:col-start-7">
+            {lead && (
+              <p className="max-w-reading text-copy-lg text-body text-pretty">
+                {lead}
+              </p>
+            )}
+            {children && <div data-intro="cta">{children}</div>}
           </div>
         )}
       </Container>

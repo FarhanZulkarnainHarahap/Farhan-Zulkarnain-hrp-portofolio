@@ -5,25 +5,13 @@ import { ThemeProvider } from "@/components/site/ThemeProvider";
 import { profile } from "@/lib/site";
 
 // Fonts are local subsets (Fase 12.1, src/app/fonts/README.md): Latin only, only the weights in use.
-// Newsreader keeps the opsz axis (design requirement) with one file per weight, so the H1 (400)
-// needs 38 KB instead of the 129 KB wght+opsz file. Preloaded again (Fase 12.8): both files were
-// requested before the LCP anyway (VeryHigh), and without the preload the late swap from the fallback
-// re-wrapped long H1s on phones (CLS 0.035 on /about). Italic is not used on the site.
-const newsreader = localFont({
-  src: [
-    { path: "./fonts/newsreader-400.woff2", weight: "400", style: "normal" },
-    { path: "./fonts/newsreader-500.woff2", weight: "500", style: "normal" },
-  ],
-  display: "swap",
-  preload: true,
-  adjustFontFallback: "Times New Roman",
-  fallback: ["Iowan Old Style", "Georgia", "serif"],
-  variable: "--font-newsreader",
-});
+// Kinetic (2026-11-27): Geist carries display and body, Geist Mono the technical metadata. Geist is
+// preloaded: the display H1 is the LCP element, and a late swap re-wraps the oversized name.
 const geist = localFont({
   src: "./fonts/geist.woff2",
   weight: "400 700",
   display: "swap",
+  preload: true,
   adjustFontFallback: "Arial",
   variable: "--font-geist",
 });
@@ -37,21 +25,21 @@ const geistMono = localFont({
 });
 
 // Mobile (Fase 12.4): edge to edge (safe areas are padded in CSS), browser chrome in the canvas
-// colour of each scheme. The colours mirror --ui-canvas (paper-50 / night-900 in globals.css); a
-// theme picked with the toggle is synced by ThemeProvider. Zoom is never disabled.
+// colour. The site is dark by default (Kinetic), so both entries are --ui-canvas dark (void-950); a
+// light theme picked with the toggle is synced by ThemeProvider. Zoom is never disabled.
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  colorScheme: "light dark",
+  colorScheme: "dark light",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#faf8f4" },
-    { media: "(prefers-color-scheme: dark)", color: "#141311" },
+    { media: "(prefers-color-scheme: light)", color: "#08090b" },
+    { media: "(prefers-color-scheme: dark)", color: "#08090b" },
   ],
 };
 
 // Runs before first paint: pins a stored theme choice. Without a stored choice (or without
-// JS) the CSS follows prefers-color-scheme, so there is no flash either way.
+// JS) the CSS default (dark) applies, so there is no flash either way.
 const themeScript = `try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
 
 // Motion (Fase 8): pre-hide animated elements only when JS runs and motion is allowed. If GSAP is
@@ -171,7 +159,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${newsreader.variable} ${geist.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geist.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

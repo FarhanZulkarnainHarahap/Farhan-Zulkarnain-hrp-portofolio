@@ -37,9 +37,10 @@ test("hero shows who, what, proof from the API, and both CTAs", async ({
     "Farhan Zulkarnain Harahap",
   );
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
-  await expect(
-    page.getByText("Full-stack engineer · Medan, Indonesia"),
-  ).toBeVisible();
+  // Fase K2: role and place are paired technical labels (Kinetic hero).
+  const hero = page.locator("#hero-title").locator("xpath=ancestor::section[1]");
+  await expect(hero.getByText(/Full-stack engineer\s*Creative developer/)).toBeVisible();
+  await expect(hero.getByText(/Based in\s*Medan, Indonesia/)).toBeVisible();
   await expect(
     page.getByText("Open to full-time roles and freelance projects"),
   ).toBeVisible();
@@ -50,7 +51,8 @@ test("hero shows who, what, proof from the API, and both CTAs", async ({
   await expect(page.locator(".legacy-root")).toHaveCount(0);
   await expect(page.locator("[data-fzh-asset]")).toHaveCount(0);
   await expect(page.locator("canvas")).toHaveCount(0);
-  await page.getByRole("link", { name: "View projects" }).click();
+  // Fase K2: the CTA reads "Explore projects" (master prompt wording).
+  await page.getByRole("link", { name: "Explore projects" }).click();
   await expect(page).toHaveURL(/\/projects$/);
   await page.goto("/");
   await page
