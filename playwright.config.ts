@@ -36,11 +36,12 @@ export default defineConfig({
   },
   projects: [
     // Production build (npm run build first).
-    { name: "app", testIgnore: [/public-quality\.spec\.ts/, /live\.spec\.ts/, /-browsers\.spec\.ts/] },
-    // Dev server: React only reports hydration mismatches in development.
+    { name: "app", testIgnore: [/public-quality\.spec\.ts/, /animation-lab\.spec\.ts/, /live\.spec\.ts/, /-browsers\.spec\.ts/] },
+    // Dev server: React only reports hydration mismatches in development; the animation lab
+    // (Fase K3) exists only in development.
     {
       name: "dev-quality",
-      testMatch: /public-quality\.spec\.ts/,
+      testMatch: /public-quality\.spec\.ts|animation-lab\.spec\.ts/,
       use: { baseURL: "http://localhost:3102" },
     },
   ],

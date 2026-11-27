@@ -25,20 +25,25 @@ export type OrbitRingSpec = {
   roll: number;
   /** +1 counter-clockwise, -1 clockwise (seen from above). */
   direction: 1 | -1;
-  /** Angular speed in radians per second at idle (WebGL). */
-  speed: number;
+  /** Seconds per revolution at idle (WebGL); mirrors --orbit-period-* (12–40 s). */
+  period: number;
   /** Phase offset of the first node, radians. */
   phase: number;
 };
 
 export const ORBIT_RINGS: readonly OrbitRingSpec[] = [
-  { id: "frontend", label: "Frontend", categories: ["FRONTEND"], radius: 0.48, inclination: 54, roll: -16, direction: 1, speed: 0.22, phase: 0.4 },
-  { id: "backend", label: "Backend", categories: ["BACKEND"], radius: 0.74, inclination: 59, roll: 9, direction: -1, speed: 0.14, phase: 1.3 },
-  { id: "tooling", label: "Tools & platforms", categories: null, radius: 1, inclination: 64, roll: -5, direction: 1, speed: 0.09, phase: 2.1 },
+  { id: "frontend", label: "Frontend", categories: ["FRONTEND"], radius: 0.48, inclination: 54, roll: -16, direction: 1, period: 21, phase: 0.4 },
+  { id: "backend", label: "Backend", categories: ["BACKEND"], radius: 0.74, inclination: 59, roll: 9, direction: -1, period: 30, phase: 1.3 },
+  { id: "tooling", label: "Tools & platforms", categories: null, radius: 1, inclination: 64, roll: -5, direction: 1, period: 38, phase: 2.1 },
 ];
 
 export type OrbitNode = { id: string; name: string; label: string; angle: number };
 export type OrbitRing = OrbitRingSpec & { nodes: OrbitNode[] };
+
+/** Angular speed (rad/s) of a ring at idle, signed by its direction. */
+export function ringSpeed(ring: Pick<OrbitRingSpec, "period" | "direction">) {
+  return ring.period > 0 ? ((Math.PI * 2) / ring.period) * ring.direction : 0;
+}
 
 /** Assigns API skills to rings (deduplicated by display name) and spreads them evenly. */
 export function buildOrbit(skills: Skill[]): OrbitRing[] {

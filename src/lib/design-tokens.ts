@@ -23,6 +23,13 @@ export type MotionTokenSet = {
     pageExit: Seconds;
     pageEnter: Seconds;
     camera: Seconds;
+    /** Semantic durations (Fase K3), see src/lib/animation/config.ts for the allowed ranges. */
+    micro: Seconds;
+    hover: Seconds;
+    press: Seconds;
+    enter: Seconds;
+    section: Seconds;
+    page: Seconds;
   };
   stagger: { base: Seconds; chars: Seconds; words: Seconds; lines: Seconds };
   /** Distance of small reveals, in px. */
@@ -44,6 +51,10 @@ export type MotionTokenSet = {
     lightPeriod: Seconds;
   };
   camera: { fov: number; fovMobile: number; smoothTime: Seconds };
+  /** Seconds per revolution of the three hero orbit rings (inner → outer). */
+  orbit: { inner: Seconds; middle: Seconds; outer: Seconds };
+  /** Lenis smooth scroll. */
+  scroll: { lerp: number; wheelMultiplier: number };
 };
 
 export type ColorTokenSet = Record<
@@ -61,7 +72,13 @@ const FALLBACK: MotionTokenSet = {
     cinematic: 1.4,
     pageExit: 0.45,
     pageEnter: 0.7,
-    camera: 1.6,
+    camera: 1.2,
+    micro: 0.15,
+    hover: 0.28,
+    press: 0.14,
+    enter: 0.56,
+    section: 0.8,
+    page: 0.8,
   },
   stagger: { base: 0.06, chars: 0.018, words: 0.04, lines: 0.09 },
   revealDistance: 12,
@@ -87,6 +104,8 @@ const FALLBACK: MotionTokenSet = {
   press: { scale: 0.96 },
   idle: { floatAmplitude: 0.06, floatPeriod: 6, rotationSpeed: 0.15, breathScale: 1.015, lightPeriod: 12 },
   camera: { fov: 35, fovMobile: 45, smoothTime: 0.35 },
+  orbit: { inner: 21, middle: 30, outer: 38 },
+  scroll: { lerp: 0.1, wheelMultiplier: 1 },
 };
 
 const FALLBACK_COLORS: ColorTokenSet = {
@@ -163,6 +182,12 @@ export function getMotionTokens(): MotionTokenSet {
       pageExit: toSeconds(get("--duration-page-exit"), f.duration.pageExit),
       pageEnter: toSeconds(get("--duration-page-enter"), f.duration.pageEnter),
       camera: toSeconds(get("--camera-duration"), f.duration.camera),
+      micro: toSeconds(get("--duration-micro"), f.duration.micro),
+      hover: toSeconds(get("--duration-hover"), f.duration.hover),
+      press: toSeconds(get("--duration-press"), f.duration.press),
+      enter: toSeconds(get("--duration-enter"), f.duration.enter),
+      section: toSeconds(get("--duration-section"), f.duration.section),
+      page: toSeconds(get("--duration-page"), f.duration.page),
     },
     stagger: {
       base: toSeconds(get("--stagger"), f.stagger.base),
@@ -217,6 +242,15 @@ export function getMotionTokens(): MotionTokenSet {
       fovMobile: toNumber(get("--camera-fov-mobile"), f.camera.fovMobile),
       smoothTime: toSeconds(get("--camera-smooth-time"), f.camera.smoothTime),
     },
+    orbit: {
+      inner: toSeconds(get("--orbit-period-inner"), f.orbit.inner),
+      middle: toSeconds(get("--orbit-period-middle"), f.orbit.middle),
+      outer: toSeconds(get("--orbit-period-outer"), f.orbit.outer),
+    },
+    scroll: {
+      lerp: Math.min(1, Math.max(0.01, toNumber(get("--scroll-lerp"), f.scroll.lerp))),
+      wheelMultiplier: toNumber(get("--scroll-wheel-multiplier"), f.scroll.wheelMultiplier),
+    },
   };
   return motionCache;
 }
@@ -259,6 +293,9 @@ export function invalidateDesignTokens() {
   motionCache = null;
   colorCache = null;
 }
+
+/** Server-safe defaults (identical to the CSS values without reduced motion). */
+export const MOTION_TOKEN_DEFAULTS: Readonly<MotionTokenSet> = FALLBACK;
 
 /** Motion-style transition from the spring tokens (DOM micro-interactions). */
 export function springTransition(kind: "default" | "soft" = "default") {

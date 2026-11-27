@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FzMark } from "@/components/brand/FzMark";
+import { acquireScrollLock } from "@/lib/animation/scroll";
 import { ExternalMark } from "@/components/ui/button";
 import { profile } from "@/lib/site";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -22,14 +23,8 @@ export function MobileMenu({ cv }: { cv: string }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    if (!open) return;
-    const previous = document.documentElement.style.overflow;
-    document.documentElement.style.overflow = "hidden";
-    return () => {
-      document.documentElement.style.overflow = previous;
-    };
-  }, [open]);
+  // Shared, counter-based scroll lock (Fase K3): <html> overflow + Lenis stopped while open.
+  useEffect(() => (open ? acquireScrollLock() : undefined), [open]);
 
   // Close when the viewport grows past the mobile breakpoint.
   useEffect(() => {

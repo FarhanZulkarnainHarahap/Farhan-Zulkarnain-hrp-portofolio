@@ -338,6 +338,15 @@
   --duration-cinematic: 1400ms;
   --duration-page-exit: 450ms;
   --duration-page-enter: 700ms;
+  /* Semantic durations (Fase K3, master prompt ranges; src/lib/animation/config.ts checks them):
+     micro 120–180 · hover 200–350 · press 100–180 · enter 400–700 · section 600–1000 ·
+     page 600–1000 · camera 800–1500 ms. */
+  --duration-micro: 150ms;
+  --duration-hover: 280ms;
+  --duration-press: 140ms;
+  --duration-enter: 560ms;
+  --duration-section: 800ms;
+  --duration-page: 800ms;
 
   /* Stagger */
   --stagger: 60ms;
@@ -379,8 +388,17 @@
   /* Camera */
   --camera-fov: 35;
   --camera-fov-mobile: 45;
-  --camera-duration: 1600ms;
+  --camera-duration: 1200ms;
   --camera-smooth-time: 0.35;
+
+  /* Orbit periods (seconds per revolution, 12–40 s): inner, middle, outer ring. */
+  --orbit-period-inner: 21s;
+  --orbit-period-middle: 30s;
+  --orbit-period-outer: 38s;
+
+  /* Smooth scroll (Lenis): lerp per 60 Hz frame (0–1, higher = snappier), wheel multiplier. */
+  --scroll-lerp: 0.1;
+  --scroll-wheel-multiplier: 1;
 
   /* Hero intro start times (docs/MOTION_PLAN.md) */
   --intro-line: 150ms;
@@ -432,6 +450,25 @@ html:has(.site-frame) {
   html:has(.site-frame) {
     scroll-behavior: smooth;
   }
+}
+/* Lenis (Fase K3, SmoothScrollProvider): whenever Lenis runs, CSS smooth scrolling is off. Lenis
+   animates wheel, anchors and programmatic scrolls itself; native smooth would fight it and would
+   also animate the browser's back/forward scroll restoration. Nested scrollers keep their own. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+html.lenis {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
 }
 
 /* ── Layer stack (public pages, SiteChrome) ────────────────────────────────────
@@ -497,6 +534,17 @@ html:has(.site-frame) {
 }
 .mask-line > * {
   display: block;
+}
+/* Word mask (MaskedText by="word", Fase K3): same clip as .mask-line, but words stay inline. */
+.mask-word {
+  display: inline-block;
+  overflow: clip;
+  vertical-align: bottom;
+  padding-block: 0.06em 0.1em;
+  margin-block: -0.06em -0.1em;
+}
+.mask-word > * {
+  display: inline-block;
 }
 /* Animated underline: grows from the left on hover / focus / current page. */
 .link-sweep {
@@ -1005,7 +1053,12 @@ html.js-motion .hero-entrance:not([data-state="still"]) .hero-entrance__end {
     --duration-cinematic: 1ms;
     --duration-page-exit: 1ms;
     --duration-page-enter: 1ms;
+    --duration-hover: 1ms;
+    --duration-enter: 1ms;
+    --duration-section: 1ms;
+    --duration-page: 1ms;
     --camera-duration: 1ms;
+    --scroll-lerp: 1;
     --stagger: 0ms;
     --stagger-chars: 0ms;
     --stagger-words: 0ms;

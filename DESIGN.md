@@ -75,7 +75,11 @@ rounded: { control: 0.125rem, card: 0.25rem, pill: 9999px }
 borders: { hairline: 1px, strong: 1.5px, focus-ring: 2px, focus-offset: 3px }
 depth-layers: [environment 0, canvas 1, mask 2, content 3, ui 4, raised 10, sticky 20, header 30, overlay 40, modal 50, toast 60, transition 70, cursor 80]
 motion:
-  duration: { instant: 90ms, fast: 150ms, base: 240ms, slow: 420ms, reveal: 800ms, cinematic: 1400ms, page-exit: 450ms, page-enter: 700ms, camera: 1600ms }
+  duration: { instant: 90ms, fast: 150ms, base: 240ms, slow: 420ms, reveal: 800ms, cinematic: 1400ms, page-exit: 450ms, page-enter: 700ms, camera: 1200ms }
+  # Semantic durations (Fase K3; ranges checked by src/lib/animation/config.ts)
+  semantic: { micro: 150ms (120–180), hover: 280ms (200–350), press: 140ms (100–180), enter: 560ms (400–700), section: 800ms (600–1000), page: 800ms (600–1000), camera: 1200ms (800–1500) }
+  orbit-period: { inner: 21s, middle: 30s, outer: 38s }  # 12–40 s per revolution
+  scroll: { lerp: 0.1, wheel-multiplier: 1 }  # Lenis; lerp 1 under reduced motion
   ease:
     standard: cubic-bezier(0.2, 0, 0, 1)
     enter: cubic-bezier(0.16, 1, 0.3, 1)
@@ -196,6 +200,7 @@ durations → 1ms, staggers → 0, hover/press/idle → neutral, so engines inhe
 
 Engine ownership (one owner per property; one shared scroll progress):
 - Three.js + React Three Fiber: rendering and 3D interaction. maath: damping.
+- Architecture, ownership and the single loop: docs/ANIMATION_ARCHITECTURE.md (Fase K3); Theatre: docs/THEATRE.md.
 - Theatre.js (`@theatre/core` only; Studio in development only): cinematic timelines, camera
   choreography, 3D keyframes. State JSON is committed.
 - GSAP (+ ScrollTrigger, Flip, SplitText): scroll-driven sequencing and DOM timelines.

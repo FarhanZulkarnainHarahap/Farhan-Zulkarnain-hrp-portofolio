@@ -117,8 +117,9 @@ export function Section({
     <section
       id={id}
       aria-labelledby={title ? headingId : undefined}
+      // Anchor offset below the sticky header comes from html's scroll-padding-top (globals.css);
+      // a scroll-margin here too would double it (Fase K3 fix).
       className={cn(
-        "scroll-mt-(--nav-height)",
         spacing === "compact" ? "py-section-sm" : "py-section",
         className,
       )}

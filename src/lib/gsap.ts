@@ -1,9 +1,15 @@
 "use client";
 /**
- * Single GSAP entry point (Fase 8). ScrollTrigger is NOT used anywhere (reveals use
- * IntersectionObserver); if a Fase 10 3D component needs scroll effects, import ScrollTrigger
- * dynamically inside that component's chunk only. Plugins are registered once; durations and eases come from the
- * design tokens in globals.css, so motion stays in sync with CSS transitions.
+ * Single GSAP entry point (Fase 8; centralised in Fase K3). setupGsap() registers Flip, SplitText,
+ * CustomEase (+ @gsap/react) exactly once, and the token eases (standard, enter, exit, cinematic,
+ * mask). ScrollTrigger is NOT imported here: it lives in src/lib/animation/scroll-trigger.ts, which
+ * only code that creates triggers imports (gsap-utils scrollProgress/parallax). That keeps its
+ * ~18 KB out of public pages and avoids its permanent keep-alive requestAnimationFrame, which
+ * starts as soon as it is registered. registeredScrollTrigger() lets other code (the Lenis
+ * runtime) update it when — and only when — something registered it. SSR-safe: it does nothing on the
+ * server, and this module is only reached through dynamic import() chunks loaded after
+ * hydration (motion-runtime, smooth-scroll runtime, projects Flip, the lab), never on first paint.
+ * Reusable tweens: src/lib/animation/gsap-utils.ts. Durations/eases come from globals.css.
  *
  *  - motion(fn): runs fn only when prefers-reduced-motion is "no-preference" (gsap.matchMedia);
  *    under reduced motion nothing tweens and content is shown in its final state.
@@ -13,6 +19,8 @@
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
+import { Flip } from "gsap/Flip";
+import type { ScrollTrigger as ScrollTriggerType } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 
 export const MOTION_OK = "(prefers-reduced-motion: no-preference)";
@@ -53,7 +61,7 @@ function bezier(value: string, fallback: string) {
 export function setupGsap() {
   if (registered || typeof window === "undefined") return gsap;
   registered = true;
-  gsap.registerPlugin(useGSAP, CustomEase, SplitText);
+  gsap.registerPlugin(useGSAP, CustomEase, SplitText, Flip);
   const root = getComputedStyle(document.documentElement);
   CustomEase.create(
     "enter",
@@ -67,8 +75,23 @@ export function setupGsap() {
     "exit",
     bezier(root.getPropertyValue("--ease-exit"), "0.4,0,1,1"),
   );
+  CustomEase.create(
+    "cinematic",
+    bezier(root.getPropertyValue("--ease-cinematic"), "0.83,0,0.17,1"),
+  );
+  CustomEase.create(
+    "mask",
+    bezier(root.getPropertyValue("--ease-mask"), "0.77,0,0.175,1"),
+  );
   gsap.defaults({ ease: "enter", duration: tokens().slow });
   return gsap;
+}
+
+/** ScrollTrigger if something registered it (see the header), else undefined. No import needed. */
+export function registeredScrollTrigger(): typeof ScrollTriggerType | undefined {
+  // gsap.core.globals() is public at runtime (ScrollTrigger registers itself there) but untyped.
+  const core = gsap.core as unknown as { globals: () => Record<string, unknown> };
+  return core.globals().ScrollTrigger as typeof ScrollTriggerType | undefined;
 }
 
 /** Motion tokens in seconds / pixels, read once from :root. */
@@ -109,5 +132,4 @@ export function markMotionReady() {
   document.documentElement.classList.add("motion-ready");
 }
 
-// Flip is registered only where it is used (projects filter), to keep it off other pages.
-export { gsap, useGSAP, SplitText };
+export { gsap, useGSAP, SplitText, Flip };

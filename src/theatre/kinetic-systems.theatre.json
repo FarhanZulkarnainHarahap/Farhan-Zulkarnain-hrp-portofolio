@@ -1,0 +1,333 @@
+{
+  "sheetsById": {
+    "Animation Lab": {
+      "staticOverrides": {
+        "byObject": {}
+      },
+      "sequence": {
+        "type": "PositionalSequence",
+        "length": 4,
+        "subUnitsPerUnit": 30,
+        "tracksByObject": {
+          "Lab Object": {
+            "trackIdByPropPath": {
+              "[\"position\",\"y\"]": "LabObject-position.y",
+              "[\"rotation\",\"y\"]": "LabObject-rotation.y",
+              "[\"scale\"]": "LabObject-scale",
+              "[\"emissiveIntensity\"]": "LabObject-emissiveIntensity"
+            },
+            "trackData": {
+              "LabObject-position.y": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Lab Object:[\"position\",\"y\"]",
+                "keyframes": [
+                  {
+                    "id": "LabObject-position.y-0",
+                    "position": 0,
+                    "value": 0,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "LabObject-position.y-1",
+                    "position": 2,
+                    "value": 0.35,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "LabObject-position.y-2",
+                    "position": 4,
+                    "value": 0,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  }
+                ]
+              },
+              "LabObject-rotation.y": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Lab Object:[\"rotation\",\"y\"]",
+                "keyframes": [
+                  {
+                    "id": "LabObject-rotation.y-0",
+                    "position": 0,
+                    "value": 0,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "LabObject-rotation.y-1",
+                    "position": 4,
+                    "value": 6.283185,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  }
+                ]
+              },
+              "LabObject-scale": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Lab Object:[\"scale\"]",
+                "keyframes": [
+                  {
+                    "id": "LabObject-scale-0",
+                    "position": 0,
+                    "value": 1,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "LabObject-scale-1",
+                    "position": 2,
+                    "value": 1.12,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "LabObject-scale-2",
+                    "position": 4,
+                    "value": 1,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  }
+                ]
+              },
+              "LabObject-emissiveIntensity": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Lab Object:[\"emissiveIntensity\"]",
+                "keyframes": [
+                  {
+                    "id": "LabObject-emissiveIntensity-0",
+                    "position": 0,
+                    "value": 0.2,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "LabObject-emissiveIntensity-1",
+                    "position": 2,
+                    "value": 1.2,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "LabObject-emissiveIntensity-2",
+                    "position": 4,
+                    "value": 0.2,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "Scroll Masking": {
+      "staticOverrides": {
+        "byObject": {}
+      },
+      "sequence": {
+        "type": "PositionalSequence",
+        "length": 1,
+        "subUnitsPerUnit": 100,
+        "tracksByObject": {
+          "Mask": {
+            "trackIdByPropPath": {
+              "[\"progress\"]": "Mask-progress",
+              "[\"dissolve\"]": "Mask-dissolve"
+            },
+            "trackData": {
+              "Mask-progress": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Mask:[\"progress\"]",
+                "keyframes": [
+                  {
+                    "id": "Mask-progress-0",
+                    "position": 0,
+                    "value": 1,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "Mask-progress-1",
+                    "position": 0.3,
+                    "value": 0,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "Mask-progress-2",
+                    "position": 0.85,
+                    "value": 1,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "Mask-progress-3",
+                    "position": 1,
+                    "value": 1,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  }
+                ]
+              },
+              "Mask-dissolve": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "Mask:[\"dissolve\"]",
+                "keyframes": [
+                  {
+                    "id": "Mask-dissolve-0",
+                    "position": 0,
+                    "value": 0,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "Mask-dissolve-1",
+                    "position": 0.3,
+                    "value": 0.5,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "Mask-dissolve-2",
+                    "position": 0.85,
+                    "value": 0,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  },
+                  {
+                    "id": "Mask-dissolve-3",
+                    "position": 1,
+                    "value": 0,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "connectedRight": true,
+                    "type": "bezier"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitionVersion": "0.4.0",
+  "revisionHistory": [
+    "kinetic-k3-initial"
+  ]
+}

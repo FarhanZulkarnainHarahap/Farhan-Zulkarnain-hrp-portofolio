@@ -9,7 +9,7 @@ import { MotionPreference } from "./MotionPreference";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, useReducedMotion, useScroll, useSpring } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
 import DashboardNavbar from "./DashboardNavbar";
 import { profile } from "@/lib/site";
 function Footer() {
