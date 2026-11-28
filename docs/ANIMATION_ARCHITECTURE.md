@@ -1,6 +1,7 @@
 # Arsitektur animasi: Kinetic Systems (Fase K3)
 
 Sumber kode: `src/lib/animation/`, `src/components/animation/`, `src/components/animated/`, `src/components/three/`.
+Canvas persisten dan scene manager (Fase K4): docs/SCENE_ARCHITECTURE.md.
 Token: `src/app/globals.css` → `src/lib/design-tokens.ts`. Theatre: `docs/THEATRE.md`. Playground: `/dev/animation-lab` (khusus dev).
 
 ## Tanggung jawab tiap engine
@@ -127,7 +128,7 @@ Handle registry punya `play`, `pause`, `resume`, `reverse`, `interrupt`, `reset`
 | Resize | debounce dan hanya bila lebar berubah (bukan URL bar mobile); juga setelah font selesai dimuat; lalu Lenis resize dan ScrollTrigger.refresh |
 | Tab tersembunyi | `pauseAll` hanya untuk yang sedang berjalan; `resumeAll` hanya untuk yang dipause olehnya; rAF berhenti |
 | Unmount | `dispose` (kill tween/ScrollTrigger, revert SplitText, detach objek Theatre) |
-| WebGL context loss | dilaporkan ke `snapshot.webgl = "lost"`; pemulihan penuh di Fase 4 |
+| WebGL context loss | canvas persisten: fallback, restore terbatas, remount sekali (docs/SCENE_ARCHITECTURE.md) |
 
 ## Kualitas, performa, aksesibilitas
 
@@ -145,8 +146,8 @@ Handle registry punya `play`, `pause`, `resume`, `reverse`, `interrupt`, `reset`
   - Lapis idle/interaksi diam.
 - Konten tidak bergantung pada animasi: komponen Motion merender keadaan akhir di server. Elemen di bawah layar pertama baru
   disembunyikan sebelum paint dan di-reveal saat terlihat. LCP tetap teks server.
-- Pustaka berat (three, R3F, drei, postprocessing, Theatre) belum dimuat di rute publik mana pun. Fase 4 memasang canvas persisten
-  lewat `import()` dinamis.
+- Sejak Fase K4, three, R3F dan drei dimuat di rute publik lewat `import()` saat idle (canvas persisten), tidak pernah sebagai skrip
+  HTML awal, dan tidak pernah di auth/dashboard. Theatre dan postprocessing belum dimuat di rute publik.
 
 ## Rentang durasi (AnimationConfig)
 

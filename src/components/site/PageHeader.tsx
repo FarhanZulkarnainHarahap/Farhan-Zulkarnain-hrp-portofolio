@@ -20,6 +20,7 @@ export function PageHeader({
   children,
   visual,
   className,
+  sceneProps,
 }: {
   eyebrow: ReactNode;
   title: ReactNode;
@@ -27,6 +28,8 @@ export function PageHeader({
   children?: ReactNode;
   visual?: ReactNode;
   className?: string;
+  /** JSON data (API-derived counts) for the page's 3D scene slot (Fase K4). */
+  sceneProps?: Record<string, unknown>;
 }) {
   return (
     <header className={cn("pt-section-sm pb-section-sm", className)}>
@@ -58,6 +61,16 @@ export function PageHeader({
           data-intro-line
           className="block h-(--border-hairline) origin-left bg-hairline-strong lg:col-span-12"
         />
+        {(lead || children) && (
+          // The empty columns 1–5 beside the lead: the page's slot in the persistent 3D canvas
+          // (Fase K4). No box on small screens, so the 3D never overlaps text there.
+          <div
+            aria-hidden="true"
+            data-scene-anchor="page"
+            data-scene-props={sceneProps ? JSON.stringify(sceneProps) : undefined}
+            className="hidden lg:col-span-5 lg:block lg:self-stretch"
+          />
+        )}
         {(lead || children) && (
           <div className="flex flex-col gap-6 lg:col-span-6 lg:col-start-7">
             {lead && (

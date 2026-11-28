@@ -45,6 +45,7 @@ export function SectionHeader({
   as: Heading = "h2",
   id,
   className,
+  sceneProps,
 }: {
   eyebrow?: ReactNode;
   title: ReactNode;
@@ -53,6 +54,12 @@ export function SectionHeader({
   as?: "h1" | "h2" | "h3";
   id?: string;
   className?: string;
+  /**
+   * Makes the label column a slot of the persistent 3D canvas (Fase K4, section-based scenes):
+   * the column stretches to the header's height and carries `data-scene-anchor`. JSON data for the
+   * scene (API-derived counts) goes in `data-scene-props`. No visual change in the DOM.
+   */
+  sceneProps?: Record<string, unknown>;
 }) {
   return (
     <div
@@ -62,7 +69,15 @@ export function SectionHeader({
         className,
       )}
     >
-      {eyebrow ? (
+      {sceneProps ? (
+        <div
+          data-scene-anchor="section"
+          data-scene-props={JSON.stringify(sceneProps)}
+          className="flex flex-col lg:col-span-3 lg:self-stretch"
+        >
+          {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+        </div>
+      ) : eyebrow ? (
         <Eyebrow className="lg:col-span-3">{eyebrow}</Eyebrow>
       ) : (
         <span aria-hidden="true" className="hidden lg:col-span-3 lg:block" />
@@ -102,6 +117,7 @@ export function Section({
   className,
   children,
   id,
+  sceneProps,
   ...props
 }: Omit<ComponentPropsWithoutRef<"section">, "title"> & {
   eyebrow?: ReactNode;
@@ -111,6 +127,8 @@ export function Section({
   headingLevel?: "h1" | "h2" | "h3";
   size?: "page" | "wide" | "reading";
   spacing?: "default" | "compact";
+  /** See SectionHeader: the label column becomes a 3D scene slot (Fase K4). */
+  sceneProps?: Record<string, unknown>;
 }) {
   const headingId = id ? `${id}-title` : undefined;
   return (
@@ -134,6 +152,7 @@ export function Section({
             description={description}
             action={action}
             as={headingLevel}
+            sceneProps={sceneProps}
           />
         )}
         {children}

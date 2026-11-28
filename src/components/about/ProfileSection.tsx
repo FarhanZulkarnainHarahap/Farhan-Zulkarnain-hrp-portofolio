@@ -22,7 +22,7 @@ const facts = [
 export function ProfileSection({ cvHref }: { cvHref: string }) {
   const cvIsFile = cvHref.startsWith("/api/");
   return (
-    <Section id="profile" eyebrow="Profile" title="Hi, I'm Farhan." size="wide">
+    <Section id="profile" sceneProps={{}} eyebrow="Profile" title="Hi, I'm Farhan." size="wide">
       <div data-reveal className="grid gap-10 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-5">
           <ProjectImage

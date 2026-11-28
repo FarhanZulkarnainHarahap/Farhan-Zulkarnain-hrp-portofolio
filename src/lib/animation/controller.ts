@@ -50,7 +50,10 @@ export type KineticDebug = {
 
 export function exposeDebug() {
   if (typeof window === "undefined") return;
-  (window as unknown as { __kinetic?: KineticDebug }).__kinetic = {
+  const w = window as unknown as { __kinetic?: KineticDebug & Record<string, unknown> };
+  // Merge: the scene manager (Fase K4) adds `scene` to the same object, possibly first.
+  w.__kinetic = {
+    ...w.__kinetic,
     state: () => animationStore.get(),
     frame: () => animationStore.frame,
     animations: () => animationRegistry.list(),

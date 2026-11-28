@@ -522,6 +522,20 @@ html.lenis {
   position: relative;
   z-index: var(--z-content);
 }
+/* Persistent canvas (Fase K4). The static fallback of a slot (e.g. the hero's SVG orbit) is hidden
+   only while WebGL is live (<html data-webgl="active">) AND the slot's WebGL rendering has drawn;
+   any other state (unsupported, loading, lost, restoring, failed) shows the fallback again. It stays
+   in the DOM either way (accessible summary). The canvas takes no pointer events: an interactive
+   slot shows the pointer cursor while one of its 3D objects is hovered. */
+[data-orbit-fallback] {
+  transition: opacity var(--duration-enter) var(--ease-standard);
+}
+html[data-webgl="active"][data-orbit-renderer="webgl"] [data-orbit-fallback] {
+  opacity: 0;
+}
+html[data-scene-hover] [data-scene-interactive] {
+  cursor: pointer;
+}
 
 /* ── Typography helpers ─────────────────────────────────────────────────────── */
 /* A masked line: the box clips its child so a line can rise into view (text masking, Fase 3+).

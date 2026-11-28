@@ -248,13 +248,17 @@ external|view|drag"]` (cursor labels), `[data-intro]` / `[data-reveal]` (MotionC
   the bottom; focus trapped, Esc closes, scroll locked.
 - **Footer**: always dark; display-size "Get in touch" CTA, brand, index, elsewhere, Fz card, colophon.
 - **Fields**: surface fill, field border, mono uppercase labels, accent border + bottom bar on focus.
-- **Orbit fallback** (`hero/OrbitFallback.tsx`): static SVG of the orbit model — the no-WebGL fallback
-  and the stand-in until the WebGL orbit (Fase 6).
+- **Orbit fallback** (`hero/OrbitFallback.tsx`): static SVG of the orbit model — the no-WebGL fallback.
+  Since Fase K4 a WebGL orbit PROTOTYPE (same model, real 3D) replaces it visually while WebGL is live;
+  the final hero orbit is Fase 6.
 
 ## 3D
 
 3D is the core of the experience. Rules:
-- One persistent canvas for public routes (Fase 4); scene switching per route and section.
+- One persistent canvas for public routes (Fase K4, docs/SCENE_ARCHITECTURE.md); scene switching per route
+  and section. 3D sits in DOM slots (`data-scene-anchor`): the hero orbit stage, the empty columns beside a
+  page lead, a section's label column. Slots have no box on small screens, so 3D never covers text.
+  Page scenes are procedural placeholders until their design phases.
 - Brand: the original Fz monogram glyphs (`src/app/icon.svg`, `components/brand/FzMark.tsx`).
 - The hero orbit model (`src/lib/display/orbit.ts`) is shared by the SVG fallback and the WebGL
   scene: ring 1 Frontend, ring 2 Backend, ring 3 Tools & platforms — API skills only.

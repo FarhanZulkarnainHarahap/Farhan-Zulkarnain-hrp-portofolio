@@ -50,6 +50,7 @@ export default async function ProjectsPage({
         eyebrow="Projects"
         title="Projects"
         lead="Web applications I've designed and built, from storefronts to admin dashboards. Each project links to its case study."
+        sceneProps={{ count }}
       >
         {!projects.error && count > 0 && (
           <p className="font-meta text-meta text-muted tabular-nums">

@@ -35,6 +35,7 @@ export default async function JourneyPage() {
         eyebrow="Journey"
         title="Experience & learning"
         lead="Roles, training, and projects that shaped how I build software."
+        sceneProps={{ count: experiences.data.length }}
       />
       <Timeline initial={experiences} />
       <NextSteps

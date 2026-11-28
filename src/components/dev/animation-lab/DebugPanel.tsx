@@ -1,9 +1,11 @@
 "use client";
 /**
- * Lab debug panel (Fase K3). Low-frequency values come from the shared snapshot / registry
- * (React, re-render on change only). Per-frame values (FPS, scroll, velocity, Theatre position)
- * are written into the DOM from the shared ticker's render phase, ~10 times per second, through
- * refs — the panel itself never re-renders per frame.
+ * Lab debug panel (Fase K3; persistent-canvas rows added in Fase K4). Low-frequency values come
+ * from the shared snapshots / registry (React, re-render on change only). Per-frame values (FPS,
+ * scroll, velocity, Theatre position, and the global canvas' frame time, draw calls, triangles,
+ * textures, geometries, camera) are written into the DOM from the shared ticker's render phase,
+ * ~10 times per second, through refs — the panel itself never re-renders per frame.
+ * "FPS" counts the panel's own ticks (the shared ticker); "Canvas frame time" is the global canvas.
  */
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useAnimationState } from "@/components/animation/hooks";
@@ -12,6 +14,8 @@ import { animationRegistry } from "@/lib/animation/registry";
 import { getScrollEngine } from "@/lib/animation/scroll";
 import { animationStore } from "@/lib/animation/state";
 import { addTick, tickerStats } from "@/lib/animation/ticker";
+import { useSceneState } from "@/components/scene/hooks";
+import { sceneStore } from "@/lib/scene/store";
 
 type Live = { timeline: () => string };
 
@@ -39,6 +43,11 @@ export function DebugPanel({ live }: { live: Live }) {
   const velocity = useRef<HTMLElement>(null);
   const timeline = useRef<HTMLElement>(null);
   const ticker = useRef<HTMLElement>(null);
+  const canvasFrame = useRef<HTMLElement>(null);
+  const canvasDraws = useRef<HTMLElement>(null);
+  const canvasMemory = useRef<HTMLElement>(null);
+  const canvasCamera = useRef<HTMLElement>(null);
+  const scene = useSceneState((x) => x);
   const liveRef = useRef(live);
   useEffect(() => {
     liveRef.current = live;
@@ -62,6 +71,13 @@ export function DebugPanel({ live }: { live: Live }) {
         const st = tickerStats();
         ticker.current.textContent = `scroll ${st.scroll} · timeline ${st.timeline} · render ${st.render}`;
       }
+      const r = sceneStore.frame.renderer;
+      const c = sceneStore.frame.camera;
+      if (canvasFrame.current) canvasFrame.current.textContent = r.frameTime ? `${r.frameTime.toFixed(1)} ms (${r.fps} fps) · ${r.frames} frames` : `– · ${r.frames} frames`;
+      if (canvasDraws.current) canvasDraws.current.textContent = `${r.calls} calls · ${r.triangles.toLocaleString("en")} triangles`;
+      if (canvasMemory.current) canvasMemory.current.textContent = `${r.textures} textures · ${r.geometries} geometries · ${r.programs} programs`;
+      if (canvasCamera.current)
+        canvasCamera.current.textContent = `pos ${c.position.map((v) => v.toFixed(2)).join(", ")} · fov ${c.fov.toFixed(1)} · ${c.settled ? "settled" : "moving"}`;
     });
   }, []);
 
@@ -79,6 +95,20 @@ export function DebugPanel({ live }: { live: Live }) {
     ["Hovered / selected", `${s.hovered ?? "–"} / ${s.selected ?? "–"}`, "debug-pointer"],
     ["Ticker phases", <span key="tk" ref={ticker} data-testid="debug-ticker">–</span>],
     ["Duration tokens", violations.length ? violations.join("; ") : "all within range", "debug-tokens"],
+    ["— Canvas (K4)", "persistent global canvas", undefined],
+    ["Renderer", `${scene.renderer}${scene.rendererError ? ` · ${scene.rendererError}` : ""}`, "debug-renderer"],
+    ["Canvas mounts", String(scene.mountCount), "debug-mounts"],
+    ["Render mode", scene.renderMode, "debug-render-mode"],
+    ["Current scene", `${scene.activeScene ?? "–"} (${scene.activeScene ? (scene.scenes[scene.activeScene] ?? "–") : "–"})${scene.forcedScene ? " · forced" : ""}`, "debug-scene"],
+    ["Camera preset", scene.cameraPreset ?? "scene default", "debug-camera-preset"],
+    ["Active camera", <span key="cam" ref={canvasCamera} data-testid="debug-camera">–</span>],
+    ["Canvas quality", `${scene.quality}${scene.qualityPinned ? " (pinned)" : ""} · ${scene.qualityReasons.join(", ")}`, "debug-canvas-quality"],
+    ["Canvas frame time", <span key="cft" ref={canvasFrame} data-testid="debug-frame-time">–</span>],
+    ["Draw calls", <span key="dc" ref={canvasDraws} data-testid="debug-draws">–</span>],
+    ["Textures / geometries", <span key="mem" ref={canvasMemory} data-testid="debug-memory">–</span>],
+    ["Object hover / select", `${scene.hoveredObject ?? "–"} / ${scene.selectedObject ?? "–"}${scene.focusedObject ? " · focused" : ""}`, "debug-object"],
+    ["Context losses", `${scene.contextLosses} lost · ${scene.recoveries} recovered`, "debug-context"],
+    ["Assets", `${scene.assets.loaded} loaded · ${scene.assets.pending} pending · ${scene.assets.failed} failed`, "debug-assets"],
   ];
 
   return (

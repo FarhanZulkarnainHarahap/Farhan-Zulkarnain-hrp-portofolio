@@ -45,7 +45,8 @@ export const ENGINE_RESPONSIBILITY: Readonly<Record<AnimationEngine, string>> = 
  */
 export const TRANSFORM_LAYERS = [
   { layer: "scene-root", owner: "r3f", drives: "placement in the scene" },
-  { layer: "scroll", owner: "scrolltrigger", drives: "scroll progress → position / rotation" },
+  { layer: "route-transition", owner: "r3f", drives: "scene enter / leave (SceneRoot, Fase K4)" },
+  { layer: "scroll", owner: "scrolltrigger", drives: "scroll progress → position / rotation (persistent canvas: ScrollSceneController from the shared scroll frame)" },
   { layer: "choreography", owner: "theatre", drives: "keyframed cinematic transform" },
   { layer: "interaction", owner: "maath", drives: "damped hover / pointer / click response" },
   { layer: "idle", owner: "r3f", drives: "float, breath, slow rotation (useFrame clock)" },
@@ -61,6 +62,8 @@ export const OWNERSHIP_RULES: readonly { property: string; owner: AnimationEngin
   { property: "Theatre sequence position", owner: "theatre", note: "GSAP/ScrollTrigger may set it; nothing else animates the values" },
   { property: "DOM element transform / opacity", owner: "motion", note: "GSAP for page intros and reveals: never both on one element" },
   { property: "Object3D transform (per layer)", owner: "r3f", note: "one engine per TransformStack layer" },
+  { property: "global camera (persistent canvas)", owner: "r3f", note: "CameraController only; Theatre values replace its goal (Fase 5)" },
+  { property: "global lights / environment intensity", owner: "r3f", note: "LightingController only; Theatre values override presets" },
   { property: "shader uniforms", owner: "glsl", note: "values come from Theatre or scroll, written in useFrame" },
 ];
 

@@ -147,20 +147,25 @@ test("lab: Motion states, 3D hover, reduced-motion mode", async ({ browser }) =>
   const points = [
     [0.5, 0.5], [0.4, 0.4], [0.6, 0.4], [0.4, 0.6], [0.6, 0.6], [0.5, 0.3], [0.5, 0.7], [0.3, 0.5], [0.7, 0.5],
   ].map(([fx, fy]) => ({ x: box.x + box.width * fx, y: box.y + (visibleBottom - box.y) * fy }));
-  let hit: { x: number; y: number } | null = null;
-  for (const point of points) {
-    await page.mouse.move(point.x, point.y);
-    try {
-      await expect(page.getByTestId("debug-pointer")).toContainText("lab-object", { timeout: 2_500 });
-      hit = point;
-      break;
-    } catch {
-      /* try the next point */
+  // The object moves (idle + Theatre timeline), so hover and click are retried together: a point that
+  // was over the object a moment ago can miss by the time the click lands (since the K4 clock fix the
+  // lab object animates at its real speed).
+  let selected = false;
+  for (let attempt = 0; attempt < 3 && !selected; attempt++)
+    for (const point of points) {
+      await page.mouse.move(point.x, point.y);
+      if (!(await page.getByTestId("debug-pointer").innerText()).includes("lab-object")) {
+        await page.waitForTimeout(150);
+        if (!(await page.getByTestId("debug-pointer").innerText()).includes("lab-object")) continue;
+      }
+      await page.mouse.click(point.x, point.y);
+      await page.waitForTimeout(200);
+      if ((await page.getByTestId("debug-pointer").innerText()).includes("/ lab-object")) {
+        selected = true;
+        break;
+      }
     }
-  }
-  expect(hit, "the pointer raycast reached the object").not.toBeNull();
-  await page.mouse.click(hit!.x, hit!.y);
-  await expect(page.getByTestId("debug-pointer")).toContainText("/ lab-object");
+  expect(selected, "hover then click on the moving lab object selects it").toBe(true);
 
   // Motion click states: loading → success (rapid clicks ignored while busy).
   // The demo records every state it went through (data-history), so a slow frame cannot hide one.
@@ -213,5 +218,157 @@ test("lab under OS reduced motion: native scroll, Theatre not auto-played, conte
   await expect(page.getByTestId("lab-theatre-status")).not.toContainText("sequence playing");
   await expect(page.getByTestId("lab-masked")).toHaveText("Kinetic systems reveal line by line");
   expect(errors).toEqual([]);
+  await context.close();
+});
+
+/* ── Fase K4: persistent global canvas & scene manager (lab sections 13–14) ─────────────────── */
+
+type SceneDbg = {
+  state: () => { renderer: string; activeScene: string | null; mountCount: number; quality: string; qualityPinned: boolean; selectedObject: string | null; hoveredObject: string | null; renderMode: string; rendererError: string | null };
+  frame: () => { camera: { position: [number, number, number] }; probes: Record<string, unknown> };
+};
+const sceneState = (page: Page) => page.evaluate(() => (window as unknown as { __kinetic: { scene: SceneDbg } }).__kinetic.scene.state());
+const sceneFrame = (page: Page) => page.evaluate(() => (window as unknown as { __kinetic: { scene: SceneDbg } }).__kinetic.scene.frame());
+
+async function openK4(page: Page) {
+  const errors = await openLab(page);
+  await page.getByTestId("k4-stage").scrollIntoViewIfNeeded();
+  await expect(page.getByTestId("k4-status")).toContainText("Renderer: active", { timeout: 60_000 });
+  await expect(page.getByTestId("k4-status")).toContainText("scene: lab (active)", { timeout: 60_000 });
+  return errors;
+}
+
+test("K4 lab: one persistent canvas, scene switching, camera / lighting presets, Theatre camera, quality pin", async ({ browser }) => {
+  test.setTimeout(300_000);
+  const context = await browser.newContext(desktop);
+  const page = await context.newPage();
+  const errors = await openK4(page);
+  await expect(page.getByTestId("k4-status")).toContainText("mounts: 1");
+
+  // Scene switching inside the same canvas.
+  for (const id of ["about", "projects", "contact"]) {
+    await page.getByTestId(`k4-scene-${id}`).click();
+    await expect(page.getByTestId("k4-status")).toContainText(`scene: ${id} (active)`, { timeout: 30_000 });
+  }
+  await page.getByTestId("k4-scene-route").click();
+  await expect(page.getByTestId("k4-status")).toContainText("scene: lab (active)", { timeout: 30_000 });
+  expect((await sceneState(page)).mountCount).toBe(1);
+
+  // Camera presets: the focus preset dollies in (z 10 − 0.6), reset returns to the scene preset.
+  await page.getByTestId("k4-camera-focus").click();
+  await expect(page.getByTestId("debug-camera-preset")).toHaveText("focus");
+  await expect.poll(async () => (await sceneFrame(page)).camera.position[2], { timeout: 15_000 }).toBeLessThan(9.45);
+  await page.getByTestId("k4-camera-reset").click();
+  await expect.poll(async () => (await sceneFrame(page)).camera.position[2], { timeout: 15_000 }).toBeGreaterThan(9.6);
+  await page.getByTestId("k4-light-showcase").click();
+  await expect(page.getByTestId("k4-light-showcase")).toHaveAttribute("aria-pressed", "true");
+
+  // Theatre drives the camera through the scene manager (Global Camera object: z = 6), then lets go.
+  await page.getByTestId("k4-theatre-camera").click();
+  await expect.poll(async () => (await sceneFrame(page)).camera.position[2], { timeout: 15_000 }).toBeLessThan(6.2);
+  await page.getByTestId("k4-theatre-camera").click();
+  await expect.poll(async () => (await sceneFrame(page)).camera.position[2], { timeout: 15_000 }).toBeGreaterThan(9.5);
+
+  // Quality pin and back to the quality manager.
+  await page.getByTestId("k4-quality-medium").click();
+  await expect.poll(async () => (await sceneState(page)).quality).toBe("medium");
+  await page.getByTestId("k4-quality-auto").click();
+  await expect.poll(async () => (await sceneState(page)).qualityPinned).toBe(false);
+
+  expect(errors).toEqual([]);
+  await context.close();
+});
+
+test("K4 lab: 3D objects respond to the pointer, and to the keyboard through the object buttons", async ({ browser }) => {
+  test.setTimeout(300_000);
+  const context = await browser.newContext(desktop);
+  const page = await context.newPage();
+  const errors = await openK4(page);
+
+  // Keyboard alternative: the object's button runs the same click response and selects it.
+  await page.getByTestId("k4-object-lab:box").focus();
+  await page.keyboard.press("Enter");
+  await expect.poll(async () => (await sceneState(page)).selectedObject).toBe("lab:box");
+  await page.getByTestId("k4-focus").click();
+  await expect(page.getByTestId("debug-object")).toContainText("focused");
+
+  // Pointer: probe the stage until a raycast hits one of its objects.
+  const box = (await page.getByTestId("k4-stage").boundingBox())!;
+  let hovered: string | null = null;
+  for (let gy = 0.15; gy < 0.95 && !hovered; gy += 0.1)
+    for (let gx = 0.1; gx < 0.95 && !hovered; gx += 0.1) {
+      await page.mouse.move(box.x + box.width * gx, box.y + box.height * gy);
+      await page.waitForTimeout(80);
+      hovered = (await sceneState(page)).hoveredObject;
+    }
+  expect(hovered, "a 3D object in the stage reacts to the pointer").not.toBeNull();
+  // Outside the interactive stage nothing is hovered.
+  await page.mouse.move(5, 300);
+  await expect.poll(async () => (await sceneState(page)).hoveredObject).toBeNull();
+  expect(errors).toEqual([]);
+  await context.close();
+});
+
+test("K4 lab: 3D masking prototype — clipping plane, bottom-to-top, scroll-driven and reversible", async ({ browser }) => {
+  test.setTimeout(300_000);
+  const context = await browser.newContext(desktop);
+  const page = await context.newPage();
+  const errors = await openK4(page);
+  const probe = async (key: string) => Number((await sceneFrame(page)).probes[key]);
+
+  expect(await probe("lab:mask:clipping")).toBe(1);
+  expect(await probe("lab:mask:opacity")).toBe(1); // not a fade
+
+  // Manual: fully hidden → half → fully revealed (bottom to top: the plane rises).
+  const range = page.getByTestId("k4-mask-range");
+  for (const [value, expected] of [["0", 0], ["0.5", 0.5], ["1", 1]] as const) {
+    await range.fill(value);
+    await expect.poll(() => probe("lab:mask:revealed")).toBeCloseTo(expected, 2);
+  }
+  // (Not compared in world units: fill() scrolls the input into view, which moves the stage.)
+  await range.fill("0.2");
+  await expect.poll(() => probe("lab:mask:revealed")).toBeCloseTo(0.2, 2);
+
+  // Scroll-driven and reversible.
+  await page.getByTestId("k4-mask-scroll").click();
+  const stageTop = await page.getByTestId("k4-stage").evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+  const at = async (offset: number) => {
+    await page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), stageTop + offset);
+    await page.waitForTimeout(500);
+    return probe("lab:mask:progress");
+  };
+  const a = await at(-800);
+  const b = await at(-200);
+  const c = await at(300);
+  expect(b).toBeGreaterThan(a);
+  expect(c).toBeGreaterThan(b);
+  const back = await at(-800);
+  expect(back).toBeCloseTo(a, 2);
+  expect(errors).toEqual([]);
+  await context.close();
+});
+
+test("K4 lab: failures stay contained — context loss and recovery, a missing asset, a broken shader", async ({ browser }) => {
+  test.setTimeout(300_000);
+  const context = await browser.newContext(desktop);
+  const page = await context.newPage();
+  await openK4(page);
+
+  await page.getByTestId("k4-lose").click();
+  await expect(page.getByTestId("k4-status")).toContainText(/Renderer: (lost|restoring)/);
+  expect((await sceneState(page)).renderMode).toBe("off");
+  await expect(page.getByTestId("k4-status")).toContainText("Renderer: active", { timeout: 20_000 });
+  await expect(page.getByTestId("k4-error")).toContainText("1 lost / 1 recovered");
+  await expect(page.getByTestId("k4-status")).toContainText("mounts: 1");
+
+  await page.getByTestId("k4-asset-fail").click();
+  await expect(page.getByTestId("k4-asset")).toContainText("failed as expected", { timeout: 15_000 });
+  await expect(page.getByTestId("debug-assets")).toContainText("1 failed");
+
+  await page.getByTestId("k4-shader").click();
+  await expect(page.getByTestId("k4-error")).toContainText("shader", { timeout: 15_000 });
+  // The rest of the scene keeps rendering.
+  await expect(page.getByTestId("k4-status")).toContainText("Renderer: active");
+  await page.getByTestId("k4-shader").click();
   await context.close();
 });

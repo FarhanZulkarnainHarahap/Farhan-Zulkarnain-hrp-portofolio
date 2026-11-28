@@ -211,3 +211,120 @@ Tidak ada test lama yang dihapus atau dilonggarkan.
   membuat daftar rute dev basi, sehingga rute baru seperti `/dev/animation-lab` menjadi 404. Hapus seluruh `.next/dev` (cache hasil generate),
   jangan hanya `types/`.
 - QA lokal berjalan bersamaan dengan proyek lain di mesin yang sama (beban CPU tinggi); run yang timeout massal diulang dan tidak dihitung.
+
+## Fase K4 — Canvas WebGL persisten dan scene manager global
+
+Arsitektur: docs/SCENE_ARCHITECTURE.md. Keamanan dependensi: docs/SECURITY_AUDIT.md. Lab: `/dev/animation-lab` bagian 13–14 (dev saja).
+
+### Yang dibangun
+
+- Satu canvas R3F persisten di `#webgl-root` (SiteChrome, rute publik). Dimuat dengan `import()` saat idle dan tidak pernah dibuat
+  ulang oleh navigasi klien (`mountCount` = 1). Tidak dimuat di auth dan dashboard.
+- Scene manager: store dua tingkat, controller, registry tujuh scene (home, about, skills, journey, projects, project-detail,
+  contact; ditambah lab di dev), scene per section di /about (#profile → about, #stack → skills, #documents → about + kamera
+  "documents"), lifecycle (loading → ready → active → deactivating → disposed, error), dan preload scene berikutnya saat idle.
+- Hierarki: SceneRoot → RouteTransitionGroup → ScrollTransformGroup → Theatre → Interaction → Idle → Mesh, satu pemilik per lapis.
+- Kamera (preset per scene/section, fokus berupa dolly di garis pandang, parallax, sway kecil, hook Theatre), cahaya (empat preset dari
+  token), dan satu environment prosedural.
+- Objek interaktif: idle (putaran, float, napas, emissive), hover (skala, tilt, emissive, kursor), klik (kompresi + pegas, seleksi,
+  fokus kamera), exit (damping kembali). Raycast hanya di slot `data-scene-interactive`, dengan alternatif keyboard lewat tombol objek
+  di lab (`sceneController.activate`).
+- **Prototipe orbit** di stage hero dengan model orbit yang sama dengan SVG (21 skill dari API, tiga cincin dengan radius, inklinasi,
+  arah, dan periode berbeda). Gerak orbit memakai waktu dan perspektif nyata, dan node di belakang core terhalang depth buffer.
+  Saat motion diizinkan, SVG disembunyikan secara visual dan tetap ada di DOM. Saat reduced motion, orbit dibekukan di tata letak SVG.
+  Node belum berlabel; label menyusul di Fase 6.
+- **Prototipe masking 3D** (lab): clipping plane di world space, terbuka dari bawah ke atas, digerakkan scroll, bisa dibalik, dengan
+  translasi objek dan tepi GLSL. Benar-benar memotong geometri, bukan opacity.
+- Kualitas adaptif: high/medium/low/minimal dari plafon kemampuan dan waktu frame dengan histeresis; DPR, antialias, bayangan, detail
+  geometri, resolusi environment, cahaya minimal.
+- Render loop: continuous saat ada alasan, on demand saat statis, suspended saat context hilang. Jam scene dibatasi supaya tidak
+  melompat setelah tab aktif kembali. Halaman idle tetap 0 rAF.
+- Pemulihan WebGL (lost → fallback → restore terbatas → satu remount → fallback permanen), error shader, fallback tanpa WebGL.
+- AssetManager: GLB (Meshopt), PNG/WebP/SVG (logo Fz berupa tekstur SVG dari path monogram asli), HDR; refcount, masa tenggang,
+  preload, error.
+- Scene halaman (about, skills, journey, projects, project-detail, contact) adalah **placeholder prosedural** yang diberi nama
+  "placeholder" di scene graph. Ini bukan desain final.
+
+### Pengukuran (Chromium headless, WebGL software/SwiftShader; bukan GPU nyata)
+
+Semua angka di sini berasal dari renderer software. **Tidak ada klaim FPS perangkat keras.** Pengujian GPU nyata masih harus dilakukan
+di perangkat pemilik.
+
+| Hal | Nilai |
+|---|---|
+| Tier kualitas di QA | low ("software renderer … SwiftShader") |
+| Mount canvas setelah home → about → journey → projects → contact → home | 1 |
+| Draw calls / segitiga per scene (low) | about 2 / 804 · journey 2 / 800 · projects 8 / 96 · contact 3 / 1616 · home ±26 / ±3.5 rb |
+| Navigasi berulang (5 putaran, setelah masa tenggang 2,5 dtk) | heap JS 22,0 MB tetap; geometri 11, tekstur 5, program 6 tetap |
+| Orbit (12 sampel / 3 dtk) | posisi node 0 berubah di setiap sampel, termasuk z (gerak 3D) |
+| Fokus klik | kamera z 9,60 → 9,03 dengan damping (dolly 0,6 m) |
+| Masking (scroll −800 … +400 … −800 px) | revealed 0 → 0,31 → 0,57 → 0,84 → 1 → 0,84 → 0,31 → 0 (monoton dan bisa dibalik) |
+
+Bukti: `.qa/kinetic/k4/*.png`, `home-orbit.webm`, `scene-switching.webm`, `lab-mask.webm`, `qa-report.json`.
+
+### Bundle (KB gzip; Fase 2 → K3 → K4)
+
+| Rute | JS awal | JS setelah idle |
+|---|---|---|
+| `/` | 204,7 → 210,3 → 214,7 | 267,3 → 287,9 → 576,1 |
+| `/about` | 201,1 → 206,7 → 211,0 | 263,8 → 284,4 → 575,0 |
+| `/projects` | 202,5 → 208,1 → 212,4 | 240,3 → 261,0 → 548,6 |
+| `/contact` | 193,8 → 199,4 → 203,7 | 231,3 → 251,9 → 537,2 |
+| `/journey` | – → – → 204,8 | – → – → 541,3 |
+| `/auth/login` | 198,4 → 204,0 → 208,2 | 204,6 → 210,2 → 214,4 (tanpa three.js) |
+
+- JS awal +4,4 KB: `GlobalCanvasMount`, store, dan controller. Ikut ke auth lewat chunk bersama not-found (lihat K3); tidak dijalankan
+  dan tidak memuat three.
+- JS setelah idle sekitar +288 KB: three (sekitar 182 KB, dua chunk r187), R3F + drei (60 KB), dan sistem scene (31 KB). Semuanya lewat
+  `import()` setelah hidrasi, sehingga LCP tetap teks server (entrance LCP/CLS lolos).
+- drei `Environment` ikut membawa loader HDR/EXR yang tidak dipakai. Kandidat pemangkasan: environment PMREM buatan sendiri.
+
+### Hasil
+
+| Pemeriksaan | Hasil |
+|---|---|
+| `npm run lint` | 0 error |
+| `npm run build` | sukses |
+| `npm run test:fast` | **139/139** lolos (K3: 124; +11 `scene.spec`, +4 test lab K4) |
+| admin-visual | 20/20 identik |
+
+### Perubahan test
+
+| Test | Perubahan | Alasan |
+|---|---|---|
+| `tests/scene.spec.ts` (baru, `app`) | 11 test: canvas persisten tanpa remount; auth/dashboard tanpa canvas dan three; scene per section dan preset kamera (nilai tepat di reduced motion); orbit bergerak 3D dan idle saat tidak terlihat; reduced motion beku dan on demand; hover/klik/fokus, kontrol DOM dan seleksi teks tetap jalan; tanpa WebGL (fallback, tanpa three, navigasi jalan); context loss dan pemulihan (mount tetap 1); navigasi berulang tanpa pertumbuhan resource GPU; ponsel dan tablet (slot, tanpa overflow) | bukti Fase 4 |
+| `tests/animation-lab.spec.ts` | +4 test K4: scene/preset/Theatre/kualitas; objek pointer dan keyboard; masking; kegagalan (context, aset, shader). Hover K3 dicoba ulang bersama klik | objek lab K3 kini bergerak dengan kecepatan sebenarnya (bug satuan waktu K3 diperbaiki) |
+| `tests/animation.spec.ts` | "tanpa three.js di rute publik" menjadi "three.js tidak pernah di HTML awal, hanya dimuat setelah hidrasi; Studio, Theatre core, dan lab tetap tidak ada" | canvas persisten memang memuat three secara lazy |
+| `tests/home.spec.ts` | "tidak ada canvas" menjadi "tidak ada canvas selain canvas persisten di #webgl-root" | aturan lama dari Fase 10.5 (three dihapus) |
+| `tests/public-quality.spec.ts` | warning `THREE.Clock` deprecated diabaikan | warning pihak ketiga (R3F 9.8.2 + three r187), bukan cacat aplikasi |
+| `playwright.config.ts` + `tests/dev-server.mjs` (baru) | dev server test selalu mulai dari `.next/dev` bersih, dan menolak bila folder dipakai dev server lain yang masih hidup | cache rute Next 16 yang basi membuat lab 404 (masalah K3), kini reproducible |
+
+Tidak ada test yang dihapus.
+
+### Perbaikan lain
+
+- K3 `TickerFrameloop` mengirim milidetik ke `advance()` R3F, yang mengharapkan detik. Idle dan damping di lab K3 berjalan dengan
+  skala waktu yang salah. Sekarang memakai jam detik yang dibatasi.
+- Listener pointer R3F terhapus oleh `connect()` R3F sendiri (urutan connect/disconnect), sehingga hover 3D tidak pernah jalan. Ditemukan
+  lewat test dan diperbaiki.
+- Status scene "active" tadinya tertimpa "ready" bila modul selesai dimuat setelah transisi. Sekarang "active" butuh keduanya.
+- Fokus kamera tadinya menggeser orbit ke atas judul hero. Sekarang berupa dolly di garis pandang.
+- Core orbit tadinya berputar penuh sehingga tampak dari samping (logo tak terlihat dan target hover menyempit). Sekarang berayun ±0,35 rad.
+- `Environment` di-remount per preset dan meninggalkan satu tekstur setiap kali. Sekarang satu environment bersama.
+- `exposeDebug()` K3 kini menggabungkan isi `window.__kinetic` alih-alih menimpanya.
+
+### Risiko / belum selesai
+
+- **Keamanan (kritis, sebelum deploy):** `next` 16.2.4 punya advisory RCE/SSRF di Image Optimization (sumber `res.cloudinary.com/**`
+  terbuka untuk akun Cloudinary mana pun, AVIF aktif), RCE `next/og`, dan bypass Proxy. Perbaikan: `next` 16.4.6 (bukan major), sebagai
+  langkah tersendiri dengan izin. Lihat docs/SECURITY_AUDIT.md.
+- FPS dan beban GPU nyata belum diukur. Semua QA memakai renderer software (tier low), jadi tier high/medium (bayangan, ContactShadows,
+  DPR 2) belum terlihat di QA otomatis.
+- Bloom selektif belum ada (canvas transparan); dievaluasi di Fase 6.
+- Node orbit belum berlabel; label dan desain final hero di Fase 6. Scene halaman masih placeholder.
+- drei `Environment` membawa loader HDR/EXR yang tidak dipakai.
+- Warning `THREE.Clock` deprecated di console (R3F 9.8.2) sampai R3F diperbarui.
+- Pemulihan scroll /about saat back (technical debt dari K3): pemeriksaan awal menunjukkan tidak terkait canvas persisten. Native dan
+  Lenis sama-sama mendarat di sekitar 950 px. Wajib selesai paling lambat Fase 8.
+- Lab K3 punya canvas sendiri di halaman dev (dua context di halaman itu saja).
+- Mesin QA dipakai bersama proyek lain; beberapa run lambat atau timeout lalu diulang.

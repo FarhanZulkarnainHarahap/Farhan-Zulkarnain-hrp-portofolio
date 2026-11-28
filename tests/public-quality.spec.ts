@@ -47,6 +47,9 @@ const ignored = [
   /GPU stall/,
   /status of 404/,
   /was detected as the Largest Contentful Paint/,
+  // Fase K4: @react-three/fiber 9.8.2 creates a THREE.Clock in its store; three r187 deprecates the
+  // class with a one-time console warning. Third-party, harmless; goes away with an R3F update.
+  /THREE\.Clock: This module has been deprecated/,
 ];
 
 for (const colorScheme of ["light", "dark"] as const) {

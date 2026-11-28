@@ -43,12 +43,12 @@ export function applyMask(uniforms: MaskUniforms, v: MaskValue) {
   uniforms.uEdgeGlow.value = v.uniforms.edgeGlow;
 }
 
-/** idle layer ← clock: float (sin), breath (scale), slow spin. Rests under reduced motion. */
+/** idle layer ← clock: float (sin), breath (scale), slow spin or a yaw swing. Rests under reduced motion. */
 export function applyIdle(
   layer: Object3D,
   time: number,
   idle: MotionTokenSet["idle"],
-  { reduced, amplitude, period, spin }: { reduced: boolean; amplitude?: number; period?: number; spin?: number },
+  { reduced, amplitude, period, spin, yaw }: { reduced: boolean; amplitude?: number; period?: number; spin?: number; yaw?: number },
 ) {
   if (reduced) {
     layer.position.y = 0;
@@ -58,7 +58,8 @@ export function applyIdle(
   const w = (Math.PI * 2) / (period ?? idle.floatPeriod);
   layer.position.y = Math.sin(time * w) * (amplitude ?? idle.floatAmplitude);
   layer.scale.setScalar(1 + (Math.sin(time * w * 0.5) * 0.5 + 0.5) * (idle.breathScale - 1));
-  layer.rotation.y = time * (spin ?? idle.rotationSpeed);
+  // `yaw`: swing ±yaw rad instead of turning (a plate that must keep facing the viewer).
+  layer.rotation.y = yaw ? Math.sin(time * w * 0.5) * yaw : time * (spin ?? idle.rotationSpeed);
 }
 
 export type InteractionInput = { hovered: boolean; pressed: boolean; follow: boolean };

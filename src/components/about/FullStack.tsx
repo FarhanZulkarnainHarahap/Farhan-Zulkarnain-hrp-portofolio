@@ -38,6 +38,7 @@ function FullStackView({ state }: { state: CollectionState<Skill> }) {
   return (
     <Section
       id="stack"
+      sceneProps={{ count: state.data.length }}
       eyebrow="Stack"
       title="The full toolkit."
       description="Every technology I use, grouped by category. Database and DevOps tools are listed separately."

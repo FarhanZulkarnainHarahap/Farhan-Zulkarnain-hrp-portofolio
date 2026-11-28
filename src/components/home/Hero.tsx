@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { ShinyText } from "@/components/accents/ShinyText";
 import { OrbitFallback } from "@/components/hero/OrbitFallback";
+import { buildOrbit } from "@/lib/display/orbit";
 import { ScrollHint } from "@/components/home/ScrollHint";
 import { buttonClasses } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
@@ -120,9 +121,15 @@ export function Hero({
           </div>
         </div>
         <div className="relative lg:col-span-5">
+          {/* Orbit stage: the SVG fallback is server-rendered here; the persistent canvas (Fase K4)
+              places its WebGL orbit prototype in this slot (data-scene-anchor) from the same model
+              (data-scene-props, from the API skills) and raycasts only inside it. */}
           <div
             data-orbit-stage
             data-orbit-renderer="svg"
+            data-scene-anchor="home"
+            data-scene-interactive
+            data-scene-props={orbitSceneProps(skills)}
             className="relative mx-auto aspect-[264/200] w-(--orbit-stage-size-mobile) lg:w-(--orbit-stage-size)"
           >
             {visual ?? <OrbitFallback skills={skills} />}
@@ -132,6 +139,20 @@ export function Hero({
       <ScrollHint />
     </section>
   );
+}
+
+/** The orbit model for the WebGL scene, as JSON (rings, node ids and angles — no extra data). */
+function orbitSceneProps(skills: Skill[]) {
+  const rings = buildOrbit(skills).map(({ id, radius, inclination, roll, direction, period, nodes }) => ({
+    id,
+    radius,
+    inclination,
+    roll,
+    direction,
+    period,
+    nodes: nodes.map((node) => ({ id: node.id, angle: Number(node.angle.toFixed(4)) })),
+  }));
+  return JSON.stringify({ rings });
 }
 
 /** "{n} projects · {n} technologies · A, B, C" from API data; hidden when there is none. */

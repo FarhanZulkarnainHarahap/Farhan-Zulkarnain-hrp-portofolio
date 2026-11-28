@@ -89,6 +89,9 @@
 - Halaman publik merender data di SERVER (src/lib/server/content.ts: fungsi api.ts + unstable_cache 300 dtk),
   dengan fallback "Try again" ke useCollection di browser (src/components/site/ServerCollection.tsx).
   Pola ini juga dipakai untuk /about, /journey, /projects di Fase 6.
+- Project `dev-quality` memulai dev server lewat `tests/dev-server.mjs`, yang menghapus `.next/dev` (cache hasil generate)
+  agar daftar rute tidak basi. Skrip ini menolak berjalan bila `.next/dev` sedang dipakai dev server lain yang masih hidup
+  (mis. `npm run dev` milik saya), jadi hentikan dev server itu dulu sebelum `test:fast`.
 - Playwright lokal butuh
   `export LD_LIBRARY_PATH=~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu:~/.local/pw-libs/root/usr/lib/x86_64-linux-gnu/nss`.
 - `npm run test:browsers` (Fase 12.6, tidak termasuk test:fast): fly-through di Chromium, Firefox, WebKit.

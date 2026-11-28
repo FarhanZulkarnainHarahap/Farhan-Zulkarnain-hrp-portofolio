@@ -2,7 +2,8 @@ import { expect, test, type Page } from "@playwright/test";
 
 /**
  * Fase K3 — animation infrastructure on the production build:
- *  - the dev-only lab and the dev-only Theatre Studio never reach production;
+ *  - the dev-only lab and the dev-only Theatre Studio never reach production (three.js does since
+ *    Fase K4, lazily, for the persistent canvas — see scene.spec.ts);
  *  - Lenis is the single scroll source on desktop with motion allowed, driven by the shared GSAP
  *    ticker (no second rAF loop), synced with the shared scroll frame;
  *  - anchors, scroll lock, client navigation and back/forward keep working with it;
@@ -41,29 +42,37 @@ test("the animation lab is a 404 in production and ships no lab code", async ({ 
   await expect(page.locator("canvas")).toHaveCount(0);
 });
 
-test("public pages load no Theatre Studio, no Theatre core, no three.js and no lab code", async ({ browser }) => {
+test("public pages load no Theatre Studio, no Theatre core and no lab code; three.js only after hydration, never in the HTML", async ({ browser }) => {
+  // Fase K4 changed this test: three.js is now expected on public pages — the persistent canvas
+  // loads it with import() at idle — but never as a <script> of the server HTML (first paint),
+  // and the dev-only lab, Theatre (Fase 5 timelines) and Studio still never reach production.
   test.setTimeout(180_000);
   const markers: [string, RegExp][] = [
     ["Theatre Studio", /TheatreStudio|theatre-studio|@theatre\/studio/],
     ["Theatre core", /Theatre_RafDriver_PublicAPI/],
-    ["three.js", /WebGLRenderer/],
-    ["animation lab", /lab:theatre|Loading animation lab/],
+    ["animation lab", /lab:theatre|Loading animation lab|k4-missing-asset/],
   ];
   const context = await browser.newContext(desktop);
   const page = await context.newPage();
   const found: string[] = [];
+  const threeScripts = new Set<string>();
   page.on("response", async (res) => {
     if (!res.url().endsWith(".js")) return;
     const body = await res.text().catch(() => "");
     for (const [name, re] of markers) if (re.test(body)) found.push(`${name} in ${res.url()}`);
+    if (/WebGLRenderer/.test(body)) threeScripts.add(new URL(res.url()).pathname);
   });
   for (const path of ["/", "/about", "/journey", "/projects", "/contact", "/dev/animation-lab"]) {
+    const html = await (await page.request.get(path)).text();
+    const initial = [...html.matchAll(/src="([^"]+\.js)"/g)].map((m) => m[1]);
     await page.goto(path);
-    await page.waitForTimeout(2500); // idle-time chunks (Lenis, GSAP runtime)
+    await page.waitForTimeout(2500); // idle-time chunks (Lenis, GSAP runtime, the canvas)
     await page.mouse.wheel(0, 600);
     await page.waitForTimeout(500);
+    for (const script of threeScripts) expect(initial, `three.js must not be a first-paint script on ${path}`).not.toContain(script);
   }
   expect(found).toEqual([]);
+  expect(threeScripts.size, "the persistent canvas loads three.js after hydration").toBeGreaterThan(0);
   await context.close();
 });
 

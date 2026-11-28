@@ -12,6 +12,9 @@
  *
  * Everything is registered in the AnimationRegistry with its owner, so the debug panel lists what
  * runs and a conflicting claim is refused (demo 10).
+ *
+ * Fase K4 adds 13 (persistent global canvas & scene manager) and 14 (3D masking prototype), see
+ * CanvasLab.tsx. The K3 demo canvas (8) stays a separate canvas of its own, only on this dev page.
  */
 import dynamic from "next/dynamic";
 import { ArrowUpRight, Sparkles } from "lucide-react";
@@ -37,6 +40,7 @@ import { acquireScrollLock, scrollToTarget } from "@/lib/animation/scroll";
 import { animationStore } from "@/lib/animation/state";
 import { addTick } from "@/lib/animation/ticker";
 import { Container } from "@/components/ui/container";
+import { CanvasLab } from "./CanvasLab";
 import { DebugPanel } from "./DebugPanel";
 import type { LabSignals } from "./LabScene";
 
@@ -559,6 +563,9 @@ function LabBody() {
         <div className="sticky top-(--nav-height) z-(--z-ui) h-[40svh] border border-hairline bg-canvas lg:top-[calc(var(--nav-height)+1rem)] lg:h-[calc(100svh-var(--nav-height)-2rem)]">
           <LabScene signals={signals} />
         </div>
+      </div>
+      <div className="order-3 lg:col-span-12">
+        <CanvasLab />
       </div>
       <DebugPanel live={debugLive} />
     </Container>

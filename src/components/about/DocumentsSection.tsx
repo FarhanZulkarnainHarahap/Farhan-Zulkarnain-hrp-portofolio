@@ -22,6 +22,7 @@ function DocumentsView({ state }: { state: CollectionState<Document> }) {
   return (
     <Section
       id="documents"
+      sceneProps={{ count: state.data.length }}
       eyebrow="Documents"
       title="CV and certificates."
       description="Download my CV or view education and professional certificates."

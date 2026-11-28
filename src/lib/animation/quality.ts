@@ -26,7 +26,11 @@ type NavigatorSignals = Navigator & {
 
 const ORDER: QualityTier[] = ["minimal", "low", "medium", "high"];
 
-export function estimateTier(): { tier: QualityTier; reasons: string[] } {
+/**
+ * `ignoreReducedMotion`: for rendering quality (the canvas, Fase K4) reduced motion changes what
+ * moves, not how well a frame may be drawn.
+ */
+export function estimateTier({ ignoreReducedMotion = false }: { ignoreReducedMotion?: boolean } = {}): { tier: QualityTier; reasons: string[] } {
   if (typeof window === "undefined") return { tier: "medium", reasons: ["server"] };
   const nav = navigator as NavigatorSignals;
   const reasons: string[] = [];
@@ -37,7 +41,7 @@ export function estimateTier(): { tier: QualityTier; reasons: string[] } {
       reasons.push(why);
     }
   };
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) lower(1, "reduced motion");
+  if (!ignoreReducedMotion && window.matchMedia("(prefers-reduced-motion: reduce)").matches) lower(1, "reduced motion");
   if (nav.connection?.saveData) lower(1, "save-data");
   if (/(^|-)2g$/.test(nav.connection?.effectiveType ?? "")) lower(1, "slow network");
   if (typeof nav.deviceMemory === "number" && nav.deviceMemory <= 2) lower(1, `memory ${nav.deviceMemory} GB`);

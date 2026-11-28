@@ -51,7 +51,14 @@ export function CaseStudy({
   return (
     <article>
       <header className="pt-section-sm pb-12">
-        <Container size="wide" className="flex flex-col gap-8">
+        <Container size="wide" className="relative flex flex-col gap-8">
+          {/* Empty right side of the header on xl screens (the text column is max-w-4xl): the case study's slot in the
+              persistent 3D canvas (Fase K4). No box on small screens. */}
+          <div
+            aria-hidden="true"
+            data-scene-anchor="page"
+            className="pointer-events-none absolute inset-y-0 right-(--spacing-gutter) hidden w-[min(24rem,22%)] xl:block"
+          />
           <nav aria-label="Breadcrumb">
             <ol className="flex flex-wrap items-center gap-2 font-meta text-meta text-muted">
               <li>

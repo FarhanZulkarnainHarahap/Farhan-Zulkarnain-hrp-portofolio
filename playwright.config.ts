@@ -60,7 +60,9 @@ export default defineConfig({
       env,
     },
     {
-      command: "npx next dev --port 3102",
+      // Clean .next/dev first (stale-route cache, see tests/dev-server.mjs); refuses if another
+      // dev server owns it.
+      command: "node tests/dev-server.mjs --port 3102",
       url: "http://localhost:3102",
       timeout: 180_000,
       reuseExistingServer: false,

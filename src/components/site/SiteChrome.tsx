@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { AnimationProvider } from "@/components/animation/AnimationProvider";
 import { MotionController } from "@/components/motion/MotionController";
+import { GlobalCanvasMount } from "@/components/scene/GlobalCanvasMount";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SiteFooter } from "./SiteFooter";
 import { SiteHeader } from "./SiteHeader";
@@ -8,7 +9,8 @@ import { SiteHeader } from "./SiteHeader";
 /**
  * Public page frame and its layer stack (Kinetic, Fase K2; back → front, globals.css "Layer stack"):
  *   1 environment   .layer-environment — CSS grid + vignette (decorative, fixed)
- *   2 WebGL canvas  #webgl-root — persistent R3F canvas mounts here in Fase 4 (empty until then)
+ *   2 WebGL canvas  #webgl-root — the persistent R3F canvas (Fase K4, GlobalCanvasMount: loaded at
+ *                   idle, kept across public navigations, absent on auth/dashboard)
  *   3 3D mask       #mask-root — scroll-mask helpers of Fase 7 (empty until then)
  *   4 content       .layer-content — skip link target, pages (<main id="main-content">), footer
  *   5 interactive UI (inside content, z --z-ui) · 6 navigation (sticky header, --z-header)
@@ -27,7 +29,9 @@ export function SiteChrome({ children }: { children: ReactNode }) {
         {/* .site-frame marks public pages (scrollbar gutter rules in globals.css). */}
         <div id="top" className="site-frame contents">
           <div aria-hidden="true" className="layer-environment" />
-          <div id="webgl-root" aria-hidden="true" className="layer-canvas" />
+          <div id="webgl-root" aria-hidden="true" className="layer-canvas">
+            <GlobalCanvasMount />
+          </div>
           <div id="mask-root" aria-hidden="true" className="layer-mask" />
           <a
             href="#main-content"

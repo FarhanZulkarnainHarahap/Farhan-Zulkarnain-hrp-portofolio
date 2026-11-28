@@ -50,7 +50,8 @@ test("hero shows who, what, proof from the API, and both CTAs", async ({
   // No legacy home content or 3D on the new home page.
   await expect(page.locator(".legacy-root")).toHaveCount(0);
   await expect(page.locator("[data-fzh-asset]")).toHaveCount(0);
-  await expect(page.locator("canvas")).toHaveCount(0);
+  // Fase K4: the only canvas is the persistent WebGL canvas in #webgl-root (no legacy canvases).
+  await expect(page.locator("canvas:not(#webgl-root canvas)")).toHaveCount(0);
   // Fase K2: the CTA reads "Explore projects" (master prompt wording).
   await page.getByRole("link", { name: "Explore projects" }).click();
   await expect(page).toHaveURL(/\/projects$/);
